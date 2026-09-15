@@ -23,11 +23,7 @@ public struct PaysView: View {
                 .frame(maxWidth: 420, alignment: .leading)
                 .padding(.bottom, 26)
 
-            AdaptiveTwoColumn(leftWeight: 1.1, rightWeight: 1, gap: theme.gap) {
-                searchCard
-            } right: {
-                selectionCard
-            }
+            searchCard
         }
     }
 
@@ -63,29 +59,6 @@ public struct PaysView: View {
         }
     }
 
-    private var selectionCard: some View {
-        VStack(spacing: 0) {
-            if theme.showPhotos {
-                PhotoPlaceholder(label: "carte du pays sélectionné — placeholder")
-            }
-            VStack(alignment: .leading, spacing: 0) {
-                Eyebrow("SÉLECTION", color: ClassicTheme.faint).padding(.bottom, 8)
-                Text(state.country).font(CFont.sans(26, weight: .semibold)).foregroundStyle(ClassicTheme.ink).padding(.bottom, 14)
-                LazyVGrid(columns: [GridItem(.flexible(), spacing: 18), GridItem(.flexible(), spacing: 18)], spacing: 12) {
-                    ForEach(derived.countryFacts) { f in
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(f.key).font(CFont.sans(13)).foregroundStyle(ClassicTheme.faint)
-                            Text(f.value).font(CFont.sans(13)).foregroundStyle(ClassicTheme.ink)
-                        }
-                    }
-                }
-            }
-            .padding(theme.cardPad)
-        }
-        .background(.white)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-        .overlay(RoundedRectangle(cornerRadius: 10).stroke(ClassicTheme.border, lineWidth: 1))
-    }
 }
 
 /// A responsive 2-column row that stacks to 1 column under `breakpoint`
