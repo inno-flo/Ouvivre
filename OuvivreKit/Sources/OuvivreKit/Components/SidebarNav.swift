@@ -11,53 +11,18 @@ public struct SidebarNav: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 9) {
-                Circle().fill(theme.accent).frame(width: 10, height: 10)
-                Text("OUVIVRE")
-                    .font(CFont.mono(13, weight: .semibold))
-                    .tracking(3)
-                    .foregroundStyle(ClassicTheme.ink)
-            }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 22)
-
             group("PARCOURS", derived.navSteps)
             Rectangle().fill(ClassicTheme.border).frame(height: 1).padding(.horizontal, 14).padding(.vertical, 16)
             group("OUTILS", derived.navTools)
 
             Spacer(minLength: 12)
 
-            VStack(alignment: .leading, spacing: 7) {
-                Eyebrow("RECHERCHE EN COURS", color: ClassicTheme.faint)
-                Text("France · Savoie / Haute‑Savoie")
-                    .font(CFont.sans(13, weight: .semibold))
-                    .foregroundStyle(ClassicTheme.ink)
-                Text("20 critères pondérés · 8 villes analysées")
-                    .font(CFont.sans(12))
-                    .foregroundStyle(ClassicTheme.sub)
-            }
-            .padding(12)
-            .background(ClassicTheme.background)
-            .overlay(RoundedRectangle(cornerRadius: 8).stroke(ClassicTheme.border, lineWidth: 1))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .padding(.horizontal, 14)
-
             if !derived.countrySources.isEmpty {
                 Button { state.go(.sources) } label: {
-                    VStack(alignment: .leading, spacing: 7) {
-                        Eyebrow("SOURCES", color: ClassicTheme.faint)
-                        ForEach(derived.countrySources.prefix(3)) { s in
-                            Text(s.label)
-                                .font(CFont.sans(11))
-                                .foregroundStyle(ClassicTheme.sub)
-                                .underline()
-                                .lineLimit(1)
-                        }
-                    }
+                    Eyebrow("SOURCES", color: ClassicTheme.faint)
                 }
                 .buttonStyle(.plain)
                 .padding(.horizontal, 14)
-                .padding(.top, 14)
             }
         }
         .padding(.vertical, 22)
