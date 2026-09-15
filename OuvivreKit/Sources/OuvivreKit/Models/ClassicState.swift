@@ -1,7 +1,7 @@
 import SwiftUI
 
 public enum ClassicScreen: String, CaseIterable {
-    case pays, geo, meteo, affiner, ville, compare, profil
+    case pays, geo, meteo, affiner, ville, compare, profil, sources
 }
 
 /// Root app state — mirrors the dc export's `Component` state/logic:

@@ -43,17 +43,19 @@ public struct SidebarNav: View {
             .padding(.horizontal, 14)
 
             if !derived.countrySources.isEmpty {
-                VStack(alignment: .leading, spacing: 7) {
-                    Eyebrow("SOURCES", color: ClassicTheme.faint)
-                    ForEach(derived.countrySources) { s in
-                        Link(destination: URL(string: s.url) ?? URL(string: "https://")!) {
+                Button { state.go(.sources) } label: {
+                    VStack(alignment: .leading, spacing: 7) {
+                        Eyebrow("SOURCES", color: ClassicTheme.faint)
+                        ForEach(derived.countrySources.prefix(3)) { s in
                             Text(s.label)
                                 .font(CFont.sans(11))
                                 .foregroundStyle(ClassicTheme.sub)
                                 .underline()
+                                .lineLimit(1)
                         }
                     }
                 }
+                .buttonStyle(.plain)
                 .padding(.horizontal, 14)
                 .padding(.top, 14)
             }

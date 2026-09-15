@@ -11,8 +11,8 @@ public struct AffinerView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Eyebrow("ÉTAPE 04 — CULTURE · TAILLE · MOBILITÉ", color: theme.accent).padding(.bottom, 12)
-            Text("Affiner entre cinq villes")
+            Eyebrow("ÉTAPE 03 — CULTURE · TAILLE · MOBILITÉ", color: theme.accent).padding(.bottom, 12)
+            Text("Qualité de vie")
                 .font(CFont.sans(theme.h2, weight: .semibold))
                 .foregroundStyle(ClassicTheme.ink)
                 .padding(.bottom, 8)

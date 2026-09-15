@@ -44,6 +44,7 @@ public struct ClassicRootView: View {
             case .ville: VilleView(derived: derived)
             case .compare: CompareView(derived: derived)
             case .profil: ProfilView(derived: derived)
+            case .sources: SourcesView(derived: derived)
             }
         }
         .padding(.horizontal, theme.mainPadding)

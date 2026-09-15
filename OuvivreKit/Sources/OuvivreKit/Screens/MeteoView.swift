@@ -11,7 +11,7 @@ public struct MeteoView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Eyebrow("ÉTAPE 03 — MÉTÉO · SAVOIE / HAUTE‑SAVOIE", color: theme.accent).padding(.bottom, 12)
+            Eyebrow("ÉTAPE 04 — CLIMAT · SAVOIE / HAUTE‑SAVOIE", color: theme.accent).padding(.bottom, 12)
             Text("Le climat que vous supportez")
                 .font(CFont.sans(theme.h2, weight: .semibold))
                 .foregroundStyle(ClassicTheme.ink)
