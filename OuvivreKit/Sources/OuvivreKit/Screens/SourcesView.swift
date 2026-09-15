@@ -22,14 +22,16 @@ public struct SourcesView: View {
                 .frame(maxWidth: 460, alignment: .leading)
                 .padding(.bottom, 24)
 
-            VStack(spacing: 14) {
+            LazyVGrid(columns: [GridItem(.flexible(), spacing: 14, alignment: .leading), GridItem(.flexible(), spacing: 14, alignment: .leading)], spacing: 14) {
                 ForEach(ClassicStatic.countries, id: \.self) { country in
                     if let profile = ClassicStatic.countryProfiles[country], !profile.sources.isEmpty {
                         countryCard(country, sources: profile.sources)
                     }
                 }
-                livabilityCard
             }
+            .padding(.bottom, 14)
+
+            livabilityCard
         }
     }
 
@@ -48,6 +50,7 @@ public struct SourcesView: View {
                     .overlay(alignment: .top) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 

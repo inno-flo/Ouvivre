@@ -45,6 +45,8 @@ public struct SidebarNav: View {
                                 Text(meta).font(CFont.mono(10)).opacity(0.5)
                             }
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
                         .foregroundStyle(item.active ? Color.white : ClassicTheme.body)
                         .padding(.horizontal, 10).padding(.vertical, 9)
                         .background(item.active ? ClassicTheme.ink : .clear)
