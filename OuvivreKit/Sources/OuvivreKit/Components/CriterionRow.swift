@@ -33,6 +33,13 @@ public struct CriterionRow: View {
                     Capsule().fill(ClassicTheme.track).frame(height: trackHeight)
                     Capsule().fill(theme.accent)
                         .frame(width: max(thumbSize / 2, geo.size.width * row.pct), height: trackHeight)
+                    ForEach(0...5, id: \.self) { step in
+                        let stepX = geo.size.width * CGFloat(step) / 5
+                        Circle()
+                            .fill(step <= row.value ? Color.white.opacity(0.9) : ClassicTheme.faint2)
+                            .frame(width: 4, height: 4)
+                            .offset(x: stepX - 2)
+                    }
                     Circle()
                         .fill(.white)
                         .frame(width: thumbSize, height: thumbSize)

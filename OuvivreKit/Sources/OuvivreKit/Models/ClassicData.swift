@@ -10,11 +10,12 @@ public struct LabeledValue: Identifiable, Hashable {
 /// Static reference data — mirrors the JS constants at the top of the dc export.
 public enum ClassicStatic {
     public static let geo: [(String, Int)] = [
-        ("Proximité de la montagne", 5),
-        ("Proximité de fleuves et rivières", 3),
-        ("Proximité de parcs et forêts publiques", 4),
+        ("Proximité d'un pays étranger", 2),
         ("Proximité de la mer", 1),
-        ("Proximité de lacs", 5)
+        ("Proximité de la montagne", 5),
+        ("Proximité de lacs", 5),
+        ("Proximité de fleuves et rivières", 3),
+        ("Proximité de parcs et forêts publiques", 4)
     ]
     public static let meteo: [(String, Int)] = [
         ("Températures", 4), ("Température ressentie", 3), ("Ensoleillement", 4),
