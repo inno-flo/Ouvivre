@@ -62,11 +62,74 @@ public enum ClassicStatic {
         ("Isère", 89), ("Pyrénées-Atlantiques", 85), ("Hautes-Alpes", 82),
         ("Hautes-Pyrénées", 78), ("Puy-de-Dôme", 74), ("Doubs", 71)
     ]
-    public static let countries = ["France", "Portugal", "Espagne", "Italie", "Slovénie", "Suisse", "Autriche", "Canada"]
+    public static let countries = ["France", "Danemark", "Suède", "Japon"]
     public static let tags = ["indifférent", "accessoire", "souhaitable", "important", "prioritaire", "déterminant"]
 
     public static let indexStats = [LabeledValue("RÉGIONS INDEXÉES", "18"), LabeledValue("VILLES > 15 000 HAB.", "1 214"), LabeledValue("SOURCES OUVERTES", "11")]
-    public static let countryFacts = [LabeledValue("Superficie", "551 695 km²"), LabeledValue("Population", "68,4 M"), LabeledValue("Climats dominants", "4"), LabeledValue("Littoral", "5 853 km")]
+
+    public struct CountrySource: Identifiable { public var id: String { label }; public let label: String; public let url: String }
+    public struct CountryProfile {
+        public let facts: [LabeledValue]
+        public let sources: [CountrySource]
+    }
+
+    public static let countryProfiles: [String: CountryProfile] = [
+        "France": CountryProfile(
+            facts: [
+                LabeledValue("Régions et départements", "18 régions · 101 départements"),
+                LabeledValue("Villes et villages (communes)", "34 875"),
+                LabeledValue("Population totale", "68,6 M"),
+                LabeledValue("Climats dominants", "4")
+            ],
+            sources: [
+                CountrySource(label: "data.gouv.fr — Référentiel géographique français (communes, départements, régions)", url: "https://www.data.gouv.fr/datasets/referentiel-geographique-francais-communes-unites-urbaines-aires-urbaines-departements-academies-regions-1"),
+                CountrySource(label: "data.gouv.fr — Liste des communes de France", url: "https://www.data.gouv.fr/datasets/communes-et-villes-de-france-en-csv-excel-json-parquet-et-feather"),
+                CountrySource(label: "data.gouv.fr — Population municipale des communes, France entière", url: "https://www.data.gouv.fr/datasets/population-municipale-des-communes-france-entiere"),
+                CountrySource(label: "data.gouv.fr — Données climatologiques de base, mensuelles", url: "https://www.data.gouv.fr/datasets/donnees-climatologiques-de-base-mensuelles")
+            ]
+        ),
+        "Danemark": CountryProfile(
+            facts: [
+                LabeledValue("Régions et municipalités", "5 régions · 98 municipalités"),
+                LabeledValue("Villes et villages", "≈ 1 410 localités (byer)"),
+                LabeledValue("Population totale", "6,0 M"),
+                LabeledValue("Climats dominants", "2")
+            ],
+            sources: [
+                CountrySource(label: "Statistics Denmark — Municipalities of Denmark", url: "https://en.wikipedia.org/wiki/Municipalities_of_Denmark"),
+                CountrySource(label: "Statistics Denmark — Population figures", url: "https://www.dst.dk/en/Statistik/emner/borgere/befolkning"),
+                CountrySource(label: "Statistics Denmark — Towns and urban settlements", url: "https://www.dst.dk/en/Statistik/bagtal/2023/2023-06-30-byer"),
+                CountrySource(label: "DMI — Danish Meteorological Institute", url: "https://en.wikipedia.org/wiki/Danish_Meteorological_Institute")
+            ]
+        ),
+        "Suède": CountryProfile(
+            facts: [
+                LabeledValue("Comtés et municipalités", "21 comtés (län) · 290 municipalités"),
+                LabeledValue("Villes et villages (tätorter)", "2 017"),
+                LabeledValue("Population totale", "10,6 M"),
+                LabeledValue("Climats dominants", "3")
+            ],
+            sources: [
+                CountrySource(label: "SCB — Counties and municipalities", url: "https://www.scb.se/en/finding-statistics/regional-statistics/regional-divisions/counties-and-municipalities/"),
+                CountrySource(label: "SCB — Population statistics", url: "https://www.scb.se/en/finding-statistics/statistics-by-subject-area/population-and-living-conditions/population-composition-and-development/population-projections/"),
+                CountrySource(label: "Wikipedia — Climate of Sweden", url: "https://en.wikipedia.org/wiki/Climate_of_Sweden")
+            ]
+        ),
+        "Japon": CountryProfile(
+            facts: [
+                LabeledValue("Préfectures", "47"),
+                LabeledValue("Villes, bourgs et villages (municipalités)", "1 719"),
+                LabeledValue("Population totale", "123,0 M"),
+                LabeledValue("Climats dominants", "6")
+            ],
+            sources: [
+                CountrySource(label: "Statistics Bureau of Japan — Statistical Handbook 2025", url: "https://www.stat.go.jp/english/data/handbook/pdf/2025all.pdf"),
+                CountrySource(label: "Statistics Bureau of Japan — Population estimates", url: "https://japantoday.com/category/national/update1-japan's-population-marks-sharpest-drop-to-123-mil.-in-2025-census"),
+                CountrySource(label: "Wikipedia — Municipalities of Japan", url: "https://en.wikipedia.org/wiki/Municipalities_of_Japan"),
+                CountrySource(label: "Wikipedia — Climate of Japan", url: "https://en.wikipedia.org/wiki/Climate_of_Japan")
+            ]
+        )
+    ]
 
     public static let rankings = [
         LabeledValue("Baromètre des villes cyclables", "Annecy — A"),

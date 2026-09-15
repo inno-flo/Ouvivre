@@ -12,7 +12,7 @@ public struct PaysView: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Eyebrow("ÉTAPE 01 — TERRITOIRE", color: theme.accent).padding(.bottom, 12)
-            Text("Dans quel pays cherchez‑vous à vivre ?")
+            Text("Choisissez un pays")
                 .font(CFont.sans(theme.h1, weight: .semibold))
                 .foregroundStyle(ClassicTheme.ink)
                 .frame(maxWidth: 480, alignment: .leading)
@@ -34,20 +34,7 @@ public struct PaysView: View {
     private var searchCard: some View {
         Card(padding: theme.cardPad) {
             VStack(alignment: .leading, spacing: 0) {
-                HStack(spacing: 10) {
-                    Text("↳").font(CFont.mono(11, weight: .medium)).foregroundStyle(ClassicTheme.faint)
-                    TextField("France, Portugal, Slovénie…", text: Binding(get: { state.query }, set: { state.query = $0 }))
-                        .textFieldStyle(.plain)
-                        .font(CFont.sans(16))
-                        .foregroundStyle(ClassicTheme.ink)
-                    Text("ENTRÉE").font(CFont.mono(10)).foregroundStyle(ClassicTheme.faint2)
-                }
-                .padding(.horizontal, 14).padding(.vertical, 12)
-                .background(ClassicTheme.cardAlt)
-                .overlay(RoundedRectangle(cornerRadius: 7).stroke(Color(hex: 0xCFC9BD), lineWidth: 1))
-                .clipShape(RoundedRectangle(cornerRadius: 7))
-
-                Eyebrow("SUGGESTIONS", color: ClassicTheme.faint).padding(.top, 20).padding(.bottom, 10)
+                Eyebrow("SUGGESTIONS", color: ClassicTheme.faint).padding(.bottom, 10)
 
                 FlowLayout(spacing: 8, rowSpacing: 8) {
                     ForEach(derived.countryList) { c in
@@ -87,7 +74,7 @@ public struct PaysView: View {
                 Eyebrow("SÉLECTION", color: ClassicTheme.faint).padding(.bottom, 8)
                 Text(state.country).font(CFont.sans(26, weight: .semibold)).foregroundStyle(ClassicTheme.ink).padding(.bottom, 14)
                 LazyVGrid(columns: [GridItem(.flexible(), spacing: 18), GridItem(.flexible(), spacing: 18)], spacing: 12) {
-                    ForEach(ClassicStatic.countryFacts) { f in
+                    ForEach(derived.countryFacts) { f in
                         VStack(alignment: .leading, spacing: 2) {
                             Text(f.key).font(CFont.sans(13)).foregroundStyle(ClassicTheme.faint)
                             Text(f.value).font(CFont.sans(13)).foregroundStyle(ClassicTheme.ink)

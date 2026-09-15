@@ -49,6 +49,13 @@ public struct ClassicDerived {
         ClassicStatic.countries.map { CountryChip(name: $0, selected: $0 == state.country) }
     }
 
+    public var countryFacts: [LabeledValue] {
+        ClassicStatic.countryProfiles[state.country]?.facts ?? []
+    }
+    public var countrySources: [ClassicStatic.CountrySource] {
+        ClassicStatic.countryProfiles[state.country]?.sources ?? []
+    }
+
     public var geoRows: [WeightedRow] {
         ClassicStatic.geo.enumerated().map { WeightedRow(id: $0, label: $1.0, value: state.geo[$0]) }
     }

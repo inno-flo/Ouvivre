@@ -41,6 +41,22 @@ public struct SidebarNav: View {
             .overlay(RoundedRectangle(cornerRadius: 8).stroke(ClassicTheme.border, lineWidth: 1))
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .padding(.horizontal, 14)
+
+            if !derived.countrySources.isEmpty {
+                VStack(alignment: .leading, spacing: 7) {
+                    Eyebrow("SOURCES", color: ClassicTheme.faint)
+                    ForEach(derived.countrySources) { s in
+                        Link(destination: URL(string: s.url) ?? URL(string: "https://")!) {
+                            Text(s.label)
+                                .font(CFont.sans(11))
+                                .foregroundStyle(ClassicTheme.sub)
+                                .underline()
+                        }
+                    }
+                }
+                .padding(.horizontal, 14)
+                .padding(.top, 14)
+            }
         }
         .padding(.vertical, 22)
         .frame(width: 236)
