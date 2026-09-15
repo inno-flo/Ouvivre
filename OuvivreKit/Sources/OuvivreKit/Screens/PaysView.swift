@@ -34,8 +34,6 @@ public struct PaysView: View {
     private var searchCard: some View {
         Card(padding: theme.cardPad) {
             VStack(alignment: .leading, spacing: 0) {
-                Eyebrow("SUGGESTIONS", color: ClassicTheme.faint).padding(.bottom, 10)
-
                 FlowLayout(spacing: 8, rowSpacing: 8) {
                     ForEach(derived.countryList) { c in
                         Button { state.setCountry(c.name) } label: {
@@ -53,11 +51,11 @@ public struct PaysView: View {
 
                 Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1).padding(.vertical, 20)
 
-                FlowLayout(spacing: 28, rowSpacing: 14) {
-                    ForEach(ClassicStatic.indexStats) { s in
-                        VStack(alignment: .leading, spacing: 6) {
-                            Eyebrow(s.key, color: ClassicTheme.faint)
-                            Text(s.value).font(CFont.sans(22, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
+                VStack(alignment: .leading, spacing: 14) {
+                    ForEach(derived.countryFacts) { f in
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(f.key).font(CFont.sans(13)).foregroundStyle(ClassicTheme.faint)
+                            Text(f.value).font(CFont.sans(15, weight: .medium)).foregroundStyle(ClassicTheme.ink)
                         }
                     }
                 }
@@ -81,10 +79,6 @@ public struct PaysView: View {
                         }
                     }
                 }
-                AccentButton("Définir les critères de géographie →", fill: theme.accent) {
-                    state.go(.geo)
-                }
-                .padding(.top, 22)
             }
             .padding(theme.cardPad)
         }
