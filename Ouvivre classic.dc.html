@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#f4f2ee;color:#1c1b19}
+*{box-sizing:border-box}
+a{color:#b4442a;text-decoration:none}
+a:hover{color:#8f3420}
+input{font:inherit}
+</style>
+</helmet>
+
+<div style="display:grid;grid-template-columns:236px minmax(0,1fr);min-height:100vh;font-family:Archivo,system-ui,sans-serif;font-size:14px;color:#1c1b19;background:#f4f2ee">
+
+  <aside style="border-right:1px solid #ddd8ce;background:#efece6;display:flex;flex-direction:column;padding:22px 0 18px;position:sticky;top:0;height:100vh">
+    <div style="display:flex;align-items:center;gap:9px;padding:0 20px 22px">
+      <div style="width:10px;height:10px;border-radius:50%;background:{{ accent }}"></div>
+      <div style="font:600 13px/1 'IBM Plex Mono',monospace;letter-spacing:.22em">OUVIVRE</div>
+    </div>
+    <div style="padding:0 20px 10px;font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.16em;color:#8c867b">PARCOURS</div>
+    <nav style="display:flex;flex-direction:column;gap:2px;padding:0 10px">
+      <sc-for list="{{ navSteps }}" as="item" hint-placeholder-count="4">
+        <div onClick="{{ item.go }}" style="display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:6px;cursor:pointer;background:{{ item.bg }};color:{{ item.fg }}">
+          <span style="font:500 10px/1 'IBM Plex Mono',monospace;width:14px;opacity:.6">{{ item.num }}</span>
+          <span style="flex:1;font-size:13px;font-weight:500">{{ item.label }}</span>
+          <span style="font:400 10px/1 'IBM Plex Mono',monospace;opacity:.5">{{ item.meta }}</span>
+        </div>
+      </sc-for>
+    </nav>
+    <div style="height:1px;background:#ddd8ce;margin:16px 14px"></div>
+    <div style="padding:0 20px 10px;font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.16em;color:#8c867b">OUTILS</div>
+    <nav style="display:flex;flex-direction:column;gap:2px;padding:0 10px">
+      <sc-for list="{{ navTools }}" as="item" hint-placeholder-count="3">
+        <div onClick="{{ item.go }}" style="display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:6px;cursor:pointer;background:{{ item.bg }};color:{{ item.fg }}">
+          <span style="font:500 10px/1 'IBM Plex Mono',monospace;width:14px;opacity:.6">{{ item.num }}</span>
+          <span style="flex:1;font-size:13px;font-weight:500">{{ item.label }}</span>
+        </div>
+      </sc-for>
+    </nav>
+    <div style="flex:1"></div>
+    <div style="margin:0 14px;padding:12px;border:1px solid #ddd8ce;border-radius:8px;background:#f4f2ee">
+      <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8c867b;margin-bottom:7px">RECHERCHE EN COURS</div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:3px">France · Savoie / Haute‑Savoie</div>
+      <div style="font-size:12px;color:#6f6a60">20 critères pondérés · 8 villes analysées</div>
+    </div>
+  </aside>
+
+  <main style="min-width:0;padding:{{ t.mainPad }};max-width:1340px">
+
+    <!-- ÉTAPE 1 — PAYS -->
+    <sc-if value="{{ isPays }}" hint-placeholder-val="{{ true }}">
+      <div>
+        <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.18em;margin-bottom:12px;color:{{ accent }}">ÉTAPE 01 — TERRITOIRE</div>
+        <h1 style="font-size:{{ t.h1 }};line-height:1.08;margin:0 0 10px;font-weight:600;letter-spacing:-.02em;max-width:16em">Dans quel pays cherchez‑vous à vivre&nbsp;?</h1>
+        <p style="margin:0 0 26px;color:#6f6a60;max-width:52ch;font-size:15px;line-height:1.5">Tapez un nom de pays. Ouvivre croise ensuite relief, hydrographie, climat, culture et mobilité pour en extraire une région, puis cinq villes.</p>
+
+        <div style="display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:{{ t.gap }};align-items:start">
+          <div style="background:#fff;border:1px solid #ddd8ce;border-radius:10px;padding:{{ t.cardPad }}">
+            <div style="display:flex;align-items:center;gap:10px;border:1px solid #cfc9bd;border-radius:7px;padding:12px 14px;background:#faf9f6">
+              <span style="font:500 11px/1 'IBM Plex Mono',monospace;color:#8c867b">↳</span>
+              <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="France, Portugal, Slovénie…" style="flex:1;border:0;outline:0;background:transparent;font-size:16px;color:#1c1b19">
+              <span style="font:400 10px/1 'IBM Plex Mono',monospace;color:#a39d91">ENTRÉE</span>
+            </div>
+            <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8c867b;margin:20px 0 10px">SUGGESTIONS</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ countryList }}" as="item" hint-placeholder-count="8">
+                <div onClick="{{ item.go }}" style="padding:8px 12px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid {{ item.bd }};background:{{ item.bg }};color:{{ item.fg }}">{{ item.name }}</div>
+              </sc-for>
+            </div>
+            <div style="height:1px;background:#eae6de;margin:22px 0 18px"></div>
+            <div style="display:flex;gap:28px;flex-wrap:wrap">
+              <sc-for list="{{ indexStats }}" as="item" hint-placeholder-count="3">
+                <div>
+                  <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8c867b;margin-bottom:6px">{{ item.k }}</div>
+                  <div style="font-size:22px;font-weight:600">{{ item.v }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #ddd8ce;border-radius:10px;overflow:hidden">
+            <sc-if value="{{ photos }}" hint-placeholder-val="{{ true }}">
+              <div style="height:196px;background:repeating-linear-gradient(135deg,#e9e5dc 0 9px,#f2efe9 9px 18px);display:flex;align-items:flex-end;padding:14px">
+                <span style="font:400 10px/1 'IBM Plex Mono',monospace;color:#8c867b;background:#f4f2ee;border:1px solid #ddd8ce;padding:5px 7px;border-radius:4px">carte du pays sélectionné — placeholder</span>
+              </div>
+            </sc-if>
+            <div style="padding:{{ t.cardPad }}">
+              <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8c867b;margin-bottom:8px">SÉLECTION</div>
+              <div style="font-size:26px;font-weight:600;letter-spacing:-.01em;margin-bottom:14px">{{ country }}</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;font-size:13px;color:#4a463f">
+                <sc-for list="{{ countryFacts }}" as="item" hint-placeholder-count="4">
+                  <div><span style="color:#8c867b">{{ item.k }}</span><br>{{ item.v }}</div>
+                </sc-for>
+              </div>
+              <div onClick="{{ goGeo }}" style="margin-top:22px;color:#fff;border-radius:7px;padding:13px 16px;font-size:14px;font-weight:600;text-align:center;cursor:pointer;background:{{ accent }}">Définir les critères de géographie →</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ÉTAPE 2 — GÉOGRAPHIE -->
+    <sc-if value="{{ isGeo }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.18em;margin-bottom:12px;color:{{ accent }}">ÉTAPE 02 — GÉOGRAPHIE · FRANCE</div>
+        <h1 style="font-size:{{ t.h2 }};line-height:1.1;margin:0 0 8px;font-weight:600;letter-spacing:-.02em">Ce qui doit être à votre porte</h1>
+        <p style="margin:0 0 24px;color:#6f6a60;max-width:56ch;font-size:15px;line-height:1.5">Pondérez chaque critère de 0 (indifférent) à 5 (déterminant). Le classement des régions se recalcule à chaque mouvement.</p>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:{{ t.gap }};align-items:start">
+
+          <div style="background:#fff;border:1px solid #ddd8ce;border-radius:10px;padding:6px {{ t.cardPadX }} 14px">
+            <sc-for list="{{ geoRows }}" as="item" hint-placeholder-count="5">
+              <div style="padding:{{ t.rowPad }} 0;border-bottom:1px solid #f0ece4">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px">
+                  <span style="font-size:14px;font-weight:500">{{ item.label }}</span>
+                  <span style="font:500 11px/1 'IBM Plex Mono',monospace;color:{{ item.tagColor }}">{{ item.tag }}</span>
+                </div>
+                <div onPointerDown="{{ item.onDown }}" style="position:relative;height:22px;display:flex;align-items:center;cursor:pointer">
+                  <div style="position:absolute;left:0;right:0;height:4px;background:#eae6de;border-radius:2px"></div>
+                  <div style="position:absolute;left:0;height:4px;border-radius:2px;background:{{ accent }};width:{{ item.pct }}"></div>
+                  <div style="position:absolute;width:16px;height:16px;margin-left:-8px;background:#fff;border-radius:50%;border:2px solid {{ accent }};left:{{ item.pct }}"></div>
+                </div>
+              </div>
+            </sc-for>
+            <div style="display:flex;gap:8px;margin-top:16px">
+              <div onClick="{{ resetGeo }}" style="font:500 11px/1 'IBM Plex Mono',monospace;color:#8c867b;border:1px solid #ddd8ce;border-radius:6px;padding:10px 12px;cursor:pointer">RÉINITIALISER</div>
+              <div onClick="{{ goMeteo }}" style="flex:1;text-align:center;font-size:13px;font-weight:600;color:#fff;border-radius:6px;padding:10px 12px;cursor:pointer;background:{{ accent }}">Valider la région →</div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div style="background:#1c1b19;color:#f4f2ee;border-radius:10px;padding:{{ t.cardPad }}">
+              <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#a39d91;margin-bottom:10px">RÉGION LA PLUS PROBANTE</div>
+              <div style="font-size:27px;font-weight:600;letter-spacing:-.01em;line-height:1.15">Savoie / Haute‑Savoie</div>
+              <div style="font-size:13px;color:#bdb7ab;margin-top:6px">Alpes du Nord · 2 lacs majeurs · Isère &amp; Arve</div>
+              <div style="display:flex;align-items:flex-end;gap:8px;margin-top:18px">
+                <span style="font:500 34px/1 'IBM Plex Mono',monospace;color:{{ accentLight }}">{{ topScore }}</span>
+                <span style="font:400 11px/1 'IBM Plex Mono',monospace;color:#a39d91;padding-bottom:5px">/100 CORRESPONDANCE</span>
+              </div>
+            </div>
+            <div style="background:#fff;border:1px solid #ddd8ce;border-radius:10px;padding:14px {{ t.cardPadX }}">
+              <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8c867b;margin-bottom:10px">AUTRES RÉGIONS</div>
+              <sc-for list="{{ regionRows }}" as="item" hint-placeholder-count="5">
+                <div style="display:flex;align-items:center;gap:12px;padding:9px 0">
+                  <span style="font:500 10px/1 'IBM Plex Mono',monospace;color:#a39d91;width:18px">{{ item.rank }}</span>
+                  <span style="flex:1;font-size:13px;font-weight:500">{{ item.name }}</span>
+                  <div style="width:104px;height:4px;background:#eae6de;border-radius:2px;position:relative">
+                    <div style="position:absolute;left:0;top:0;height:4px;background:#c9c3b6;border-radius:2px;width:{{ item.pct }}"></div>
+                  </div>
+                  <span style="font:500 11px/1 'IBM Plex Mono',monospace;width:26px;text-align:right">{{ item.score }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ÉTAPE 3 — MÉTÉO -->
+    <sc-if value="{{ isMeteo }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.18em;margin-bottom:12px;color:{{ accent }}">ÉTAPE 03 — MÉTÉO · SAVOIE / HAUTE‑SAVOIE</div>
+        <h1 style="font-size:{{ t.h2 }};line-height:1.1;margin:0 0 8px;font-weight:600;letter-spacing:-.02em">Le climat que vous supportez</h1>
+        <p style="margin:0 0 24px;color:#6f6a60;max-width:56ch;font-size:15px;line-height:1.5">Normales 1991‑2020 et indices de confort. Les cinq villes sont recalculées en direct, géographie incluse.</p>
+        <div style="display:grid;grid-template-columns:minmax(280px,.8fr) minmax(0,1.2fr);gap:{{ t.gap }};align-items:start">
+
+          <div style="background:#fff;border:1px solid #ddd8ce;border-radius:10px;padding:6px {{ t.cardPadX }} 16px">
+            <sc-for list="{{ meteoRows }}" as="item" hint-placeholder-count="9">
+              <div style="padding:{{ t.rowPadTight }} 0;border-bottom:1px solid #f0ece4">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:7px">
+                  <span style="font-size:13px;font-weight:500">{{ item.label }}</span>
+                  <span style="font:500 11px/1 'IBM Plex Mono',monospace;color:{{ item.tagColor }}">{{ item.tag }}</span>
+                </div>
+                <div onPointerDown="{{ item.onDown }}" style="position:relative;height:18px;display:flex;align-items:center;cursor:pointer">
+                  <div style="position:absolute;left:0;right:0;height:4px;background:#eae6de;border-radius:2px"></div>
+                  <div style="position:absolute;left:0;height:4px;border-radius:2px;background:{{ accent }};width:{{ item.pct }}"></div>
+                  <div style="position:absolute;width:14px;height:14px;margin-left:-7px;background:#fff;border-radius:50%;border:2px solid {{ accent }};left:{{ item.pct }}"></div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px">
+              <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8c867b">RÉSULTAT — 5 VILLES SUR 8 ANALYSÉES</div>
+              <div onClick="{{ goAffiner }}" style="font:500 11px/1 'IBM Plex Mono',monospace;cursor:pointer;color:{{ accent }}">AFFINER LE CHOIX →</div>
+            </div>
+
+            <sc-if value="{{ modeCards }}" hint-placeholder-val="{{ true }}">
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:16px">
+                <sc-for list="{{ cities }}" as="c" hint-placeholder-count="5">
+                  <div onClick="{{ c.open }}" style="background:#fff;border:1px solid #ddd8ce;border-radius:10px;overflow:hidden;cursor:pointer">
+                    <sc-if value="{{ photos }}" hint-placeholder-val="{{ true }}">
+                      <div style="height:120px;background:repeating-linear-gradient(135deg,#e9e5dc 0 9px,#f2efe9 9px 18px);position:relative">
+                        <span style="position:absolute;left:10px;bottom:10px;font:400 9px/1 'IBM Plex Mono',monospace;color:#8c867b;background:#f4f2ee;border:1px solid #ddd8ce;padding:4px 6px;border-radius:3px">photo {{ c.name }}</span>
+                      </div>
+                    </sc-if>
+                    <div style="padding:14px 15px 16px">
+                      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+                        <span style="font-size:17px;font-weight:600;letter-spacing:-.01em">{{ c.name }}</span>
+                        <span style="font:500 15px/1 'IBM Plex Mono',monospace;color:{{ accent }}">{{ c.score }}</span>
+                      </div>
+                      <div style="font-size:12px;color:#8c867b;margin:5px 0 12px">{{ c.sub }}</div>
+                      <div style="display:flex;flex-direction:column;gap:7px">
+                        <sc-for list="{{ c.bars }}" as="b" hint-placeholder-count="3">
+                          <div style="display:flex;align-items:center;gap:8px">
+                            <span style="font:400 9px/1 'IBM Plex Mono',monospace;color:#a39d91;width:42px">{{ b.k }}</span>
+                            <div style="flex:1;height:3px;background:#eae6de;border-radius:2px;position:relative">
+                              <div style="position:absolute;left:0;top:0;height:3px;border-radius:2px;background:{{ accent }};width:{{ b.pct }}"></div>
+                            </div>
+                            <span style="font:400 10px/1 'IBM Plex Mono',monospace;color:#6f6a60;width:34px;text-align:right">{{ b.v }}</span>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ modeList }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#fff;border:1px solid #ddd8ce;border-radius:10px;overflow:hidden">
+                <sc-for list="{{ cities }}" as="c" hint-placeholder-count="5">
+                  <div onClick="{{ c.open }}" style="display:flex;align-items:center;gap:16px;padding:14px 18px;border-bottom:1px solid #f0ece4;cursor:pointer">
+                    <span style="font:500 11px/1 'IBM Plex Mono',monospace;color:#a39d91;width:20px">{{ c.rank }}</span>
+                    <div style="flex:1;min-width:0">
+                      <div style="font-size:15px;font-weight:600">{{ c.name }}</div>
+                      <div style="font-size:12px;color:#8c867b;margin-top:2px">{{ c.sub }}</div>
+                    </div>
+                    <div style="font:400 11px/1.5 'IBM Plex Mono',monospace;color:#6f6a60;text-align:right">{{ c.inline }}</div>
+                    <span style="font:500 16px/1 'IBM Plex Mono',monospace;width:38px;text-align:right;color:{{ accent }}">{{ c.score }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ modeRank }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#fff;border:1px solid #ddd8ce;border-radius:10px;padding:18px 20px">
+                <sc-for list="{{ cities }}" as="c" hint-placeholder-count="5">
+                  <div onClick="{{ c.open }}" style="padding:14px 0;border-bottom:1px solid #f0ece4;cursor:pointer">
+                    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:9px">
+                      <span style="font:500 11px/1 'IBM Plex Mono',monospace;color:#a39d91">{{ c.rank }}</span>
+                      <span style="flex:1;font-size:16px;font-weight:600">{{ c.name }}</span>
+                      <span style="font:500 22px/1 'IBM Plex Mono',monospace;color:{{ accent }}">{{ c.score }}</span>
+                    </div>
+                    <div style="height:10px;background:#f0ece4;border-radius:3px;position:relative">
+                      <div style="position:absolute;left:0;top:0;height:10px;border-radius:3px;background:{{ accent }};width:{{ c.scorePct }}"></div>
+                    </div>
+                    <div style="font:400 10px/1 'IBM Plex Mono',monospace;color:#8c867b;margin-top:8px">{{ c.inline }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ÉTAPE 4 — AFFINER -->
+    <sc-if value="{{ isAffiner }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.18em;margin-bottom:12px;color:{{ accent }}">ÉTAPE 04 — CULTURE · TAILLE · MOBILITÉ</div>
+        <h1 style="font-size:{{ t.h2 }};line-height:1.1;margin:0 0 8px;font-weight:600;letter-spacing:-.02em">Affiner entre cinq villes</h1>
+        <p style="margin:0 0 24px;color:#6f6a60;max-width:58ch;font-size:15px;line-height:1.5">Trois familles de critères et les classements de livabilité. Le podium de droite se réordonne en direct.</p>
+        <div style="display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr);gap:{{ t.gap }};align-items:start">
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit,minmax(252px,1fr)); gap: 16px; width: 796px; height: 594px">
+            <sc-for list="{{ groups }}" as="g" hint-placeholder-count="4">
+              <div style="background:#fff;border:1px solid #ddd8ce;border-radius:10px;padding:16px {{ t.cardPadX }} 12px">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px">
+                  <span style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8c867b">{{ g.title }}</span>
+                  <span style="font:400 10px/1 'IBM Plex Mono',monospace;color:#a39d91">{{ g.count }}</span>
+                </div>
+                <sc-for list="{{ g.rows }}" as="item" hint-placeholder-count="5">
+                  <div style="padding:8px 0">
+                    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px">
+                      <span style="font-size:13px">{{ item.label }}</span>
+                      <span style="font:500 10px/1 'IBM Plex Mono',monospace;color:{{ item.tagColor }}">{{ item.tag }}</span>
+                    </div>
+                    <div onPointerDown="{{ item.onDown }}" style="position:relative;height:14px;display:flex;align-items:center;cursor:pointer">
+                      <div style="position:absolute;left:0;right:0;height:3px;background:#eae6de;border-radius:2px"></div>
+                      <div style="position:absolute;left:0;height:3px;border-radius:2px;background:{{ accent }};width:{{ item.pct }}"></div>
+                      <div style="position:absolute;width:11px;height:11px;margin-left:-5px;background:#fff;border-radius:50%;border:2px solid {{ accent }};left:{{ item.pct }}"></div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="background:#fff;border:1px solid #ddd8ce;border-radius:10px;padding:16px {{ t.cardPadX }}">
+              <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8c867b;margin-bottom:12px">CLASSEMENT FINAL</div>
+              <sc-for list="{{ cities }}" as="c" hint-placeholder-count="5">
+                <div onClick="{{ c.open }}" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #f0ece4;cursor:pointer">
+                  <span style="font:500 11px/1 'IBM Plex Mono',monospace;color:#a39d91;width:16px">{{ c.rank }}</span>
+                  <span style="flex:1;font-size:14px;font-weight:500">{{ c.name }}</span>
+                  <span style="font:500 13px/1 'IBM Plex Mono',monospace;color:{{ accent }}">{{ c.score }}</span>
+                </div>
+              </sc-for>
+              <div onClick="{{ goCompare }}" style="margin-top:14px;text-align:center;font-size:13px;font-weight:600;color:#fff;border-radius:6px;padding:11px;cursor:pointer;background:{{ accent }}">Comparer les 3 premières →</div>
+            </div>
+            <div style="background:#efece6;border:1px solid #ddd8ce;border-radius:10px;padding:16px {{ t.cardPadX }}">
+              <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8c867b;margin-bottom:10px">LIVABILITÉ — SOURCES</div>
+              <sc-for list="{{ rankings }}" as="r" hint-placeholder-count="3">
+                <div style="display:flex;justify-content:space-between;gap:10px;padding:7px 0;font-size:12px">
+                  <span style="color:#4a463f">{{ r.k }}</span>
+                  <span style="font:500 11px/1.3 'IBM Plex Mono',monospace;color:#1c1b19">{{ r.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- FICHE VILLE -->
+    <sc-if value="{{ isVille }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div onClick="{{ goMeteo }}" style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.18em;margin-bottom:14px;cursor:pointer;color:{{ accent }}">← RETOUR AUX RÉSULTATS</div>
+        <div style="display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr);gap:{{ t.gap }};align-items:start">
+          <div>
+            <sc-if value="{{ photos }}" hint-placeholder-val="{{ true }}">
+              <div style="height:240px;border-radius:10px;border:1px solid #ddd8ce;background:repeating-linear-gradient(135deg,#e9e5dc 0 9px,#f2efe9 9px 18px);display:flex;align-items:flex-end;padding:14px;margin-bottom:20px">
+                <span style="font:400 10px/1 'IBM Plex Mono',monospace;color:#8c867b;background:#f4f2ee;border:1px solid #ddd8ce;padding:5px 7px;border-radius:4px">vue de {{ ville.name }} — placeholder 16:9</span>
+              </div>
+            </sc-if>
+            <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+              <h1 style="font-size:{{ t.h1 }};margin:0;font-weight:600;letter-spacing:-.025em">{{ ville.name }}</h1>
+              <span style="font:500 11px/1 'IBM Plex Mono',monospace;color:#8c867b">{{ ville.dept }}</span>
+            </div>
+            <p style="margin:12px 0 24px;color:#4a463f;max-width:62ch;font-size:15px;line-height:1.6">{{ ville.blurb }}</p>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:#ddd8ce;border:1px solid #ddd8ce;border-radius:10px;overflow:hidden">
+              <sc-for list="{{ ville.stats }}" as="s" hint-placeholder-count="6">
+                <div style="background:#fff;padding:16px 18px">
+                  <div style="font:500 9px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8c867b;margin-bottom:8px">{{ s.k }}</div>
+                  <div style="font-size:19px;font-weight:600">{{ s.v }}</div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8c867b;margin:28px 0 12px">CORRESPONDANCE PAR FAMILLE</div>
+            <div style="background:#fff;border:1px solid #ddd8ce;border-radius:10px;padding:14px {{ t.cardPadX }}">
+              <sc-for list="{{ ville.families }}" as="f" hint-placeholder-count="5">
+                <div style="display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid #f0ece4">
+                  <span style="width:96px;font-size:13px;font-weight:500">{{ f.k }}</span>
+                  <div style="flex:1;height:6px;background:#eae6de;border-radius:3px;position:relative">
+                    <div style="position:absolute;left:0;top:0;height:6px;border-radius:3px;background:{{ accent }};width:{{ f.pct }}"></div>
+                  </div>
+                  <span style="font:500 11px/1 'IBM Plex Mono',monospace;width:28px;text-align:right">{{ f.v }}</span>
+                  <span style="font:400 11px/1 'IBM Plex Mono',monospace;color:#8c867b;width:120px;text-align:right">{{ f.note }}</span>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8c867b;margin:28px 0 12px">CLIMAT — NORMALES MENSUELLES</div>
+            <div style="background:#fff;border:1px solid #ddd8ce;border-radius:10px;padding:20px {{ t.cardPadX }}">
+              <div style="display:flex;align-items:flex-end;gap:6px;height:132px">
+                <sc-for list="{{ ville.months }}" as="m" hint-placeholder-count="12">
+                  <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;height:100%">
+                    <span style="font:400 9px/1 'IBM Plex Mono',monospace;color:#6f6a60">{{ m.t }}</span>
+                    <div style="width:100%;border-radius:3px 3px 0 0;background:{{ accent }};height:{{ m.h }}"></div>
+                    <span style="font:400 9px/1 'IBM Plex Mono',monospace;color:#a39d91">{{ m.label }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:14px;position:sticky;top:24px">
+            <div style="background:#1c1b19;color:#f4f2ee;border-radius:10px;padding:{{ t.cardPad }}">
+              <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#a39d91;margin-bottom:8px">CORRESPONDANCE GLOBALE</div>
+              <div style="display:flex;align-items:flex-end;gap:8px">
+                <span style="font:500 44px/1 'IBM Plex Mono',monospace;color:{{ accentLight }}">{{ ville.score }}</span>
+                <span style="font:400 11px/1 'IBM Plex Mono',monospace;color:#a39d91;padding-bottom:7px">/100</span>
+              </div>
+              <div style="font-size:13px;color:#bdb7ab;margin-top:10px;line-height:1.5">1<sup>re</sup> sur 5 villes retenues · 20 critères pondérés</div>
+              <div style="display:flex;gap:8px;margin-top:18px">
+                <div onClick="{{ goProfil }}" style="flex:1;text-align:center;border:1px solid #4a463f;border-radius:6px;padding:11px;font-size:13px;font-weight:600;cursor:pointer">Sauvegarder</div>
+                <div onClick="{{ goCompare }}" style="flex:1;text-align:center;border-radius:6px;padding:11px;font-size:13px;font-weight:600;color:#fff;cursor:pointer;background:{{ accent }}">Comparer</div>
+              </div>
+            </div>
+            <div style="background:#fff;border:1px solid #ddd8ce;border-radius:10px;padding:16px {{ t.cardPadX }}">
+              <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8c867b;margin-bottom:10px">À DISTANCE</div>
+              <sc-for list="{{ ville.distances }}" as="d" hint-placeholder-count="6">
+                <div style="display:flex;justify-content:space-between;gap:10px;padding:7px 0;font-size:13px">
+                  <span style="color:#4a463f">{{ d.k }}</span>
+                  <span style="font:500 11px/1 'IBM Plex Mono',monospace">{{ d.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:#fff;border:1px solid #ddd8ce;border-radius:10px;padding:16px {{ t.cardPadX }}">
+              <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8c867b;margin-bottom:10px">POINTS D'ATTENTION</div>
+              <sc-for list="{{ ville.warnings }}" as="w" hint-placeholder-count="3">
+                <div style="display:flex;gap:9px;padding:7px 0;font-size:13px;line-height:1.45;color:#4a463f">
+                  <span style="color:{{ accent }}">◆</span>
+                  <span>{{ w }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- COMPARATEUR -->
+    <sc-if value="{{ isCompare }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.18em;margin-bottom:12px;color:{{ accent }}">COMPARATEUR</div>
+        <h1 style="font-size:{{ t.h2 }};line-height:1.1;margin:0 0 8px;font-weight:600;letter-spacing:-.02em">Trois villes, critère par critère</h1>
+        <p style="margin:0 0 24px;color:#6f6a60;max-width:56ch;font-size:15px;line-height:1.5">La meilleure valeur de chaque ligne est mise en avant. Les écarts inférieurs à 3 points sont considérés comme équivalents.</p>
+        <div style="background:#fff;border:1px solid #ddd8ce;border-radius:10px;overflow:hidden">
+          <div style="display:grid;grid-template-columns:200px repeat(3,minmax(0,1fr));border-bottom:1px solid #ddd8ce;background:#efece6">
+            <div style="padding:14px 18px;font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8c867b">CRITÈRE</div>
+            <sc-for list="{{ compareHeads }}" as="h" hint-placeholder-count="3">
+              <div style="padding:12px 18px;border-left:1px solid #ddd8ce">
+                <div style="font-size:16px;font-weight:600">{{ h.name }}</div>
+                <div style="font:400 10px/1 'IBM Plex Mono',monospace;color:#8c867b;margin-top:4px">{{ h.sub }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <sc-for list="{{ compareRows }}" as="r" hint-placeholder-count="10">
+            <div style="display:grid;grid-template-columns:200px repeat(3,minmax(0,1fr));border-bottom:1px solid #f0ece4">
+              <div style="padding:13px 18px;font-size:13px;font-weight:500;background:#faf9f6">{{ r.label }}</div>
+              <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="3">
+                <div style="padding:13px 18px;border-left:1px solid #f0ece4;font-size:13px;display:flex;align-items:center;gap:8px;color:{{ c.color }};font-weight:{{ c.weight }}">
+                  <span>{{ c.v }}</span>
+                  <sc-if value="{{ c.best }}" hint-placeholder-val="{{ false }}">
+                    <span style="font:500 9px/1 'IBM Plex Mono',monospace;padding:3px 5px;border-radius:3px;color:#fff;background:{{ accent }}">MEILLEUR</span>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+          <div style="display:grid;grid-template-columns:200px repeat(3,minmax(0,1fr));background:#1c1b19;color:#f4f2ee">
+            <div style="padding:16px 18px;font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#a39d91;align-self:center">SCORE OUVIVRE</div>
+            <sc-for list="{{ compareScores }}" as="s" hint-placeholder-count="3">
+              <div style="padding:14px 18px;border-left:1px solid #34312c;display:flex;align-items:baseline;gap:7px">
+                <span style="font:500 26px/1 'IBM Plex Mono',monospace;color:{{ accentLight }}">{{ s.v }}</span>
+                <span style="font:400 10px/1 'IBM Plex Mono',monospace;color:#a39d91">/100</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- PROFIL / SAUVEGARDES -->
+    <sc-if value="{{ isProfil }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.18em;margin-bottom:12px;color:{{ accent }}">MON ESPACE</div>
+        <h1 style="font-size:{{ t.h2 }};line-height:1.1;margin:0 0 24px;font-weight:600;letter-spacing:-.02em">Recherches et villes sauvegardées</h1>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.7fr);gap:{{ t.gap }};align-items:start">
+          <div>
+            <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8c867b;margin-bottom:12px">RECHERCHES ENREGISTRÉES</div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <sc-for list="{{ saved }}" as="s" hint-placeholder-count="3">
+                <div style="background:#fff;border:1px solid #ddd8ce;border-radius:10px;padding:16px {{ t.cardPadX }};display:flex;gap:16px;align-items:center">
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:15px;font-weight:600">{{ s.title }}</div>
+                    <div style="font-size:12px;color:#8c867b;margin-top:4px">{{ s.meta }}</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">
+                      <sc-for list="{{ s.tags }}" as="tg" hint-placeholder-count="4">
+                        <span style="font:400 10px/1 'IBM Plex Mono',monospace;color:#6f6a60;border:1px solid #e2ddd3;background:#faf9f6;padding:5px 7px;border-radius:4px">{{ tg }}</span>
+                      </sc-for>
+                    </div>
+                  </div>
+                  <div style="text-align:right">
+                    <div style="font:500 18px/1 'IBM Plex Mono',monospace;color:{{ accent }}">{{ s.score }}</div>
+                    <div onClick="{{ s.open }}" style="font:500 10px/1 'IBM Plex Mono',monospace;color:#8c867b;margin-top:10px;cursor:pointer">OUVRIR →</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="background:#fff;border:1px solid #ddd8ce;border-radius:10px;padding:16px {{ t.cardPadX }}">
+              <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8c867b;margin-bottom:10px">VILLES SUIVIES</div>
+              <sc-for list="{{ shortlist }}" as="c" hint-placeholder-count="4">
+                <div onClick="{{ c.open }}" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #f0ece4;cursor:pointer">
+                  <span style="width:26px;height:26px;border-radius:5px;background:repeating-linear-gradient(135deg,#e9e5dc 0 5px,#f2efe9 5px 10px)"></span>
+                  <span style="flex:1;font-size:14px;font-weight:500">{{ c.name }}</span>
+                  <span style="font:500 12px/1 'IBM Plex Mono',monospace;color:{{ accent }}">{{ c.score }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:#efece6;border:1px solid #ddd8ce;border-radius:10px;padding:16px {{ t.cardPadX }}">
+              <div style="font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8c867b;margin-bottom:8px">PROFIL DE CRITÈRES</div>
+              <div style="font-size:13px;color:#4a463f;line-height:1.55">Montagne et lacs dominants, tolérance faible aux précipitations, exigence forte sur la desserte ferroviaire.</div>
+              <div onClick="{{ goGeo }}" style="margin-top:14px;font:500 11px/1 'IBM Plex Mono',monospace;cursor:pointer;color:{{ accent }}">MODIFIER LES PONDÉRATIONS →</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#b4442a&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#b4442a&quot;,&quot;#0f4c81&quot;,&quot;#1c3f36&quot;,&quot;#2a2a28&quot;],&quot;section&quot;:&quot;Direction visuelle&quot;},&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Confortable&quot;,&quot;Compact&quot;],&quot;default&quot;:&quot;Confortable&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Direction visuelle&quot;},&quot;resultLayout&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Cartes visuelles&quot;,&quot;Liste dense&quot;,&quot;Classement scoré&quot;],&quot;default&quot;:&quot;Cartes visuelles&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Résultats&quot;},&quot;imagery&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Photo + données&quot;,&quot;Données seules&quot;],&quot;default&quot;:&quot;Photo + données&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Résultats&quot;}}">
+const GEO = [
+  ["Proximité de la montagne", 5],
+  ["Proximité de fleuves et rivières", 3],
+  ["Proximité de parcs et forêts publiques", 4],
+  ["Proximité de la mer", 1],
+  ["Proximité de lacs", 5]
+];
+const METEO = [
+  ["Températures", 4], ["Température ressentie", 3], ["Ensoleillement", 4],
+  ["Durée d'ensoleillement", 3], ["Précipitations", 2], ["Vent", 2],
+  ["Nuages", 2], ["Qualité de l'air", 5], ["Humidité", 3]
+];
+const GROUPS = [
+  ["CULTURE", [["Musées", 4], ["Équipements culturels", 3], ["Lieux du patrimoine", 4], ["Centre ancien", 5], ["Événements annuels", 3], ["Festivals", 3], ["Salons", 1]]],
+  ["TAILLE", [["Superficie de la ville", 2], ["Nombre d'habitants", 3]]],
+  ["MOBILITÉ", [["Bus", 3], ["Pistes cyclables", 5], ["Gares", 4], ["Aéroports", 2]]],
+  ["QUALITÉ DE VIE", [["Classements de livabilité", 4]]]
+];
+const CITIES = [
+  { name: "Annecy", sub: "Haute-Savoie · 132 000 hab.", score: 94, bars: [["Géo", 98, "98"], ["Météo", 88, "88"], ["Culture", 91, "91"]], inline: "Lac 0,4 km · Montagne 6 km · Gare TGV" },
+  { name: "Chambéry", sub: "Savoie · 60 100 hab.", score: 89, bars: [["Géo", 92, "92"], ["Météo", 86, "86"], ["Culture", 88, "88"]], inline: "Lac 12 km · Montagne 4 km · Gare TGV" },
+  { name: "Aix-les-Bains", sub: "Savoie · 31 200 hab.", score: 86, bars: [["Géo", 95, "95"], ["Météo", 84, "84"], ["Culture", 76, "76"]], inline: "Lac 0,8 km · Montagne 5 km · Gare" },
+  { name: "Thonon-les-Bains", sub: "Haute-Savoie · 35 900 hab.", score: 82, bars: [["Géo", 93, "93"], ["Météo", 79, "79"], ["Culture", 71, "71"]], inline: "Lac 0,5 km · Montagne 9 km · Gare" },
+  { name: "Albertville", sub: "Savoie · 19 400 hab.", score: 74, bars: [["Géo", 88, "88"], ["Météo", 72, "72"], ["Culture", 61, "61"]], inline: "Lac 28 km · Montagne 2 km · Gare" }
+];
+const REGIONS = [["Isère", 89], ["Pyrénées-Atlantiques", 85], ["Hautes-Alpes", 82], ["Hautes-Pyrénées", 78], ["Puy-de-Dôme", 74], ["Doubs", 71]];
+const COUNTRIES = ["France", "Portugal", "Espagne", "Italie", "Slovénie", "Suisse", "Autriche", "Canada"];
+const TAGS = ["indifférent", "accessoire", "souhaitable", "important", "prioritaire", "déterminant"];
+
+class Component extends DCLogic {
+  state = {
+    screen: "pays", country: "France", query: "France",
+    geo: GEO.map(g => g[1]), meteo: METEO.map(m => m[1]),
+    groups: GROUPS.map(g => g[1].map(r => r[1]))
+  };
+
+  go = (screen) => () => this.setState({ screen });
+
+  slider = (key, i, max) => (e) => {
+    const el = e.currentTarget;
+    const move = (ev) => {
+      const r = el.getBoundingClientRect();
+      const v = Math.round(Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width)) * max);
+      this.setState(s => {
+        if (key === "groups") {
+          const g = s.groups.map(a => a.slice());
+          g[i[0]][i[1]] = v;
+          return { groups: g };
+        }
+        const arr = s[key].slice(); arr[i] = v; return { [key]: arr };
+      });
+    };
+    move(e);
+    const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+  };
+
+  row = (label, val, key, i, accent) => ({
+    label, tag: TAGS[val] ? TAGS[val].toUpperCase() : "INDIFFÉRENT",
+    tagColor: val >= 4 ? accent : (val === 0 ? "#a39d91" : "#8c867b"),
+    pct: (val / 5 * 100) + "%",
+    onDown: this.slider(key, i, 5)
+  });
+
+  renderVals() {
+    const s = this.state;
+    const accent = this.props.accent ?? "#b4442a";
+    const dense = (this.props.density ?? "Confortable") === "Compact";
+    const layout = this.props.resultLayout ?? "Cartes visuelles";
+    const photos = (this.props.imagery ?? "Photo + données") === "Photo + données";
+    const accentLight = `color-mix(in oklab, ${accent} 62%, white)`;
+
+    const t = dense ? {
+      mainPad: "22px 26px 40px", gap: "18px", cardPad: "15px", cardPadX: "16px",
+      rowPad: "10px", rowPadTight: "8px", h1: "30px", h2: "25px"
+    } : {
+      mainPad: "34px 40px 56px", gap: "28px", cardPad: "22px", cardPadX: "20px",
+      rowPad: "15px", rowPadTight: "12px", h1: "38px", h2: "32px"
+    };
+
+    const geoSum = s.geo.reduce((a, b) => a + b, 0);
+    const topScore = Math.min(99, 60 + Math.round(geoSum * 1.6));
+
+    const navSteps = [
+      ["01", "Pays", "pays", "France"],
+      ["02", "Géographie", "geo", "5"],
+      ["03", "Météo", "meteo", "9"],
+      ["04", "Affiner", "affiner", "14"]
+    ].map(([num, label, sc, meta]) => ({
+      num, label, meta, go: this.go(sc),
+      bg: s.screen === sc ? "#1c1b19" : "transparent",
+      fg: s.screen === sc ? "#f4f2ee" : "#4a463f"
+    }));
+    const navTools = [
+      ["05", "Fiche ville", "ville"], ["06", "Comparateur", "compare"], ["07", "Mon espace", "profil"]
+    ].map(([num, label, sc]) => ({
+      num, label, go: this.go(sc),
+      bg: s.screen === sc ? "#1c1b19" : "transparent",
+      fg: s.screen === sc ? "#f4f2ee" : "#4a463f"
+    }));
+
+    const cities = CITIES.map((c, i) => ({
+      ...c, rank: String(i + 1).padStart(2, "0"),
+      scorePct: c.score + "%",
+      bars: c.bars.map(([k, p, v]) => ({ k, pct: p + "%", v })),
+      open: this.go("ville")
+    }));
+
+    const cmp = CITIES.slice(0, 3);
+    const compareData = [
+      ["Habitants", ["132 000", "60 100", "31 200"], 0],
+      ["Superficie", ["13,6 km²", "21,0 km²", "18,9 km²"], 1],
+      ["Altitude", ["448 m", "270 m", "265 m"], 0],
+      ["Distance montagne", ["6 km", "4 km", "5 km"], 1],
+      ["Distance lac", ["0,4 km", "12 km", "0,8 km"], 0],
+      ["Ensoleillement", ["1 924 h/an", "1 987 h/an", "1 951 h/an"], 1],
+      ["Précipitations", ["1 220 mm", "1 140 mm", "1 180 mm"], 1],
+      ["Qualité de l'air", ["Bonne (32)", "Moyenne (41)", "Bonne (34)"], 0],
+      ["Musées", ["7", "9", "4"], 1],
+      ["Centre ancien", ["Oui — médiéval", "Oui — carré Curial", "Partiel"], 0],
+      ["Festivals / an", ["14", "11", "8"], 0],
+      ["Pistes cyclables", ["68 km", "42 km", "39 km"], 0],
+      ["Gares", ["TGV directe", "TGV directe", "TER"], 0],
+      ["Aéroport < 1 h", ["Genève", "Lyon-St-Exupéry", "Genève"], 0],
+      ["Livabilité (Fr.)", ["3e / 100", "12e / 100", "21e / 100"], 0]
+    ];
+
+    return {
+      t, accent, accentLight, photos, navSteps, navTools,
+      isPays: s.screen === "pays", isGeo: s.screen === "geo", isMeteo: s.screen === "meteo",
+      isAffiner: s.screen === "affiner", isVille: s.screen === "ville",
+      isCompare: s.screen === "compare", isProfil: s.screen === "profil",
+      modeCards: layout === "Cartes visuelles", modeList: layout === "Liste dense", modeRank: layout === "Classement scoré",
+      goGeo: this.go("geo"), goMeteo: this.go("meteo"), goAffiner: this.go("affiner"),
+      goCompare: this.go("compare"), goProfil: this.go("profil"),
+      query: s.query, country: s.country,
+      onQuery: (e) => this.setState({ query: e.target.value }),
+      countryList: COUNTRIES.map(name => ({
+        name, go: () => this.setState({ country: name, query: name }),
+        bg: name === s.country ? "#1c1b19" : "#fff",
+        fg: name === s.country ? "#f4f2ee" : "#4a463f",
+        bd: name === s.country ? "#1c1b19" : "#ddd8ce"
+      })),
+      indexStats: [{ k: "RÉGIONS INDEXÉES", v: "18" }, { k: "VILLES > 15 000 HAB.", v: "1 214" }, { k: "SOURCES OUVERTES", v: "11" }],
+      countryFacts: [{ k: "Superficie", v: "551 695 km²" }, { k: "Population", v: "68,4 M" }, { k: "Climats dominants", v: "4" }, { k: "Littoral", v: "5 853 km" }],
+      geoRows: GEO.map((g, i) => this.row(g[0], s.geo[i], "geo", i, accent)),
+      meteoRows: METEO.map((m, i) => this.row(m[0], s.meteo[i], "meteo", i, accent)),
+      groups: GROUPS.map((g, gi) => ({
+        title: g[0], count: g[1].length + " CRITÈRES",
+        rows: g[1].map((r, ri) => this.row(r[0], s.groups[gi][ri], "groups", [gi, ri], accent))
+      })),
+      resetGeo: () => this.setState({ geo: GEO.map(g => g[1]) }),
+      topScore,
+      regionRows: REGIONS.map((r, i) => ({ rank: String(i + 2).padStart(2, "0"), name: r[0], score: r[1], pct: r[1] + "%" })),
+      cities,
+      rankings: [
+        { k: "Baromètre des villes cyclables", v: "Annecy — A" },
+        { k: "Palmarès qualité de vie 2025", v: "Annecy — 3e" },
+        { k: "Indice air ATMO", v: "Chambéry — 41" },
+        { k: "Villes où il fait bon vivre", v: "Aix-les-Bains — 21e" }
+      ],
+      ville: {
+        name: "Annecy", dept: "HAUTE-SAVOIE · AUVERGNE-RHÔNE-ALPES", score: 94,
+        blurb: "Ville lacustre adossée au massif des Bornes, centre médiéval sur canaux, desserte TGV directe et 68 km de pistes cyclables continues. Correspond à vos pondérations fortes sur lacs, montagne et centre ancien.",
+        stats: [
+          { k: "HABITANTS", v: "132 000" }, { k: "SUPERFICIE", v: "13,6 km²" },
+          { k: "ALTITUDE", v: "448 m" }, { k: "ENSOLEILLEMENT", v: "1 924 h/an" },
+          { k: "PRÉCIPITATIONS", v: "1 220 mm" }, { k: "QUALITÉ DE L'AIR", v: "Bonne — 32" }
+        ],
+        families: [
+          { k: "Géographie", v: 98, pct: "98%", note: "lac + montagne" },
+          { k: "Météo", v: 88, pct: "88%", note: "air très bon" },
+          { k: "Culture", v: 91, pct: "91%", note: "7 musées · 14 festivals" },
+          { k: "Taille", v: 79, pct: "79%", note: "moyenne, dense" },
+          { k: "Mobilité", v: 86, pct: "86%", note: "TGV · vélo A" },
+          { k: "Livabilité", v: 93, pct: "93%", note: "3e au national" }
+        ],
+        months: ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"].map((label, i) => {
+          const temps = [2, 3, 7, 11, 15, 19, 21, 20, 16, 12, 6, 3];
+          return { label, t: temps[i] + "°", h: Math.round(18 + temps[i] * 3.6) + "px" };
+        }),
+        distances: [
+          { k: "Lac d'Annecy", v: "0,4 km" }, { k: "Premier sommet > 1 500 m", v: "6 km" },
+          { k: "Forêt publique", v: "2,1 km" }, { k: "Mer", v: "310 km" },
+          { k: "Gare TGV", v: "en ville" }, { k: "Aéroport (Genève)", v: "45 min" }
+        ],
+        warnings: [
+          "Tension immobilière élevée : +62 % au m² en dix ans.",
+          "Trafic estival saturé sur les rives du lac.",
+          "Précipitations annuelles supérieures à votre seuil de tolérance."
+        ]
+      },
+      compareHeads: cmp.map(c => ({ name: c.name, sub: c.sub.split(" · ")[0].toUpperCase() })),
+      compareRows: compareData.map(([label, vals, best]) => ({
+        label,
+        cells: vals.map((v, i) => ({
+          v, best: i === best,
+          color: i === best ? "#1c1b19" : "#6f6a60",
+          weight: i === best ? 600 : 400
+        }))
+      })),
+      compareScores: cmp.map(c => ({ v: c.score })),
+      saved: [
+        { title: "Alpes du Nord — lacs & montagne", meta: "Créée le 14 mars · 20 critères · 5 villes", tags: ["Montagne 5/5", "Lacs 5/5", "Vélo 5/5", "Mer 1/5"], score: 94, open: this.go("meteo") },
+        { title: "Sud-Ouest — océan & patrimoine", meta: "Créée le 2 mars · 18 critères · 5 villes", tags: ["Mer 5/5", "Patrimoine 4/5", "Ensoleillement 5/5"], score: 88, open: this.go("meteo") },
+        { title: "Massif central — calme & forêts", meta: "Créée le 21 février · 15 critères · 4 villes", tags: ["Forêts 5/5", "Habitants 2/5", "Air 5/5"], score: 81, open: this.go("meteo") }
+      ],
+      shortlist: cities.slice(0, 4)
+    };
+  }
+}
+
+</script>
+</body>
+</html>

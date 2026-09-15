@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#04070c;color:#c9e8f2}
+*{box-sizing:border-box}
+a{color:#38e8ff;text-decoration:none}
+a:hover{color:#ff9d2e}
+input{font:inherit}
+@keyframes ovSweep{0%{transform:translateY(-100%)}100%{transform:translateY(100%)}}
+</style>
+</helmet>
+
+<div style="position:relative;min-height:100vh;background:#04070c;font-family:'IBM Plex Mono',monospace;color:#c9e8f2;overflow:hidden">
+
+  <div style="position:absolute;inset:0;pointer-events:none;background-image:{{ gridImage }};background-size:44px 44px"></div>
+  <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 0%,transparent 20%,rgba(4,7,12,.92) 100%)"></div>
+
+  <div style="position:relative;padding:0 0 60px">
+
+    <header style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:16px 30px;border-bottom:1px solid {{ line }};background:rgba(4,9,16,.86)">
+      <div style="display:flex;align-items:center;gap:11px">
+        <div style="width:9px;height:9px;transform:rotate(45deg);background:{{ accent }};box-shadow:{{ glowDot }}"></div>
+        <span style="font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:23px;letter-spacing:.34em;color:{{ accent }};text-shadow:{{ glowText }}">OUVIVRE</span>
+      </div>
+      <span style="font-size:14px;letter-spacing:.2em;color:#5c7f8f;border:1px solid {{ line }};padding:5px 9px">SYS.LIV / v4.11 · NODE FR</span>
+      <div style="flex:1"></div>
+      <nav style="display:flex;gap:1px;flex-wrap:wrap;border:1px solid {{ line }}">
+        <sc-for list="{{ nav }}" as="item" hint-placeholder-count="3">
+          <div onClick="{{ item.go }}" style="font-size:15px;font-weight:600;letter-spacing:.16em;padding:10px 15px;cursor:pointer;background:{{ item.bg }};color:{{ item.fg }};box-shadow:{{ item.glow }}">{{ item.label }}</div>
+        </sc-for>
+      </nav>
+      <span style="font-size:14px;letter-spacing:.16em;color:{{ accent }}">{{ clock }}</span>
+    </header>
+
+    <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;row-gap:6px;padding:9px 30px;border-bottom:1px solid {{ line }};font-size:14px;letter-spacing:.18em;color:#5c7f8f">
+      <span style="color:{{ accent2 }}">▲ FLUX</span>
+      <span>1 214 VILLES INDEXÉES</span>
+      <span style="color:{{ line2 }}">/</span>
+      <span>{{ queryCountLabel }}</span>
+      <span style="color:{{ line2 }}">/</span>
+      <span>NORMALES 1991‑2020</span>
+      <span style="color:{{ line2 }}">/</span>
+      <span>DERNIER CALCUL {{ clock }}</span>
+    </div>
+
+    <main style="padding:26px 30px;max-width:1380px">
+
+      <!-- SCAN -->
+      <sc-if value="{{ isScan }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:22px">
+            <div>
+              <div style="font-size:14px;letter-spacing:.26em;color:{{ accent2 }};margin-bottom:12px">[ PHASE 01 ] SÉLECTION DU TERRITOIRE</div>
+              <h1 style="margin:0;font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:clamp(34px,4.2vw,56px);line-height:1;letter-spacing:.02em;color:#e8fbff;text-shadow:{{ glowText }}">REQUÊTE DE ZONE HABITABLE</h1>
+            </div>
+            <div style="font-size:15px;line-height:1.7;letter-spacing:.05em;color:#7fa6b5;max-width:38ch">&gt; définissez le pays, puis pondérez les vecteurs géographiques.<br />&gt; jusqu'à trois requêtes parallèles, comparées dans la matrice.</div>
+          </div>
+
+          <sc-for list="{{ queries }}" as="q" hint-placeholder-count="1">
+            <div style="display:flex;flex-direction:column;gap:1px;background:{{ line }};border:1px solid {{ line }};margin-bottom:18px">
+
+              <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:11px 16px;background:rgba(9,18,28,.95)">
+                <span style="font-size:14px;letter-spacing:.22em;color:{{ accent }}">{{ q.tag }}</span>
+                <span style="font-size:14px;letter-spacing:.14em;color:#7fa6b5">{{ q.title }}</span>
+                <div style="flex:1"></div>
+                <span style="font-size:14px;letter-spacing:.14em;color:#5c7f8f">POIDS CUMULÉS {{ q.weightSum }}</span>
+                <sc-if value="{{ q.removable }}" hint-placeholder-val="{{ false }}">
+                  <div onClick="{{ q.remove }}" style="font-size:14px;letter-spacing:.16em;padding:6px 10px;border:1px solid {{ line }};color:{{ accent2 }};cursor:pointer">RETIRER ✕</div>
+                </sc-if>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(296px,1fr));gap:1px;background:{{ line }}">
+
+                <div style="background:rgba(7,14,22,.9);padding:20px">
+                  <div style="font-size:14px;letter-spacing:.22em;color:{{ accent }};margin-bottom:14px">01 / PAYS</div>
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid {{ accent }};padding:12px 13px;background:rgba(56,232,255,.06);box-shadow:{{ glowBox }}">
+                    <span style="color:{{ accent2 }};font-size:16px">&gt;</span>
+                    <input value="{{ q.query }}" onChange="{{ q.onQuery }}" placeholder="ENTRER UN PAYS" style="flex:1;border:0;outline:0;background:transparent;font-size:19px;font-weight:600;letter-spacing:.1em;color:#e8fbff" />
+                    <span style="font-size:14px;letter-spacing:.16em;color:{{ accent }}">⏎</span>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:14px">
+                    <sc-for list="{{ q.countries }}" as="c" hint-placeholder-count="6">
+                      <div onClick="{{ c.go }}" style="font-size:15px;letter-spacing:.12em;padding:7px 11px;border:1px solid {{ c.bd }};cursor:pointer;background:{{ c.bg }};color:{{ c.fg }}">{{ c.name }}</div>
+                    </sc-for>
+                  </div>
+                  <div style="margin-top:20px;border-top:1px solid {{ line }};padding-top:14px">
+                    <sc-for list="{{ facts }}" as="f" hint-placeholder-count="5">
+                      <div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0;font-size:15px;letter-spacing:.08em">
+                        <span style="flex:1;min-width:0;color:#5c7f8f">{{ f.k }}</span>
+                        <span style="flex:none;white-space:nowrap;color:#e8fbff">{{ f.v }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+
+                <div style="background:rgba(7,14,22,.9);padding:20px">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px">
+                    <span style="font-size:14px;letter-spacing:.22em;color:{{ accent }}">02 / VECTEURS GÉO</span>
+                    <span style="font-size:14px;color:#5c7f8f">POIDS 0‑5</span>
+                  </div>
+                  <sc-for list="{{ q.geoRows }}" as="r" hint-placeholder-count="5">
+                    <div style="padding:9px 0;border-bottom:1px solid {{ line }}">
+                      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:7px">
+                        <span style="font-size:15.5px;letter-spacing:.08em;color:#cfeaf4">{{ r.label }}</span>
+                        <span style="font-size:14px;letter-spacing:.12em;color:{{ r.tagColor }}">{{ r.tag }}</span>
+                      </div>
+                      <div onPointerDown="{{ r.onDown }}" style="display:flex;gap:5px;cursor:pointer">
+                        <sc-for list="{{ r.cells }}" as="cl" hint-placeholder-count="5">
+                          <div style="flex:1;height:14px;background:{{ cl.bg }};box-shadow:{{ cl.glow }}"></div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-for>
+                  <div onClick="{{ goMatrix }}" style="margin-top:16px;text-align:center;font-size:15.5px;font-weight:600;letter-spacing:.22em;padding:13px;border:1px solid {{ accent }};color:{{ accent }};cursor:pointer;background:rgba(56,232,255,.07);box-shadow:{{ glowBox }}">EXÉCUTER LE SCAN ▸</div>
+                </div>
+
+                <div style="background:rgba(7,14,22,.9);padding:20px;position:relative;overflow:hidden">
+                  <div style="font-size:14px;letter-spacing:.22em;color:{{ accent2 }};margin-bottom:14px">03 / RÉGION RETENUE</div>
+                  <div style="font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:31px;line-height:1.06;letter-spacing:.03em;color:#e8fbff;text-shadow:{{ glowText }}">{{ q.regionL1 }}<br />{{ q.regionL2 }}</div>
+                  <div style="font-size:15px;letter-spacing:.08em;color:#7fa6b5;margin-top:8px">{{ q.regionSub }}</div>
+                  <div style="display:flex;align-items:flex-end;gap:9px;margin:20px 0 4px">
+                    <span style="font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:64px;line-height:.82;letter-spacing:.01em;color:{{ accent }};text-shadow:{{ glowText }}">{{ q.topScore }}</span>
+                    <span style="font-size:14px;letter-spacing:.14em;color:#5c7f8f;padding-bottom:9px">/100 MATCH</span>
+                  </div>
+                  <div style="border-top:1px solid {{ line }};margin-top:16px;padding-top:12px">
+                    <sc-for list="{{ q.regions }}" as="rg" hint-placeholder-count="4">
+                      <div style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:15px;letter-spacing:.07em">
+                        <span style="color:#7fa6b5;width:20px">{{ rg.rank }}</span>
+                        <span style="flex:1;min-width:0;color:#cfeaf4">{{ rg.name }}</span>
+                        <div style="width:70px;height:3px;background:{{ line2 }};position:relative">
+                          <div style="position:absolute;left:0;top:0;height:3px;background:{{ accent2 }};width:{{ rg.pct }}"></div>
+                        </div>
+                        <span style="color:#e8fbff;width:22px;text-align:right">{{ rg.score }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+
+          <sc-if value="{{ canAdd }}" hint-placeholder-val="{{ true }}">
+            <div onClick="{{ addQuery }}" style="display:flex;align-items:center;justify-content:center;gap:12px;padding:18px;border:1px dashed {{ accent }};color:{{ accent }};cursor:pointer;background:rgba(56,232,255,.04)">
+              <span style="font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:26px;line-height:1">+</span>
+              <span style="font-size:15px;font-weight:600;letter-spacing:.22em">{{ addLabel }}</span>
+            </div>
+          </sc-if>
+          <sc-if value="{{ atLimit }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:16px;border:1px solid {{ line }};font-size:14px;letter-spacing:.18em;color:#5c7f8f;text-align:center">LIMITE ATTEINTE — 3 REQUÊTES PARALLÈLES MAXIMUM</div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- MATRICE -->
+      <sc-if value="{{ isMatrix }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:20px">
+            <div>
+              <div style="font-size:14px;letter-spacing:.26em;color:{{ accent2 }};margin-bottom:12px">[ PHASE 02‑03 ] FILTRE CLIMATIQUE · {{ candidateLabel }}</div>
+              <h1 style="margin:0;font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:clamp(30px,3.4vw,46px);line-height:1;letter-spacing:.03em;color:#e8fbff;text-shadow:{{ glowText }}">MATRICE DE CORRESPONDANCE</h1>
+            </div>
+            <div onClick="{{ goDossier }}" style="font-size:15px;font-weight:600;letter-spacing:.2em;padding:12px 16px;border:1px solid {{ accent2 }};color:{{ accent2 }};cursor:pointer">OUVRIR LES DOSSIERS ▸</div>
+          </div>
+
+          <sc-for list="{{ queries }}" as="q" hint-placeholder-count="1">
+            <div style="margin-bottom:26px">
+              <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:11px 16px;border:1px solid {{ line }};border-bottom:0;background:rgba(9,18,28,.95)">
+                <span style="font-size:14px;letter-spacing:.22em;color:{{ accent }}">{{ q.tag }}</span>
+                <span style="font-size:14px;letter-spacing:.14em;color:#7fa6b5">{{ q.title }}</span>
+                <div style="flex:1"></div>
+                <span style="font-size:14px;letter-spacing:.14em;color:#5c7f8f">MATCH RÉGION {{ q.topScore }}/100</span>
+              </div>
+
+              <div style="display:flex;flex-wrap:wrap;gap:1px;background:{{ line }};border:1px solid {{ line }}">
+                <sc-for list="{{ q.meteoChips }}" as="m" hint-placeholder-count="9">
+                  <div onClick="{{ m.cycle }}" style="flex:1 1 140px;padding:11px 13px;cursor:pointer;background:{{ m.bg }}">
+                    <div style="font-size:14px;letter-spacing:.14em;color:{{ m.labelColor }}">{{ m.label }}</div>
+                    <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+                      <div style="display:flex;gap:2px;flex:1">
+                        <sc-for list="{{ m.cells }}" as="cl" hint-placeholder-count="5">
+                          <div style="flex:1;height:6px;background:{{ cl.bg }}"></div>
+                        </sc-for>
+                      </div>
+                      <span style="font-size:14px;color:{{ m.valColor }}">{{ m.val }}</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="border:1px solid {{ line }};border-top:0;background:rgba(7,14,22,.9)">
+                <div style="display:grid;grid-template-columns:38px minmax(130px,1.3fr) repeat(4,minmax(74px,1fr)) 132px;gap:1px;background:{{ line }};font-size:13.5px;letter-spacing:.16em;color:#5c7f8f">
+                  <sc-for list="{{ heads }}" as="h" hint-placeholder-count="7">
+                    <div style="background:rgba(9,18,28,.95);padding:11px 10px;text-align:{{ h.align }}">{{ h.k }}</div>
+                  </sc-for>
+                </div>
+                <sc-for list="{{ q.rows }}" as="r" hint-placeholder-count="5">
+                  <div onClick="{{ r.open }}" style="display:grid;grid-template-columns:38px minmax(130px,1.3fr) repeat(4,minmax(74px,1fr)) 132px;gap:1px;background:{{ line }};cursor:pointer">
+                    <div style="background:{{ r.cellBg }};padding:13px 10px;font-size:14px;color:{{ accent2 }}">{{ r.rank }}</div>
+                    <div style="background:{{ r.cellBg }};padding:12px 10px">
+                      <div style="font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:19px;letter-spacing:.05em;color:{{ r.nameColor }}">{{ r.name }}</div>
+                      <div style="font-size:13.5px;letter-spacing:.08em;color:#5c7f8f;margin-top:3px">{{ r.sub }}</div>
+                    </div>
+                    <sc-for list="{{ r.metrics }}" as="m" hint-placeholder-count="4">
+                      <div style="background:{{ r.cellBg }};padding:13px 10px;text-align:right;font-size:15.5px;color:{{ m.color }}">{{ m.v }}</div>
+                    </sc-for>
+                    <div style="background:{{ r.cellBg }};padding:11px 12px;display:flex;align-items:center;gap:9px">
+                      <div style="flex:1;height:8px;background:{{ line2 }};position:relative">
+                        <div style="position:absolute;left:0;top:0;height:8px;background:{{ accent }};width:{{ r.pct }};box-shadow:{{ glowBar }}"></div>
+                      </div>
+                      <span style="font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:20px;color:{{ accent }};text-shadow:{{ glowText }}">{{ r.score }}</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;background:{{ line }};border:1px solid {{ line }};border-top:0">
+                <sc-for list="{{ q.telemetry }}" as="t" hint-placeholder-count="4">
+                  <div style="background:rgba(9,18,28,.95);padding:14px 16px">
+                    <div style="font-size:13.5px;letter-spacing:.16em;color:#5c7f8f">{{ t.k }}</div>
+                    <div style="font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:24px;letter-spacing:.04em;color:{{ t.color }};margin-top:7px">{{ t.v }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- DOSSIER -->
+      <sc-if value="{{ isDossier }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px">
+            <div onClick="{{ goMatrix }}" style="font-size:14px;letter-spacing:.2em;padding:8px 12px;border:1px solid {{ line }};color:#7fa6b5;cursor:pointer">◂ RETOUR MATRICE</div>
+            <span style="font-size:14px;letter-spacing:.18em;color:#5c7f8f">{{ dossierCountLabel }}</span>
+          </div>
+
+          <sc-for list="{{ queries }}" as="q" hint-placeholder-count="1">
+            <div style="margin-bottom:26px">
+              <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:11px 16px;border:1px solid {{ line }};border-bottom:0;background:rgba(9,18,28,.95)">
+                <span style="font-size:14px;letter-spacing:.22em;color:{{ accent }}">{{ q.tag }}</span>
+                <span style="font-size:14px;letter-spacing:.14em;color:#7fa6b5">{{ q.title }}</span>
+                <div style="flex:1"></div>
+                <span style="font-size:14px;letter-spacing:.14em;color:#5c7f8f">DOSSIER {{ q.ville.name }}</span>
+              </div>
+
+              <div style="display:grid;grid-template-columns:minmax(0,1.42fr) minmax(258px,.58fr);gap:1px;background:{{ line }};border:1px solid {{ line }}">
+
+                <div style="background:rgba(7,14,22,.9);padding:22px">
+                  <div style="position:relative;height:198px;border:1px solid {{ accent }};overflow:hidden;background:linear-gradient(180deg,rgba(56,232,255,.1),rgba(4,7,12,.6));box-shadow:{{ glowBox }}">
+                    <div style="position:absolute;inset:0;background-image:{{ gridImage }};background-size:26px 26px"></div>
+                    <div style="position:absolute;left:0;right:0;height:2px;background:{{ accent }};opacity:.55;animation:ovSweep 4.5s linear infinite"></div>
+                    <div style="position:absolute;left:18px;bottom:16px">
+                      <div style="font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:clamp(38px,5vw,60px);line-height:.9;letter-spacing:.05em;color:#e8fbff;text-shadow:{{ glowText }}">{{ q.ville.name }}</div>
+                      <div style="font-size:14px;letter-spacing:.22em;color:{{ accent }};margin-top:9px">{{ q.ville.coords }}</div>
+                    </div>
+                    <div style="position:absolute;right:16px;top:14px;font-size:13.5px;letter-spacing:.16em;color:#7fa6b5;text-align:right;line-height:1.9">IMAGERIE —<br />PLACEHOLDER 16:9<br />SCAN TOPO ACTIF</div>
+                  </div>
+
+                  <div style="font-size:15.5px;line-height:1.75;letter-spacing:.04em;color:#9cc3d1;margin:20px 0 22px;max-width:70ch">{{ q.ville.blurb1 }}<br />{{ q.ville.blurb2 }}</div>
+
+                  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:1px;background:{{ line }};border:1px solid {{ line }}">
+                    <sc-for list="{{ q.ville.stats }}" as="s" hint-placeholder-count="6">
+                      <div style="background:rgba(9,18,28,.95);padding:13px 14px">
+                        <div style="font-size:13.5px;letter-spacing:.16em;color:#5c7f8f">{{ s.k }}</div>
+                        <div style="font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:23px;letter-spacing:.03em;color:#e8fbff;margin-top:7px">{{ s.v }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+
+                  <div style="font-size:14px;letter-spacing:.22em;color:{{ accent }};margin:24px 0 12px">CORRESPONDANCE PAR FAMILLE</div>
+                  <div style="border:1px solid {{ line }};padding:14px 16px">
+                    <sc-for list="{{ q.ville.families }}" as="f" hint-placeholder-count="6">
+                      <div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid {{ line }}">
+                        <span style="flex:none;white-space:nowrap;font-size:15px;letter-spacing:.1em;color:#cfeaf4">{{ f.k }}</span>
+                        <div style="flex:1;height:10px;background:{{ line2 }};position:relative">
+                          <div style="position:absolute;left:0;top:0;height:10px;width:{{ f.pct }};background:{{ f.fill }};box-shadow:{{ glowBar }}"></div>
+                        </div>
+                        <span style="font-size:15px;color:#e8fbff;width:24px;text-align:right">{{ f.v }}</span>
+                        <span style="font-size:13.5px;letter-spacing:.1em;color:#5c7f8f;width:122px;text-align:right">{{ f.note }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+
+                  <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:24px 0 12px">
+                    <span style="font-size:14px;letter-spacing:.22em;color:{{ accent }}">DÉTAIL PAR FAMILLE</span>
+                    <span style="font-size:13px;letter-spacing:.14em;color:#5c7f8f">6 BLOCS · DONNÉES D'EXEMPLE</span>
+                  </div>
+                  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(272px,1fr));gap:1px;background:{{ line }};border:1px solid {{ line }}">
+                    <sc-for list="{{ q.ville.familyDetails }}" as="fd" hint-placeholder-count="6">
+                      <div style="background:rgba(9,18,28,.95);padding:16px 17px">
+                        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;border-bottom:1px solid {{ line }};padding-bottom:11px">
+                          <span style="font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:19px;letter-spacing:.07em;color:#e8fbff">{{ fd.k }}</span>
+                          <span style="font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:22px;letter-spacing:.02em;color:{{ fd.color }};text-shadow:{{ glowText }}">{{ fd.v }}</span>
+                        </div>
+                        <div style="padding:10px 0 2px">
+                          <sc-for list="{{ fd.rows }}" as="dr" hint-placeholder-count="5">
+                            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:6px 0;font-size:15px;letter-spacing:.05em">
+                              <span style="flex:1;min-width:0;color:#7fa6b5;text-wrap:pretty">{{ dr.k }}</span>
+                              <span style="flex:none;white-space:nowrap;color:#e8fbff;text-align:right">{{ dr.v }}</span>
+                            </div>
+                          </sc-for>
+                        </div>
+                        <div style="display:flex;gap:9px;border-top:1px solid {{ line }};padding-top:11px;margin-top:8px;font-size:14px;line-height:1.6;letter-spacing:.04em;color:#9cc3d1">
+                          <span style="color:{{ fd.color }}">▸</span><span>{{ fd.note }}</span>
+                        </div>
+                        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:12px">
+                          <sc-for list="{{ fd.tags }}" as="tg" hint-placeholder-count="3">
+                            <span style="font-size:13px;letter-spacing:.12em;padding:5px 8px;border:1px solid {{ line }};color:#7fa6b5">{{ tg }}</span>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+
+                  <div style="font-size:14px;letter-spacing:.22em;color:{{ accent }};margin:24px 0 12px">NORMALES MENSUELLES · 1991‑2020</div>
+                  <div style="border:1px solid {{ line }};padding:18px 16px">
+                    <div style="display:flex;align-items:flex-end;gap:5px;height:140px">
+                      <sc-for list="{{ q.ville.months }}" as="m" hint-placeholder-count="12">
+                        <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;height:100%">
+                          <span style="font-size:13px;color:{{ m.color }}">{{ m.t }}</span>
+                          <div style="width:100%;height:{{ m.h }};background:{{ m.fill }};box-shadow:{{ glowBar }}"></div>
+                          <span style="font-size:13px;color:#7fa6b5">{{ m.label }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="background:rgba(7,14,22,.9);padding:22px;display:flex;flex-direction:column;gap:18px">
+                  <div style="border:1px solid {{ accent }};padding:18px;background:rgba(56,232,255,.06);box-shadow:{{ glowBox }}">
+                    <div style="font-size:14px;letter-spacing:.2em;color:#7fa6b5">MATCH GLOBAL</div>
+                    <div style="display:flex;align-items:flex-end;gap:8px;margin-top:10px">
+                      <span style="font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:60px;line-height:.82;color:{{ accent }};text-shadow:{{ glowText }}">{{ q.ville.score }}</span>
+                      <span style="font-size:14px;letter-spacing:.14em;color:#5c7f8f;padding-bottom:8px">/100</span>
+                    </div>
+                    <div style="font-size:14px;letter-spacing:.12em;color:#7fa6b5;margin-top:12px;line-height:1.8">RANG 1 / 5 CANDIDATES<br />20 CRITÈRES PONDÉRÉS<br />CONFIANCE {{ q.ville.confidence }}</div>
+                  </div>
+                  <div>
+                    <div style="font-size:14px;letter-spacing:.2em;color:{{ accent }};margin-bottom:10px">DISTANCES</div>
+                    <sc-for list="{{ q.ville.distances }}" as="d" hint-placeholder-count="6">
+                      <div style="display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid {{ line }};font-size:15px;letter-spacing:.07em">
+                        <span style="flex:1;min-width:0;color:#9cc3d1">{{ d.k }}</span>
+                        <span style="flex:none;white-space:nowrap;color:#e8fbff">{{ d.v }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div>
+                    <div style="font-size:14px;letter-spacing:.2em;color:{{ accent2 }};margin-bottom:10px">⚠ ALERTES</div>
+                    <sc-for list="{{ q.ville.warnings }}" as="w" hint-placeholder-count="3">
+                      <div style="display:flex;gap:9px;padding:7px 0;font-size:15px;line-height:1.65;letter-spacing:.05em;color:#9cc3d1;border-bottom:1px solid {{ line }}">
+                        <span style="color:{{ accent2 }}">▸</span><span>{{ w }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="display:flex;gap:1px;background:{{ line }};border:1px solid {{ line }}">
+                    <div style="flex:1;text-align:center;font-size:14.5px;font-weight:600;letter-spacing:.18em;padding:14px;background:rgba(9,18,28,.95);color:#9cc3d1;cursor:pointer">SUIVRE</div>
+                    <div style="flex:1;text-align:center;font-size:14.5px;font-weight:600;letter-spacing:.18em;padding:14px;background:rgba(56,232,255,.12);color:{{ accent }};cursor:pointer">COMPARER</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+    </main>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1320},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#38e8ff&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#38e8ff&quot;,&quot;#7dff6b&quot;,&quot;#ff3d7f&quot;,&quot;#c08cff&quot;],&quot;section&quot;:&quot;Interface&quot;},&quot;alert&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#ff9d2e&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#ff9d2e&quot;,&quot;#ffe45c&quot;,&quot;#ff4d4d&quot;],&quot;section&quot;:&quot;Interface&quot;},&quot;glow&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Néon&quot;,&quot;Discret&quot;,&quot;Aucun&quot;],&quot;default&quot;:&quot;Néon&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Interface&quot;},&quot;grid&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Grille + halo&quot;,&quot;Fond nu&quot;],&quot;default&quot;:&quot;Grille + halo&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Interface&quot;}}">
+const GEO_LABELS = ["PROXIMITÉ MONTAGNE", "FLEUVES & RIVIÈRES", "PARCS & FORÊTS", "MER", "LACS"];
+const METEO_LABELS = ["TEMPÉRATURES", "RESSENTI", "ENSOLEILLEMENT", "DURÉE SOLEIL", "PRÉCIPITATIONS", "VENT", "NUAGES", "QUALITÉ AIR", "HUMIDITÉ"];
+const COUNTRIES = ["FRANCE", "PORTUGAL", "ESPAGNE", "ITALIE", "SLOVÉNIE", "SUISSE"];
+const TAGS = ["NUL", "FAIBLE", "MOYEN", "HAUT", "FORT", "CRITIQUE"];
+
+const PRESETS = [
+  {
+    title: "FRANCE · PROFIL MONTAGNE & LACS",
+    country: "FRANCE",
+    geo: [5, 3, 4, 1, 5],
+    meteo: [4, 3, 4, 3, 2, 2, 2, 5, 3],
+    regionL1: "SAVOIE ·", regionL2: "HAUTE‑SAVOIE",
+    regionSub: "ALPES DU NORD / 2 LACS MAJEURS / ISÈRE & ARVE",
+    regions: [["ISÈRE", 89], ["PYRÉNÉES-ATL.", 85], ["HAUTES-ALPES", 82], ["PUY-DE-DÔME", 74]],
+    cities: [
+      { name: "ANNECY", sub: "HAUTE-SAVOIE", score: 94, m: ["132 000", "1 924 h", "1 220 mm", "32"] },
+      { name: "CHAMBÉRY", sub: "SAVOIE", score: 89, m: ["60 100", "1 987 h", "1 140 mm", "41"] },
+      { name: "AIX-LES-BAINS", sub: "SAVOIE", score: 86, m: ["31 200", "1 951 h", "1 180 mm", "34"] },
+      { name: "THONON-LES-BAINS", sub: "HAUTE-SAVOIE", score: 82, m: ["35 900", "1 903 h", "1 260 mm", "36"] },
+      { name: "ALBERTVILLE", sub: "SAVOIE", score: 74, m: ["19 400", "1 862 h", "1 310 mm", "44"] }
+    ],
+    telemetry: [
+      { k: "CANDIDATES RETENUES", v: "5 / 8", tone: "accent" },
+      { k: "ÉCART TYPE SCORES", v: "6,8", tone: "ink" },
+      { k: "CRITÈRE LE PLUS DISCRIMINANT", v: "LACS", tone: "accent" },
+      { k: "ALERTE", v: "IMMOBILIER TENDU", tone: "alert" }
+    ],
+    ville: {
+      name: "ANNECY", coords: "45.8992 N / 6.1294 E · ALT 448 M", score: 94, confidence: "0.91",
+      blurb1: "> ville lacustre adossée au massif des Bornes. centre médiéval sur canaux, desserte TGV directe, 68 km de pistes cyclables continues.",
+      blurb2: "> satisfait vos trois vecteurs maximaux : LACS · MONTAGNE · CENTRE ANCIEN.",
+      temps: [2, 3, 7, 11, 15, 19, 21, 20, 16, 12, 6, 3],
+      stats: [
+        { k: "HABITANTS", v: "132 000" }, { k: "SUPERFICIE", v: "13,6 KM²" },
+        { k: "ALTITUDE", v: "448 M" }, { k: "SOLEIL", v: "1 924 H/AN" },
+        { k: "PLUIE", v: "1 220 MM" }, { k: "INDICE AIR", v: "32 · BON" }
+      ],
+      families: [
+        { k: "GÉOGRAPHIE", v: 98, note: "LAC + MONTAGNE" }, { k: "MÉTÉO", v: 88, note: "AIR TRÈS BON" },
+        { k: "CULTURE", v: 91, note: "7 MUSÉES · 14 FEST." }, { k: "TAILLE", v: 79, note: "MOYENNE, DENSE" },
+        { k: "MOBILITÉ", v: 86, note: "TGV · VÉLO A" }, { k: "LIVABILITÉ", v: 93, note: "3E AU NATIONAL" }
+      ],
+      familyDetails: [
+        { k: "GÉOGRAPHIE", v: 98, note: "TOUS LES VECTEURS PONDÉRÉS 4+ SONT SATISFAITS SOUS 7 KM.", tags: ["LACS 5/5", "MONTAGNE 5/5", "MER 1/5"], rows: [
+          { k: "LAC D'ANNECY", v: "0,4 KM · 27 KM²" }, { k: "MASSIF DES BORNES", v: "6 KM · 2 438 M" },
+          { k: "RIVIÈRE THIOU / FIER", v: "EN VILLE" }, { k: "FORÊT PUBLIQUE (SEMNOZ)", v: "2,1 KM · 1 400 HA" },
+          { k: "MER LA PLUS PROCHE", v: "310 KM · GÊNES" }] },
+        { k: "MÉTÉO", v: 88, note: "PRÉCIPITATIONS 1 220 MM : AU-DESSUS DE VOTRE SEUIL (POIDS 2).", tags: ["AIR 5/5", "SOLEIL 4/5", "PLUIE 2/5"], rows: [
+          { k: "MOYENNE ANNUELLE", v: "11,2 °C" }, { k: "AMPLITUDE JANV / JUIL", v: "2 °C → 21 °C" },
+          { k: "DURÉE SOLEIL", v: "1 924 H/AN" }, { k: "JOURS DE PLUIE", v: "118 / AN" },
+          { k: "VENT / HUMIDITÉ", v: "9 KM/H · 74 %" }, { k: "INDICE AIR ATMO", v: "32 · BON" }] },
+        { k: "CULTURE", v: 91, note: "CENTRE MÉDIÉVAL SUR CANAUX, SECTEUR SAUVEGARDÉ DE 42 HA.", tags: ["CENTRE ANCIEN 5/5", "MUSÉES 4/5"], rows: [
+          { k: "MUSÉES", v: "7" }, { k: "ÉQUIPEMENTS CULTURELS", v: "23" }, { k: "MONUMENTS CLASSÉS", v: "31" },
+          { k: "CENTRE ANCIEN", v: "MÉDIÉVAL · 42 HA" }, { k: "FESTIVALS / AN", v: "14" }, { k: "SALONS PROS", v: "4" }] },
+        { k: "TAILLE", v: 79, note: "DENSITÉ ÉLEVÉE POUR LA STRATE : 9 700 HAB./KM² EN CENTRE.", tags: ["HABITANTS 3/5", "SUPERFICIE 2/5"], rows: [
+          { k: "POPULATION COMMUNE", v: "132 000" }, { k: "AIRE URBAINE", v: "242 000" },
+          { k: "SUPERFICIE", v: "13,6 KM²" }, { k: "DENSITÉ", v: "9 700 HAB./KM²" }, { k: "CROISSANCE 10 ANS", v: "+7,4 %" }] },
+        { k: "MOBILITÉ", v: 86, note: "PISTES CYCLABLES CONTINUES LE LONG DU LAC, NOTE BAROMÈTRE A.", tags: ["VÉLO 5/5", "GARES 4/5"], rows: [
+          { k: "LIGNES DE BUS", v: "22 · SIBRA" }, { k: "PISTES CYCLABLES", v: "68 KM · NOTE A" },
+          { k: "GARES", v: "1 · TGV DIRECT" }, { k: "PARIS EN TRAIN", v: "3 H 45" }, { k: "AÉROPORT < 1 H", v: "GENÈVE · 45 MIN" }] },
+        { k: "LIVABILITÉ", v: 93, note: "TROIS CLASSEMENTS SUR QUATRE LA PLACENT DANS LE TOP 5.", tags: ["CLASSEMENTS 4/5"], rows: [
+          { k: "VILLES OÙ IL FAIT BON VIVRE", v: "3E / 34 800" }, { k: "BAROMÈTRE CYCLABLE", v: "A · 2E STRATE" },
+          { k: "QUALITÉ DE VIE 2025", v: "3E" }, { k: "TENSION IMMOBILIÈRE", v: "4 980 €/M² · ⚠" }, { k: "REVENU MÉDIAN", v: "26 400 €/AN" }] }
+      ],
+      distances: [
+        { k: "LAC D'ANNECY", v: "0,4 KM" }, { k: "SOMMET > 1 500 M", v: "6 KM" },
+        { k: "FORÊT PUBLIQUE", v: "2,1 KM" }, { k: "MER", v: "310 KM" },
+        { k: "GARE TGV", v: "EN VILLE" }, { k: "AÉROPORT GENÈVE", v: "45 MIN" }
+      ],
+      warnings: ["IMMOBILIER : +62 % AU M² EN DIX ANS.", "RIVES DU LAC SATURÉES EN ÉTÉ.", "PRÉCIPITATIONS AU-DESSUS DU SEUIL DÉFINI."]
+    }
+  },
+  {
+    title: "FRANCE · PROFIL OCÉAN & PATRIMOINE",
+    country: "FRANCE",
+    geo: [4, 3, 3, 5, 1],
+    meteo: [5, 4, 4, 4, 2, 2, 3, 4, 3],
+    regionL1: "PYRÉNÉES‑", regionL2: "ATLANTIQUES",
+    regionSub: "CÔTE BASQUE / ADOUR & NIVE / MASSIF DE LA RHUNE",
+    regions: [["CHARENTE-MARIT.", 84], ["MORBIHAN", 81], ["VAR", 79], ["HÉRAULT", 76]],
+    cities: [
+      { name: "BAYONNE", sub: "PYRÉNÉES-ATL.", score: 91, m: ["52 000", "1 950 h", "1 480 mm", "30"] },
+      { name: "BIARRITZ", sub: "PYRÉNÉES-ATL.", score: 88, m: ["25 500", "1 945 h", "1 450 mm", "28"] },
+      { name: "ANGLET", sub: "PYRÉNÉES-ATL.", score: 84, m: ["40 100", "1 940 h", "1 460 mm", "29"] },
+      { name: "SAINT-JEAN-DE-LUZ", sub: "PYRÉNÉES-ATL.", score: 81, m: ["14 200", "1 960 h", "1 500 mm", "26"] },
+      { name: "PAU", sub: "PYRÉNÉES-ATL.", score: 76, m: ["77 200", "1 850 h", "1 100 mm", "35"] }
+    ],
+    telemetry: [
+      { k: "CANDIDATES RETENUES", v: "5 / 9", tone: "accent" },
+      { k: "ÉCART TYPE SCORES", v: "5,4", tone: "ink" },
+      { k: "CRITÈRE LE PLUS DISCRIMINANT", v: "MER", tone: "accent" },
+      { k: "ALERTE", v: "PLUVIOMÉTRIE HAUTE", tone: "alert" }
+    ],
+    ville: {
+      name: "BAYONNE", coords: "43.4929 N / 1.4748 O · ALT 20 M", score: 91, confidence: "0.88",
+      blurb1: "> confluence Adour / Nive, centre ancien à colombages, océan à 6 km, premiers sommets pyrénéens à 45 min.",
+      blurb2: "> satisfait vos vecteurs maximaux : MER · PATRIMOINE. vecteur LACS non couvert (poids 1).",
+      temps: [9, 9, 11, 13, 16, 19, 21, 21, 19, 16, 12, 9],
+      stats: [
+        { k: "HABITANTS", v: "52 000" }, { k: "SUPERFICIE", v: "21,7 KM²" },
+        { k: "ALTITUDE", v: "20 M" }, { k: "SOLEIL", v: "1 950 H/AN" },
+        { k: "PLUIE", v: "1 480 MM" }, { k: "INDICE AIR", v: "30 · BON" }
+      ],
+      families: [
+        { k: "GÉOGRAPHIE", v: 94, note: "OCÉAN + ADOUR" }, { k: "MÉTÉO", v: 85, note: "DOUX, HUMIDE" },
+        { k: "CULTURE", v: 88, note: "5 MUSÉES · FÊTES" }, { k: "TAILLE", v: 82, note: "PETITE, DENSE" },
+        { k: "MOBILITÉ", v: 84, note: "TGV · TRAM'BUS" }, { k: "LIVABILITÉ", v: 87, note: "9E AU NATIONAL" }
+      ],
+      familyDetails: [
+        { k: "GÉOGRAPHIE", v: 94, note: "OCÉAN ET MONTAGNE DANS LE MÊME RAYON DE 25 KM.", tags: ["MER 5/5", "MONTAGNE 4/5", "LACS 1/5"], rows: [
+          { k: "OCÉAN (ANGLET)", v: "6 KM" }, { k: "LA RHUNE", v: "22 KM · 905 M" },
+          { k: "ADOUR & NIVE", v: "EN VILLE" }, { k: "FORÊT DE CHIBERTA", v: "7 KM · 240 HA" },
+          { k: "LAC LE PLUS PROCHE", v: "38 KM" }] },
+        { k: "MÉTÉO", v: 85, note: "1 480 MM DE PLUIE : LE POINT FAIBLE DU PROFIL OCÉANIQUE.", tags: ["TEMPÉRATURES 5/5", "PLUIE 2/5"], rows: [
+          { k: "MOYENNE ANNUELLE", v: "14,3 °C" }, { k: "AMPLITUDE JANV / JUIL", v: "9 °C → 21 °C" },
+          { k: "DURÉE SOLEIL", v: "1 950 H/AN" }, { k: "JOURS DE PLUIE", v: "141 / AN" },
+          { k: "VENT / HUMIDITÉ", v: "14 KM/H · 79 %" }, { k: "INDICE AIR ATMO", v: "30 · BON" }] },
+        { k: "CULTURE", v: 88, note: "SECTEUR SAUVEGARDÉ, MUSÉE BASQUE, FÊTES DE JUILLET.", tags: ["CENTRE ANCIEN 5/5", "ÉVÉNEMENTS 4/5"], rows: [
+          { k: "MUSÉES", v: "5" }, { k: "ÉQUIPEMENTS CULTURELS", v: "17" }, { k: "MONUMENTS CLASSÉS", v: "24" },
+          { k: "CENTRE ANCIEN", v: "COLOMBAGES · 31 HA" }, { k: "FESTIVALS / AN", v: "11" }, { k: "SALONS PROS", v: "3" }] },
+        { k: "TAILLE", v: 82, note: "COMMUNE COMPACTE DANS UNE AGGLOMÉRATION DE 300 000.", tags: ["HABITANTS 3/5", "SUPERFICIE 2/5"], rows: [
+          { k: "POPULATION COMMUNE", v: "52 000" }, { k: "AGGLO. BAYONNE-ANGLET-BIARRITZ", v: "300 000" },
+          { k: "SUPERFICIE", v: "21,7 KM²" }, { k: "DENSITÉ", v: "2 400 HAB./KM²" }, { k: "CROISSANCE 10 ANS", v: "+5,1 %" }] },
+        { k: "MOBILITÉ", v: 84, note: "TGV DIRECT ET AÉROPORT À 15 MIN, RÉSEAU CYCLABLE EN RETRAIT.", tags: ["GARES 4/5", "VÉLO 5/5"], rows: [
+          { k: "LIGNES DE BUS", v: "18 · TXIK TXAK" }, { k: "PISTES CYCLABLES", v: "44 KM · NOTE C" },
+          { k: "GARES", v: "1 · TGV DIRECT" }, { k: "PARIS EN TRAIN", v: "4 H 10" }, { k: "AÉROPORT < 1 H", v: "BIARRITZ · 15 MIN" }] },
+        { k: "LIVABILITÉ", v: 87, note: "BIEN CLASSÉE, MAIS MARCHÉ LOCATIF SOUS FORTE TENSION.", tags: ["CLASSEMENTS 4/5"], rows: [
+          { k: "VILLES OÙ IL FAIT BON VIVRE", v: "9E / 34 800" }, { k: "BAROMÈTRE CYCLABLE", v: "C · 4E STRATE" },
+          { k: "QUALITÉ DE VIE 2025", v: "12E" }, { k: "TENSION IMMOBILIÈRE", v: "4 210 €/M² · ⚠" }, { k: "REVENU MÉDIAN", v: "22 900 €/AN" }] }
+      ],
+      distances: [
+        { k: "OCÉAN (ANGLET)", v: "6 KM" }, { k: "LA RHUNE", v: "22 KM" },
+        { k: "FORÊT DE CHIBERTA", v: "7 KM" }, { k: "LAC", v: "38 KM" },
+        { k: "GARE TGV", v: "EN VILLE" }, { k: "AÉROPORT BIARRITZ", v: "15 MIN" }
+      ],
+      warnings: ["PLUIE 1 480 MM : 141 JOURS PAR AN.", "PRESSION TOURISTIQUE ESTIVALE FORTE.", "AUCUN LAC DANS LE RAYON DEMANDÉ."]
+    }
+  },
+  {
+    title: "FRANCE · PROFIL SOLEIL & MÉDITERRANÉE",
+    country: "FRANCE",
+    geo: [2, 3, 4, 5, 3],
+    meteo: [5, 4, 5, 5, 1, 3, 2, 3, 2],
+    regionL1: "HÉRAULT ·", regionL2: "OCCITANIE",
+    regionSub: "GOLFE DU LION / LEZ & HÉRAULT / GARRIGUES",
+    regions: [["GARD", 83], ["BOUCHES-DU-RHÔNE", 80], ["AUDE", 78], ["VAR", 75]],
+    cities: [
+      { name: "MONTPELLIER", sub: "HÉRAULT", score: 90, m: ["307 100", "2 668 h", "640 mm", "38"] },
+      { name: "SÈTE", sub: "HÉRAULT", score: 86, m: ["44 500", "2 720 h", "600 mm", "33"] },
+      { name: "AGDE", sub: "HÉRAULT", score: 80, m: ["29 800", "2 750 h", "590 mm", "31"] },
+      { name: "BÉZIERS", sub: "HÉRAULT", score: 77, m: ["80 200", "2 690 h", "610 mm", "37"] },
+      { name: "LUNEL", sub: "HÉRAULT", score: 72, m: ["26 700", "2 640 h", "650 mm", "35"] }
+    ],
+    telemetry: [
+      { k: "CANDIDATES RETENUES", v: "5 / 11", tone: "accent" },
+      { k: "ÉCART TYPE SCORES", v: "7,1", tone: "ink" },
+      { k: "CRITÈRE LE PLUS DISCRIMINANT", v: "DURÉE SOLEIL", tone: "accent" },
+      { k: "ALERTE", v: "STRESS HYDRIQUE", tone: "alert" }
+    ],
+    ville: {
+      name: "MONTPELLIER", coords: "43.6108 N / 3.8767 E · ALT 27 M", score: 90, confidence: "0.86",
+      blurb1: "> métropole méditerranéenne, 2 668 h de soleil, écusson médiéval piéton, mer à 11 km par tramway et piste cyclable.",
+      blurb2: "> satisfait vos vecteurs maximaux : MER · ENSOLEILLEMENT. vecteur MONTAGNE faible (55 km).",
+      temps: [7, 8, 11, 13, 17, 21, 24, 24, 20, 16, 11, 8],
+      stats: [
+        { k: "HABITANTS", v: "307 100" }, { k: "SUPERFICIE", v: "56,9 KM²" },
+        { k: "ALTITUDE", v: "27 M" }, { k: "SOLEIL", v: "2 668 H/AN" },
+        { k: "PLUIE", v: "640 MM" }, { k: "INDICE AIR", v: "38 · MOYEN" }
+      ],
+      families: [
+        { k: "GÉOGRAPHIE", v: 84, note: "MER + ÉTANGS" }, { k: "MÉTÉO", v: 93, note: "SOLEIL MAX" },
+        { k: "CULTURE", v: 95, note: "12 MUSÉES · 22 FEST." }, { k: "TAILLE", v: 71, note: "GRANDE, DENSE" },
+        { k: "MOBILITÉ", v: 92, note: "4 LIGNES TRAM" }, { k: "LIVABILITÉ", v: 85, note: "24E AU NATIONAL" }
+      ],
+      familyDetails: [
+        { k: "GÉOGRAPHIE", v: 84, note: "MER ET ÉTANGS PROCHES, MAIS RELIEF À PLUS DE 50 KM.", tags: ["MER 5/5", "PARCS 4/5", "MONTAGNE 2/5"], rows: [
+          { k: "MER (PALAVAS)", v: "11 KM" }, { k: "CÉVENNES", v: "55 KM · 1 567 M" },
+          { k: "LE LEZ", v: "EN VILLE" }, { k: "BOIS DE MONTMAUR", v: "1,8 KM · 20 HA" },
+          { k: "ÉTANG DE L'OR", v: "9 KM" }] },
+        { k: "MÉTÉO", v: 93, note: "MEILLEUR ENSOLEILLEMENT DES TROIS REQUÊTES : 2 668 H.", tags: ["SOLEIL 5/5", "PLUIE 1/5"], rows: [
+          { k: "MOYENNE ANNUELLE", v: "15,8 °C" }, { k: "AMPLITUDE JANV / JUIL", v: "7 °C → 24 °C" },
+          { k: "DURÉE SOLEIL", v: "2 668 H/AN" }, { k: "JOURS DE PLUIE", v: "58 / AN" },
+          { k: "VENT / HUMIDITÉ", v: "17 KM/H · 68 %" }, { k: "INDICE AIR ATMO", v: "38 · MOYEN" }] },
+        { k: "CULTURE", v: 95, note: "OFFRE LA PLUS DENSE DU PANEL, ÉCUSSON MÉDIÉVAL PIÉTON.", tags: ["MUSÉES 4/5", "FESTIVALS 3/5"], rows: [
+          { k: "MUSÉES", v: "12" }, { k: "ÉQUIPEMENTS CULTURELS", v: "58" }, { k: "MONUMENTS CLASSÉS", v: "87" },
+          { k: "CENTRE ANCIEN", v: "ÉCUSSON · 60 HA" }, { k: "FESTIVALS / AN", v: "22" }, { k: "SALONS PROS", v: "19" }] },
+        { k: "TAILLE", v: 71, note: "AU-DESSUS DE VOTRE STRATE CIBLE : 307 000 HABITANTS.", tags: ["HABITANTS 3/5", "SUPERFICIE 2/5"], rows: [
+          { k: "POPULATION COMMUNE", v: "307 100" }, { k: "AIRE URBAINE", v: "813 000" },
+          { k: "SUPERFICIE", v: "56,9 KM²" }, { k: "DENSITÉ", v: "5 400 HAB./KM²" }, { k: "CROISSANCE 10 ANS", v: "+12,6 %" }] },
+        { k: "MOBILITÉ", v: 92, note: "QUATRE LIGNES DE TRAMWAY ET AÉROPORT À 10 MIN.", tags: ["BUS 3/5", "VÉLO 5/5", "GARES 4/5"], rows: [
+          { k: "TRAMWAY / BUS", v: "4 LIGNES · 36 BUS" }, { k: "PISTES CYCLABLES", v: "180 KM · NOTE B" },
+          { k: "GARES", v: "2 · TGV DIRECT" }, { k: "PARIS EN TRAIN", v: "3 H 20" }, { k: "AÉROPORT < 1 H", v: "MONTPELLIER · 10 MIN" }] },
+        { k: "LIVABILITÉ", v: 85, note: "TRÈS BONS SERVICES, MAIS CANICULES ET SÉCHERESSE EN HAUSSE.", tags: ["CLASSEMENTS 4/5"], rows: [
+          { k: "VILLES OÙ IL FAIT BON VIVRE", v: "24E / 34 800" }, { k: "BAROMÈTRE CYCLABLE", v: "B · 2E STRATE" },
+          { k: "QUALITÉ DE VIE 2025", v: "18E" }, { k: "TENSION IMMOBILIÈRE", v: "3 640 €/M²" }, { k: "REVENU MÉDIAN", v: "20 800 €/AN" }] }
+      ],
+      distances: [
+        { k: "MER (PALAVAS)", v: "11 KM" }, { k: "CÉVENNES", v: "55 KM" },
+        { k: "LE LEZ", v: "EN VILLE" }, { k: "ÉTANG DE L'OR", v: "9 KM" },
+        { k: "GARE TGV", v: "EN VILLE" }, { k: "AÉROPORT", v: "10 MIN" }
+      ],
+      warnings: ["CANICULES : 21 JOURS > 35 °C EN 2024.", "RESTRICTIONS D'EAU DEUX ÉTÉS SUR TROIS.", "MONTAGNE À PLUS DE 50 KM (VECTEUR 2/5)."]
+    }
+  }
+];
+
+class Component extends DCLogic {
+  state = {
+    screen: "scan", clock: "--:--:--",
+    queries: [{ preset: 0, query: PRESETS[0].country, country: PRESETS[0].country, geo: PRESETS[0].geo.slice(), meteo: PRESETS[0].meteo.slice() }]
+  };
+
+  componentDidMount() {
+    const tick = () => {
+      const d = new Date();
+      const p = (n) => String(n).padStart(2, "0");
+      this.setState({ clock: `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}` });
+    };
+    tick();
+    this.timer = setInterval(tick, 1000);
+  }
+  componentWillUnmount() { clearInterval(this.timer); }
+
+  go = (screen) => () => this.setState({ screen });
+
+  patch = (qi, fn) => this.setState(s => ({
+    queries: s.queries.map((q, i) => (i === qi ? { ...q, ...fn(q) } : q))
+  }));
+
+  addQuery = () => this.setState(s => {
+    if (s.queries.length >= 3) return null;
+    const p = PRESETS[s.queries.length] || PRESETS[0];
+    return { queries: s.queries.concat([{ preset: s.queries.length, query: p.country, country: p.country, geo: p.geo.slice(), meteo: p.meteo.slice() }]) };
+  });
+
+  removeQuery = (qi) => () => this.setState(s => ({ queries: s.queries.filter((q, i) => i !== qi) }));
+
+  dragGeo = (qi, i) => (e) => {
+    const el = e.currentTarget;
+    const move = (ev) => {
+      const r = el.getBoundingClientRect();
+      const v = Math.round(Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width)) * 5);
+      this.patch(qi, (q) => { const a = q.geo.slice(); a[i] = v; return { geo: a }; });
+    };
+    move(e);
+    const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+  };
+
+  cycleMeteo = (qi, i) => () => this.patch(qi, (q) => { const a = q.meteo.slice(); a[i] = (a[i] + 1) % 6; return { meteo: a }; });
+
+  renderVals() {
+    const s = this.state;
+    const accent = this.props.accent ?? "#38e8ff";
+    const accent2 = this.props.alert ?? "#ff9d2e";
+    const glowLevel = this.props.glow ?? "Néon";
+    const gridOn = (this.props.grid ?? "Grille + halo") === "Grille + halo";
+
+    const g = glowLevel === "Néon" ? 1 : (glowLevel === "Discret" ? 0.45 : 0);
+    const glowText = g ? `0 0 ${Math.round(16 * g)}px ${accent}${g > .7 ? "aa" : "66"}` : "none";
+    const glowBox = g ? `0 0 ${Math.round(22 * g)}px rgba(56,232,255,${0.22 * g}), inset 0 0 ${Math.round(24 * g)}px rgba(56,232,255,${0.07 * g})` : "none";
+    const glowBar = g ? `0 0 ${Math.round(10 * g)}px ${accent}88` : "none";
+    const glowDot = g ? `0 0 ${Math.round(14 * g)}px ${accent}` : "none";
+    const line = "rgba(56,232,255,.18)";
+    const line2 = "rgba(56,232,255,.1)";
+    const gridImage = gridOn
+      ? `linear-gradient(${line2} 1px,transparent 1px),linear-gradient(90deg,${line2} 1px,transparent 1px)`
+      : "none";
+    const tone = { accent, alert: accent2, ink: "#e8fbff" };
+
+    const n = s.queries.length;
+
+    const queries = s.queries.map((q, qi) => {
+      const P = PRESETS[q.preset] || PRESETS[0];
+      const geoSum = q.geo.reduce((a, b) => a + b, 0);
+      const drift = Math.round((geoSum - P.geo.reduce((a, b) => a + b, 0)) * 0.8);
+
+      return {
+        tag: "REQUÊTE " + String(qi + 1).padStart(2, "0"),
+        title: P.title,
+        weightSum: geoSum + q.meteo.reduce((a, b) => a + b, 0),
+        removable: qi > 0,
+        remove: this.removeQuery(qi),
+        query: q.query,
+        onQuery: (e) => this.patch(qi, () => ({ query: e.target.value.toUpperCase() })),
+        countries: COUNTRIES.map(name => ({
+          name,
+          go: () => this.patch(qi, () => ({ country: name, query: name })),
+          bg: name === q.country ? "rgba(56,232,255,.14)" : "transparent",
+          fg: name === q.country ? accent : "#7fa6b5",
+          bd: name === q.country ? accent : line
+        })),
+        geoRows: GEO_LABELS.map((label, i) => {
+          const v = q.geo[i];
+          return {
+            label, tag: TAGS[v],
+            tagColor: v >= 4 ? accent : (v === 0 ? "#5c7f8f" : "#7fa6b5"),
+            onDown: this.dragGeo(qi, i),
+            cells: Array.from({ length: 5 }, (_, k) => {
+              const on = k < v;
+              return { bg: on ? accent : line2, glow: on && g ? `0 0 ${Math.round(8 * g)}px ${accent}66` : "none" };
+            })
+          };
+        }),
+        regionL1: P.regionL1, regionL2: P.regionL2, regionSub: P.regionSub,
+        topScore: Math.max(40, Math.min(99, 60 + Math.round(geoSum * 1.6))),
+        regions: P.regions.map((r, i) => ({ rank: String(i + 2).padStart(2, "0"), name: r[0], score: r[1], pct: r[1] + "%" })),
+        meteoChips: METEO_LABELS.map((label, i) => {
+          const v = q.meteo[i];
+          return {
+            label, val: TAGS[v], cycle: this.cycleMeteo(qi, i),
+            bg: v >= 4 ? "rgba(56,232,255,.1)" : "rgba(9,18,28,.95)",
+            labelColor: v >= 4 ? accent : "#7fa6b5",
+            valColor: v >= 4 ? accent : "#5c7f8f",
+            cells: [0, 1, 2, 3, 4].map(k => ({ bg: k < v ? (v >= 4 ? accent : "#7fa6b5") : line2 }))
+          };
+        }),
+        rows: P.cities.map((c, i) => ({
+          rank: String(i + 1).padStart(2, "0"), name: c.name, sub: c.sub,
+          score: Math.max(40, Math.min(99, c.score + drift)),
+          pct: Math.max(40, Math.min(99, c.score + drift)) + "%",
+          open: this.go("dossier"),
+          cellBg: i === 0 ? "rgba(56,232,255,.07)" : "rgba(7,14,22,.9)",
+          nameColor: i === 0 ? "#e8fbff" : "#cfeaf4",
+          metrics: c.m.map((v, mi) => ({ v, color: mi === 3 && parseInt(v, 10) > 36 ? accent2 : "#9cc3d1" }))
+        })),
+        telemetry: P.telemetry.map(t => ({ k: t.k, v: t.v, color: tone[t.tone] })),
+        ville: {
+          ...P.ville,
+          families: P.ville.families.map(f => ({ ...f, pct: f.v + "%", fill: f.v >= 80 ? accent : "#7fa6b5" })),
+          familyDetails: P.ville.familyDetails.map(fd => ({ ...fd, color: fd.v >= 80 ? accent : "#7fa6b5" })),
+          months: ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"].map((label, i) => {
+            const temp = P.ville.temps[i];
+            const hot = temp >= 17;
+            return { label, t: temp + "°", h: Math.round(16 + temp * 4) + "px", fill: hot ? accent2 : accent, color: hot ? accent2 : "#9cc3d1" };
+          })
+        }
+      };
+    });
+
+    return {
+      accent, accent2, line, line2, glowText, glowBox, glowBar, glowDot, gridImage, clock: s.clock,
+      isScan: s.screen === "scan", isMatrix: s.screen === "matrix", isDossier: s.screen === "dossier",
+      goMatrix: this.go("matrix"), goDossier: this.go("dossier"),
+      nav: [["SCAN", "scan"], ["MATRICE", "matrix"], ["DOSSIER", "dossier"]].map(([label, sc]) => ({
+        label, go: this.go(sc),
+        bg: s.screen === sc ? "rgba(56,232,255,.14)" : "rgba(9,18,28,.9)",
+        fg: s.screen === sc ? accent : "#7fa6b5",
+        glow: s.screen === sc && g ? `inset 0 -2px 0 ${accent}` : "none"
+      })),
+      queries,
+      canAdd: n < 3,
+      atLimit: n >= 3,
+      addQuery: this.addQuery,
+      addLabel: n === 1 ? "AJOUTER UNE 2E REQUÊTE" : "AJOUTER UNE 3E REQUÊTE (DERNIÈRE)",
+      queryCountLabel: n === 1 ? "1 REQUÊTE ACTIVE · 20 CRITÈRES" : n + " REQUÊTES PARALLÈLES · " + (n * 20) + " CRITÈRES",
+      candidateLabel: n === 1 ? "5 CANDIDATES" : n + " × 5 CANDIDATES",
+      dossierCountLabel: n === 1 ? "1 DOSSIER" : n + " DOSSIERS EMPILÉS",
+      heads: [
+        { k: "#", align: "left" }, { k: "VILLE", align: "left" }, { k: "HAB.", align: "right" },
+        { k: "SOLEIL", align: "right" }, { k: "PLUIE", align: "right" }, { k: "AIR", align: "right" },
+        { k: "MATCH", align: "left" }
+      ],
+      facts: [
+        { k: "SUPERFICIE", v: "551 695 KM²" }, { k: "POPULATION", v: "68,4 M" },
+        { k: "CLIMATS", v: "4 DOMINANTS" }, { k: "LITTORAL", v: "5 853 KM" },
+        { k: "RÉGIONS INDEXÉES", v: "18" }
+      ]
+    };
+  }
+}
+
+</script>
+</body>
+</html>
