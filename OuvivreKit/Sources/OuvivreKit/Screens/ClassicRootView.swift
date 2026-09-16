@@ -15,7 +15,6 @@ public struct ClassicRootView: View {
     @State private var hasSetInitialMapPanelWidth = false
 
     private let mapPanelMinWidth: CGFloat = 220
-    private let mapPanelMaxWidth: CGFloat = 560
     private let sidebarWidth: CGFloat = 236
 
     public init() {}
@@ -60,13 +59,13 @@ public struct ClassicRootView: View {
         .onChange(of: state.country) { _, newValue in mapState.focusOnCountry(newValue) }
     }
 
-    /// Sets the map panel to a 2/3 content – 1/3 carte split on first layout,
+    /// Sets the map panel to a 50/50 content – carte split on first layout,
     /// leaving it alone afterwards so a manual resize (`resizeHandle`) sticks.
     private func setInitialMapPanelWidth(totalWidth: CGFloat) {
         guard !hasSetInitialMapPanelWidth, totalWidth > 0 else { return }
         hasSetInitialMapPanelWidth = true
         let available = max(0, totalWidth - sidebarWidth)
-        mapPanelWidth = min(mapPanelMaxWidth, max(mapPanelMinWidth, available / 3))
+        mapPanelWidth = max(mapPanelMinWidth, available / 2)
         mapPanelWidthAtDragStart = mapPanelWidth
     }
 
@@ -83,7 +82,7 @@ public struct ClassicRootView: View {
                         DragGesture(minimumDistance: 0)
                             .onChanged { value in
                                 let proposed = mapPanelWidthAtDragStart - value.translation.width
-                                mapPanelWidth = min(mapPanelMaxWidth, max(mapPanelMinWidth, proposed))
+                                mapPanelWidth = max(mapPanelMinWidth, proposed)
                             }
                             .onEnded { _ in mapPanelWidthAtDragStart = mapPanelWidth }
                     )
@@ -97,7 +96,7 @@ public struct ClassicRootView: View {
 
     private var reopenTab: some View {
         Button { mapState.isVisible = true } label: {
-            Image(systemName: "map")
+            Image(systemName: "sidebar.trailing")
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(ClassicTheme.faint)
                 .frame(width: 28, height: 44)
@@ -105,6 +104,7 @@ public struct ClassicRootView: View {
         .buttonStyle(.plain)
         .background(ClassicTheme.sidebarBg)
         .overlay(alignment: .leading) { Rectangle().fill(ClassicTheme.border).frame(width: 1) }
+        .help("Afficher la carte")
     }
 
     @ViewBuilder

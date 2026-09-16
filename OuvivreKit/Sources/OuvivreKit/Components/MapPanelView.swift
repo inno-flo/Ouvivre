@@ -44,6 +44,7 @@ public struct MapPanelView: View {
     @ObservedObject var mapState: MapPanelState
     @State private var position: MapCameraPosition = .automatic
     @State private var lastRegion: MKCoordinateRegion?
+    @State private var transitionGeneration = 0
     @State private var planType: MapPlanType = .explorer
     @State private var is3D: Bool = false
 
@@ -60,10 +61,9 @@ public struct MapPanelView: View {
             .mapStyle(planType.style(elevation: is3D ? .realistic : .flat))
             .mapControls {
                 MapZoomStepper()
-                MapPitchToggle()
                 MapCompass()
             }
-            planTypePicker
+            .overlay(alignment: .topTrailing) { controlCluster.padding(10) }
         }
         .frame(maxHeight: .infinity)
         .background(ClassicTheme.sidebarBg)
@@ -74,49 +74,47 @@ public struct MapPanelView: View {
 
     private var header: some View {
         HStack {
-            Text("CARTE")
-                .font(CFont.mono(11, weight: .medium))
-                .foregroundStyle(ClassicTheme.faint)
             Spacer()
-            Button { is3D.toggle() } label: {
-                Image(systemName: is3D ? "view.2d" : "view.3d")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(ClassicTheme.faint)
-            }
-            .buttonStyle(.plain)
-            .help(is3D ? "Passer en 2D" : "Passer en 3D")
             Button { mapState.isVisible = false } label: {
-                Image(systemName: "xmark")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(ClassicTheme.faint)
+                Image(systemName: "sidebar.trailing")
+                    .font(.system(size: 13, weight: .medium))
             }
             .buttonStyle(.plain)
+            .foregroundStyle(ClassicTheme.faint)
+            .help("Masquer la carte")
         }
-        .padding(.horizontal, 16).padding(.vertical, 12)
+        .padding(.horizontal, 12).padding(.vertical, 8)
         .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.border).frame(height: 1) }
     }
 
-    private var planTypePicker: some View {
-        HStack(spacing: 4) {
+    /// The plan-type switcher and 2D/3D toggle, styled like MapKit's own
+    /// native controls (e.g. `MapPitchToggle`/`MapCompass`) — a vertical
+    /// stack of rounded, material-backed icon buttons overlaid top-trailing.
+    private var controlCluster: some View {
+        VStack(spacing: 8) {
             ForEach(MapPlanType.allCases) { type in
-                Button { planType = type } label: {
-                    VStack(spacing: 3) {
-                        Image(systemName: type.icon)
-                            .font(.system(size: 14, weight: .medium))
-                        Text(type.label)
-                            .font(CFont.sans(10, weight: .medium))
-                    }
-                    .foregroundStyle(planType == type ? .white : ClassicTheme.body)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
-                    .background(planType == type ? ClassicTheme.ink : Color.clear)
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                nativeControlButton(icon: type.icon, active: planType == type, help: type.label) {
+                    planType = type
                 }
-                .buttonStyle(.plain)
+            }
+            nativeControlButton(icon: is3D ? "view.2d" : "view.3d", active: is3D, help: is3D ? "Passer en 2D" : "Passer en 3D") {
+                is3D.toggle()
             }
         }
-        .padding(6)
-        .overlay(alignment: .top) { Rectangle().fill(ClassicTheme.border).frame(height: 1) }
+    }
+
+    private func nativeControlButton(icon: String, active: Bool, help: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: icon)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(active ? Color.accentColor : .primary)
+                .frame(width: 29, height: 29)
+        }
+        .buttonStyle(.plain)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
+        .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(.separator, lineWidth: 0.5))
+        .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
+        .help(help)
     }
 
     private func moveCamera(animated: Bool) {
@@ -142,10 +140,16 @@ public struct MapPanelView: View {
             span: MKCoordinateSpan(latitudeDelta: spread * 1.5, longitudeDelta: spread * 1.5)
         )
 
+        // Chained via the first animation's completion (rather than a fixed
+        // `asyncAfter` delay) so the dézoom → zoom sits on one continuous
+        // timeline instead of drifting out of sync and visibly hitching.
+        transitionGeneration += 1
+        let generation = transitionGeneration
+
         withAnimation(.easeInOut(duration: 0.35)) {
             position = .region(midRegion)
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+        } completion: {
+            guard generation == transitionGeneration else { return }
             withAnimation(.easeInOut(duration: 0.45)) {
                 position = .region(target)
             }
