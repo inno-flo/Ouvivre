@@ -12,9 +12,11 @@ public struct ClassicRootView: View {
     @StateObject private var mapState = MapPanelState.shared
     @State private var mapPanelWidth: CGFloat = 300
     @State private var mapPanelWidthAtDragStart: CGFloat = 300
+    @State private var hasSetInitialMapPanelWidth = false
 
     private let mapPanelMinWidth: CGFloat = 220
     private let mapPanelMaxWidth: CGFloat = 560
+    private let sidebarWidth: CGFloat = 236
 
     public init() {}
 
@@ -45,6 +47,8 @@ public struct ClassicRootView: View {
                             reopenTab
                         }
                     }
+                    .onAppear { setInitialMapPanelWidth(totalWidth: geo.size.width) }
+                    .onChange(of: geo.size.width) { _, newValue in setInitialMapPanelWidth(totalWidth: newValue) }
                 }
             }
         }
@@ -54,6 +58,16 @@ public struct ClassicRootView: View {
         .environmentObject(mapState)
         .onAppear { mapState.focusOnCountry(state.country) }
         .onChange(of: state.country) { _, newValue in mapState.focusOnCountry(newValue) }
+    }
+
+    /// Sets the map panel to a 2/3 content – 1/3 carte split on first layout,
+    /// leaving it alone afterwards so a manual resize (`resizeHandle`) sticks.
+    private func setInitialMapPanelWidth(totalWidth: CGFloat) {
+        guard !hasSetInitialMapPanelWidth, totalWidth > 0 else { return }
+        hasSetInitialMapPanelWidth = true
+        let available = max(0, totalWidth - sidebarWidth)
+        mapPanelWidth = min(mapPanelMaxWidth, max(mapPanelMinWidth, available / 3))
+        mapPanelWidthAtDragStart = mapPanelWidth
     }
 
     private var resizeHandle: some View {
