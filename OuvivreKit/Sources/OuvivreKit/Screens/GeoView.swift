@@ -5,6 +5,7 @@ import SwiftUI
 public struct GeoView: View {
     @EnvironmentObject var theme: ClassicTheme
     @EnvironmentObject var state: ClassicState
+    @EnvironmentObject var mapState: MapPanelState
     let derived: ClassicDerived
 
     public init(derived: ClassicDerived) { self.derived = derived }
@@ -78,21 +79,26 @@ public struct GeoView: View {
     }
 
     private var regionHero: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Eyebrow("RÉGION LA PLUS PROBANTE", color: ClassicTheme.darkPanelFaint).padding(.bottom, 10)
-            Text(derived.winningRegion?.nomRegion ?? "—").font(CFont.sans(27, weight: .semibold)).foregroundStyle(.white)
-            Text("Département le plus probant : \(derived.winningRegion?.bestDept ?? "—")")
-                .font(CFont.sans(13)).foregroundStyle(ClassicTheme.darkPanelSub).padding(.top, 6)
-            HStack(alignment: .lastTextBaseline, spacing: 8) {
-                Text("\(derived.topScore)").font(CFont.mono(34, weight: .medium)).foregroundStyle(theme.accentLight)
-                Text("/100 CORRESPONDANCE").font(CFont.mono(11)).foregroundStyle(ClassicTheme.darkPanelFaint)
+        Button {
+            if let nomRegion = derived.winningRegion?.nomRegion { mapState.focusOnRegion(nomRegion) }
+        } label: {
+            VStack(alignment: .leading, spacing: 0) {
+                Eyebrow("RÉGION LA PLUS PROBANTE", color: ClassicTheme.darkPanelFaint).padding(.bottom, 10)
+                Text(derived.winningRegion?.nomRegion ?? "—").font(CFont.sans(27, weight: .semibold)).foregroundStyle(.white)
+                Text("Département le plus probant : \(derived.winningRegion?.bestDept ?? "—")")
+                    .font(CFont.sans(13)).foregroundStyle(ClassicTheme.darkPanelSub).padding(.top, 6)
+                HStack(alignment: .lastTextBaseline, spacing: 8) {
+                    Text("\(derived.topScore)").font(CFont.mono(34, weight: .medium)).foregroundStyle(theme.accentLight)
+                    Text("/100 CORRESPONDANCE").font(CFont.mono(11)).foregroundStyle(ClassicTheme.darkPanelFaint)
+                }
+                .padding(.top, 18)
             }
-            .padding(.top, 18)
+            .padding(theme.cardPad)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(ClassicTheme.darkPanel)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
         }
-        .padding(theme.cardPad)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(ClassicTheme.darkPanel)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .buttonStyle(.plain)
     }
 
     private var otherRegions: some View {
@@ -100,14 +106,20 @@ public struct GeoView: View {
             VStack(alignment: .leading, spacing: 0) {
                 Eyebrow("AUTRES RÉGIONS", color: ClassicTheme.faint).padding(.top, 14).padding(.horizontal, theme.cardPadX).padding(.bottom, 10)
                 ForEach(derived.regionRows) { r in
-                    HStack(spacing: 12) {
-                        Text(r.rank).font(CFont.mono(10, weight: .medium)).foregroundStyle(ClassicTheme.faint2).frame(width: 18, alignment: .leading)
-                        Text(r.name).font(CFont.sans(13, weight: .medium)).foregroundStyle(ClassicTheme.ink)
-                        Spacer()
-                        MiniBar(pct: r.pct, fill: ClassicTheme.trackAlt).frame(width: 104, height: 4)
-                        Text("\(r.score)").font(CFont.mono(11, weight: .medium)).foregroundStyle(ClassicTheme.ink).frame(width: 26, alignment: .trailing)
+                    Button {
+                        mapState.focusOnRegion(r.nomRegion)
+                    } label: {
+                        HStack(spacing: 12) {
+                            Text(r.rank).font(CFont.mono(10, weight: .medium)).foregroundStyle(ClassicTheme.faint2).frame(width: 18, alignment: .leading)
+                            Text(r.name).font(CFont.sans(13, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+                            Spacer()
+                            MiniBar(pct: r.pct, fill: ClassicTheme.trackAlt).frame(width: 104, height: 4)
+                            Text("\(r.score)").font(CFont.mono(11, weight: .medium)).foregroundStyle(ClassicTheme.ink).frame(width: 26, alignment: .trailing)
+                        }
+                        .padding(.horizontal, theme.cardPadX).padding(.vertical, 9)
+                        .contentShape(Rectangle())
                     }
-                    .padding(.horizontal, theme.cardPadX).padding(.vertical, 9)
+                    .buttonStyle(.plain)
                 }
                 Spacer(minLength: 6)
             }

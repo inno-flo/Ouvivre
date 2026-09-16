@@ -108,7 +108,14 @@ public struct ClassicDerived {
         }
     }
 
-    public struct RegionRow: Identifiable { public var id: String { name }; public let rank: String; public let name: String; public let score: Int; public var pct: CGFloat { CGFloat(score) / 100 } }
+    public struct RegionRow: Identifiable {
+        public var id: String { name }
+        public let rank: String
+        public let name: String
+        public let nomRegion: String
+        public let score: Int
+        public var pct: CGFloat { CGFloat(score) / 100 }
+    }
     /// Top départements nationally by weighted score, skipping the one
     /// already shown as the winning région's headline pick.
     public var regionRows: [RegionRow] {
@@ -116,7 +123,7 @@ public struct ClassicDerived {
         return rankedDepartements
             .filter { $0.dep.nom != bestDeptName && $0.score >= 50 }
             .enumerated()
-            .map { i, entry in RegionRow(rank: String(format: "%02d", i + 2), name: entry.dep.nom, score: Int(entry.score.rounded())) }
+            .map { i, entry in RegionRow(rank: String(format: "%02d", i + 2), name: entry.dep.nom, nomRegion: entry.dep.nomRegion, score: Int(entry.score.rounded())) }
     }
 
     public struct CityCard: Identifiable {

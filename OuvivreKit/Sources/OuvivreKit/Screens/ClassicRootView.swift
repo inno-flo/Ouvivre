@@ -1,4 +1,7 @@
 import SwiftUI
+#if os(macOS)
+import AppKit
+#endif
 
 /// Entry point for the "classic" theme — owns `ClassicTheme`/`ClassicState`
 /// and lays out the sidebar + main content, collapsing the sidebar into a
@@ -6,8 +9,16 @@ import SwiftUI
 public struct ClassicRootView: View {
     @StateObject private var theme = ClassicTheme()
     @StateObject private var state = ClassicState()
+    @StateObject private var mapState = MapPanelState.shared
+    @State private var mapPanelWidth: CGFloat = 300
+    @State private var mapPanelWidthAtDragStart: CGFloat = 300
+
+    private let mapPanelMinWidth: CGFloat = 220
+    private let mapPanelMaxWidth: CGFloat = 560
 
     public init() {}
+
+    private var showMapPanel: Bool { mapState.isVisible && state.screen != .sources }
 
     public var body: some View {
         GeometryReader { geo in
@@ -19,11 +30,20 @@ public struct ClassicRootView: View {
                     VStack(spacing: 0) {
                         CompactNavBar(derived: derived)
                         ScrollView { content(derived) }
+                        if showMapPanel {
+                            MapPanelView(mapState: mapState).frame(height: 260)
+                        }
                     }
                 } else {
                     HStack(spacing: 0) {
                         SidebarNav(derived: derived)
                         ScrollView { content(derived) }
+                        if showMapPanel {
+                            resizeHandle
+                            MapPanelView(mapState: mapState).frame(width: mapPanelWidth)
+                        } else if state.screen != .sources {
+                            reopenTab
+                        }
                     }
                 }
             }
@@ -31,6 +51,46 @@ public struct ClassicRootView: View {
         .background(ClassicTheme.background)
         .environmentObject(theme)
         .environmentObject(state)
+        .environmentObject(mapState)
+        .onAppear { mapState.focusOnCountry(state.country) }
+        .onChange(of: state.country) { _, newValue in mapState.focusOnCountry(newValue) }
+    }
+
+    private var resizeHandle: some View {
+        Rectangle()
+            .fill(ClassicTheme.border)
+            .frame(width: 1)
+            .overlay(
+                Rectangle()
+                    .fill(Color.clear)
+                    .frame(width: 9)
+                    .contentShape(Rectangle())
+                    .gesture(
+                        DragGesture(minimumDistance: 0)
+                            .onChanged { value in
+                                let proposed = mapPanelWidthAtDragStart - value.translation.width
+                                mapPanelWidth = min(mapPanelMaxWidth, max(mapPanelMinWidth, proposed))
+                            }
+                            .onEnded { _ in mapPanelWidthAtDragStart = mapPanelWidth }
+                    )
+                    #if os(macOS)
+                    .onHover { hovering in
+                        if hovering { NSCursor.resizeLeftRight.push() } else { NSCursor.pop() }
+                    }
+                    #endif
+            )
+    }
+
+    private var reopenTab: some View {
+        Button { mapState.isVisible = true } label: {
+            Image(systemName: "map")
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(ClassicTheme.faint)
+                .frame(width: 28, height: 44)
+        }
+        .buttonStyle(.plain)
+        .background(ClassicTheme.sidebarBg)
+        .overlay(alignment: .leading) { Rectangle().fill(ClassicTheme.border).frame(width: 1) }
     }
 
     @ViewBuilder
