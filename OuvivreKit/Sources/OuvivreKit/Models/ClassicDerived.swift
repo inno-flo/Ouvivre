@@ -33,6 +33,8 @@ public struct ClassicDerived {
     /// fake `topScore = 60 + geoSum*1.6` formula.
     public var rankedDepartements: [(dep: FranceGeoData.DepartementScore, score: Double)] {
         FranceGeoData.departements
+            .filter { !(state.excludeOverseas && $0.isOverseas) }
+            .filter { !(state.excludeCorse && $0.isCorse) }
             .map { ($0, FranceGeoData.weightedScore($0, weights: state.geo)) }
             .sorted { $0.1 > $1.1 }
     }

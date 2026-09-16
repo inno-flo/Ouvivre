@@ -11,6 +11,9 @@ public enum FranceGeoData {
         public let codeRegion: String
         public let nomRegion: String
         public let scores: [String: Double]
+
+        public var isOverseas: Bool { codeInsee.hasPrefix("97") }
+        public var isCorse: Bool { codeInsee == "2A" || codeInsee == "2B" }
     }
 
     private struct Root: Decodable {

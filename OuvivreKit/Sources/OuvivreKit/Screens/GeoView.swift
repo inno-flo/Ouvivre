@@ -36,6 +36,13 @@ public struct GeoView: View {
     private var slidersCard: some View {
         Card(padding: 0) {
             VStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: 8) {
+                    exclusionToggle("Exclure les Territoires ultramarins", isOn: $state.excludeOverseas)
+                    exclusionToggle("Exclure la Corse", isOn: $state.excludeCorse)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, theme.cardPadX).padding(.vertical, theme.rowPad)
+                .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
                 ForEach(derived.geoRows) { row in
                     CriterionRow(row: row) { state.setGeo(row.id, value: $0) }
                         .padding(.horizontal, theme.cardPadX).padding(.vertical, theme.rowPad)
@@ -45,9 +52,29 @@ public struct GeoView: View {
                     OutlineButton("RÉINITIALISER") { state.resetGeo() }
                     AccentButton("Valider la région →", fill: theme.accent) { state.go(.meteo) }
                 }
-                .padding(.horizontal, theme.cardPadX).padding(.top, 16).padding(.bottom, 6)
+                .padding(.horizontal, theme.cardPadX).padding(.top, 14).padding(.bottom, 6)
             }
         }
+    }
+
+    private func exclusionToggle(_ label: String, isOn: Binding<Bool>) -> some View {
+        Button { isOn.wrappedValue.toggle() } label: {
+            HStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(isOn.wrappedValue ? theme.accent : .white)
+                    .frame(width: 16, height: 16)
+                    .overlay(RoundedRectangle(cornerRadius: 3).stroke(isOn.wrappedValue ? theme.accent : ClassicTheme.border, lineWidth: 1))
+                    .overlay {
+                        if isOn.wrappedValue {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundStyle(.white)
+                        }
+                    }
+                Text(label).font(CFont.sans(13)).foregroundStyle(ClassicTheme.body)
+            }
+        }
+        .buttonStyle(.plain)
     }
 
     private var regionHero: some View {
