@@ -47,7 +47,7 @@ public struct ClassicRootView: View {
                 }
                 .inspector(isPresented: inspectorBinding) {
                     MapPanelView(mapState: mapState)
-                        .inspectorColumnWidth(min: 220, ideal: 320, max: 480)
+                        .inspectorColumnWidth(min: 220, ideal: 320, max: 800)
                 }
         }
         .navigationTitle("")
