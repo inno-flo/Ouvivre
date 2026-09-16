@@ -1,13 +1,51 @@
 import SwiftUI
 import MapKit
 
+/// The four plan types offered by the panel's type picker, mirroring Apple
+/// Maps' own choices (Explorer / Conduite / Transports / Satellite).
+public enum MapPlanType: String, CaseIterable, Identifiable {
+    case explorer, voiture, transports, satellite
+
+    public var id: String { rawValue }
+
+    public var label: String {
+        switch self {
+        case .explorer: "Explorer"
+        case .voiture: "Voiture"
+        case .transports: "Transports"
+        case .satellite: "Satellite"
+        }
+    }
+
+    public var icon: String {
+        switch self {
+        case .explorer: "map"
+        case .voiture: "car"
+        case .transports: "tram"
+        case .satellite: "globe.americas"
+        }
+    }
+
+    func style(elevation: MapStyle.Elevation) -> MapStyle {
+        switch self {
+        case .explorer: .standard(elevation: elevation)
+        case .voiture: .standard(elevation: elevation, showsTraffic: true)
+        case .transports: .standard(elevation: elevation, pointsOfInterest: .including([.publicTransport]))
+        case .satellite: .hybrid(elevation: elevation)
+        }
+    }
+}
+
 /// The "Carte" side panel — a MapKit view (via MapKit for SwiftUI) that
 /// stays in sync with `MapPanelState`, animating a zoom-out/zoom-in transition
 /// whenever the focused place changes (country in Pays, région in Géographie).
+/// Offers manual zoom, a 2D/3D toggle, and the four plan types.
 public struct MapPanelView: View {
     @ObservedObject var mapState: MapPanelState
     @State private var position: MapCameraPosition = .automatic
     @State private var lastRegion: MKCoordinateRegion?
+    @State private var planType: MapPlanType = .explorer
+    @State private var is3D: Bool = false
 
     public init(mapState: MapPanelState) {
         self.mapState = mapState
@@ -19,6 +57,13 @@ public struct MapPanelView: View {
             Map(position: $position) {
                 Marker(mapState.title, coordinate: mapState.coordinate)
             }
+            .mapStyle(planType.style(elevation: is3D ? .realistic : .flat))
+            .mapControls {
+                MapZoomStepper()
+                MapPitchToggle()
+                MapCompass()
+            }
+            planTypePicker
         }
         .frame(maxHeight: .infinity)
         .background(ClassicTheme.sidebarBg)
@@ -33,6 +78,13 @@ public struct MapPanelView: View {
                 .font(CFont.mono(11, weight: .medium))
                 .foregroundStyle(ClassicTheme.faint)
             Spacer()
+            Button { is3D.toggle() } label: {
+                Image(systemName: is3D ? "view.2d" : "view.3d")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(ClassicTheme.faint)
+            }
+            .buttonStyle(.plain)
+            .help(is3D ? "Passer en 2D" : "Passer en 3D")
             Button { mapState.isVisible = false } label: {
                 Image(systemName: "xmark")
                     .font(.system(size: 11, weight: .medium))
@@ -42,6 +94,29 @@ public struct MapPanelView: View {
         }
         .padding(.horizontal, 16).padding(.vertical, 12)
         .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.border).frame(height: 1) }
+    }
+
+    private var planTypePicker: some View {
+        HStack(spacing: 4) {
+            ForEach(MapPlanType.allCases) { type in
+                Button { planType = type } label: {
+                    VStack(spacing: 3) {
+                        Image(systemName: type.icon)
+                            .font(.system(size: 14, weight: .medium))
+                        Text(type.label)
+                            .font(CFont.sans(10, weight: .medium))
+                    }
+                    .foregroundStyle(planType == type ? .white : ClassicTheme.body)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(planType == type ? ClassicTheme.ink : Color.clear)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(6)
+        .overlay(alignment: .top) { Rectangle().fill(ClassicTheme.border).frame(height: 1) }
     }
 
     private func moveCamera(animated: Bool) {
