@@ -19,10 +19,12 @@ public struct ClassicRootView: View {
     }
 
     /// Mirrors the old `showMapPanel` rule: force-hidden on the Sources
-    /// screen regardless of the user's last visibility choice.
+    /// screen (and on Géographie 2, which embeds its own full-bleed map
+    /// instead of using the inspector) regardless of the user's last
+    /// visibility choice.
     private var inspectorBinding: Binding<Bool> {
         Binding(
-            get: { mapState.isVisible && state.screen != .sources },
+            get: { mapState.isVisible && state.screen != .sources && state.screen != .geo2 },
             set: { mapState.isVisible = $0 }
         )
     }
@@ -33,8 +35,14 @@ public struct ClassicRootView: View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             SidebarNav(derived: derived, selection: sidebarSelectionBinding)
         } detail: {
-            ScrollView { content(derived) }
-                .frame(maxWidth: .infinity)
+            Group {
+                if state.screen == .geo2 {
+                    GeoView2(derived: derived)
+                } else {
+                    ScrollView { content(derived) }
+                        .frame(maxWidth: .infinity)
+                }
+            }
                 .toolbar {
                     ToolbarItem {
                         Button {
@@ -65,6 +73,7 @@ public struct ClassicRootView: View {
             switch state.screen {
             case .pays: PaysView(derived: derived)
             case .geo: GeoView(derived: derived)
+            case .geo2: EmptyView() // rendered full-bleed outside content(), see body
             case .meteo: MeteoView(derived: derived)
             case .affiner: AffinerView(derived: derived)
             case .ville: VilleView(derived: derived)
