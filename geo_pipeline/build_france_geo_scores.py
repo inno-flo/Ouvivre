@@ -75,14 +75,14 @@ DISTANCE_LAYERS = {
     "mer": ("BDTOPO_V3:limite_terre_mer", None),
 }
 
-# lacs/fleuves/forêts are common enough that "distance to the nearest one"
-# is ~0 km for almost every département (verified on the first full run:
-# min==max==0.0 across all 101) — no discriminative signal. These instead
-# use coverage within the département: total water/forest area as a % of
-# département area, and total river length per km² of département area.
+# lacs/forêts are common enough that "distance to the nearest one" is ~0 km
+# for almost every département (verified on the first full run: min==max==
+# 0.0 across all 101) — no discriminative signal. These instead use coverage
+# within the département: total water/forest area as a % of département area.
+# fleuves is handled separately below (distance to a *major* river only —
+# see the comment at its computation for why).
 COVERAGE_LAYERS = {
     "lacs": (("BDTOPO_V3:plan_d_eau",), "area"),
-    "fleuves": (("BDTOPO_V3:cours_d_eau",), "length"),
     "forets": (("BDTOPO_V3:foret_publique", "BDTOPO_V3:parc_ou_reserve"), "area"),
 }
 
@@ -162,9 +162,12 @@ def to_local(geom, lon, lat):
     return shp_transform(transformer.transform, geom)
 
 
-def expanding_bbox_fetch(typenames_list, center_lon, center_lat, base_deg=0.3, max_deg=20.0, count=2000):
+def expanding_bbox_fetch(typenames_list, center_lon, center_lat, base_deg=0.3, max_deg=20.0, count=2000, predicate=None):
     """Fetch features from one or more WFS layers, growing the bbox around
-    (center_lon, center_lat) until at least one feature is found."""
+    (center_lon, center_lat) until at least one feature is found — or, if
+    `predicate` is given, until at least one *matching* feature is found
+    (e.g. only importance=1 "major" rivers, which aren't in every bbox the
+    way any cours d'eau is)."""
     deg = base_deg
     while deg <= max_deg:
         bbox = (center_lon - deg, center_lat - deg, center_lon + deg, center_lat + deg)
@@ -174,8 +177,9 @@ def expanding_bbox_fetch(typenames_list, center_lon, center_lat, base_deg=0.3, m
                 continue
             data = wfs_get(tn, count=count, bbox=bbox)
             feats.extend(data.get("features", []))
-        if feats:
-            return feats, deg
+        matching = feats if predicate is None else [f for f in feats if predicate(f)]
+        if matching:
+            return matching, deg
         deg *= 2.5
     return [], deg
 
@@ -204,9 +208,9 @@ def wfs_get_all(typenames, bbox, page_size=2000, max_total=10000):
 
 def coverage_within_department(dept_local, dept_geom_wgs84, typenames_list, lon, lat, kind):
     """Area (km², kind='area') or length (km, kind='length') of features
-    clipped to the département polygon — used for criteria (lacs, fleuves,
-    forêts) that are so common a "nearest distance" is ~0 almost everywhere
-    in France and carries no signal. Geometries are unioned before measuring
+    clipped to the département polygon — used for criteria (lacs, forêts)
+    that are so common a "nearest distance" is ~0 almost everywhere in
+    France and carries no signal. Geometries are unioned before measuring
     so that overlapping features (e.g. a parc naturel régional overlapping a
     forêt domaniale) aren't double-counted — otherwise forest coverage can
     exceed 100% of the département's own area, which is impossible."""
@@ -233,6 +237,13 @@ def coverage_within_department(dept_local, dept_geom_wgs84, typenames_list, lon,
     if kind == "area":
         return merged.area / 1_000_000.0
     return merged.length / 1000.0
+
+
+def _river_importance(feature):
+    try:
+        return int(feature["properties"].get("importance"))
+    except (TypeError, ValueError):
+        return 5
 
 
 def min_distance_km(dept_geom_local, features, lon, lat):
@@ -321,19 +332,32 @@ def main():
             distances[key] = d
             print(f"    {key}: {d:.1f} km (bbox ±{used_deg:.2f}°, {len(feats)} feats)" if d is not None else f"    {key}: NONE")
 
+        # fleuves: distance to the nearest *major* river (importance=1 —
+        # le Rhône, la Saône, la Loire…), not "any cours d'eau" (saturates at
+        # 0 km almost everywhere, see COVERAGE_LAYERS comment) and not
+        # importance-weighted length (favors long rural départements over
+        # ones like Rhône with a short but real river through their main
+        # city) — this direclty answers "is there a real river nearby".
+        # count=8000: importance=1 rivers are a small fraction of all cours
+        # d'eau in a wide bbox — the default 2000-row cap could fill up with
+        # minor streams before reaching one (verified: Corsica found none up
+        # to the 20° max at count=2000, but found "le Rhône" at count=8000).
+        feats, used_deg = expanding_bbox_fetch(
+            ["BDTOPO_V3:cours_d_eau"], lon, lat,
+            predicate=lambda f: _river_importance(f) <= 1, count=8000
+        )
+        distances["fleuves"] = min_distance_km(dept_local, feats, lon, lat)
+        print(f"    fleuves: {distances['fleuves']:.1f} km (bbox ±{used_deg:.2f}°, {len(feats)} major rivers)" if distances["fleuves"] is not None else "    fleuves: NONE")
+
         area_geod_m2, _ = GEOD.geometry_area_perimeter(dept_geom_wgs84)
         dept_area_km2 = abs(area_geod_m2) / 1_000_000.0
 
         coverage = {}
         for key, (typenames, kind) in COVERAGE_LAYERS.items():
             raw = coverage_within_department(dept_local, dept_geom_wgs84, typenames, lon, lat, kind)
-            if kind == "area":
-                density = raw / dept_area_km2  # fraction of département area covered
-            else:
-                density = raw / dept_area_km2  # km of river per km² of département
+            density = raw / dept_area_km2  # fraction of département area covered
             coverage[key] = density
-            unit = "km²" if kind == "area" else "km"
-            print(f"    {key}: {raw:.1f} {unit} total ({density:.4f} density)")
+            print(f"    {key}: {raw:.1f} km² total ({density:.4f} density)")
 
         results.append({
             "code_insee": code_insee,

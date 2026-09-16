@@ -141,7 +141,7 @@ public struct ClassicDerived {
     public func regionRows(weights: [Int]? = nil, excluding: Set<Int> = []) -> [RegionRow] {
         let bestDeptName = winningRegion(weights: weights, excluding: excluding)?.bestDept
         return rankedDepartements(weights: weights, excluding: excluding)
-            .filter { $0.dep.nom != bestDeptName && $0.score >= 50 }
+            .filter { $0.dep.nom != bestDeptName && $0.score >= 35 }
             .enumerated()
             .map { i, entry in RegionRow(rank: String(format: "%02d", i + 2), name: entry.dep.nom, nomRegion: entry.dep.nomRegion, score: Int(entry.score.rounded())) }
     }

@@ -98,7 +98,7 @@ public struct GeoView: View {
     private var otherRegions: some View {
         Card(padding: 0) {
             VStack(alignment: .leading, spacing: 0) {
-                Eyebrow("AUTRES RÉGIONS", color: ClassicTheme.faint).padding(.top, 14).padding(.horizontal, theme.cardPadX).padding(.bottom, 10)
+                Eyebrow("AUTRES DÉPARTEMENTS", color: ClassicTheme.faint).padding(.top, 14).padding(.horizontal, theme.cardPadX).padding(.bottom, 10)
                 ForEach(derived.regionRows()) { r in
                     Button {
                         mapState.focusOnRegion(r.nomRegion)

@@ -141,7 +141,7 @@ public struct GeoView2: View {
     /// ceiling on its own, so a short list doesn't pad out to empty space.
     private func otherRegionsCard(maxHeight: CGFloat) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Eyebrow("AUTRES RÉGIONS", color: ClassicTheme.faint).padding(.bottom, 8)
+            Eyebrow("AUTRES DÉPARTEMENTS", color: ClassicTheme.faint).padding(.bottom, 8)
             ScrollView {
                 VStack(spacing: 0) {
                     ForEach(derived.regionRows(weights: state.geo2)) { r in

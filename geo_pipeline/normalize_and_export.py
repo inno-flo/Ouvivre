@@ -3,8 +3,9 @@ Reads data/out/raw_distances.json (raw km distances + coverage densities per
 département) and writes france_geo_scores.json: for each département, a
 0-100 score per criterion, min-max normalized across all 101 départements.
 
-- paysEtranger, montagne, mer: distance-based (nearer = higher score).
-- lacs, fleuves, forets: coverage-density-based (denser = higher score).
+- paysEtranger, montagne, mer, fleuves: distance-based (nearer = higher
+  score) — fleuves is distance to the nearest *major* river (importance=1).
+- lacs, forets: coverage-density-based (denser = higher score).
 
 Run: .venv/bin/python normalize_and_export.py
 """
@@ -13,8 +14,8 @@ from pathlib import Path
 
 OUT = Path(__file__).parent / "data" / "out"
 
-DISTANCE_KEYS = ["paysEtranger", "montagne", "mer"]
-COVERAGE_KEYS = ["lacs", "fleuves", "forets"]
+DISTANCE_KEYS = ["paysEtranger", "montagne", "mer", "fleuves"]
+COVERAGE_KEYS = ["lacs", "forets"]
 
 
 def min_max_normalize(values, invert):
