@@ -114,8 +114,7 @@ public struct ClassicDerived {
     public var regionRows: [RegionRow] {
         let bestDeptName = winningRegion?.bestDept
         return rankedDepartements
-            .filter { $0.dep.nom != bestDeptName }
-            .prefix(6)
+            .filter { $0.dep.nom != bestDeptName && $0.score >= 50 }
             .enumerated()
             .map { i, entry in RegionRow(rank: String(format: "%02d", i + 2), name: entry.dep.nom, score: Int(entry.score.rounded())) }
     }
