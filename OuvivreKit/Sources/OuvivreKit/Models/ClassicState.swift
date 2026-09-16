@@ -1,7 +1,8 @@
 import SwiftUI
 
-public enum ClassicScreen: String, CaseIterable {
+public enum ClassicScreen: String, CaseIterable, Identifiable, Hashable {
     case pays, geo, meteo, affiner, ville, compare, profil, sources
+    public var id: Self { self }
 }
 
 /// Root app state — mirrors the dc export's `Component` state/logic:

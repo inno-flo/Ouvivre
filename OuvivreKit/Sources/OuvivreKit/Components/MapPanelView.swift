@@ -54,7 +54,6 @@ public struct MapPanelView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            header
             Map(position: $position) {
                 Marker(mapState.title, coordinate: mapState.coordinate)
             }
@@ -70,21 +69,6 @@ public struct MapPanelView: View {
         .onAppear { moveCamera(animated: false) }
         .onChange(of: mapState.coordinate.latitude) { _, _ in moveCamera(animated: true) }
         .onChange(of: mapState.coordinate.longitude) { _, _ in moveCamera(animated: true) }
-    }
-
-    private var header: some View {
-        HStack {
-            Spacer()
-            Button { mapState.isVisible = false } label: {
-                Image(systemName: "sidebar.trailing")
-                    .font(.system(size: 13, weight: .medium))
-            }
-            .buttonStyle(.plain)
-            .foregroundStyle(ClassicTheme.faint)
-            .help("Masquer la carte")
-        }
-        .padding(.horizontal, 12).padding(.vertical, 8)
-        .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.border).frame(height: 1) }
     }
 
     /// The plan-type switcher and 2D/3D toggle, styled like MapKit's own
