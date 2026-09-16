@@ -40,16 +40,14 @@ public struct GeoView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, theme.cardPadX).padding(.vertical, theme.rowPad)
                 .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
+                Eyebrow("PROXIMITÉS", color: ClassicTheme.faint)
+                    .padding(.horizontal, theme.cardPadX).padding(.top, 14).padding(.bottom, 4)
                 ForEach(derived.geoRows) { row in
                     CriterionRow(row: row) { state.setGeo(row.id, value: $0) }
                         .padding(.horizontal, theme.cardPadX).padding(.vertical, theme.rowPad)
                         .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
                 }
-                HStack(spacing: 8) {
-                    OutlineButton("RÉINITIALISER") { state.resetGeo() }
-                    AccentButton("Valider la région →", fill: theme.accent) { state.go(.meteo) }
-                }
-                .padding(.horizontal, theme.cardPadX).padding(.top, 14).padding(.bottom, 6)
+                .padding(.bottom, 6)
             }
         }
     }
