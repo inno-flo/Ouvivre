@@ -12,11 +12,7 @@ public struct CompareView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Eyebrow("COMPARATEUR", color: theme.accent).padding(.bottom, 12)
-            Text("Trois villes, critère par critère")
-                .font(CFont.sans(theme.h2, weight: .semibold))
-                .foregroundStyle(ClassicTheme.ink)
-                .padding(.bottom, 8)
+            Eyebrow("COMPARATEUR", color: theme.accent).padding(.bottom, 16)
             Text("La meilleure valeur de chaque ligne est mise en avant. Les écarts inférieurs à 3 points sont considérés comme équivalents.")
                 .font(CFont.sans(15))
                 .foregroundStyle(ClassicTheme.sub)

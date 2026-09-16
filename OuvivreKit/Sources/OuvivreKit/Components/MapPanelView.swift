@@ -59,9 +59,9 @@ public struct MapPanelView: View {
             }
             .mapStyle(planType.style(elevation: is3D ? .realistic : .flat))
             .mapControls {
-                MapZoomStepper()
                 MapCompass()
             }
+            .onMapCameraChange { context in lastRegion = context.region }
             .overlay(alignment: .topTrailing) { controlCluster.padding(10) }
         }
         .frame(maxHeight: .infinity)
@@ -71,20 +71,57 @@ public struct MapPanelView: View {
         .onChange(of: mapState.coordinate.longitude) { _, _ in moveCamera(animated: true) }
     }
 
-    /// The plan-type switcher and 2D/3D toggle, styled like MapKit's own
-    /// native controls (e.g. `MapPitchToggle`/`MapCompass`) — a vertical
-    /// stack of rounded, material-backed icon buttons overlaid top-trailing.
+    /// Mirrors Apple Plans' standard control stack: a map-style menu, then
+    /// zoom, then the 2D/3D toggle — all styled like MapKit's own controls.
     private var controlCluster: some View {
         VStack(spacing: 8) {
-            ForEach(MapPlanType.allCases) { type in
-                nativeControlButton(icon: type.icon, active: planType == type, help: type.label) {
-                    planType = type
-                }
-            }
+            mapStyleMenu
+            zoomControl
             nativeControlButton(icon: is3D ? "view.2d" : "view.3d", active: is3D, help: is3D ? "Passer en 2D" : "Passer en 3D") {
                 is3D.toggle()
             }
         }
+    }
+
+    /// Groups the four plan types (Explorer/Voiture/Transports/Satellite)
+    /// behind one menu button, like Plans' layers picker, instead of four
+    /// separate buttons always on screen.
+    private var mapStyleMenu: some View {
+        Menu {
+            ForEach(MapPlanType.allCases) { type in
+                Button { planType = type } label: { Label(type.label, systemImage: type.icon) }
+            }
+        } label: {
+            Image(systemName: planType.icon)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(.primary)
+                .frame(width: 29, height: 29)
+        }
+        .menuStyle(.button)
+        .menuIndicator(.hidden)
+        .buttonStyle(.plain)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
+        .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(.separator, lineWidth: 0.5))
+        .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
+        .help("Type de carte")
+    }
+
+    private var zoomControl: some View {
+        VStack(spacing: 0) {
+            Button { zoom(by: 0.5) } label: {
+                Image(systemName: "plus").font(.system(size: 13, weight: .medium)).frame(width: 29, height: 22)
+            }
+            Divider().frame(width: 18)
+            Button { zoom(by: 2) } label: {
+                Image(systemName: "minus").font(.system(size: 13, weight: .medium)).frame(width: 29, height: 22)
+            }
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(.primary)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
+        .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(.separator, lineWidth: 0.5))
+        .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
+        .help("Zoom")
     }
 
     private func nativeControlButton(icon: String, active: Bool, help: String, action: @escaping () -> Void) -> some View {
@@ -99,6 +136,19 @@ public struct MapPanelView: View {
         .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(.separator, lineWidth: 0.5))
         .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
         .help(help)
+    }
+
+    private func zoom(by factor: Double) {
+        guard let region = lastRegion else { return }
+        let newRegion = MKCoordinateRegion(
+            center: region.center,
+            span: MKCoordinateSpan(
+                latitudeDelta: max(0.002, region.span.latitudeDelta * factor),
+                longitudeDelta: max(0.002, region.span.longitudeDelta * factor)
+            )
+        )
+        withAnimation(.easeInOut(duration: 0.25)) { position = .region(newRegion) }
+        lastRegion = newRegion
     }
 
     private func moveCamera(animated: Bool) {

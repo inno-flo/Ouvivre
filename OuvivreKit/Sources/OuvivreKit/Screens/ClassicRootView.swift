@@ -35,10 +35,22 @@ public struct ClassicRootView: View {
         } detail: {
             ScrollView { content(derived) }
                 .frame(maxWidth: .infinity)
+                .toolbar {
+                    ToolbarItem {
+                        Button {
+                            inspectorBinding.wrappedValue.toggle()
+                        } label: {
+                            Image(systemName: "globe.europe.africa")
+                        }
+                        .help("Afficher/masquer la carte")
+                    }
+                }
                 .inspector(isPresented: inspectorBinding) {
                     MapPanelView(mapState: mapState)
+                        .inspectorColumnWidth(min: 220, ideal: 320, max: 480)
                 }
         }
+        .navigationTitle("")
         .background(ClassicTheme.background)
         .environmentObject(theme)
         .environmentObject(state)

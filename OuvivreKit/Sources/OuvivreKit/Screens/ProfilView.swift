@@ -11,11 +11,7 @@ public struct ProfilView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Eyebrow("MON ESPACE", color: theme.accent).padding(.bottom, 12)
-            Text("Recherches et villes sauvegardées")
-                .font(CFont.sans(theme.h2, weight: .semibold))
-                .foregroundStyle(ClassicTheme.ink)
-                .padding(.bottom, 24)
+            Eyebrow("MON ESPACE", color: theme.accent).padding(.bottom, 24)
 
             AdaptiveTwoColumn(rightWeight: 0.7, gap: theme.gap) {
                 savedList

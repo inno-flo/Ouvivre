@@ -13,12 +13,12 @@ public struct SidebarNav: View {
 
     public var body: some View {
         List(selection: selection) {
-            Section("PARCOURS") {
+            Section("Sélecteur") {
                 ForEach(derived.navSteps) { item in
                     NavItemRow(item: item).tag(item.screen)
                 }
             }
-            Section("OUTILS") {
+            Section("Outils") {
                 ForEach(derived.navTools) { item in
                     NavItemRow(item: item).tag(item.screen)
                 }

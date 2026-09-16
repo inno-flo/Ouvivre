@@ -11,11 +11,7 @@ public struct SourcesView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Eyebrow("SOURCES", color: theme.accent).padding(.bottom, 12)
-            Text("Sources des données")
-                .font(CFont.sans(theme.h2, weight: .semibold))
-                .foregroundStyle(ClassicTheme.ink)
-                .padding(.bottom, 8)
+            Eyebrow("SOURCES", color: theme.accent).padding(.bottom, 16)
             Text("Références ouvertes utilisées pour les profils pays et les classements de livabilité.")
                 .font(CFont.sans(15))
                 .foregroundStyle(ClassicTheme.sub)

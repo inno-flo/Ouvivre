@@ -11,12 +11,7 @@ public struct PaysView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Eyebrow("ÉTAPE 01 — TERRITOIRE", color: theme.accent).padding(.bottom, 12)
-            Text("Choisissez un pays")
-                .font(CFont.sans(theme.h1, weight: .semibold))
-                .foregroundStyle(ClassicTheme.ink)
-                .frame(maxWidth: 480, alignment: .leading)
-                .padding(.bottom, 10)
+            Eyebrow("ÉTAPE 01 — TERRITOIRE", color: theme.accent).padding(.bottom, 16)
             Text("Tapez un nom de pays. Ouvivre croise ensuite relief, hydrographie, climat, culture et mobilité pour en extraire une région, puis cinq villes.")
                 .font(CFont.sans(15))
                 .foregroundStyle(ClassicTheme.sub)

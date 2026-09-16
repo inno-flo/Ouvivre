@@ -88,11 +88,12 @@
 				};
 			};
 			buildConfigurationList = 7CB3BDEA305977F50036175D /* Build configuration list for PBXProject "Ouvivre" */;
-			developmentRegion = en;
+			developmentRegion = fr;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
+				fr,
 			);
 			mainGroup = 7CB3BDE6305977F50036175D;
 			minimizedProjectReferenceProxies = 1;
