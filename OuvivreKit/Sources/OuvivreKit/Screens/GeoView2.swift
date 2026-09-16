@@ -90,7 +90,7 @@ public struct GeoView2: View {
             }
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(ClassicTheme.darkPanel)
+            .background(Color(hex: 0x2D2F36))
             .clipShape(RoundedRectangle(cornerRadius: 10))
         }
         .buttonStyle(.plain)
@@ -108,10 +108,9 @@ public struct GeoView2: View {
                             mapState.focusOnRegion(r.nomRegion)
                         } label: {
                             HStack(spacing: 10) {
-                                Text(r.rank).font(CFont.mono(9, weight: .medium)).foregroundStyle(ClassicTheme.faint2).frame(width: 16, alignment: .leading)
+                                Text("\(r.score)").font(CFont.mono(10, weight: .medium)).foregroundStyle(ClassicTheme.ink).frame(width: 20, alignment: .leading)
                                 Text(r.name).font(CFont.sans(12, weight: .medium)).foregroundStyle(ClassicTheme.ink)
                                 Spacer()
-                                Text("\(r.score)").font(CFont.mono(10, weight: .medium)).foregroundStyle(ClassicTheme.ink)
                             }
                             .padding(.vertical, 6)
                             .contentShape(Rectangle())
