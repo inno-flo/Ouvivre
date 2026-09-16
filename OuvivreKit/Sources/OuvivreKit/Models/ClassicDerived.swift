@@ -6,8 +6,19 @@ public struct WeightedRow: Identifiable {
     public let id: Int
     public let label: String
     public let value: Int
-    public var tag: String { ClassicStatic.tags[value].uppercased() }
-    public var pct: CGFloat { CGFloat(value) / 5 }
+    public let maxValue: Int
+    public let tags: [String]
+
+    public init(id: Int, label: String, value: Int, maxValue: Int = 5, tags: [String] = ClassicStatic.tags) {
+        self.id = id
+        self.label = label
+        self.value = value
+        self.maxValue = maxValue
+        self.tags = tags
+    }
+
+    public var tag: String { tags[min(value, tags.count - 1)].uppercased() }
+    public var pct: CGFloat { maxValue > 0 ? CGFloat(value) / CGFloat(maxValue) : 0 }
 }
 
 public struct NavItem: Identifiable {
@@ -28,14 +39,18 @@ public struct ClassicDerived {
 
     public var geoSum: Int { state.geo.reduce(0, +) }
 
-    /// Real département scores (weighted by `state.geo`), ranked — backed by
-    /// `FranceGeoData` (IGN-derived, see geo_pipeline/). Replaces the old
-    /// fake `topScore = 60 + geoSum*1.6` formula.
-    public var rankedDepartements: [(dep: FranceGeoData.DepartementScore, score: Double)] {
-        FranceGeoData.departements
+    /// Real département scores (weighted by `weights`, defaults to
+    /// `state.geo`), ranked — backed by `FranceGeoData` (IGN-derived, see
+    /// geo_pipeline/). Replaces the old fake `topScore = 60 + geoSum*1.6`
+    /// formula. `excluding` drops criteria (by index into
+    /// `FranceGeoData.criterionKeys`) from the average. Géographie 2 passes
+    /// its own `state.geo2` (5-level scale) as `weights`.
+    public func rankedDepartements(weights: [Int]? = nil, excluding: Set<Int> = []) -> [(dep: FranceGeoData.DepartementScore, score: Double)] {
+        let weights = weights ?? state.geo
+        return FranceGeoData.departements
             .filter { !(state.excludeOverseas && $0.isOverseas) }
             .filter { !(state.excludeCorse && $0.isCorse) }
-            .map { ($0, FranceGeoData.weightedScore($0, weights: state.geo)) }
+            .map { ($0, FranceGeoData.weightedScore($0, weights: weights, excluding: excluding)) }
             .sorted { $0.1 > $1.1 }
     }
 
@@ -43,8 +58,8 @@ public struct ClassicDerived {
     /// primary "région la plus probante" ranking is at région level, backed
     /// by a finer per-département computation (see plan: région ranking,
     /// département detail).
-    public var rankedRegions: [(nomRegion: String, score: Double, bestDept: FranceGeoData.DepartementScore)] {
-        let ranked = rankedDepartements
+    public func rankedRegions(weights: [Int]? = nil, excluding: Set<Int> = []) -> [(nomRegion: String, score: Double, bestDept: FranceGeoData.DepartementScore)] {
+        let ranked = rankedDepartements(weights: weights, excluding: excluding)
         var byRegion: [String: [(dep: FranceGeoData.DepartementScore, score: Double)]] = [:]
         for entry in ranked { byRegion[entry.dep.nomRegion, default: []].append(entry) }
         return byRegion.map { nomRegion, entries in
@@ -55,11 +70,11 @@ public struct ClassicDerived {
     }
 
     public struct WinningRegion { public let nomRegion: String; public let bestDept: String; public let score: Int }
-    public var winningRegion: WinningRegion? {
-        guard let top = rankedRegions.first else { return nil }
+    public func winningRegion(weights: [Int]? = nil, excluding: Set<Int> = []) -> WinningRegion? {
+        guard let top = rankedRegions(weights: weights, excluding: excluding).first else { return nil }
         return WinningRegion(nomRegion: top.nomRegion, bestDept: top.bestDept.nom, score: Int(top.score.rounded()))
     }
-    public var topScore: Int { winningRegion?.score ?? 0 }
+    public func topScore(weights: [Int]? = nil, excluding: Set<Int> = []) -> Int { winningRegion(weights: weights, excluding: excluding)?.score ?? 0 }
 
     public var navSteps: [NavItem] {
         let defs: [(String, String, ClassicScreen, String?)] = [
@@ -92,6 +107,10 @@ public struct ClassicDerived {
     public var geoRows: [WeightedRow] {
         ClassicStatic.geo.enumerated().map { WeightedRow(id: $0, label: $1.0, value: state.geo[$0]) }
     }
+    /// Géographie 2's rows, on its own 5-level (0...4) scale — no "prioritaire".
+    public var geo2Rows: [WeightedRow] {
+        ClassicStatic.geo.enumerated().map { WeightedRow(id: $0, label: $1.0, value: state.geo2[$0], maxValue: 4, tags: ClassicStatic.tagsGeo2) }
+    }
     public var meteoRows: [WeightedRow] {
         ClassicStatic.meteo.enumerated().map { WeightedRow(id: $0, label: $1.0, value: state.meteo[$0]) }
     }
@@ -119,9 +138,9 @@ public struct ClassicDerived {
     }
     /// Top départements nationally by weighted score, skipping the one
     /// already shown as the winning région's headline pick.
-    public var regionRows: [RegionRow] {
-        let bestDeptName = winningRegion?.bestDept
-        return rankedDepartements
+    public func regionRows(weights: [Int]? = nil, excluding: Set<Int> = []) -> [RegionRow] {
+        let bestDeptName = winningRegion(weights: weights, excluding: excluding)?.bestDept
+        return rankedDepartements(weights: weights, excluding: excluding)
             .filter { $0.dep.nom != bestDeptName && $0.score >= 50 }
             .enumerated()
             .map { i, entry in RegionRow(rank: String(format: "%02d", i + 2), name: entry.dep.nom, nomRegion: entry.dep.nomRegion, score: Int(entry.score.rounded())) }

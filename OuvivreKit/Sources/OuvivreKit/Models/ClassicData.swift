@@ -61,6 +61,8 @@ public enum ClassicStatic {
 
     public static let countries = ["France", "Danemark", "Suède", "Japon"]
     public static let tags = ["indifférent", "accessoire", "souhaitable", "important", "prioritaire", "déterminant"]
+    /// Géographie 2's 5-level scale (0...4) — drops "prioritaire".
+    public static let tagsGeo2 = ["indifférent", "accessoire", "souhaitable", "important", "déterminant"]
 
     public static let indexStats = [LabeledValue("RÉGIONS INDEXÉES", "18"), LabeledValue("VILLES > 15 000 HAB.", "1 214"), LabeledValue("SOURCES OUVERTES", "11")]
 

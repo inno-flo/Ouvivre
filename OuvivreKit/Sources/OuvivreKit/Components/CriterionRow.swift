@@ -26,15 +26,15 @@ public struct CriterionRow: View {
                 Spacer()
                 Text(row.tag)
                     .font(CFont.mono(11, weight: .medium))
-                    .foregroundStyle(row.value >= 4 ? theme.accent : (row.value == 0 ? ClassicTheme.faint2 : ClassicTheme.faint))
+                    .foregroundStyle(row.value >= row.maxValue - 1 ? theme.accent : (row.value == 0 ? ClassicTheme.faint2 : ClassicTheme.faint))
             }
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule().fill(ClassicTheme.track).frame(height: trackHeight)
                     Capsule().fill(theme.accent)
                         .frame(width: max(thumbSize / 2, geo.size.width * row.pct), height: trackHeight)
-                    ForEach(0...5, id: \.self) { step in
-                        let stepX = geo.size.width * CGFloat(step) / 5
+                    ForEach(0...row.maxValue, id: \.self) { step in
+                        let stepX = geo.size.width * CGFloat(step) / CGFloat(row.maxValue)
                         Circle()
                             .fill(step <= row.value ? Color.white.opacity(0.9) : ClassicTheme.faint2)
                             .frame(width: 4, height: 4)
@@ -52,7 +52,7 @@ public struct CriterionRow: View {
                     DragGesture(minimumDistance: 0)
                         .onChanged { g in
                             let ratio = max(0, min(1, g.location.x / max(geo.size.width, 1)))
-                            onChange(Int((ratio * 5).rounded()))
+                            onChange(Int((ratio * CGFloat(row.maxValue)).rounded()))
                         }
                 )
             }

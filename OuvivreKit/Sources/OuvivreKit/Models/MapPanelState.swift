@@ -16,6 +16,10 @@ public final class MapPanelState: ObservableObject {
     @Published public var title: String = "France"
     @Published public var coordinate: CLLocationCoordinate2D
     @Published public var spanDegrees: Double
+    /// The focused région's real perimeter (one ring per landmass), if any —
+    /// empty outside Géographie/Géographie 2, or for a place with no
+    /// boundary data (a country, or a région not found).
+    @Published public var regionRings: [[CLLocationCoordinate2D]] = []
 
     public init() {
         let place = GeoCoordinates.countries["France"]!
@@ -28,6 +32,7 @@ public final class MapPanelState: ObservableObject {
         title = name
         coordinate = place.coordinate
         spanDegrees = place.span
+        regionRings = []
     }
 
     public func focusOnRegion(_ nomRegion: String) {
@@ -35,5 +40,6 @@ public final class MapPanelState: ObservableObject {
         title = nomRegion
         coordinate = place.coordinate
         spanDegrees = place.span
+        regionRings = RegionBoundaries.rings[nomRegion] ?? []
     }
 }

@@ -14,6 +14,8 @@ public final class ClassicState: ObservableObject {
     @Published public var country: String = "France"
     @Published public var query: String = "France"
     @Published public var geo: [Int] = ClassicStatic.geo.map(\.1)
+    /// Géographie 2's own weights, on its 5-level (0...4) scale.
+    @Published public var geo2: [Int] = ClassicStatic.geo.map { min($0.1, 4) }
     @Published public var excludeOverseas: Bool = false
     @Published public var excludeCorse: Bool = false
     @Published public var meteo: [Int] = ClassicStatic.meteo.map(\.1)
@@ -25,8 +27,10 @@ public final class ClassicState: ObservableObject {
     public func go(_ screen: ClassicScreen) { self.screen = screen }
 
     public func resetGeo() { geo = ClassicStatic.geo.map(\.1) }
+    public func resetGeo2() { geo2 = ClassicStatic.geo.map { min($0.1, 4) } }
 
     public func setGeo(_ index: Int, value: Int) { geo[index] = max(0, min(5, value)) }
+    public func setGeo2(_ index: Int, value: Int) { geo2[index] = max(0, min(4, value)) }
     public func setMeteo(_ index: Int, value: Int) { meteo[index] = max(0, min(5, value)) }
     public func setGroup(_ groupIndex: Int, _ rowIndex: Int, value: Int) {
         groups[groupIndex][rowIndex] = max(0, min(5, value))

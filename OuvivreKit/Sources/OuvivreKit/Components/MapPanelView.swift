@@ -41,12 +41,12 @@ public enum MapPlanType: String, CaseIterable, Identifiable {
 /// whenever the focused place changes (country in Pays, région in Géographie).
 /// Offers manual zoom, a 2D/3D toggle, and the four plan types.
 public struct MapPanelView: View {
+    @EnvironmentObject var theme: ClassicTheme
     @ObservedObject var mapState: MapPanelState
     @State private var position: MapCameraPosition = .automatic
     @State private var lastRegion: MKCoordinateRegion?
     @State private var transitionGeneration = 0
     @State private var planType: MapPlanType = .explorer
-    @State private var is3D: Bool = false
 
     public init(mapState: MapPanelState) {
         self.mapState = mapState
@@ -55,14 +55,23 @@ public struct MapPanelView: View {
     public var body: some View {
         VStack(spacing: 0) {
             Map(position: $position) {
-                Marker(mapState.title, coordinate: mapState.coordinate)
+                ForEach(Array(mapState.regionRings.enumerated()), id: \.offset) { _, ring in
+                    MapPolygon(coordinates: ring)
+                        .foregroundStyle(theme.accent.opacity(0.16))
+                        .stroke(theme.accent, lineWidth: 2)
+                }
+                if mapState.regionRings.isEmpty {
+                    Marker(mapState.title, coordinate: mapState.coordinate)
+                }
             }
-            .mapStyle(planType.style(elevation: is3D ? .realistic : .flat))
+            .mapStyle(planType.style(elevation: .automatic))
             .mapControls {
                 MapCompass()
+                MapPitchToggle()
+                MapZoomStepper()
             }
             .onMapCameraChange { context in lastRegion = context.region }
-            .overlay(alignment: .topTrailing) { controlCluster.padding(10) }
+            .overlay(alignment: .topTrailing) { mapStyleMenu.padding(10) }
         }
         .frame(maxHeight: .infinity)
         .background(ClassicTheme.sidebarBg)
@@ -71,21 +80,11 @@ public struct MapPanelView: View {
         .onChange(of: mapState.coordinate.longitude) { _, _ in moveCamera(animated: true) }
     }
 
-    /// Mirrors Apple Plans' standard control stack: a map-style menu, then
-    /// zoom, then the 2D/3D toggle — all styled like MapKit's own controls.
-    private var controlCluster: some View {
-        VStack(spacing: 8) {
-            mapStyleMenu
-            zoomControl
-            nativeControlButton(icon: is3D ? "view.2d" : "view.3d", active: is3D, help: is3D ? "Passer en 2D" : "Passer en 3D") {
-                is3D.toggle()
-            }
-        }
-    }
-
     /// Groups the four plan types (Explorer/Voiture/Transports/Satellite)
-    /// behind one menu button, like Plans' layers picker, instead of four
-    /// separate buttons always on screen.
+    /// behind one system `Menu`, styled with the stock bordered control look
+    /// (no hand-rolled material/border) — like Plans' own layers picker.
+    /// Zoom (`MapZoomStepper`) and the 2D/3D toggle (`MapPitchToggle`) are
+    /// MapKit's own native controls, added via `.mapControls` above.
     private var mapStyleMenu: some View {
         Menu {
             ForEach(MapPlanType.allCases) { type in
@@ -93,62 +92,12 @@ public struct MapPanelView: View {
             }
         } label: {
             Image(systemName: planType.icon)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(.primary)
-                .frame(width: 29, height: 29)
         }
-        .menuStyle(.button)
         .menuIndicator(.hidden)
-        .buttonStyle(.plain)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
-        .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(.separator, lineWidth: 0.5))
-        .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
+        .buttonStyle(.bordered)
+        .buttonBorderShape(.circle)
+        .controlSize(.large)
         .help("Type de carte")
-    }
-
-    private var zoomControl: some View {
-        VStack(spacing: 0) {
-            Button { zoom(by: 0.5) } label: {
-                Image(systemName: "plus").font(.system(size: 13, weight: .medium)).frame(width: 29, height: 22)
-            }
-            Divider().frame(width: 18)
-            Button { zoom(by: 2) } label: {
-                Image(systemName: "minus").font(.system(size: 13, weight: .medium)).frame(width: 29, height: 22)
-            }
-        }
-        .buttonStyle(.plain)
-        .foregroundStyle(.primary)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
-        .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(.separator, lineWidth: 0.5))
-        .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
-        .help("Zoom")
-    }
-
-    private func nativeControlButton(icon: String, active: Bool, help: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: icon)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(active ? Color.accentColor : .primary)
-                .frame(width: 29, height: 29)
-        }
-        .buttonStyle(.plain)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
-        .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(.separator, lineWidth: 0.5))
-        .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
-        .help(help)
-    }
-
-    private func zoom(by factor: Double) {
-        guard let region = lastRegion else { return }
-        let newRegion = MKCoordinateRegion(
-            center: region.center,
-            span: MKCoordinateSpan(
-                latitudeDelta: max(0.002, region.span.latitudeDelta * factor),
-                longitudeDelta: max(0.002, region.span.longitudeDelta * factor)
-            )
-        )
-        withAnimation(.easeInOut(duration: 0.25)) { position = .region(newRegion) }
-        lastRegion = newRegion
     }
 
     private func moveCamera(animated: Bool) {

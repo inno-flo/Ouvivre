@@ -34,10 +34,12 @@ public enum FranceGeoData {
 
     /// Weighted match (0-100) of a département against 6 weights (0...5, same
     /// order as `criterionKeys`), by weighted average of its criterion scores.
-    public static func weightedScore(_ dep: DepartementScore, weights: [Int]) -> Double {
+    /// `excluding` drops criteria (by index into `criterionKeys`) from the
+    /// average entirely, e.g. for Géographie 2's 5-criteria variant.
+    public static func weightedScore(_ dep: DepartementScore, weights: [Int], excluding: Set<Int> = []) -> Double {
         var weightedSum = 0.0
         var weightTotal = 0.0
-        for (i, key) in criterionKeys.enumerated() where i < weights.count {
+        for (i, key) in criterionKeys.enumerated() where i < weights.count && !excluding.contains(i) {
             let w = Double(weights[i])
             weightedSum += w * (dep.scores[key] ?? 50.0)
             weightTotal += w

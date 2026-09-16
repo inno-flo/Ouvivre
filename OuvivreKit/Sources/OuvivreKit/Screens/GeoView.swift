@@ -74,15 +74,15 @@ public struct GeoView: View {
 
     private var regionHero: some View {
         Button {
-            if let nomRegion = derived.winningRegion?.nomRegion { mapState.focusOnRegion(nomRegion) }
+            if let nomRegion = derived.winningRegion()?.nomRegion { mapState.focusOnRegion(nomRegion) }
         } label: {
             VStack(alignment: .leading, spacing: 0) {
                 Eyebrow("RÉGION LA PLUS PROBANTE", color: ClassicTheme.darkPanelFaint).padding(.bottom, 10)
-                Text(derived.winningRegion?.nomRegion ?? "—").font(CFont.sans(27, weight: .semibold)).foregroundStyle(.white)
-                Text("Département le plus probant : \(derived.winningRegion?.bestDept ?? "—")")
+                Text(derived.winningRegion()?.nomRegion ?? "—").font(CFont.sans(27, weight: .semibold)).foregroundStyle(.white)
+                Text("Département le plus probant : \(derived.winningRegion()?.bestDept ?? "—")")
                     .font(CFont.sans(13)).foregroundStyle(ClassicTheme.darkPanelSub).padding(.top, 6)
                 HStack(alignment: .lastTextBaseline, spacing: 8) {
-                    Text("\(derived.topScore)").font(CFont.mono(34, weight: .medium)).foregroundStyle(theme.accentLight)
+                    Text("\(derived.topScore())").font(CFont.mono(34, weight: .medium)).foregroundStyle(theme.accentLight)
                     Text("/100 CORRESPONDANCE").font(CFont.mono(11)).foregroundStyle(ClassicTheme.darkPanelFaint)
                 }
                 .padding(.top, 18)
@@ -99,7 +99,7 @@ public struct GeoView: View {
         Card(padding: 0) {
             VStack(alignment: .leading, spacing: 0) {
                 Eyebrow("AUTRES RÉGIONS", color: ClassicTheme.faint).padding(.top, 14).padding(.horizontal, theme.cardPadX).padding(.bottom, 10)
-                ForEach(derived.regionRows) { r in
+                ForEach(derived.regionRows()) { r in
                     Button {
                         mapState.focusOnRegion(r.nomRegion)
                     } label: {

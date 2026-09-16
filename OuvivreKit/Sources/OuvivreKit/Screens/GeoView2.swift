@@ -6,6 +6,11 @@ private struct ContentHeightKey: PreferenceKey {
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
 }
 
+private struct TopContentHeightKey: PreferenceKey {
+    static let defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
+}
+
 /// Étape 02 (variante) — Géographie 2: an experimental single-pane layout.
 /// There is no separate settings column or map inspector — the criteria
 /// sliders float in a translucent column over a full-bleed MapKit
@@ -23,9 +28,15 @@ public struct GeoView2: View {
     @State private var planType: MapPlanType = .explorer
     @State private var is3D: Bool = false
     @State private var otherRegionsContentHeight: CGFloat = 0
+    @State private var topContentHeight: CGFloat = 0
 
     private let columnWidth: CGFloat = 320
-    private let otherRegionsMaxHeight: CGFloat = 200
+    private let columnOuterPadding: CGFloat = 20
+    private let columnInnerPadding: CGFloat = 16
+    /// Reserved regardless of whether the chevron actually shows, so the
+    /// scroll budget doesn't depend on its own visibility.
+    private let chevronReserve: CGFloat = 18
+    private let regionsHeaderReserve: CGFloat = 22
 
     public init(derived: ClassicDerived) { self.derived = derived }
 
@@ -33,7 +44,14 @@ public struct GeoView2: View {
         GeometryReader { geo in
             ZStack(alignment: .topLeading) {
                 Map(position: $position) {
-                    Marker(mapState.title, coordinate: mapState.coordinate)
+                    ForEach(Array(mapState.regionRings.enumerated()), id: \.offset) { _, ring in
+                        MapPolygon(coordinates: ring)
+                            .foregroundStyle(theme.accent.opacity(0.16))
+                            .stroke(theme.accent, lineWidth: 2)
+                    }
+                    if mapState.regionRings.isEmpty {
+                        Marker(mapState.title, coordinate: mapState.coordinate)
+                    }
                 }
                 .mapStyle(planType.style(elevation: is3D ? .realistic : .flat))
                 .mapControls { MapCompass() }
@@ -41,9 +59,9 @@ public struct GeoView2: View {
                 .ignoresSafeArea(edges: [.horizontal, .bottom])
                 .overlay(alignment: .topTrailing) { controlCluster.padding(10) }
 
-                settingsColumn
+                settingsColumn(columnAvailableHeight: geo.size.height - columnOuterPadding * 2)
                     .frame(width: columnWidth)
-                    .padding(20)
+                    .padding(columnOuterPadding)
             }
             .onAppear { moveCamera(totalWidth: geo.size.width, animated: false) }
             .onChange(of: mapState.coordinate.latitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
@@ -52,7 +70,32 @@ public struct GeoView2: View {
         }
     }
 
-    private var settingsColumn: some View {
+    /// The column shrinks to fit its content (so a short "autres régions"
+    /// list doesn't force it to full window height) but never grows past
+    /// `columnAvailableHeight` — "autres régions" is the one flexible piece,
+    /// sized to `min(its own content, whatever room is left)`.
+    private func settingsColumn(columnAvailableHeight: CGFloat) -> some View {
+        let chrome = columnInnerPadding * 2 + 12 /* spacing before the list */ + chevronReserve + regionsHeaderReserve
+        let scrollBudget = max(60, columnAvailableHeight - chrome - topContentHeight)
+
+        return VStack(alignment: .leading, spacing: 12) {
+            topContent
+                .background(
+                    GeometryReader { proxy in
+                        Color.clear.preference(key: TopContentHeightKey.self, value: proxy.size.height)
+                    }
+                )
+                .onPreferenceChange(TopContentHeightKey.self) { topContentHeight = $0 }
+
+            otherRegionsCard(maxHeight: scrollBudget)
+        }
+        .padding(columnInnerPadding)
+        .background(.regularMaterial.opacity(0.75), in: RoundedRectangle(cornerRadius: 14))
+        .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(ClassicTheme.border, lineWidth: 1))
+        .shadow(color: .black.opacity(0.15), radius: 12, y: 4)
+    }
+
+    private var topContent: some View {
         VStack(alignment: .leading, spacing: 12) {
             Eyebrow("ÉTAPE 02 BIS — GÉOGRAPHIE · FRANCE", color: theme.accent)
             VStack(alignment: .leading, spacing: 8) {
@@ -60,30 +103,25 @@ public struct GeoView2: View {
                 exclusionToggle("Exclure la Corse", isOn: $state.excludeCorse)
             }
             Eyebrow("PROXIMITÉS", color: ClassicTheme.faint).padding(.top, 4)
-            ForEach(derived.geoRows) { row in
-                CriterionRow(row: row) { state.setGeo(row.id, value: $0) }
+            ForEach(derived.geo2Rows) { row in
+                CriterionRow(row: row) { state.setGeo2(row.id, value: $0) }
             }
 
             regionHero.padding(.top, 8)
-            otherRegionsCard
         }
-        .padding(16)
-        .background(.regularMaterial.opacity(0.75), in: RoundedRectangle(cornerRadius: 14))
-        .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(ClassicTheme.border, lineWidth: 1))
-        .shadow(color: .black.opacity(0.15), radius: 12, y: 4)
     }
 
     private var regionHero: some View {
         Button {
-            if let nomRegion = derived.winningRegion?.nomRegion { mapState.focusOnRegion(nomRegion) }
+            if let nomRegion = derived.winningRegion(weights: state.geo2)?.nomRegion { mapState.focusOnRegion(nomRegion) }
         } label: {
             VStack(alignment: .leading, spacing: 0) {
                 Eyebrow("RÉGION LA PLUS PROBANTE", color: ClassicTheme.darkPanelFaint).padding(.bottom, 8)
-                Text(derived.winningRegion?.nomRegion ?? "—").font(CFont.sans(20, weight: .semibold)).foregroundStyle(.white)
-                Text("Département le plus probant : \(derived.winningRegion?.bestDept ?? "—")")
+                Text(derived.winningRegion(weights: state.geo2)?.nomRegion ?? "—").font(CFont.sans(20, weight: .semibold)).foregroundStyle(.white)
+                Text("Département le plus probant : \(derived.winningRegion(weights: state.geo2)?.bestDept ?? "—")")
                     .font(CFont.sans(12)).foregroundStyle(ClassicTheme.darkPanelSub).padding(.top, 4)
                 HStack(alignment: .lastTextBaseline, spacing: 6) {
-                    Text("\(derived.topScore)").font(CFont.mono(24, weight: .medium)).foregroundStyle(theme.accentLight)
+                    Text("\(derived.topScore(weights: state.geo2))").font(CFont.mono(24, weight: .medium)).foregroundStyle(theme.accentLight)
                     Text("/100 CORRESPONDANCE").font(CFont.mono(10)).foregroundStyle(ClassicTheme.darkPanelFaint)
                 }
                 .padding(.top, 10)
@@ -96,20 +134,23 @@ public struct GeoView2: View {
         .buttonStyle(.plain)
     }
 
-    /// Capped-height card so it always fits under the sliders; scrolls
-    /// internally and shows a down chevron only when there's more to see.
-    private var otherRegionsCard: some View {
+    /// Shrinks to fit its own list when short; scrolls internally, capped at
+    /// `maxHeight` (the room left in the column), with a down chevron only
+    /// when there's still more to see than fits. `maxHeight` is a ceiling,
+    /// not a forced size — ScrollView sizes to its content up to that
+    /// ceiling on its own, so a short list doesn't pad out to empty space.
+    private func otherRegionsCard(maxHeight: CGFloat) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Eyebrow("AUTRES RÉGIONS", color: ClassicTheme.faint).padding(.bottom, 8)
             ScrollView {
                 VStack(spacing: 0) {
-                    ForEach(derived.regionRows) { r in
+                    ForEach(derived.regionRows(weights: state.geo2)) { r in
                         Button {
                             mapState.focusOnRegion(r.nomRegion)
                         } label: {
                             HStack(spacing: 10) {
-                                Text("\(r.score)").font(CFont.mono(10, weight: .medium)).foregroundStyle(ClassicTheme.ink).frame(width: 20, alignment: .leading)
-                                Text(r.name).font(CFont.sans(12, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+                                Text("\(r.score)").font(CFont.mono(12, weight: .medium)).foregroundStyle(ClassicTheme.ink).frame(width: 20, alignment: .leading)
+                                Text(r.name).font(CFont.sans(14, weight: .medium)).foregroundStyle(ClassicTheme.ink)
                                 Spacer()
                             }
                             .padding(.vertical, 6)
@@ -124,10 +165,10 @@ public struct GeoView2: View {
                     }
                 )
             }
-            .frame(maxHeight: otherRegionsMaxHeight)
+            .frame(maxHeight: maxHeight)
             .onPreferenceChange(ContentHeightKey.self) { otherRegionsContentHeight = $0 }
 
-            if otherRegionsContentHeight > otherRegionsMaxHeight {
+            if otherRegionsContentHeight > maxHeight {
                 Image(systemName: "chevron.down")
                     .font(.system(size: 10, weight: .semibold))
                     .foregroundStyle(ClassicTheme.faint)
