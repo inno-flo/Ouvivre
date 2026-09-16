@@ -27,7 +27,37 @@ public struct ClassicDerived {
     public let theme: ClassicTheme
 
     public var geoSum: Int { state.geo.reduce(0, +) }
-    public var topScore: Int { min(99, 60 + Int((Double(geoSum) * 1.6).rounded())) }
+
+    /// Real département scores (weighted by `state.geo`), ranked — backed by
+    /// `FranceGeoData` (IGN-derived, see geo_pipeline/). Replaces the old
+    /// fake `topScore = 60 + geoSum*1.6` formula.
+    public var rankedDepartements: [(dep: FranceGeoData.DepartementScore, score: Double)] {
+        FranceGeoData.departements
+            .map { ($0, FranceGeoData.weightedScore($0, weights: state.geo)) }
+            .sorted { $0.1 > $1.1 }
+    }
+
+    /// Régions ranked by the mean weighted score of their départements — the
+    /// primary "région la plus probante" ranking is at région level, backed
+    /// by a finer per-département computation (see plan: région ranking,
+    /// département detail).
+    public var rankedRegions: [(nomRegion: String, score: Double, bestDept: FranceGeoData.DepartementScore)] {
+        let ranked = rankedDepartements
+        var byRegion: [String: [(dep: FranceGeoData.DepartementScore, score: Double)]] = [:]
+        for entry in ranked { byRegion[entry.dep.nomRegion, default: []].append(entry) }
+        return byRegion.map { nomRegion, entries in
+            let mean = entries.map(\.score).reduce(0, +) / Double(entries.count)
+            let best = entries.max { $0.score < $1.score }!.dep
+            return (nomRegion, mean, best)
+        }.sorted { $0.score > $1.score }
+    }
+
+    public struct WinningRegion { public let nomRegion: String; public let bestDept: String; public let score: Int }
+    public var winningRegion: WinningRegion? {
+        guard let top = rankedRegions.first else { return nil }
+        return WinningRegion(nomRegion: top.nomRegion, bestDept: top.bestDept.nom, score: Int(top.score.rounded()))
+    }
+    public var topScore: Int { winningRegion?.score ?? 0 }
 
     public var navSteps: [NavItem] {
         let defs: [(String, String, ClassicScreen, String)] = [
@@ -77,8 +107,15 @@ public struct ClassicDerived {
     }
 
     public struct RegionRow: Identifiable { public var id: String { name }; public let rank: String; public let name: String; public let score: Int; public var pct: CGFloat { CGFloat(score) / 100 } }
+    /// Top départements nationally by weighted score, skipping the one
+    /// already shown as the winning région's headline pick.
     public var regionRows: [RegionRow] {
-        ClassicStatic.regions.enumerated().map { i, r in RegionRow(rank: String(format: "%02d", i + 2), name: r.0, score: r.1) }
+        let bestDeptName = winningRegion?.bestDept
+        return rankedDepartements
+            .filter { $0.dep.nom != bestDeptName }
+            .prefix(6)
+            .enumerated()
+            .map { i, entry in RegionRow(rank: String(format: "%02d", i + 2), name: entry.dep.nom, score: Int(entry.score.rounded())) }
     }
 
     public struct CityCard: Identifiable {

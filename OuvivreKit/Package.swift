@@ -11,6 +11,6 @@ let package = Package(
         .library(name: "OuvivreKit", targets: ["OuvivreKit"])
     ],
     targets: [
-        .target(name: "OuvivreKit")
+        .target(name: "OuvivreKit", resources: [.copy("Resources/france_geo_scores.json")])
     ]
 )

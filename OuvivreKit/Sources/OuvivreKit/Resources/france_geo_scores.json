@@ -1,0 +1,1420 @@
+{
+ "generatedAt": "2026-09-15",
+ "source": "IGN BD TOPO V3 (data.geopf.fr) + IGN RGE ALTI elevation API + Natural Earth admin boundaries",
+ "departements": [
+  {
+   "codeInsee": "01",
+   "nom": "Ain",
+   "codeRegion": "84",
+   "nomRegion": "Auvergne-Rhône-Alpes",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 100.0,
+    "mer": 47.7,
+    "lacs": 25.6,
+    "fleuves": 14.4,
+    "forets": 29.1
+   }
+  },
+  {
+   "codeInsee": "02",
+   "nom": "Aisne",
+   "codeRegion": "32",
+   "nomRegion": "Hauts-de-France",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 81.7,
+    "mer": 77.0,
+    "lacs": 5.6,
+    "fleuves": 15.9,
+    "forets": 7.2
+   }
+  },
+  {
+   "codeInsee": "03",
+   "nom": "Allier",
+   "codeRegion": "84",
+   "nomRegion": "Auvergne-Rhône-Alpes",
+   "scores": {
+    "paysEtranger": 47.8,
+    "montagne": 100.0,
+    "mer": 39.7,
+    "lacs": 6.1,
+    "fleuves": 32.2,
+    "forets": 11.1
+   }
+  },
+  {
+   "codeInsee": "04",
+   "nom": "Alpes-de-Haute-Provence",
+   "codeRegion": "93",
+   "nomRegion": "Provence-Alpes-Côte d'Azur",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 100.0,
+    "mer": 91.5,
+    "lacs": 6.7,
+    "fleuves": 23.7,
+    "forets": 85.7
+   }
+  },
+  {
+   "codeInsee": "05",
+   "nom": "Hautes-Alpes",
+   "codeRegion": "93",
+   "nomRegion": "Provence-Alpes-Côte d'Azur",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 100.0,
+    "mer": 78.8,
+    "lacs": 16.4,
+    "fleuves": 30.0,
+    "forets": 80.1
+   }
+  },
+  {
+   "codeInsee": "06",
+   "nom": "Alpes-Maritimes",
+   "codeRegion": "93",
+   "nomRegion": "Provence-Alpes-Côte d'Azur",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 100.0,
+    "mer": 100.0,
+    "lacs": 0.9,
+    "fleuves": 20.8,
+    "forets": 71.3
+   }
+  },
+  {
+   "codeInsee": "07",
+   "nom": "Ardèche",
+   "codeRegion": "84",
+   "nomRegion": "Auvergne-Rhône-Alpes",
+   "scores": {
+    "paysEtranger": 55.9,
+    "montagne": 100.0,
+    "mer": 87.9,
+    "lacs": 0.7,
+    "fleuves": 37.7,
+    "forets": 51.0
+   }
+  },
+  {
+   "codeInsee": "08",
+   "nom": "Ardennes",
+   "codeRegion": "44",
+   "nomRegion": "Grand Est",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 86.2,
+    "mer": 58.8,
+    "lacs": 2.0,
+    "fleuves": 19.5,
+    "forets": 32.8
+   }
+  },
+  {
+   "codeInsee": "09",
+   "nom": "Ariège",
+   "codeRegion": "76",
+   "nomRegion": "Occitanie",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 100.0,
+    "mer": 84.0,
+    "lacs": 6.1,
+    "fleuves": 41.2,
+    "forets": 64.2
+   }
+  },
+  {
+   "codeInsee": "10",
+   "nom": "Aube",
+   "codeRegion": "44",
+   "nomRegion": "Grand Est",
+   "scores": {
+    "paysEtranger": 57.5,
+    "montagne": 89.2,
+    "mer": 53.4,
+    "lacs": 18.9,
+    "fleuves": 12.8,
+    "forets": 28.8
+   }
+  },
+  {
+   "codeInsee": "11",
+   "nom": "Aude",
+   "codeRegion": "76",
+   "nomRegion": "Occitanie",
+   "scores": {
+    "paysEtranger": 91.8,
+    "montagne": 100.0,
+    "mer": 100.0,
+    "lacs": 28.3,
+    "fleuves": 33.6,
+    "forets": 54.5
+   }
+  },
+  {
+   "codeInsee": "12",
+   "nom": "Aveyron",
+   "codeRegion": "76",
+   "nomRegion": "Occitanie",
+   "scores": {
+    "paysEtranger": 53.3,
+    "montagne": 100.0,
+    "mer": 88.7,
+    "lacs": 5.9,
+    "fleuves": 31.4,
+    "forets": 51.6
+   }
+  },
+  {
+   "codeInsee": "13",
+   "nom": "Bouches-du-Rhône",
+   "codeRegion": "93",
+   "nomRegion": "Provence-Alpes-Côte d'Azur",
+   "scores": {
+    "paysEtranger": 61.3,
+    "montagne": 97.0,
+    "mer": 100.0,
+    "lacs": 100.0,
+    "fleuves": 14.5,
+    "forets": 62.1
+   }
+  },
+  {
+   "codeInsee": "14",
+   "nom": "Calvados",
+   "codeRegion": "28",
+   "nomRegion": "Normandie",
+   "scores": {
+    "paysEtranger": 77.9,
+    "montagne": 71.8,
+    "mer": 100.0,
+    "lacs": 1.5,
+    "fleuves": 25.8,
+    "forets": 7.8
+   }
+  },
+  {
+   "codeInsee": "15",
+   "nom": "Cantal",
+   "codeRegion": "84",
+   "nomRegion": "Auvergne-Rhône-Alpes",
+   "scores": {
+    "paysEtranger": 23.0,
+    "montagne": 100.0,
+    "mer": 65.5,
+    "lacs": 10.1,
+    "fleuves": 35.9,
+    "forets": 76.0
+   }
+  },
+  {
+   "codeInsee": "16",
+   "nom": "Charente",
+   "codeRegion": "75",
+   "nomRegion": "Nouvelle-Aquitaine",
+   "scores": {
+    "paysEtranger": 16.6,
+    "montagne": 89.7,
+    "mer": 94.4,
+    "lacs": 2.9,
+    "fleuves": 20.1,
+    "forets": 21.0
+   }
+  },
+  {
+   "codeInsee": "17",
+   "nom": "Charente-Maritime",
+   "codeRegion": "75",
+   "nomRegion": "Nouvelle-Aquitaine",
+   "scores": {
+    "paysEtranger": 23.3,
+    "montagne": 85.7,
+    "mer": 100.0,
+    "lacs": 35.4,
+    "fleuves": 17.9,
+    "forets": 30.0
+   }
+  },
+  {
+   "codeInsee": "18",
+   "nom": "Cher",
+   "codeRegion": "24",
+   "nomRegion": "Centre-Val de Loire",
+   "scores": {
+    "paysEtranger": 19.9,
+    "montagne": 94.2,
+    "mer": 46.4,
+    "lacs": 8.3,
+    "fleuves": 21.5,
+    "forets": 12.6
+   }
+  },
+  {
+   "codeInsee": "19",
+   "nom": "Corrèze",
+   "codeRegion": "75",
+   "nomRegion": "Nouvelle-Aquitaine",
+   "scores": {
+    "paysEtranger": 15.7,
+    "montagne": 99.0,
+    "mer": 49.1,
+    "lacs": 10.8,
+    "fleuves": 33.7,
+    "forets": 100.0
+   }
+  },
+  {
+   "codeInsee": "21",
+   "nom": "Côte-d'Or",
+   "codeRegion": "27",
+   "nomRegion": "Bourgogne-Franche-Comté",
+   "scores": {
+    "paysEtranger": 73.1,
+    "montagne": 95.3,
+    "mer": 31.2,
+    "lacs": 3.8,
+    "fleuves": 12.8,
+    "forets": 43.8
+   }
+  },
+  {
+   "codeInsee": "22",
+   "nom": "Côtes-d'Armor",
+   "codeRegion": "53",
+   "nomRegion": "Bretagne",
+   "scores": {
+    "paysEtranger": 81.3,
+    "montagne": 67.0,
+    "mer": 100.0,
+    "lacs": 3.2,
+    "fleuves": 21.8,
+    "forets": 3.5
+   }
+  },
+  {
+   "codeInsee": "23",
+   "nom": "Creuse",
+   "codeRegion": "75",
+   "nomRegion": "Nouvelle-Aquitaine",
+   "scores": {
+    "paysEtranger": 10.5,
+    "montagne": 98.4,
+    "mer": 57.4,
+    "lacs": 10.3,
+    "fleuves": 29.7,
+    "forets": 22.0
+   }
+  },
+  {
+   "codeInsee": "24",
+   "nom": "Dordogne",
+   "codeRegion": "75",
+   "nomRegion": "Nouvelle-Aquitaine",
+   "scores": {
+    "paysEtranger": 33.3,
+    "montagne": 93.5,
+    "mer": 95.6,
+    "lacs": 2.3,
+    "fleuves": 17.8,
+    "forets": 94.8
+   }
+  },
+  {
+   "codeInsee": "25",
+   "nom": "Doubs",
+   "codeRegion": "27",
+   "nomRegion": "Bourgogne-Franche-Comté",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 100.0,
+    "mer": 20.3,
+    "lacs": 2.9,
+    "fleuves": 2.7,
+    "forets": 50.4
+   }
+  },
+  {
+   "codeInsee": "26",
+   "nom": "Drôme",
+   "codeRegion": "84",
+   "nomRegion": "Auvergne-Rhône-Alpes",
+   "scores": {
+    "paysEtranger": 74.0,
+    "montagne": 100.0,
+    "mer": 88.5,
+    "lacs": 0.0,
+    "fleuves": 23.3,
+    "forets": 44.8
+   }
+  },
+  {
+   "codeInsee": "27",
+   "nom": "Eure",
+   "codeRegion": "28",
+   "nomRegion": "Normandie",
+   "scores": {
+    "paysEtranger": 50.7,
+    "montagne": 75.2,
+    "mer": 100.0,
+    "lacs": 6.2,
+    "fleuves": 5.8,
+    "forets": 10.5
+   }
+  },
+  {
+   "codeInsee": "28",
+   "nom": "Eure-et-Loir",
+   "codeRegion": "24",
+   "nomRegion": "Centre-Val de Loire",
+   "scores": {
+    "paysEtranger": 26.4,
+    "montagne": 81.3,
+    "mer": 87.5,
+    "lacs": 3.9,
+    "fleuves": 12.6,
+    "forets": 26.9
+   }
+  },
+  {
+   "codeInsee": "29",
+   "nom": "Finistère",
+   "codeRegion": "53",
+   "nomRegion": "Bretagne",
+   "scores": {
+    "paysEtranger": 61.8,
+    "montagne": 62.0,
+    "mer": 100.0,
+    "lacs": 3.9,
+    "fleuves": 26.8,
+    "forets": 21.7
+   }
+  },
+  {
+   "codeInsee": "2A",
+   "nom": "Corse-du-Sud",
+   "codeRegion": "94",
+   "nomRegion": "Corse",
+   "scores": {
+    "paysEtranger": 97.0,
+    "montagne": 100.0,
+    "mer": 100.0,
+    "lacs": 1.4,
+    "fleuves": 27.5,
+    "forets": 59.6
+   }
+  },
+  {
+   "codeInsee": "2B",
+   "nom": "Haute-Corse",
+   "codeRegion": "94",
+   "nomRegion": "Corse",
+   "scores": {
+    "paysEtranger": 82.7,
+    "montagne": 100.0,
+    "mer": 100.0,
+    "lacs": 13.0,
+    "fleuves": 40.6,
+    "forets": 56.0
+   }
+  },
+  {
+   "codeInsee": "30",
+   "nom": "Gard",
+   "codeRegion": "76",
+   "nomRegion": "Occitanie",
+   "scores": {
+    "paysEtranger": 52.3,
+    "montagne": 100.0,
+    "mer": 100.0,
+    "lacs": 20.1,
+    "fleuves": 22.4,
+    "forets": 57.2
+   }
+  },
+  {
+   "codeInsee": "31",
+   "nom": "Haute-Garonne",
+   "codeRegion": "76",
+   "nomRegion": "Occitanie",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 100.0,
+    "mer": 79.7,
+    "lacs": 7.5,
+    "fleuves": 45.9,
+    "forets": 11.2
+   }
+  },
+  {
+   "codeInsee": "32",
+   "nom": "Gers",
+   "codeRegion": "76",
+   "nomRegion": "Occitanie",
+   "scores": {
+    "paysEtranger": 82.1,
+    "montagne": 97.4,
+    "mer": 84.4,
+    "lacs": 5.2,
+    "fleuves": 37.7,
+    "forets": 3.2
+   }
+  },
+  {
+   "codeInsee": "33",
+   "nom": "Gironde",
+   "codeRegion": "75",
+   "nomRegion": "Nouvelle-Aquitaine",
+   "scores": {
+    "paysEtranger": 56.9,
+    "montagne": 90.9,
+    "mer": 100.0,
+    "lacs": 65.6,
+    "fleuves": 29.5,
+    "forets": 68.1
+   }
+  },
+  {
+   "codeInsee": "34",
+   "nom": "Hérault",
+   "codeRegion": "76",
+   "nomRegion": "Occitanie",
+   "scores": {
+    "paysEtranger": 70.7,
+    "montagne": 99.1,
+    "mer": 100.0,
+    "lacs": 49.6,
+    "fleuves": 28.7,
+    "forets": 53.9
+   }
+  },
+  {
+   "codeInsee": "35",
+   "nom": "Ille-et-Vilaine",
+   "codeRegion": "53",
+   "nomRegion": "Bretagne",
+   "scores": {
+    "paysEtranger": 82.0,
+    "montagne": 72.4,
+    "mer": 100.0,
+    "lacs": 8.0,
+    "fleuves": 29.1,
+    "forets": 5.5
+   }
+  },
+  {
+   "codeInsee": "36",
+   "nom": "Indre",
+   "codeRegion": "24",
+   "nomRegion": "Centre-Val de Loire",
+   "scores": {
+    "paysEtranger": 0.0,
+    "montagne": 93.7,
+    "mer": 55.5,
+    "lacs": 24.0,
+    "fleuves": 16.9,
+    "forets": 31.6
+   }
+  },
+  {
+   "codeInsee": "37",
+   "nom": "Indre-et-Loire",
+   "codeRegion": "24",
+   "nomRegion": "Centre-Val de Loire",
+   "scores": {
+    "paysEtranger": 17.3,
+    "montagne": 87.1,
+    "mer": 70.2,
+    "lacs": 6.0,
+    "fleuves": 23.8,
+    "forets": 28.0
+   }
+  },
+  {
+   "codeInsee": "38",
+   "nom": "Isère",
+   "codeRegion": "84",
+   "nomRegion": "Auvergne-Rhône-Alpes",
+   "scores": {
+    "paysEtranger": 91.2,
+    "montagne": 100.0,
+    "mer": 69.1,
+    "lacs": 12.3,
+    "fleuves": 20.4,
+    "forets": 38.6
+   }
+  },
+  {
+   "codeInsee": "39",
+   "nom": "Jura",
+   "codeRegion": "27",
+   "nomRegion": "Bourgogne-Franche-Comté",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 100.0,
+    "mer": 31.6,
+    "lacs": 13.0,
+    "fleuves": 10.4,
+    "forets": 50.3
+   }
+  },
+  {
+   "codeInsee": "40",
+   "nom": "Landes",
+   "codeRegion": "75",
+   "nomRegion": "Nouvelle-Aquitaine",
+   "scores": {
+    "paysEtranger": 91.4,
+    "montagne": 97.3,
+    "mer": 100.0,
+    "lacs": 20.3,
+    "fleuves": 32.4,
+    "forets": 30.4
+   }
+  },
+  {
+   "codeInsee": "41",
+   "nom": "Loir-et-Cher",
+   "codeRegion": "24",
+   "nomRegion": "Centre-Val de Loire",
+   "scores": {
+    "paysEtranger": 17.5,
+    "montagne": 87.8,
+    "mer": 67.2,
+    "lacs": 18.9,
+    "fleuves": 22.7,
+    "forets": 44.6
+   }
+  },
+  {
+   "codeInsee": "42",
+   "nom": "Loire",
+   "codeRegion": "84",
+   "nomRegion": "Auvergne-Rhône-Alpes",
+   "scores": {
+    "paysEtranger": 59.4,
+    "montagne": 100.0,
+    "mer": 61.6,
+    "lacs": 10.4,
+    "fleuves": 32.3,
+    "forets": 28.3
+   }
+  },
+  {
+   "codeInsee": "43",
+   "nom": "Haute-Loire",
+   "codeRegion": "84",
+   "nomRegion": "Auvergne-Rhône-Alpes",
+   "scores": {
+    "paysEtranger": 47.2,
+    "montagne": 100.0,
+    "mer": 70.8,
+    "lacs": 1.3,
+    "fleuves": 31.7,
+    "forets": 43.6
+   }
+  },
+  {
+   "codeInsee": "44",
+   "nom": "Loire-Atlantique",
+   "codeRegion": "52",
+   "nomRegion": "Pays de la Loire",
+   "scores": {
+    "paysEtranger": 47.0,
+    "montagne": 76.0,
+    "mer": 100.0,
+    "lacs": 47.1,
+    "fleuves": 25.2,
+    "forets": 16.6
+   }
+  },
+  {
+   "codeInsee": "45",
+   "nom": "Loiret",
+   "codeRegion": "24",
+   "nomRegion": "Centre-Val de Loire",
+   "scores": {
+    "paysEtranger": 24.9,
+    "montagne": 86.9,
+    "mer": 67.3,
+    "lacs": 12.5,
+    "fleuves": 16.9,
+    "forets": 20.8
+   }
+  },
+  {
+   "codeInsee": "46",
+   "nom": "Lot",
+   "codeRegion": "76",
+   "nomRegion": "Occitanie",
+   "scores": {
+    "paysEtranger": 45.4,
+    "montagne": 97.1,
+    "mer": 76.0,
+    "lacs": 0.3,
+    "fleuves": 13.9,
+    "forets": 64.8
+   }
+  },
+  {
+   "codeInsee": "47",
+   "nom": "Lot-et-Garonne",
+   "codeRegion": "75",
+   "nomRegion": "Nouvelle-Aquitaine",
+   "scores": {
+    "paysEtranger": 55.0,
+    "montagne": 92.5,
+    "mer": 93.4,
+    "lacs": 4.0,
+    "fleuves": 30.4,
+    "forets": 2.5
+   }
+  },
+  {
+   "codeInsee": "48",
+   "nom": "Lozère",
+   "codeRegion": "76",
+   "nomRegion": "Occitanie",
+   "scores": {
+    "paysEtranger": 35.4,
+    "montagne": 100.0,
+    "mer": 86.6,
+    "lacs": 4.5,
+    "fleuves": 31.0,
+    "forets": 60.8
+   }
+  },
+  {
+   "codeInsee": "49",
+   "nom": "Maine-et-Loire",
+   "codeRegion": "52",
+   "nomRegion": "Pays de la Loire",
+   "scores": {
+    "paysEtranger": 44.2,
+    "montagne": 81.0,
+    "mer": 98.1,
+    "lacs": 4.5,
+    "fleuves": 24.6,
+    "forets": 24.3
+   }
+  },
+  {
+   "codeInsee": "50",
+   "nom": "Manche",
+   "codeRegion": "28",
+   "nomRegion": "Normandie",
+   "scores": {
+    "paysEtranger": 92.5,
+    "montagne": 70.5,
+    "mer": 100.0,
+    "lacs": 1.9,
+    "fleuves": 32.3,
+    "forets": 28.0
+   }
+  },
+  {
+   "codeInsee": "51",
+   "nom": "Marne",
+   "codeRegion": "44",
+   "nomRegion": "Grand Est",
+   "scores": {
+    "paysEtranger": 83.3,
+    "montagne": 88.7,
+    "mer": 61.0,
+    "lacs": 13.7,
+    "fleuves": 12.6,
+    "forets": 22.5
+   }
+  },
+  {
+   "codeInsee": "52",
+   "nom": "Haute-Marne",
+   "codeRegion": "44",
+   "nomRegion": "Grand Est",
+   "scores": {
+    "paysEtranger": 67.4,
+    "montagne": 94.9,
+    "mer": 34.2,
+    "lacs": 7.1,
+    "fleuves": 13.5,
+    "forets": 53.4
+   }
+  },
+  {
+   "codeInsee": "53",
+   "nom": "Mayenne",
+   "codeRegion": "52",
+   "nomRegion": "Pays de la Loire",
+   "scores": {
+    "paysEtranger": 65.1,
+    "montagne": 76.3,
+    "mer": 94.2,
+    "lacs": 3.8,
+    "fleuves": 33.2,
+    "forets": 11.3
+   }
+  },
+  {
+   "codeInsee": "54",
+   "nom": "Meurthe-et-Moselle",
+   "codeRegion": "44",
+   "nomRegion": "Grand Est",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 97.9,
+    "mer": 34.1,
+    "lacs": 3.1,
+    "fleuves": 15.5,
+    "forets": 33.8
+   }
+  },
+  {
+   "codeInsee": "55",
+   "nom": "Meuse",
+   "codeRegion": "44",
+   "nomRegion": "Grand Est",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 93.0,
+    "mer": 40.4,
+    "lacs": 6.4,
+    "fleuves": 15.6,
+    "forets": 37.8
+   }
+  },
+  {
+   "codeInsee": "56",
+   "nom": "Morbihan",
+   "codeRegion": "53",
+   "nomRegion": "Bretagne",
+   "scores": {
+    "paysEtranger": 61.4,
+    "montagne": 69.5,
+    "mer": 100.0,
+    "lacs": 6.6,
+    "fleuves": 29.6,
+    "forets": 16.4
+   }
+  },
+  {
+   "codeInsee": "57",
+   "nom": "Moselle",
+   "codeRegion": "44",
+   "nomRegion": "Grand Est",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 97.4,
+    "mer": 27.3,
+    "lacs": 12.0,
+    "fleuves": 17.6,
+    "forets": 42.4
+   }
+  },
+  {
+   "codeInsee": "58",
+   "nom": "Nièvre",
+   "codeRegion": "27",
+   "nomRegion": "Bourgogne-Franche-Comté",
+   "scores": {
+    "paysEtranger": 46.1,
+    "montagne": 94.5,
+    "mer": 42.0,
+    "lacs": 7.1,
+    "fleuves": 25.7,
+    "forets": 38.8
+   }
+  },
+  {
+   "codeInsee": "59",
+   "nom": "Nord",
+   "codeRegion": "32",
+   "nomRegion": "Hauts-de-France",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 79.0,
+    "mer": 100.0,
+    "lacs": 6.4,
+    "fleuves": 29.8,
+    "forets": 32.6
+   }
+  },
+  {
+   "codeInsee": "60",
+   "nom": "Oise",
+   "codeRegion": "32",
+   "nomRegion": "Hauts-de-France",
+   "scores": {
+    "paysEtranger": 73.1,
+    "montagne": 78.3,
+    "mer": 90.5,
+    "lacs": 5.9,
+    "fleuves": 5.1,
+    "forets": 16.0
+   }
+  },
+  {
+   "codeInsee": "61",
+   "nom": "Orne",
+   "codeRegion": "28",
+   "nomRegion": "Normandie",
+   "scores": {
+    "paysEtranger": 66.5,
+    "montagne": 78.0,
+    "mer": 91.7,
+    "lacs": 2.5,
+    "fleuves": 29.2,
+    "forets": 52.7
+   }
+  },
+  {
+   "codeInsee": "62",
+   "nom": "Pas-de-Calais",
+   "codeRegion": "32",
+   "nomRegion": "Hauts-de-France",
+   "scores": {
+    "paysEtranger": 98.2,
+    "montagne": 74.5,
+    "mer": 100.0,
+    "lacs": 3.3,
+    "fleuves": 14.2,
+    "forets": 20.5
+   }
+  },
+  {
+   "codeInsee": "63",
+   "nom": "Puy-de-Dôme",
+   "codeRegion": "84",
+   "nomRegion": "Auvergne-Rhône-Alpes",
+   "scores": {
+    "paysEtranger": 41.6,
+    "montagne": 100.0,
+    "mer": 55.8,
+    "lacs": 5.0,
+    "fleuves": 29.6,
+    "forets": 64.3
+   }
+  },
+  {
+   "codeInsee": "64",
+   "nom": "Pyrénées-Atlantiques",
+   "codeRegion": "75",
+   "nomRegion": "Nouvelle-Aquitaine",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 100.0,
+    "mer": 100.0,
+    "lacs": 2.5,
+    "fleuves": 44.6,
+    "forets": 34.9
+   }
+  },
+  {
+   "codeInsee": "65",
+   "nom": "Hautes-Pyrénées",
+   "codeRegion": "76",
+   "nomRegion": "Occitanie",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 100.0,
+    "mer": 80.9,
+    "lacs": 7.3,
+    "fleuves": 46.8,
+    "forets": 44.2
+   }
+  },
+  {
+   "codeInsee": "66",
+   "nom": "Pyrénées-Orientales",
+   "codeRegion": "76",
+   "nomRegion": "Occitanie",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 100.0,
+    "mer": 100.0,
+    "lacs": 24.1,
+    "fleuves": 35.8,
+    "forets": 58.3
+   }
+  },
+  {
+   "codeInsee": "67",
+   "nom": "Bas-Rhin",
+   "codeRegion": "44",
+   "nomRegion": "Grand Est",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 99.0,
+    "mer": 3.5,
+    "lacs": 5.5,
+    "fleuves": 23.7,
+    "forets": 43.2
+   }
+  },
+  {
+   "codeInsee": "68",
+   "nom": "Haut-Rhin",
+   "codeRegion": "44",
+   "nomRegion": "Grand Est",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 100.0,
+    "mer": 0.8,
+    "lacs": 2.8,
+    "fleuves": 19.3,
+    "forets": 54.4
+   }
+  },
+  {
+   "codeInsee": "69",
+   "nom": "Rhône",
+   "codeRegion": "84",
+   "nomRegion": "Auvergne-Rhône-Alpes",
+   "scores": {
+    "paysEtranger": 73.5,
+    "montagne": 98.6,
+    "mer": 55.5,
+    "lacs": 3.9,
+    "fleuves": 18.3,
+    "forets": 52.3
+   }
+  },
+  {
+   "codeInsee": "70",
+   "nom": "Haute-Saône",
+   "codeRegion": "27",
+   "nomRegion": "Bourgogne-Franche-Comté",
+   "scores": {
+    "paysEtranger": 94.3,
+    "montagne": 99.8,
+    "mer": 7.4,
+    "lacs": 3.5,
+    "fleuves": 12.7,
+    "forets": 38.4
+   }
+  },
+  {
+   "codeInsee": "71",
+   "nom": "Saône-et-Loire",
+   "codeRegion": "27",
+   "nomRegion": "Bourgogne-Franche-Comté",
+   "scores": {
+    "paysEtranger": 83.0,
+    "montagne": 98.4,
+    "mer": 36.1,
+    "lacs": 6.8,
+    "fleuves": 23.2,
+    "forets": 22.7
+   }
+  },
+  {
+   "codeInsee": "72",
+   "nom": "Sarthe",
+   "codeRegion": "52",
+   "nomRegion": "Pays de la Loire",
+   "scores": {
+    "paysEtranger": 43.4,
+    "montagne": 80.6,
+    "mer": 78.5,
+    "lacs": 3.4,
+    "fleuves": 23.0,
+    "forets": 13.1
+   }
+  },
+  {
+   "codeInsee": "73",
+   "nom": "Savoie",
+   "codeRegion": "84",
+   "nomRegion": "Auvergne-Rhône-Alpes",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 100.0,
+    "mer": 61.2,
+    "lacs": 34.8,
+    "fleuves": 25.2,
+    "forets": 46.2
+   }
+  },
+  {
+   "codeInsee": "74",
+   "nom": "Haute-Savoie",
+   "codeRegion": "84",
+   "nomRegion": "Auvergne-Rhône-Alpes",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 100.0,
+    "mer": 44.9,
+    "lacs": 35.9,
+    "fleuves": 20.6,
+    "forets": 47.9
+   }
+  },
+  {
+   "codeInsee": "75",
+   "nom": "Paris",
+   "codeRegion": "11",
+   "nomRegion": "Île-de-France",
+   "scores": {
+    "paysEtranger": 40.1,
+    "montagne": 76.4,
+    "mer": 76.3,
+    "lacs": 8.4,
+    "fleuves": 9.9,
+    "forets": 0.0
+   }
+  },
+  {
+   "codeInsee": "76",
+   "nom": "Seine-Maritime",
+   "codeRegion": "28",
+   "nomRegion": "Normandie",
+   "scores": {
+    "paysEtranger": 65.6,
+    "montagne": 71.0,
+    "mer": 100.0,
+    "lacs": 3.4,
+    "fleuves": 0.6,
+    "forets": 16.0
+   }
+  },
+  {
+   "codeInsee": "77",
+   "nom": "Seine-et-Marne",
+   "codeRegion": "11",
+   "nomRegion": "Île-de-France",
+   "scores": {
+    "paysEtranger": 58.7,
+    "montagne": 82.2,
+    "mer": 73.3,
+    "lacs": 10.6,
+    "fleuves": 15.3,
+    "forets": 27.2
+   }
+  },
+  {
+   "codeInsee": "78",
+   "nom": "Yvelines",
+   "codeRegion": "11",
+   "nomRegion": "Île-de-France",
+   "scores": {
+    "paysEtranger": 37.9,
+    "montagne": 78.6,
+    "mer": 90.3,
+    "lacs": 10.0,
+    "fleuves": 16.5,
+    "forets": 38.0
+   }
+  },
+  {
+   "codeInsee": "79",
+   "nom": "Deux-Sèvres",
+   "codeRegion": "75",
+   "nomRegion": "Nouvelle-Aquitaine",
+   "scores": {
+    "paysEtranger": 11.3,
+    "montagne": 85.4,
+    "mer": 95.5,
+    "lacs": 3.6,
+    "fleuves": 18.0,
+    "forets": 22.5
+   }
+  },
+  {
+   "codeInsee": "80",
+   "nom": "Somme",
+   "codeRegion": "32",
+   "nomRegion": "Hauts-de-France",
+   "scores": {
+    "paysEtranger": 83.2,
+    "montagne": 76.2,
+    "mer": 100.0,
+    "lacs": 8.9,
+    "fleuves": 3.4,
+    "forets": 23.9
+   }
+  },
+  {
+   "codeInsee": "81",
+   "nom": "Tarn",
+   "codeRegion": "76",
+   "nomRegion": "Occitanie",
+   "scores": {
+    "paysEtranger": 68.2,
+    "montagne": 96.1,
+    "mer": 89.3,
+    "lacs": 5.1,
+    "fleuves": 41.0,
+    "forets": 31.9
+   }
+  },
+  {
+   "codeInsee": "82",
+   "nom": "Tarn-et-Garonne",
+   "codeRegion": "76",
+   "nomRegion": "Occitanie",
+   "scores": {
+    "paysEtranger": 63.8,
+    "montagne": 94.0,
+    "mer": 75.6,
+    "lacs": 5.3,
+    "fleuves": 40.7,
+    "forets": 3.9
+   }
+  },
+  {
+   "codeInsee": "83",
+   "nom": "Var",
+   "codeRegion": "93",
+   "nomRegion": "Provence-Alpes-Côte d'Azur",
+   "scores": {
+    "paysEtranger": 86.1,
+    "montagne": 98.5,
+    "mer": 100.0,
+    "lacs": 7.0,
+    "fleuves": 17.4,
+    "forets": 48.7
+   }
+  },
+  {
+   "codeInsee": "84",
+   "nom": "Vaucluse",
+   "codeRegion": "93",
+   "nomRegion": "Provence-Alpes-Côte d'Azur",
+   "scores": {
+    "paysEtranger": 61.5,
+    "montagne": 99.7,
+    "mer": 96.7,
+    "lacs": 0.7,
+    "fleuves": 21.9,
+    "forets": 69.2
+   }
+  },
+  {
+   "codeInsee": "85",
+   "nom": "Vendée",
+   "codeRegion": "52",
+   "nomRegion": "Pays de la Loire",
+   "scores": {
+    "paysEtranger": 18.5,
+    "montagne": 80.8,
+    "mer": 100.0,
+    "lacs": 7.6,
+    "fleuves": 29.0,
+    "forets": 24.6
+   }
+  },
+  {
+   "codeInsee": "86",
+   "nom": "Vienne",
+   "codeRegion": "75",
+   "nomRegion": "Nouvelle-Aquitaine",
+   "scores": {
+    "paysEtranger": 7.6,
+    "montagne": 89.5,
+    "mer": 81.6,
+    "lacs": 2.9,
+    "fleuves": 15.9,
+    "forets": 9.8
+   }
+  },
+  {
+   "codeInsee": "87",
+   "nom": "Haute-Vienne",
+   "codeRegion": "75",
+   "nomRegion": "Nouvelle-Aquitaine",
+   "scores": {
+    "paysEtranger": 0.0,
+    "montagne": 95.5,
+    "mer": 76.0,
+    "lacs": 10.8,
+    "fleuves": 31.4,
+    "forets": 31.6
+   }
+  },
+  {
+   "codeInsee": "88",
+   "nom": "Vosges",
+   "codeRegion": "44",
+   "nomRegion": "Grand Est",
+   "scores": {
+    "paysEtranger": 87.9,
+    "montagne": 100.0,
+    "mer": 20.8,
+    "lacs": 2.0,
+    "fleuves": 18.9,
+    "forets": 45.1
+   }
+  },
+  {
+   "codeInsee": "89",
+   "nom": "Yonne",
+   "codeRegion": "27",
+   "nomRegion": "Bourgogne-Franche-Comté",
+   "scores": {
+    "paysEtranger": 39.6,
+    "montagne": 89.5,
+    "mer": 56.2,
+    "lacs": 5.6,
+    "fleuves": 11.3,
+    "forets": 12.7
+   }
+  },
+  {
+   "codeInsee": "90",
+   "nom": "Territoire de Belfort",
+   "codeRegion": "27",
+   "nomRegion": "Bourgogne-Franche-Comté",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 100.0,
+    "mer": 0.0,
+    "lacs": 18.1,
+    "fleuves": 18.5,
+    "forets": 47.2
+   }
+  },
+  {
+   "codeInsee": "91",
+   "nom": "Essonne",
+   "codeRegion": "11",
+   "nomRegion": "Île-de-France",
+   "scores": {
+    "paysEtranger": 37.6,
+    "montagne": 80.2,
+    "mer": 75.9,
+    "lacs": 6.2,
+    "fleuves": 10.5,
+    "forets": 38.0
+   }
+  },
+  {
+   "codeInsee": "92",
+   "nom": "Hauts-de-Seine",
+   "codeRegion": "11",
+   "nomRegion": "Île-de-France",
+   "scores": {
+    "paysEtranger": 40.1,
+    "montagne": 76.8,
+    "mer": 77.7,
+    "lacs": 4.6,
+    "fleuves": 3.2,
+    "forets": 8.4
+   }
+  },
+  {
+   "codeInsee": "93",
+   "nom": "Seine-Saint-Denis",
+   "codeRegion": "11",
+   "nomRegion": "Île-de-France",
+   "scores": {
+    "paysEtranger": 46.3,
+    "montagne": 76.7,
+    "mer": 76.7,
+    "lacs": 3.0,
+    "fleuves": 6.9,
+    "forets": 6.2
+   }
+  },
+  {
+   "codeInsee": "94",
+   "nom": "Val-de-Marne",
+   "codeRegion": "11",
+   "nomRegion": "Île-de-France",
+   "scores": {
+    "paysEtranger": 41.2,
+    "montagne": 77.6,
+    "mer": 74.1,
+    "lacs": 7.7,
+    "fleuves": 12.9,
+    "forets": 7.7
+   }
+  },
+  {
+   "codeInsee": "95",
+   "nom": "Val-d'Oise",
+   "codeRegion": "11",
+   "nomRegion": "Île-de-France",
+   "scores": {
+    "paysEtranger": 48.9,
+    "montagne": 75.9,
+    "mer": 89.6,
+    "lacs": 3.9,
+    "fleuves": 7.5,
+    "forets": 61.3
+   }
+  },
+  {
+   "codeInsee": "971",
+   "nom": "Guadeloupe",
+   "codeRegion": "01",
+   "nomRegion": "Guadeloupe",
+   "scores": {
+    "paysEtranger": 91.1,
+    "montagne": 100.0,
+    "mer": 100.0,
+    "lacs": 1.2,
+    "fleuves": 78.0,
+    "forets": 71.5
+   }
+  },
+  {
+   "codeInsee": "972",
+   "nom": "Martinique",
+   "codeRegion": "02",
+   "nomRegion": "Martinique",
+   "scores": {
+    "paysEtranger": 88.7,
+    "montagne": 100.0,
+    "mer": 100.0,
+    "lacs": 3.7,
+    "fleuves": 89.0,
+    "forets": 67.1
+   }
+  },
+  {
+   "codeInsee": "973",
+   "nom": "Guyane",
+   "codeRegion": "03",
+   "nomRegion": "Guyane",
+   "scores": {
+    "paysEtranger": 100.0,
+    "montagne": 8.7,
+    "mer": 100.0,
+    "lacs": 7.5,
+    "fleuves": 0.0,
+    "forets": 73.8
+   }
+  },
+  {
+   "codeInsee": "974",
+   "nom": "La Réunion",
+   "codeRegion": "04",
+   "nomRegion": "La Réunion",
+   "scores": {
+    "paysEtranger": 40.2,
+    "montagne": 100.0,
+    "mer": 100.0,
+    "lacs": 0.3,
+    "fleuves": 48.1,
+    "forets": 69.9
+   }
+  },
+  {
+   "codeInsee": "976",
+   "nom": "Mayotte",
+   "codeRegion": "06",
+   "nomRegion": "Mayotte",
+   "scores": {
+    "paysEtranger": 78.0,
+    "montagne": 0.0,
+    "mer": 100.0,
+    "lacs": 3.1,
+    "fleuves": 100.0,
+    "forets": 19.9
+   }
+  }
+ ]
+}

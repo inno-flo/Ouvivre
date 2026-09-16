@@ -59,10 +59,6 @@ public enum ClassicStatic {
              inline: "Lac 28 km · Montagne 2 km · Gare")
     ]
 
-    public static let regions: [(String, Int)] = [
-        ("Isère", 89), ("Pyrénées-Atlantiques", 85), ("Hautes-Alpes", 82),
-        ("Hautes-Pyrénées", 78), ("Puy-de-Dôme", 74), ("Doubs", 71)
-    ]
     public static let countries = ["France", "Danemark", "Suède", "Japon"]
     public static let tags = ["indifférent", "accessoire", "souhaitable", "important", "prioritaire", "déterminant"]
 

@@ -53,8 +53,8 @@ public struct GeoView: View {
     private var regionHero: some View {
         VStack(alignment: .leading, spacing: 0) {
             Eyebrow("RÉGION LA PLUS PROBANTE", color: ClassicTheme.darkPanelFaint).padding(.bottom, 10)
-            Text("Savoie / Haute‑Savoie").font(CFont.sans(27, weight: .semibold)).foregroundStyle(.white)
-            Text("Alpes du Nord · 2 lacs majeurs · Isère & Arve")
+            Text(derived.winningRegion?.nomRegion ?? "—").font(CFont.sans(27, weight: .semibold)).foregroundStyle(.white)
+            Text("Département le plus probant : \(derived.winningRegion?.bestDept ?? "—")")
                 .font(CFont.sans(13)).foregroundStyle(ClassicTheme.darkPanelSub).padding(.top, 6)
             HStack(alignment: .lastTextBaseline, spacing: 8) {
                 Text("\(derived.topScore)").font(CFont.mono(34, weight: .medium)).foregroundStyle(theme.accentLight)
