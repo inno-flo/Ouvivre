@@ -13,6 +13,11 @@ public final class MapPanelState: ObservableObject {
     public static let shared = MapPanelState()
 
     @Published public var isVisible: Bool = true
+    /// Visibilité de l'inspecteur spécifique à Big Mac — séparée de
+    /// `isVisible` (qui vaut `true` par défaut pour les autres écrans) pour
+    /// que l'inspecteur reste fermé tant qu'aucun département n'a été
+    /// cliqué sur la carte de cet écran.
+    @Published public var bigMacInspectorVisible: Bool = false
     @Published public var title: String = "France"
     @Published public var coordinate: CLLocationCoordinate2D
     @Published public var spanDegrees: Double

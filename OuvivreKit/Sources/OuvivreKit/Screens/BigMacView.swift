@@ -22,6 +22,11 @@ public struct BigMacView: View {
     @State private var position: MapCameraPosition = .automatic
     @State private var lastRegion: MKCoordinateRegion?
     @State private var transitionGeneration = 0
+    /// Département actuellement survolé — rend son polygone opaque, comme
+    /// dans Régions (`hoveredDepartementName` de `GeoView2`). MapKit ne
+    /// propose pas de survol par forme, donc on hit-teste manuellement le
+    /// point de la souris contre les polygones via `MapReader`.
+    @State private var hoveredDepartementName: String?
 
     // L'ouverture/fermeture des blocs vit dans `ClassicState` (pas un
     // `@State` local) pour rester persistante en quittant puis en revenant
@@ -52,10 +57,27 @@ public struct BigMacView: View {
     public var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .topLeading) {
-                Map(position: $position) { mapContent }
-                .mapStyle(mapState.planType.style(elevation: .automatic))
-                .mapControls {}
-                .onMapCameraChange { context in lastRegion = context.region }
+                MapReader { proxy in
+                    Map(position: $position) { mapContent }
+                        .mapStyle(mapState.planType.style(elevation: .automatic))
+                        .mapControls {}
+                        .onMapCameraChange { context in lastRegion = context.region }
+                        .onContinuousHover { phase in
+                            switch phase {
+                            case .active(let point):
+                                hoveredDepartementName = departementName(at: point, proxy: proxy)
+                            case .ended:
+                                hoveredDepartementName = nil
+                            }
+                        }
+                        .gesture(
+                            SpatialTapGesture().onEnded { value in
+                                guard let name = departementName(at: value.location, proxy: proxy) else { return }
+                                mapState.title = name
+                                mapState.bigMacInspectorVisible = true
+                            }
+                        )
+                }
                 .ignoresSafeArea(edges: [.horizontal, .bottom])
 
                 // Colonne à largeur fixe, hauteur naturelle plafonnée à
@@ -113,18 +135,49 @@ public struct BigMacView: View {
             }
         } else {
             ForEach(mapState.departementRingGroups, id: \.name) { group in
-                departementRings(group.rings)
+                departementRings(group.rings, isHovered: group.name == hoveredDepartementName)
             }
         }
     }
 
     @MapContentBuilder
-    private func departementRings(_ rings: [[CLLocationCoordinate2D]]) -> some MapContent {
+    private func departementRings(_ rings: [[CLLocationCoordinate2D]], isHovered: Bool) -> some MapContent {
         ForEach(Array(rings.enumerated()), id: \.offset) { _, ring in
             MapPolygon(coordinates: ring)
-                .foregroundStyle(theme.accent.opacity(0.16))
+                .foregroundStyle(theme.accent.opacity(isHovered ? 0.54 : 0.16))
                 .stroke(theme.accent, lineWidth: 2)
         }
+    }
+
+    /// Hit-test manuel : convertit un point écran en coordonnée puis
+    /// cherche le premier département dont un des anneaux le contient
+    /// (ray casting) — MapKit ne propose pas de survol/tap par forme sur
+    /// `MapPolygon`.
+    private func departementName(at point: CGPoint, proxy: MapProxy) -> String? {
+        guard let coordinate = proxy.convert(point, from: .local) else { return nil }
+        for group in mapState.departementRingGroups {
+            if group.rings.contains(where: { Self.ring($0, contains: coordinate) }) {
+                return group.name
+            }
+        }
+        return nil
+    }
+
+    /// Ray casting standard (pair/impair) sur un anneau de coordonnées.
+    private static func ring(_ ring: [CLLocationCoordinate2D], contains coordinate: CLLocationCoordinate2D) -> Bool {
+        guard ring.count > 2 else { return false }
+        var inside = false
+        var j = ring.count - 1
+        for i in 0..<ring.count {
+            let pi = ring[i], pj = ring[j]
+            if (pi.latitude > coordinate.latitude) != (pj.latitude > coordinate.latitude) {
+                let slope = (pj.longitude - pi.longitude) / (pj.latitude - pi.latitude)
+                let longitudeAtLatitude = pi.longitude + slope * (coordinate.latitude - pi.latitude)
+                if coordinate.longitude < longitudeAtLatitude { inside.toggle() }
+            }
+            j = i
+        }
+        return inside
     }
 
     // MARK: Départements correspondant aux communes filtrées + Culture
@@ -439,7 +492,7 @@ public struct BigMacView: View {
         }
         .padding(.vertical, 10)
         .padding(.horizontal, 12)
-        .background(ClassicTheme.background.opacity(0.75), in: RoundedRectangle(cornerRadius: 10))
+        .background(ClassicTheme.sidebarBg, in: RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(ClassicTheme.border.opacity(0.6), lineWidth: 1))
         .opacity(enabled ? 1 : 0.55)
     }

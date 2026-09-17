@@ -25,8 +25,19 @@ public struct ClassicRootView: View {
     /// on Pays regardless, it's just a no-op there for now.
     private var inspectorBinding: Binding<Bool> {
         Binding(
-            get: { mapState.isVisible && state.screen != .sources && state.screen != .geo2 && state.screen != .pays && state.screen != .bigMac },
-            set: { mapState.isVisible = $0 }
+            get: {
+                // Big Mac garde son propre indicateur (`bigMacInspectorVisible`,
+                // par défaut fermé) plutôt que le `isVisible` partagé — sinon
+                // l'inspecteur s'ouvrirait dès l'arrivée sur cet écran (valeur
+                // par défaut de `isVisible` = true, utilisée par les autres
+                // écrans). Il ne s'ouvre qu'en cliquant un département sur la
+                // carte de Big Mac (voir `BigMacView`).
+                let visible = state.screen == .bigMac ? mapState.bigMacInspectorVisible : mapState.isVisible
+                return visible && state.screen != .sources && state.screen != .geo2 && state.screen != .pays
+            },
+            set: { newValue in
+                if state.screen == .bigMac { mapState.bigMacInspectorVisible = newValue } else { mapState.isVisible = newValue }
+            }
         )
     }
 
