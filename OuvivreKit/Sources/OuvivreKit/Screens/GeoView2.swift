@@ -1,16 +1,6 @@
 import SwiftUI
 import MapKit
 
-private struct ContentHeightKey: PreferenceKey {
-    static let defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
-}
-
-private struct TopContentHeightKey: PreferenceKey {
-    static let defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
-}
-
 /// Étape 02 (variante) — Géographie 2: an experimental single-pane layout.
 /// There is no separate settings column or map inspector — the criteria
 /// sliders float in a translucent column over a full-bleed MapKit
@@ -34,16 +24,13 @@ public struct GeoView2: View {
     @State private var position: MapCameraPosition = .automatic
     @State private var lastRegion: MKCoordinateRegion?
     @State private var transitionGeneration = 0
-    @State private var otherRegionsContentHeight: CGFloat = 0
-    @State private var topContentHeight: CGFloat = 0
+    @State private var showMoreDepartements = false
 
     private let columnWidth: CGFloat = 320
     private let columnOuterPadding: CGFloat = 20
     private let columnInnerPadding: CGFloat = 16
-    /// Reserved regardless of whether the chevron actually shows, so the
-    /// scroll budget doesn't depend on its own visibility.
-    private let chevronReserve: CGFloat = 18
-    private let regionsHeaderReserve: CGFloat = 22
+    private let topDepartementsCount = 10
+    private let moreDepartementsMaxHeight: CGFloat = 220
 
     public init(derived: ClassicDerived) { self.derived = derived }
 
@@ -65,7 +52,7 @@ public struct GeoView2: View {
                 .onMapCameraChange { context in lastRegion = context.region }
                 .ignoresSafeArea(edges: [.horizontal, .bottom])
 
-                settingsColumn(columnAvailableHeight: geo.size.height - columnOuterPadding * 2)
+                settingsColumn
                     .frame(width: columnWidth)
                     .padding(columnOuterPadding)
             }
@@ -76,24 +63,10 @@ public struct GeoView2: View {
         }
     }
 
-    /// The column shrinks to fit its content (so a short "autres régions"
-    /// list doesn't force it to full window height) but never grows past
-    /// `columnAvailableHeight` — "autres régions" is the one flexible piece,
-    /// sized to `min(its own content, whatever room is left)`.
-    private func settingsColumn(columnAvailableHeight: CGFloat) -> some View {
-        let chrome = columnInnerPadding * 2 + 12 /* spacing before the list */ + chevronReserve + regionsHeaderReserve
-        let scrollBudget = max(60, columnAvailableHeight - chrome - topContentHeight)
-
-        return VStack(alignment: .leading, spacing: 12) {
+    private var settingsColumn: some View {
+        VStack(alignment: .leading, spacing: 12) {
             topContent
-                .background(
-                    GeometryReader { proxy in
-                        Color.clear.preference(key: TopContentHeightKey.self, value: proxy.size.height)
-                    }
-                )
-                .onPreferenceChange(TopContentHeightKey.self) { topContentHeight = $0 }
-
-            otherRegionsCard(maxHeight: scrollBudget)
+            departementsCard
         }
         .padding(columnInnerPadding)
         .background(.regularMaterial.opacity(0.75), in: RoundedRectangle(cornerRadius: 14))
@@ -113,7 +86,8 @@ public struct GeoView2: View {
                 CriterionRow(row: row, labelColor: columnInk) { state.setGeo2(row.id, value: $0) }
             }
 
-            regionHero.padding(.top, 8)
+            // "Région la plus probante" masqué à titre de test — la logique
+            // (`regionHero`) reste disponible ci-dessous, juste non affichée.
         }
     }
 
@@ -140,48 +114,87 @@ public struct GeoView2: View {
         .buttonStyle(.plain)
     }
 
-    /// Shrinks to fit its own list when short; scrolls internally, capped at
-    /// `maxHeight` (the room left in the column), with a down chevron only
-    /// when there's still more to see than fits. `maxHeight` is a ceiling,
-    /// not a forced size — ScrollView sizes to its content up to that
-    /// ceiling on its own, so a short list doesn't pad out to empty space.
-    private func otherRegionsCard(maxHeight: CGFloat) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Eyebrow("AUTRES DÉPARTEMENTS", color: columnFaint).padding(.bottom, 8)
-            ScrollView {
-                VStack(spacing: 0) {
-                    ForEach(derived.regionRows(weights: state.geo2)) { r in
-                        Button {
-                            mapState.focusOnDepartement(r.name)
-                        } label: {
-                            HStack(spacing: 10) {
-                                Text("\(r.score)").font(CFont.mono(12, weight: .medium)).foregroundStyle(columnInk).frame(width: 20, alignment: .leading)
-                                Text(r.name).font(CFont.sans(14, weight: .medium)).foregroundStyle(columnInk)
-                                Spacer()
-                            }
-                            .padding(.vertical, 6)
-                            .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .background(
-                    GeometryReader { proxy in
-                        Color.clear.preference(key: ContentHeightKey.self, value: proxy.size.height)
-                    }
-                )
-            }
-            .frame(maxHeight: maxHeight)
-            .onPreferenceChange(ContentHeightKey.self) { otherRegionsContentHeight = $0 }
+    /// All départements ranked 0...100 by the current proximity criteria —
+    /// the top 10 always show; the rest sit behind a collapsible
+    /// "Autres départements" header with a disclosure chevron.
+    private var departementsCard: some View {
+        let ranked = derived.rankedDepartements(weights: state.geo2)
+        let top10 = Array(ranked.prefix(topDepartementsCount))
+        let rest = Array(ranked.dropFirst(topDepartementsCount))
 
-            if otherRegionsContentHeight > maxHeight {
-                Image(systemName: "chevron.down")
-                    .font(.system(size: 10, weight: .semibold))
-                    .foregroundStyle(columnFaint)
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 4)
+        return VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .firstTextBaseline) {
+                Eyebrow("DÉPARTEMENTS", color: columnFaint)
+                Spacer()
+                sortMenu
+            }
+            .padding(.bottom, 8)
+
+            VStack(spacing: 0) {
+                ForEach(top10, id: \.dep.nom) { entry in
+                    departementRow(name: entry.dep.nom, score: entry.score)
+                }
+            }
+
+            if !rest.isEmpty {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) { showMoreDepartements.toggle() }
+                } label: {
+                    HStack {
+                        Eyebrow("AUTRES DÉPARTEMENTS", color: columnFaint)
+                        Spacer()
+                        Image(systemName: showMoreDepartements ? "chevron.up" : "chevron.down")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(columnFaint)
+                    }
+                    .padding(.top, 12)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+
+                if showMoreDepartements {
+                    ScrollView {
+                        VStack(spacing: 0) {
+                            ForEach(rest, id: \.dep.nom) { entry in
+                                departementRow(name: entry.dep.nom, score: entry.score)
+                            }
+                        }
+                    }
+                    .frame(maxHeight: moreDepartementsMaxHeight)
+                    .padding(.top, 8)
+                }
             }
         }
+    }
+
+    private var sortMenu: some View {
+        Menu {
+            Button("Département") {}
+            Button("Région") {}
+        } label: {
+            HStack(spacing: 4) {
+                Text("Classer").font(CFont.sans(11, weight: .medium))
+                Image(systemName: "chevron.up.chevron.down").font(.system(size: 9, weight: .semibold))
+            }
+            .foregroundStyle(columnFaint)
+        }
+        .menuStyle(.borderlessButton)
+        .fixedSize()
+    }
+
+    private func departementRow(name: String, score: Double) -> some View {
+        Button {
+            mapState.focusOnDepartement(name)
+        } label: {
+            HStack(spacing: 10) {
+                Text("\(Int(score.rounded()))").font(CFont.mono(12, weight: .medium)).foregroundStyle(columnInk).frame(width: 20, alignment: .leading)
+                Text(name).font(CFont.sans(14, weight: .medium)).foregroundStyle(columnInk)
+                Spacer()
+            }
+            .padding(.vertical, 6)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 
     private func exclusionToggle(_ label: String, isOn: Binding<Bool>) -> some View {
