@@ -27,8 +27,21 @@ public final class ClassicState: ObservableObject {
     @Published public var includeVilleMoyenne: Bool = true
     @Published public var includeGrandeVille: Bool = true
     @Published public var meteo: [Int] = ClassicStatic.meteo.map(\.1)
-    /// One weight array per group, indexed like `ClassicStatic.groups`.
-    @Published public var groups: [[Int]] = ClassicStatic.groups.map { $0.rows.map(\.1) }
+    /// One weight array per group, indexed like `ClassicStatic.groups`. Les 3
+    /// critères CULTURE repris par "Big Mac" (Musées, Lieux du patrimoine,
+    /// Festivals) démarrent à 0 (indifférent) plutôt qu'avec les valeurs
+    /// pré-remplies de `ClassicStatic` — celles-ci restent utilisées telles
+    /// quelles par "Communes et services" pour les 4 autres critères CULTURE.
+    @Published public var groups: [[Int]] = {
+        var groups = ClassicStatic.groups.map { $0.rows.map(\.1) }
+        if let cultureIndex = ClassicStatic.groups.firstIndex(where: { $0.title == "CULTURE" }) {
+            let zeroedLabels: Set<String> = ["Musées", "Lieux du patrimoine", "Festivals"]
+            for (rowIndex, row) in ClassicStatic.groups[cultureIndex].rows.enumerated() where zeroedLabels.contains(row.0) {
+                groups[cultureIndex][rowIndex] = 0
+            }
+        }
+        return groups
+    }()
 
     public init() {}
 

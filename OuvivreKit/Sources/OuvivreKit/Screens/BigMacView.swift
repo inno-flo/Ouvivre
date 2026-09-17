@@ -39,6 +39,14 @@ public struct BigMacView: View {
     private let columnInnerPadding: CGFloat = 16
     private let topCommunesCount = 30
     private let moreCommunesMaxHeight: CGFloat = 440
+    /// Nombre de départements affichés sur la carte — sans ce plafond, tous
+    /// les départements correspondant aux tailles de commune restent
+    /// affichés quel que soit leur classement, et les réglages de
+    /// proximité/Culture (qui ne font que réordonner la liste) n'ont donc
+    /// aucun effet visible (même bug que "0 communes" : effet invisible
+    /// plutôt qu'absent). Même convention que `topDepartementsCount` dans
+    /// GeoView2.
+    private let topDepartementsCount = 10
 
     public init(derived: ClassicDerived) { self.derived = derived }
 
@@ -65,6 +73,7 @@ public struct BigMacView: View {
             }
             .onChange(of: mapState.coordinate.latitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: mapState.coordinate.longitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
+            .onChange(of: mapState.spanDegrees) { _, newSpan in applyZoom(newSpan) }
             .onChange(of: state.excludeOverseas) { _, _ in refreshDepartementsOnMap() }
             .onChange(of: state.excludeCorse) { _, _ in refreshDepartementsOnMap() }
             .onChange(of: state.geo2) { _, _ in refreshDepartementsOnMap() }
@@ -154,6 +163,7 @@ public struct BigMacView: View {
                 return (entry.dep.nom, (entry.score + cultureScore) / 2)
             }
             .sorted { $0.score > $1.score }
+            .prefix(topDepartementsCount)
             .map(\.name)
     }
 
@@ -426,6 +436,21 @@ public struct BigMacView: View {
     }
 
     // MARK: Caméra (identique à PaysView/GeoView2)
+
+    /// Applique un changement de `spanDegrees` (boutons de zoom de la
+    /// toolbar) à la caméra courante — la molette/le trackpad modifient déjà
+    /// `position` directement via MapKit, mais les boutons ne passent que
+    /// par `mapState.spanDegrees`, qu'il faut donc écouter (comme
+    /// `applyZoom` dans GeoView2).
+    private func applyZoom(_ newSpan: Double) {
+        guard let current = lastRegion else { return }
+        let updated = MKCoordinateRegion(
+            center: current.center,
+            span: MKCoordinateSpan(latitudeDelta: newSpan, longitudeDelta: newSpan)
+        )
+        withAnimation(.easeInOut(duration: 0.25)) { position = .region(updated) }
+        lastRegion = updated
+    }
 
     private func moveCamera(totalWidth: CGFloat, animated: Bool) {
         guard totalWidth > 0 else { return }
