@@ -30,7 +30,7 @@ public struct GeoView2: View {
     private let columnOuterPadding: CGFloat = 20
     private let columnInnerPadding: CGFloat = 16
     private let topDepartementsCount = 10
-    private let moreDepartementsMaxHeight: CGFloat = 220
+    private let moreDepartementsMaxHeight: CGFloat = 440
 
     public init(derived: ClassicDerived) { self.derived = derived }
 

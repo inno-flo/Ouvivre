@@ -16,8 +16,8 @@ public final class ClassicState: ObservableObject {
     @Published public var geo: [Int] = ClassicStatic.geo.map(\.1)
     /// Géographie 2's own weights, on its 5-level (0...4) scale.
     @Published public var geo2: [Int] = ClassicStatic.geo.map { min($0.1, 4) }
-    @Published public var excludeOverseas: Bool = false
-    @Published public var excludeCorse: Bool = false
+    @Published public var excludeOverseas: Bool = true
+    @Published public var excludeCorse: Bool = true
     @Published public var meteo: [Int] = ClassicStatic.meteo.map(\.1)
     /// One weight array per group, indexed like `ClassicStatic.groups`.
     @Published public var groups: [[Int]] = ClassicStatic.groups.map { $0.rows.map(\.1) }
