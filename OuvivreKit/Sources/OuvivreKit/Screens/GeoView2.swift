@@ -58,7 +58,7 @@ public struct GeoView2: View {
                         ForEach(mapState.departementRingGroups, id: \.name) { group in
                             ForEach(Array(group.rings.enumerated()), id: \.offset) { _, ring in
                                 MapPolygon(coordinates: ring)
-                                    .foregroundStyle(theme.accent.opacity(group.name == hoveredDepartementName ? 0.20 : 0.16))
+                                    .foregroundStyle(theme.accent.opacity(group.name == hoveredDepartementName ? 0.45 : 0.16))
                                     .stroke(theme.accent, lineWidth: 2)
                             }
                         }
