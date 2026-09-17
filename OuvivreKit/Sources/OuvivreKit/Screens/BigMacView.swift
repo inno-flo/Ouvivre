@@ -29,9 +29,16 @@ public struct BigMacView: View {
     @State private var expandedCulture = false
     @State private var expandedMobilite = false
 
+    // Liste des communes correspondantes (bloc Régions) : les 30 premières
+    // s'affichent directement, le reste se déplie — même pattern que
+    // `showMoreDepartements` dans GeoView2.
+    @State private var showMoreCommunes = false
+
     private let columnWidth: CGFloat = 340
     private let columnOuterPadding: CGFloat = 20
     private let columnInnerPadding: CGFloat = 16
+    private let topCommunesCount = 30
+    private let moreCommunesMaxHeight: CGFloat = 440
 
     public init(derived: ClassicDerived) { self.derived = derived }
 
@@ -40,6 +47,9 @@ public struct BigMacView: View {
             ZStack(alignment: .topLeading) {
                 Map(position: $position) {
                     Marker(mapState.title, coordinate: mapState.coordinate)
+                    ForEach(shownCommunes) { entry in
+                        Marker(entry.name, coordinate: entry.coordinate)
+                    }
                 }
                 .mapStyle(mapState.planType.style(elevation: .automatic))
                 .onMapCameraChange { context in lastRegion = context.region }
@@ -98,14 +108,20 @@ public struct BigMacView: View {
 
     // MARK: Bloc 2 — Régions + tailles de commune
 
-    private var communeCount: Int {
-        CommuneSizeData.count(
+    private var matchingCommunes: [CommuneSizeEntry] {
+        CommuneSizeData.matching(
             includeVillage: state.includeVillage,
             includePetiteVille: state.includePetiteVille,
             includeVilleMoyenne: state.includeVilleMoyenne,
             includeGrandeVille: state.includeGrandeVille
         )
     }
+    private var communeCount: Int { matchingCommunes.count }
+    /// Les 30 premières communes correspondantes, toujours affichées — et
+    /// aussi celles utilisées comme pins sur la carte (pour éviter d'en
+    /// surcharger l'affichage avec les "autres communes").
+    private var shownCommunes: [CommuneSizeEntry] { Array(matchingCommunes.prefix(topCommunesCount)) }
+    private var moreCommunes: [CommuneSizeEntry] { Array(matchingCommunes.dropFirst(topCommunesCount)) }
 
     private var regionsBlock: some View {
         blockDisclosure(title: "Régions", isExpanded: $expandedRegions, enabled: paysHasSelection) {
@@ -124,8 +140,65 @@ public struct BigMacView: View {
                 Text("\(communeCount) communes correspondantes")
                     .font(CFont.mono(11, weight: .medium))
                     .foregroundStyle(columnFaint)
+
+                communesList
             }
         }
+    }
+
+    /// Liste des communes correspondant aux filtres — 30 premières en clair,
+    /// le reste replié derrière "AUTRES COMMUNES" (même pattern que
+    /// `departementsCard` dans GeoView2).
+    private var communesList: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            if !shownCommunes.isEmpty {
+                Eyebrow("COMMUNES", color: columnFaint)
+                    .padding(.bottom, 6)
+
+                VStack(spacing: 0) {
+                    ForEach(shownCommunes) { entry in
+                        communeRow(entry)
+                    }
+                }
+            }
+
+            if !moreCommunes.isEmpty {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) { showMoreCommunes.toggle() }
+                } label: {
+                    HStack {
+                        Eyebrow("AUTRES COMMUNES", color: columnFaint)
+                        Spacer()
+                        Image(systemName: showMoreCommunes ? "chevron.up" : "chevron.down")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(columnFaint)
+                    }
+                    .padding(.top, 12)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+
+                if showMoreCommunes {
+                    ScrollView {
+                        VStack(spacing: 0) {
+                            ForEach(moreCommunes) { entry in
+                                communeRow(entry)
+                            }
+                        }
+                    }
+                    .frame(maxHeight: moreCommunesMaxHeight)
+                    .padding(.top, 8)
+                }
+            }
+        }
+    }
+
+    private func communeRow(_ entry: CommuneSizeEntry) -> some View {
+        Text(entry.name)
+            .font(CFont.sans(14, weight: .medium))
+            .foregroundStyle(columnInk)
+            .padding(.vertical, 6)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func sizeCheckbox(_ label: String, description: String, isOn: Binding<Bool>) -> some View {
