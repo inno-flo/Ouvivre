@@ -1,0 +1,168 @@
+"""
+Builds culture_scores.json: per-département 0-100 scores for Musées, Lieux
+du patrimoine et Festivals — feeds the "Culture" block of BigMacView.
+
+Sources (culture.data.gouv.fr / ministère de la Culture, via data.gouv.fr) :
+- Musées : Base des lieux et équipements culturels (Basilic)
+  https://culture.data.gouv.fr/datasets/61777ddaa9101d073e5506cd
+  filtré sur Type équipement ou lieu == "Musée" (1843 lignes sur ~86k)
+- Lieux du patrimoine : Liste des sites patrimoniaux remarquables (SPR)
+  https://culture.data.gouv.fr/datasets/628da9ff836d8bf454c7fd48
+- Festivals : Liste des festivals en France
+  https://culture.data.gouv.fr/datasets/62cf95993d99f22480f49334
+
+Méthode : décompte brut par département pour chacune des 3 catégories, puis
+normalisation min-max sur les 101 départements (0 = minimum, 100 = maximum) —
+même convention que normalize_and_export.py pour france_geo_scores.json.
+
+Run: .venv/bin/python build_culture_data.py
+"""
+import csv
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+
+import requests
+
+RAW = Path(__file__).parent / "data" / "raw"
+OUT = Path(__file__).parent / "data" / "out"
+RAW.mkdir(parents=True, exist_ok=True)
+OUT.mkdir(parents=True, exist_ok=True)
+
+MUSEES_URL = "https://static.data.gouv.fr/resources/base-des-lieux-et-equipements-culturels-basilic/20260218-084338/base-des-lieux-et-des-equipements-culturels.csv"
+PATRIMOINE_URL = "https://ministere-culture.s3.sbg.io.cloud.ovh.net/SPR/liste_sites_patrimoniaux_remarquables.csv"
+FESTIVALS_URL = "https://static.data.gouv.fr/resources/liste-des-festivals-en-france/20250827-132958/festivals-global-festivals-pl.csv"
+
+MUSEES_PATH = RAW / "musees.csv"
+PATRIMOINE_PATH = RAW / "patrimoine.csv"
+FESTIVALS_PATH = RAW / "festivals.csv"
+
+FRANCE_GEO_SCORES = Path(__file__).parent.parent / "OuvivreKit" / "Sources" / "OuvivreKit" / "Resources" / "france_geo_scores.json"
+
+
+def download(url, path):
+    if path.exists():
+        return
+    print(f"Downloading {url} ...")
+    r = requests.get(url, timeout=120)
+    r.raise_for_status()
+    path.write_bytes(r.content)
+    print(f"Saved {len(r.content)} bytes to {path}")
+
+
+def dept_code_from_insee(insee):
+    if not insee:
+        return None
+    if insee.startswith("97") or insee.startswith("98"):
+        return insee[:3]
+    return insee[:2]
+
+
+def load_departements():
+    """Canonical list of 101 départements (code, nom) from the existing
+    france_geo_scores.json — keeps this pipeline consistent with it."""
+    data = json.loads(FRANCE_GEO_SCORES.read_text())
+    return {d["codeInsee"]: d["nom"] for d in data["departements"]}
+
+
+def count_musees(dept_codes):
+    counts = {c: 0 for c in dept_codes}
+    with MUSEES_PATH.open(encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f, delimiter=";")
+        for row in reader:
+            if row.get("Type équipement ou lieu", "").strip() != "Musée":
+                continue
+            code = dept_code_from_insee(row.get("code_insee", "").strip())
+            if code in counts:
+                counts[code] += 1
+    return counts
+
+
+def count_patrimoine(dept_codes):
+    counts = {c: 0 for c in dept_codes}
+    with PATRIMOINE_PATH.open(encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f, delimiter=";")
+        for row in reader:
+            code = row.get("code_departement", "").strip()
+            if code in counts:
+                try:
+                    counts[code] += int(row.get("nombre_de_spr", "1") or "1")
+                except ValueError:
+                    counts[code] += 1
+    return counts
+
+
+def count_festivals(dept_codes):
+    counts = {c: 0 for c in dept_codes}
+    with FESTIVALS_PATH.open(encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f, delimiter=";")
+        for row in reader:
+            code = dept_code_from_insee(row.get("Code Insee commune", "").strip())
+            if code in counts:
+                counts[code] += 1
+    return counts
+
+
+def min_max_normalize(counts):
+    vals = list(counts.values())
+    lo, hi = min(vals), max(vals)
+    span = hi - lo
+
+    def score(code):
+        if span == 0:
+            return 50.0
+        return round((counts[code] - lo) / span * 100.0, 1)
+    return score
+
+
+def main():
+    download(MUSEES_URL, MUSEES_PATH)
+    download(PATRIMOINE_URL, PATRIMOINE_PATH)
+    download(FESTIVALS_URL, FESTIVALS_PATH)
+
+    dept_names = load_departements()
+    dept_codes = list(dept_names.keys())
+
+    musees_counts = count_musees(dept_codes)
+    patrimoine_counts = count_patrimoine(dept_codes)
+    festivals_counts = count_festivals(dept_codes)
+
+    musees_score = min_max_normalize(musees_counts)
+    patrimoine_score = min_max_normalize(patrimoine_counts)
+    festivals_score = min_max_normalize(festivals_counts)
+
+    out_records = []
+    for code in sorted(dept_codes):
+        out_records.append({
+            "codeInsee": code,
+            "nom": dept_names[code],
+            "scores": {
+                "musees": musees_score(code),
+                "patrimoine": patrimoine_score(code),
+                "festivals": festivals_score(code),
+            },
+            "counts": {
+                "musees": musees_counts[code],
+                "patrimoine": patrimoine_counts[code],
+                "festivals": festivals_counts[code],
+            },
+        })
+
+    final = {
+        "generatedAt": datetime.now(timezone.utc).isoformat(),
+        "source": (
+            "culture.data.gouv.fr — Base des lieux et équipements culturels "
+            "(Basilic, filtré Musée): " + MUSEES_URL + " | "
+            "Liste des sites patrimoniaux remarquables (SPR): " + PATRIMOINE_URL + " | "
+            "Liste des festivals en France: " + FESTIVALS_URL
+        ),
+        "departements": out_records,
+    }
+    out_path = OUT / "culture_scores.json"
+    out_path.write_text(json.dumps(final, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"Wrote {len(out_records)} départements to {out_path}")
+    print("Totals — musées:", sum(musees_counts.values()), "patrimoine:", sum(patrimoine_counts.values()), "festivals:", sum(festivals_counts.values()))
+
+
+if __name__ == "__main__":
+    main()

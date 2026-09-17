@@ -14,7 +14,9 @@ let package = Package(
         .target(name: "OuvivreKit", resources: [
             .copy("Resources/france_geo_scores.json"),
             .copy("Resources/france_regions_boundaries.json"),
-            .copy("Resources/france_departements_boundaries.json")
+            .copy("Resources/france_departements_boundaries.json"),
+            .copy("Resources/communes_data.json"),
+            .copy("Resources/culture_scores.json")
         ])
     ]
 )

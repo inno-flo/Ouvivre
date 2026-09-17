@@ -72,6 +72,7 @@ public struct BigMacView: View {
             .onChange(of: state.includePetiteVille) { _, _ in refreshDepartementsOnMap() }
             .onChange(of: state.includeVilleMoyenne) { _, _ in refreshDepartementsOnMap() }
             .onChange(of: state.includeGrandeVille) { _, _ in refreshDepartementsOnMap() }
+            .onChange(of: state.groups) { _, _ in refreshDepartementsOnMap() }
             .onChange(of: geo.size.width) { _, newValue in moveCamera(totalWidth: newValue, animated: false) }
         }
     }
@@ -118,27 +119,48 @@ public struct BigMacView: View {
         }
     }
 
-    // MARK: Départements correspondant aux communes filtrées
+    // MARK: Départements correspondant aux communes filtrées + Culture
 
-    /// Codes département (2 premiers caractères du code INSEE) des communes
-    /// qui correspondent aux tailles cochées.
+    /// Codes département des communes qui correspondent aux tailles cochées
+    /// — précalculé côté `CommuneSizeData` (groupes par catégorie), évite de
+    /// refiltrer/trier ~35k communes à chaque changement d'état.
     private var matchingDepartementCodes: Set<String> {
-        Set(matchingCommunes.map { String($0.inseeCode.prefix(2)) })
+        CommuneSizeData.matchingDepartementCodes(
+            includeVillage: state.includeVillage,
+            includePetiteVille: state.includePetiteVille,
+            includeVilleMoyenne: state.includeVilleMoyenne,
+            includeGrandeVille: state.includeGrandeVille
+        )
     }
 
-    /// Ces départements, classés par pertinence via les réglages de
-    /// proximité (`state.geo2`) — mêmes calculs que Régions, filtrés à
-    /// l'ensemble issu des tailles de commune.
+    /// Poids Culture (Musées, Lieux du patrimoine, Festivals) actuellement
+    /// réglés, dans l'ordre de `CultureScores.criterionKeys`.
+    private var cultureWeights: [Int] {
+        cultureRows.map(\.row.value)
+    }
+
+    /// Ces départements, classés par pertinence en combinant les réglages de
+    /// proximité (`state.geo2`) et les poids Culture (moyenne des deux
+    /// scores 0-100) — filtrés à l'ensemble issu des tailles de commune.
+    /// Tant qu'aucun poids Culture n'est réglé (curseurs à 0), le score
+    /// Culture retombe à 50 pour tous les départements et n'influence donc
+    /// pas le classement, qui reste piloté par les seules proximités.
     private var matchingDepartementNames: [String] {
-        derived.rankedDepartements(weights: state.geo2)
+        let weights = cultureWeights
+        return derived.rankedDepartements(weights: state.geo2)
             .filter { matchingDepartementCodes.contains($0.dep.codeInsee) }
-            .map(\.dep.nom)
+            .map { entry -> (name: String, score: Double) in
+                let cultureScore = CultureScores.weightedScore(forDepartementCode: entry.dep.codeInsee, weights: weights)
+                return (entry.dep.nom, (entry.score + cultureScore) / 2)
+            }
+            .sorted { $0.score > $1.score }
+            .map(\.name)
     }
 
     /// Redessine les périmètres des départements correspondants — appelé à
-    /// l'apparition et à chaque changement de taille de commune ou de
-    /// réglage de proximité (comme `refreshTopDepartementsOnMap` dans
-    /// GeoView2), sans déplacer la caméra.
+    /// l'apparition et à chaque changement de taille de commune, de réglage
+    /// de proximité ou de poids Culture (comme `refreshTopDepartementsOnMap`
+    /// dans GeoView2), sans déplacer la caméra.
     private func refreshDepartementsOnMap() {
         mapState.updateDepartementRingGroups(matchingDepartementNames)
     }

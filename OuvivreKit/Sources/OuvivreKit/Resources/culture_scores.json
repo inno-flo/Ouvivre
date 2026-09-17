@@ -1,0 +1,1420 @@
+{
+ "generatedAt": "2026-09-17T17:20:27.470357+00:00",
+ "source": "culture.data.gouv.fr — Base des lieux et équipements culturels (Basilic, filtré Musée): https://static.data.gouv.fr/resources/base-des-lieux-et-equipements-culturels-basilic/20260218-084338/base-des-lieux-et-des-equipements-culturels.csv | Liste des sites patrimoniaux remarquables (SPR): https://ministere-culture.s3.sbg.io.cloud.ovh.net/SPR/liste_sites_patrimoniaux_remarquables.csv | Liste des festivals en France: https://static.data.gouv.fr/resources/liste-des-festivals-en-france/20250827-132958/festivals-global-festivals-pl.csv",
+ "departements": [
+  {
+   "codeInsee": "01",
+   "nom": "Ain",
+   "scores": {
+    "musees": 27.0,
+    "patrimoine": 17.9,
+    "festivals": 0.0
+   },
+   "counts": {
+    "musees": 19,
+    "patrimoine": 7,
+    "festivals": 0
+   }
+  },
+  {
+   "codeInsee": "02",
+   "nom": "Aisne",
+   "scores": {
+    "musees": 34.9,
+    "patrimoine": 17.9,
+    "festivals": 0.0
+   },
+   "counts": {
+    "musees": 24,
+    "patrimoine": 7,
+    "festivals": 0
+   }
+  },
+  {
+   "codeInsee": "03",
+   "nom": "Allier",
+   "scores": {
+    "musees": 22.2,
+    "patrimoine": 35.9,
+    "festivals": 0.0
+   },
+   "counts": {
+    "musees": 16,
+    "patrimoine": 14,
+    "festivals": 0
+   }
+  },
+  {
+   "codeInsee": "04",
+   "nom": "Alpes-de-Haute-Provence",
+   "scores": {
+    "musees": 14.3,
+    "patrimoine": 10.3,
+    "festivals": 0.0
+   },
+   "counts": {
+    "musees": 11,
+    "patrimoine": 4,
+    "festivals": 0
+   }
+  },
+  {
+   "codeInsee": "05",
+   "nom": "Hautes-Alpes",
+   "scores": {
+    "musees": 4.8,
+    "patrimoine": 28.2,
+    "festivals": 0.0
+   },
+   "counts": {
+    "musees": 5,
+    "patrimoine": 11,
+    "festivals": 0
+   }
+  },
+  {
+   "codeInsee": "06",
+   "nom": "Alpes-Maritimes",
+   "scores": {
+    "musees": 65.1,
+    "patrimoine": 17.9,
+    "festivals": 0.0
+   },
+   "counts": {
+    "musees": 43,
+    "patrimoine": 7,
+    "festivals": 0
+   }
+  },
+  {
+   "codeInsee": "07",
+   "nom": "Ardèche",
+   "scores": {
+    "musees": 17.5,
+    "patrimoine": 38.5,
+    "festivals": 0.0
+   },
+   "counts": {
+    "musees": 13,
+    "patrimoine": 15,
+    "festivals": 0
+   }
+  },
+  {
+   "codeInsee": "08",
+   "nom": "Ardennes",
+   "scores": {
+    "musees": 17.5,
+    "patrimoine": 20.5,
+    "festivals": 0.0
+   },
+   "counts": {
+    "musees": 13,
+    "patrimoine": 8,
+    "festivals": 0
+   }
+  },
+  {
+   "codeInsee": "09",
+   "nom": "Ariège",
+   "scores": {
+    "musees": 9.5,
+    "patrimoine": 23.1,
+    "festivals": 0.0
+   },
+   "counts": {
+    "musees": 8,
+    "patrimoine": 9,
+    "festivals": 0
+   }
+  },
+  {
+   "codeInsee": "10",
+   "nom": "Aube",
+   "scores": {
+    "musees": 27.0,
+    "patrimoine": 17.9,
+    "festivals": 15.8
+   },
+   "counts": {
+    "musees": 19,
+    "patrimoine": 7,
+    "festivals": 49
+   }
+  },
+  {
+   "codeInsee": "11",
+   "nom": "Aude",
+   "scores": {
+    "musees": 17.5,
+    "patrimoine": 25.6,
+    "festivals": 36.8
+   },
+   "counts": {
+    "musees": 13,
+    "patrimoine": 10,
+    "festivals": 114
+   }
+  },
+  {
+   "codeInsee": "12",
+   "nom": "Aveyron",
+   "scores": {
+    "musees": 17.5,
+    "patrimoine": 43.6,
+    "festivals": 17.1
+   },
+   "counts": {
+    "musees": 13,
+    "patrimoine": 17,
+    "festivals": 53
+   }
+  },
+  {
+   "codeInsee": "13",
+   "nom": "Bouches-du-Rhône",
+   "scores": {
+    "musees": 81.0,
+    "patrimoine": 33.3,
+    "festivals": 100.0
+   },
+   "counts": {
+    "musees": 53,
+    "patrimoine": 13,
+    "festivals": 310
+   }
+  },
+  {
+   "codeInsee": "14",
+   "nom": "Calvados",
+   "scores": {
+    "musees": 46.0,
+    "patrimoine": 28.2,
+    "festivals": 29.0
+   },
+   "counts": {
+    "musees": 31,
+    "patrimoine": 11,
+    "festivals": 90
+   }
+  },
+  {
+   "codeInsee": "15",
+   "nom": "Cantal",
+   "scores": {
+    "musees": 14.3,
+    "patrimoine": 23.1,
+    "festivals": 6.8
+   },
+   "counts": {
+    "musees": 11,
+    "patrimoine": 9,
+    "festivals": 21
+   }
+  },
+  {
+   "codeInsee": "16",
+   "nom": "Charente",
+   "scores": {
+    "musees": 12.7,
+    "patrimoine": 28.2,
+    "festivals": 16.8
+   },
+   "counts": {
+    "musees": 10,
+    "patrimoine": 11,
+    "festivals": 52
+   }
+  },
+  {
+   "codeInsee": "17",
+   "nom": "Charente-Maritime",
+   "scores": {
+    "musees": 38.1,
+    "patrimoine": 71.8,
+    "festivals": 31.6
+   },
+   "counts": {
+    "musees": 26,
+    "patrimoine": 28,
+    "festivals": 98
+   }
+  },
+  {
+   "codeInsee": "18",
+   "nom": "Cher",
+   "scores": {
+    "musees": 17.5,
+    "patrimoine": 12.8,
+    "festivals": 12.3
+   },
+   "counts": {
+    "musees": 13,
+    "patrimoine": 5,
+    "festivals": 38
+   }
+  },
+  {
+   "codeInsee": "19",
+   "nom": "Corrèze",
+   "scores": {
+    "musees": 12.7,
+    "patrimoine": 17.9,
+    "festivals": 11.9
+   },
+   "counts": {
+    "musees": 10,
+    "patrimoine": 7,
+    "festivals": 37
+   }
+  },
+  {
+   "codeInsee": "21",
+   "nom": "Côte-d'Or",
+   "scores": {
+    "musees": 34.9,
+    "patrimoine": 48.7,
+    "festivals": 23.9
+   },
+   "counts": {
+    "musees": 24,
+    "patrimoine": 19,
+    "festivals": 74
+   }
+  },
+  {
+   "codeInsee": "22",
+   "nom": "Côtes-d'Armor",
+   "scores": {
+    "musees": 6.3,
+    "patrimoine": 43.6,
+    "festivals": 43.9
+   },
+   "counts": {
+    "musees": 6,
+    "patrimoine": 17,
+    "festivals": 136
+   }
+  },
+  {
+   "codeInsee": "23",
+   "nom": "Creuse",
+   "scores": {
+    "musees": 9.5,
+    "patrimoine": 5.1,
+    "festivals": 12.9
+   },
+   "counts": {
+    "musees": 8,
+    "patrimoine": 2,
+    "festivals": 40
+   }
+  },
+  {
+   "codeInsee": "24",
+   "nom": "Dordogne",
+   "scores": {
+    "musees": 36.5,
+    "patrimoine": 100.0,
+    "festivals": 22.6
+   },
+   "counts": {
+    "musees": 25,
+    "patrimoine": 39,
+    "festivals": 70
+   }
+  },
+  {
+   "codeInsee": "25",
+   "nom": "Doubs",
+   "scores": {
+    "musees": 14.3,
+    "patrimoine": 15.4,
+    "festivals": 25.2
+   },
+   "counts": {
+    "musees": 11,
+    "patrimoine": 6,
+    "festivals": 78
+   }
+  },
+  {
+   "codeInsee": "26",
+   "nom": "Drôme",
+   "scores": {
+    "musees": 19.0,
+    "patrimoine": 48.7,
+    "festivals": 26.8
+   },
+   "counts": {
+    "musees": 14,
+    "patrimoine": 19,
+    "festivals": 83
+   }
+  },
+  {
+   "codeInsee": "27",
+   "nom": "Eure",
+   "scores": {
+    "musees": 14.3,
+    "patrimoine": 17.9,
+    "festivals": 11.6
+   },
+   "counts": {
+    "musees": 11,
+    "patrimoine": 7,
+    "festivals": 36
+   }
+  },
+  {
+   "codeInsee": "28",
+   "nom": "Eure-et-Loir",
+   "scores": {
+    "musees": 19.0,
+    "patrimoine": 28.2,
+    "festivals": 9.0
+   },
+   "counts": {
+    "musees": 14,
+    "patrimoine": 11,
+    "festivals": 28
+   }
+  },
+  {
+   "codeInsee": "29",
+   "nom": "Finistère",
+   "scores": {
+    "musees": 28.6,
+    "patrimoine": 97.4,
+    "festivals": 46.5
+   },
+   "counts": {
+    "musees": 20,
+    "patrimoine": 38,
+    "festivals": 144
+   }
+  },
+  {
+   "codeInsee": "2A",
+   "nom": "Corse-du-Sud",
+   "scores": {
+    "musees": 17.5,
+    "patrimoine": 10.3,
+    "festivals": 10.6
+   },
+   "counts": {
+    "musees": 13,
+    "patrimoine": 4,
+    "festivals": 33
+   }
+  },
+  {
+   "codeInsee": "2B",
+   "nom": "Haute-Corse",
+   "scores": {
+    "musees": 9.5,
+    "patrimoine": 12.8,
+    "festivals": 11.6
+   },
+   "counts": {
+    "musees": 8,
+    "patrimoine": 5,
+    "festivals": 36
+   }
+  },
+  {
+   "codeInsee": "30",
+   "nom": "Gard",
+   "scores": {
+    "musees": 34.9,
+    "patrimoine": 48.7,
+    "festivals": 34.2
+   },
+   "counts": {
+    "musees": 24,
+    "patrimoine": 19,
+    "festivals": 106
+   }
+  },
+  {
+   "codeInsee": "31",
+   "nom": "Haute-Garonne",
+   "scores": {
+    "musees": 19.0,
+    "patrimoine": 15.4,
+    "festivals": 52.9
+   },
+   "counts": {
+    "musees": 14,
+    "patrimoine": 6,
+    "festivals": 164
+   }
+  },
+  {
+   "codeInsee": "32",
+   "nom": "Gers",
+   "scores": {
+    "musees": 9.5,
+    "patrimoine": 10.3,
+    "festivals": 21.6
+   },
+   "counts": {
+    "musees": 8,
+    "patrimoine": 4,
+    "festivals": 67
+   }
+  },
+  {
+   "codeInsee": "33",
+   "nom": "Gironde",
+   "scores": {
+    "musees": 41.3,
+    "patrimoine": 61.5,
+    "festivals": 62.3
+   },
+   "counts": {
+    "musees": 28,
+    "patrimoine": 24,
+    "festivals": 193
+   }
+  },
+  {
+   "codeInsee": "34",
+   "nom": "Hérault",
+   "scores": {
+    "musees": 34.9,
+    "patrimoine": 51.3,
+    "festivals": 50.3
+   },
+   "counts": {
+    "musees": 24,
+    "patrimoine": 20,
+    "festivals": 156
+   }
+  },
+  {
+   "codeInsee": "35",
+   "nom": "Ille-et-Vilaine",
+   "scores": {
+    "musees": 14.3,
+    "patrimoine": 38.5,
+    "festivals": 59.4
+   },
+   "counts": {
+    "musees": 11,
+    "patrimoine": 15,
+    "festivals": 184
+   }
+  },
+  {
+   "codeInsee": "36",
+   "nom": "Indre",
+   "scores": {
+    "musees": 15.9,
+    "patrimoine": 10.3,
+    "festivals": 15.8
+   },
+   "counts": {
+    "musees": 12,
+    "patrimoine": 4,
+    "festivals": 49
+   }
+  },
+  {
+   "codeInsee": "37",
+   "nom": "Indre-et-Loire",
+   "scores": {
+    "musees": 38.1,
+    "patrimoine": 46.2,
+    "festivals": 35.2
+   },
+   "counts": {
+    "musees": 26,
+    "patrimoine": 18,
+    "festivals": 109
+   }
+  },
+  {
+   "codeInsee": "38",
+   "nom": "Isère",
+   "scores": {
+    "musees": 49.2,
+    "patrimoine": 51.3,
+    "festivals": 37.7
+   },
+   "counts": {
+    "musees": 33,
+    "patrimoine": 20,
+    "festivals": 117
+   }
+  },
+  {
+   "codeInsee": "39",
+   "nom": "Jura",
+   "scores": {
+    "musees": 17.5,
+    "patrimoine": 41.0,
+    "festivals": 13.9
+   },
+   "counts": {
+    "musees": 13,
+    "patrimoine": 16,
+    "festivals": 43
+   }
+  },
+  {
+   "codeInsee": "40",
+   "nom": "Landes",
+   "scores": {
+    "musees": 19.0,
+    "patrimoine": 15.4,
+    "festivals": 21.0
+   },
+   "counts": {
+    "musees": 14,
+    "patrimoine": 6,
+    "festivals": 65
+   }
+  },
+  {
+   "codeInsee": "41",
+   "nom": "Loir-et-Cher",
+   "scores": {
+    "musees": 12.7,
+    "patrimoine": 28.2,
+    "festivals": 23.2
+   },
+   "counts": {
+    "musees": 10,
+    "patrimoine": 11,
+    "festivals": 72
+   }
+  },
+  {
+   "codeInsee": "42",
+   "nom": "Loire",
+   "scores": {
+    "musees": 39.7,
+    "patrimoine": 74.4,
+    "festivals": 21.3
+   },
+   "counts": {
+    "musees": 27,
+    "patrimoine": 29,
+    "festivals": 66
+   }
+  },
+  {
+   "codeInsee": "43",
+   "nom": "Haute-Loire",
+   "scores": {
+    "musees": 19.0,
+    "patrimoine": 23.1,
+    "festivals": 13.2
+   },
+   "counts": {
+    "musees": 14,
+    "patrimoine": 9,
+    "festivals": 41
+   }
+  },
+  {
+   "codeInsee": "44",
+   "nom": "Loire-Atlantique",
+   "scores": {
+    "musees": 23.8,
+    "patrimoine": 33.3,
+    "festivals": 40.3
+   },
+   "counts": {
+    "musees": 17,
+    "patrimoine": 13,
+    "festivals": 125
+   }
+  },
+  {
+   "codeInsee": "45",
+   "nom": "Loiret",
+   "scores": {
+    "musees": 30.2,
+    "patrimoine": 46.2,
+    "festivals": 23.9
+   },
+   "counts": {
+    "musees": 21,
+    "patrimoine": 18,
+    "festivals": 74
+   }
+  },
+  {
+   "codeInsee": "46",
+   "nom": "Lot",
+   "scores": {
+    "musees": 15.9,
+    "patrimoine": 28.2,
+    "festivals": 13.5
+   },
+   "counts": {
+    "musees": 12,
+    "patrimoine": 11,
+    "festivals": 42
+   }
+  },
+  {
+   "codeInsee": "47",
+   "nom": "Lot-et-Garonne",
+   "scores": {
+    "musees": 11.1,
+    "patrimoine": 20.5,
+    "festivals": 12.3
+   },
+   "counts": {
+    "musees": 9,
+    "patrimoine": 8,
+    "festivals": 38
+   }
+  },
+  {
+   "codeInsee": "48",
+   "nom": "Lozère",
+   "scores": {
+    "musees": 1.6,
+    "patrimoine": 15.4,
+    "festivals": 6.5
+   },
+   "counts": {
+    "musees": 3,
+    "patrimoine": 6,
+    "festivals": 20
+   }
+  },
+  {
+   "codeInsee": "49",
+   "nom": "Maine-et-Loire",
+   "scores": {
+    "musees": 25.4,
+    "patrimoine": 79.5,
+    "festivals": 17.7
+   },
+   "counts": {
+    "musees": 18,
+    "patrimoine": 31,
+    "festivals": 55
+   }
+  },
+  {
+   "codeInsee": "50",
+   "nom": "Manche",
+   "scores": {
+    "musees": 31.7,
+    "patrimoine": 15.4,
+    "festivals": 31.0
+   },
+   "counts": {
+    "musees": 22,
+    "patrimoine": 6,
+    "festivals": 96
+   }
+  },
+  {
+   "codeInsee": "51",
+   "nom": "Marne",
+   "scores": {
+    "musees": 20.6,
+    "patrimoine": 30.8,
+    "festivals": 25.5
+   },
+   "counts": {
+    "musees": 15,
+    "patrimoine": 12,
+    "festivals": 79
+   }
+  },
+  {
+   "codeInsee": "52",
+   "nom": "Haute-Marne",
+   "scores": {
+    "musees": 12.7,
+    "patrimoine": 23.1,
+    "festivals": 5.2
+   },
+   "counts": {
+    "musees": 10,
+    "patrimoine": 9,
+    "festivals": 16
+   }
+  },
+  {
+   "codeInsee": "53",
+   "nom": "Mayenne",
+   "scores": {
+    "musees": 12.7,
+    "patrimoine": 35.9,
+    "festivals": 15.2
+   },
+   "counts": {
+    "musees": 10,
+    "patrimoine": 14,
+    "festivals": 47
+   }
+  },
+  {
+   "codeInsee": "54",
+   "nom": "Meurthe-et-Moselle",
+   "scores": {
+    "musees": 27.0,
+    "patrimoine": 10.3,
+    "festivals": 20.6
+   },
+   "counts": {
+    "musees": 19,
+    "patrimoine": 4,
+    "festivals": 64
+   }
+  },
+  {
+   "codeInsee": "55",
+   "nom": "Meuse",
+   "scores": {
+    "musees": 17.5,
+    "patrimoine": 10.3,
+    "festivals": 7.1
+   },
+   "counts": {
+    "musees": 13,
+    "patrimoine": 4,
+    "festivals": 22
+   }
+  },
+  {
+   "codeInsee": "56",
+   "nom": "Morbihan",
+   "scores": {
+    "musees": 23.8,
+    "patrimoine": 35.9,
+    "festivals": 41.0
+   },
+   "counts": {
+    "musees": 17,
+    "patrimoine": 14,
+    "festivals": 127
+   }
+  },
+  {
+   "codeInsee": "57",
+   "nom": "Moselle",
+   "scores": {
+    "musees": 36.5,
+    "patrimoine": 12.8,
+    "festivals": 14.8
+   },
+   "counts": {
+    "musees": 25,
+    "patrimoine": 5,
+    "festivals": 46
+   }
+  },
+  {
+   "codeInsee": "58",
+   "nom": "Nièvre",
+   "scores": {
+    "musees": 19.0,
+    "patrimoine": 20.5,
+    "festivals": 16.1
+   },
+   "counts": {
+    "musees": 14,
+    "patrimoine": 8,
+    "festivals": 50
+   }
+  },
+  {
+   "codeInsee": "59",
+   "nom": "Nord",
+   "scores": {
+    "musees": 71.4,
+    "patrimoine": 28.2,
+    "festivals": 45.8
+   },
+   "counts": {
+    "musees": 47,
+    "patrimoine": 11,
+    "festivals": 142
+   }
+  },
+  {
+   "codeInsee": "60",
+   "nom": "Oise",
+   "scores": {
+    "musees": 25.4,
+    "patrimoine": 15.4,
+    "festivals": 57.7
+   },
+   "counts": {
+    "musees": 18,
+    "patrimoine": 6,
+    "festivals": 179
+   }
+  },
+  {
+   "codeInsee": "61",
+   "nom": "Orne",
+   "scores": {
+    "musees": 12.7,
+    "patrimoine": 33.3,
+    "festivals": 24.5
+   },
+   "counts": {
+    "musees": 10,
+    "patrimoine": 13,
+    "festivals": 76
+   }
+  },
+  {
+   "codeInsee": "62",
+   "nom": "Pas-de-Calais",
+   "scores": {
+    "musees": 36.5,
+    "patrimoine": 43.6,
+    "festivals": 23.2
+   },
+   "counts": {
+    "musees": 25,
+    "patrimoine": 17,
+    "festivals": 72
+   }
+  },
+  {
+   "codeInsee": "63",
+   "nom": "Puy-de-Dôme",
+   "scores": {
+    "musees": 28.6,
+    "patrimoine": 51.3,
+    "festivals": 33.5
+   },
+   "counts": {
+    "musees": 20,
+    "patrimoine": 20,
+    "festivals": 104
+   }
+  },
+  {
+   "codeInsee": "64",
+   "nom": "Pyrénées-Atlantiques",
+   "scores": {
+    "musees": 23.8,
+    "patrimoine": 43.6,
+    "festivals": 26.5
+   },
+   "counts": {
+    "musees": 17,
+    "patrimoine": 17,
+    "festivals": 82
+   }
+  },
+  {
+   "codeInsee": "65",
+   "nom": "Hautes-Pyrénées",
+   "scores": {
+    "musees": 9.5,
+    "patrimoine": 20.5,
+    "festivals": 12.3
+   },
+   "counts": {
+    "musees": 8,
+    "patrimoine": 8,
+    "festivals": 38
+   }
+  },
+  {
+   "codeInsee": "66",
+   "nom": "Pyrénées-Orientales",
+   "scores": {
+    "musees": 19.0,
+    "patrimoine": 28.2,
+    "festivals": 30.6
+   },
+   "counts": {
+    "musees": 14,
+    "patrimoine": 11,
+    "festivals": 95
+   }
+  },
+  {
+   "codeInsee": "67",
+   "nom": "Bas-Rhin",
+   "scores": {
+    "musees": 46.0,
+    "patrimoine": 12.8,
+    "festivals": 32.6
+   },
+   "counts": {
+    "musees": 31,
+    "patrimoine": 5,
+    "festivals": 101
+   }
+  },
+  {
+   "codeInsee": "68",
+   "nom": "Haut-Rhin",
+   "scores": {
+    "musees": 46.0,
+    "patrimoine": 10.3,
+    "festivals": 23.9
+   },
+   "counts": {
+    "musees": 31,
+    "patrimoine": 4,
+    "festivals": 74
+   }
+  },
+  {
+   "codeInsee": "69",
+   "nom": "Rhône",
+   "scores": {
+    "musees": 55.6,
+    "patrimoine": 38.5,
+    "festivals": 59.7
+   },
+   "counts": {
+    "musees": 37,
+    "patrimoine": 15,
+    "festivals": 185
+   }
+  },
+  {
+   "codeInsee": "70",
+   "nom": "Haute-Saône",
+   "scores": {
+    "musees": 11.1,
+    "patrimoine": 25.6,
+    "festivals": 17.1
+   },
+   "counts": {
+    "musees": 9,
+    "patrimoine": 10,
+    "festivals": 53
+   }
+  },
+  {
+   "codeInsee": "71",
+   "nom": "Saône-et-Loire",
+   "scores": {
+    "musees": 38.1,
+    "patrimoine": 28.2,
+    "festivals": 37.4
+   },
+   "counts": {
+    "musees": 26,
+    "patrimoine": 11,
+    "festivals": 116
+   }
+  },
+  {
+   "codeInsee": "72",
+   "nom": "Sarthe",
+   "scores": {
+    "musees": 19.0,
+    "patrimoine": 41.0,
+    "festivals": 22.6
+   },
+   "counts": {
+    "musees": 14,
+    "patrimoine": 16,
+    "festivals": 70
+   }
+  },
+  {
+   "codeInsee": "73",
+   "nom": "Savoie",
+   "scores": {
+    "musees": 30.2,
+    "patrimoine": 20.5,
+    "festivals": 25.8
+   },
+   "counts": {
+    "musees": 21,
+    "patrimoine": 8,
+    "festivals": 80
+   }
+  },
+  {
+   "codeInsee": "74",
+   "nom": "Haute-Savoie",
+   "scores": {
+    "musees": 20.6,
+    "patrimoine": 15.4,
+    "festivals": 29.0
+   },
+   "counts": {
+    "musees": 15,
+    "patrimoine": 6,
+    "festivals": 90
+   }
+  },
+  {
+   "codeInsee": "75",
+   "nom": "Paris",
+   "scores": {
+    "musees": 100.0,
+    "patrimoine": 5.1,
+    "festivals": 95.8
+   },
+   "counts": {
+    "musees": 65,
+    "patrimoine": 2,
+    "festivals": 297
+   }
+  },
+  {
+   "codeInsee": "76",
+   "nom": "Seine-Maritime",
+   "scores": {
+    "musees": 69.8,
+    "patrimoine": 46.2,
+    "festivals": 23.2
+   },
+   "counts": {
+    "musees": 46,
+    "patrimoine": 18,
+    "festivals": 72
+   }
+  },
+  {
+   "codeInsee": "77",
+   "nom": "Seine-et-Marne",
+   "scores": {
+    "musees": 58.7,
+    "patrimoine": 59.0,
+    "festivals": 15.2
+   },
+   "counts": {
+    "musees": 39,
+    "patrimoine": 23,
+    "festivals": 47
+   }
+  },
+  {
+   "codeInsee": "78",
+   "nom": "Yvelines",
+   "scores": {
+    "musees": 39.7,
+    "patrimoine": 35.9,
+    "festivals": 12.3
+   },
+   "counts": {
+    "musees": 27,
+    "patrimoine": 14,
+    "festivals": 38
+   }
+  },
+  {
+   "codeInsee": "79",
+   "nom": "Deux-Sèvres",
+   "scores": {
+    "musees": 17.5,
+    "patrimoine": 33.3,
+    "festivals": 17.4
+   },
+   "counts": {
+    "musees": 13,
+    "patrimoine": 13,
+    "festivals": 54
+   }
+  },
+  {
+   "codeInsee": "80",
+   "nom": "Somme",
+   "scores": {
+    "musees": 17.5,
+    "patrimoine": 7.7,
+    "festivals": 15.5
+   },
+   "counts": {
+    "musees": 13,
+    "patrimoine": 3,
+    "festivals": 48
+   }
+  },
+  {
+   "codeInsee": "81",
+   "nom": "Tarn",
+   "scores": {
+    "musees": 25.4,
+    "patrimoine": 46.2,
+    "festivals": 21.9
+   },
+   "counts": {
+    "musees": 18,
+    "patrimoine": 18,
+    "festivals": 68
+   }
+  },
+  {
+   "codeInsee": "82",
+   "nom": "Tarn-et-Garonne",
+   "scores": {
+    "musees": 7.9,
+    "patrimoine": 23.1,
+    "festivals": 11.9
+   },
+   "counts": {
+    "musees": 7,
+    "patrimoine": 9,
+    "festivals": 37
+   }
+  },
+  {
+   "codeInsee": "83",
+   "nom": "Var",
+   "scores": {
+    "musees": 39.7,
+    "patrimoine": 41.0,
+    "festivals": 62.6
+   },
+   "counts": {
+    "musees": 27,
+    "patrimoine": 16,
+    "festivals": 194
+   }
+  },
+  {
+   "codeInsee": "84",
+   "nom": "Vaucluse",
+   "scores": {
+    "musees": 34.9,
+    "patrimoine": 23.1,
+    "festivals": 51.9
+   },
+   "counts": {
+    "musees": 24,
+    "patrimoine": 9,
+    "festivals": 161
+   }
+  },
+  {
+   "codeInsee": "85",
+   "nom": "Vendée",
+   "scores": {
+    "musees": 31.7,
+    "patrimoine": 59.0,
+    "festivals": 15.5
+   },
+   "counts": {
+    "musees": 22,
+    "patrimoine": 23,
+    "festivals": 48
+   }
+  },
+  {
+   "codeInsee": "86",
+   "nom": "Vienne",
+   "scores": {
+    "musees": 23.8,
+    "patrimoine": 25.6,
+    "festivals": 25.5
+   },
+   "counts": {
+    "musees": 17,
+    "patrimoine": 10,
+    "festivals": 79
+   }
+  },
+  {
+   "codeInsee": "87",
+   "nom": "Haute-Vienne",
+   "scores": {
+    "musees": 9.5,
+    "patrimoine": 20.5,
+    "festivals": 21.0
+   },
+   "counts": {
+    "musees": 8,
+    "patrimoine": 8,
+    "festivals": 65
+   }
+  },
+  {
+   "codeInsee": "88",
+   "nom": "Vosges",
+   "scores": {
+    "musees": 14.3,
+    "patrimoine": 28.2,
+    "festivals": 10.3
+   },
+   "counts": {
+    "musees": 11,
+    "patrimoine": 11,
+    "festivals": 32
+   }
+  },
+  {
+   "codeInsee": "89",
+   "nom": "Yonne",
+   "scores": {
+    "musees": 19.0,
+    "patrimoine": 28.2,
+    "festivals": 15.8
+   },
+   "counts": {
+    "musees": 14,
+    "patrimoine": 11,
+    "festivals": 49
+   }
+  },
+  {
+   "codeInsee": "90",
+   "nom": "Territoire de Belfort",
+   "scores": {
+    "musees": 3.2,
+    "patrimoine": 0.0,
+    "festivals": 7.4
+   },
+   "counts": {
+    "musees": 4,
+    "patrimoine": 0,
+    "festivals": 23
+   }
+  },
+  {
+   "codeInsee": "91",
+   "nom": "Essonne",
+   "scores": {
+    "musees": 23.8,
+    "patrimoine": 25.6,
+    "festivals": 16.1
+   },
+   "counts": {
+    "musees": 17,
+    "patrimoine": 10,
+    "festivals": 50
+   }
+  },
+  {
+   "codeInsee": "92",
+   "nom": "Hauts-de-Seine",
+   "scores": {
+    "musees": 47.6,
+    "patrimoine": 15.4,
+    "festivals": 26.1
+   },
+   "counts": {
+    "musees": 32,
+    "patrimoine": 6,
+    "festivals": 81
+   }
+  },
+  {
+   "codeInsee": "93",
+   "nom": "Seine-Saint-Denis",
+   "scores": {
+    "musees": 38.1,
+    "patrimoine": 2.6,
+    "festivals": 23.2
+   },
+   "counts": {
+    "musees": 26,
+    "patrimoine": 1,
+    "festivals": 72
+   }
+  },
+  {
+   "codeInsee": "94",
+   "nom": "Val-de-Marne",
+   "scores": {
+    "musees": 23.8,
+    "patrimoine": 10.3,
+    "festivals": 17.4
+   },
+   "counts": {
+    "musees": 17,
+    "patrimoine": 4,
+    "festivals": 54
+   }
+  },
+  {
+   "codeInsee": "95",
+   "nom": "Val-d'Oise",
+   "scores": {
+    "musees": 34.9,
+    "patrimoine": 15.4,
+    "festivals": 13.5
+   },
+   "counts": {
+    "musees": 24,
+    "patrimoine": 6,
+    "festivals": 42
+   }
+  },
+  {
+   "codeInsee": "971",
+   "nom": "Guadeloupe",
+   "scores": {
+    "musees": 11.1,
+    "patrimoine": 0.0,
+    "festivals": 12.3
+   },
+   "counts": {
+    "musees": 9,
+    "patrimoine": 0,
+    "festivals": 38
+   }
+  },
+  {
+   "codeInsee": "972",
+   "nom": "Martinique",
+   "scores": {
+    "musees": 11.1,
+    "patrimoine": 5.1,
+    "festivals": 5.8
+   },
+   "counts": {
+    "musees": 9,
+    "patrimoine": 2,
+    "festivals": 18
+   }
+  },
+  {
+   "codeInsee": "973",
+   "nom": "Guyane",
+   "scores": {
+    "musees": 7.9,
+    "patrimoine": 7.7,
+    "festivals": 5.8
+   },
+   "counts": {
+    "musees": 7,
+    "patrimoine": 3,
+    "festivals": 18
+   }
+  },
+  {
+   "codeInsee": "974",
+   "nom": "La Réunion",
+   "scores": {
+    "musees": 11.1,
+    "patrimoine": 5.1,
+    "festivals": 13.2
+   },
+   "counts": {
+    "musees": 9,
+    "patrimoine": 2,
+    "festivals": 41
+   }
+  },
+  {
+   "codeInsee": "976",
+   "nom": "Mayotte",
+   "scores": {
+    "musees": 0.0,
+    "patrimoine": 0.0,
+    "festivals": 2.9
+   },
+   "counts": {
+    "musees": 2,
+    "patrimoine": 0,
+    "festivals": 9
+   }
+  }
+ ]
+}

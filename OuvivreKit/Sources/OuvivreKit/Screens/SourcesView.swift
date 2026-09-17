@@ -5,6 +5,7 @@ import SwiftUI
 public struct SourcesView: View {
     @EnvironmentObject var theme: ClassicTheme
     @EnvironmentObject var state: ClassicState
+    @StateObject private var freshness = DatasetFreshness()
     let derived: ClassicDerived
 
     public init(derived: ClassicDerived) { self.derived = derived }
@@ -28,6 +29,45 @@ public struct SourcesView: View {
             .padding(.bottom, 14)
 
             livabilityCard
+                .padding(.bottom, 14)
+
+            freshnessCard
+        }
+        .onAppear {
+            Task { await freshness.checkIfDue() }
+        }
+    }
+
+    /// Fraîcheur des jeux de données "Big Mac" (communes + culture),
+    /// vérifiée au plus une fois toutes les 15 jours auprès de l'API
+    /// data.gouv.fr — voir `DatasetFreshness`. Le pipeline offline
+    /// (`geo_pipeline/`) reste à relancer manuellement ; ceci se contente de
+    /// signaler qu'une mise à jour amont est disponible.
+    private var freshnessCard: some View {
+        Card(padding: theme.cardPadX, background: ClassicTheme.sidebarBg) {
+            VStack(alignment: .leading, spacing: 0) {
+                Eyebrow("FRAÎCHEUR DES DONNÉES — BIG MAC", color: ClassicTheme.faint).padding(.bottom, 10)
+                ForEach(freshnessRows, id: \.label) { row in
+                    HStack(alignment: .top) {
+                        Text(row.label).font(CFont.sans(12)).foregroundStyle(ClassicTheme.body)
+                        Spacer()
+                        Text(row.status)
+                            .font(CFont.mono(11, weight: .medium))
+                            .foregroundStyle(row.isStale ? theme.accent : ClassicTheme.ink)
+                            .multilineTextAlignment(.trailing)
+                            .frame(maxWidth: 260, alignment: .trailing)
+                    }
+                    .padding(.vertical, 7)
+                }
+            }
+        }
+    }
+
+    private var freshnessRows: [(label: String, status: String, isStale: Bool)] {
+        let allLabels = ["Communes de France", "Musées (Basilic)", "Lieux du patrimoine (SPR)", "Festivals"]
+        return allLabels.map { label in
+            let stale = freshness.staleDatasets.contains(label)
+            return (label, stale ? "mise à jour disponible — retraiter via geo_pipeline/" : "à jour", stale)
         }
     }
 
