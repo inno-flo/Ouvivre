@@ -50,31 +50,7 @@ public struct PaysView: View {
     private var settingsColumn: some View {
         VStack(alignment: .leading, spacing: 12) {
             Eyebrow("ÉTAPE 1", color: theme.accent)
-
-            FlowLayout(spacing: 8, rowSpacing: 8) {
-                ForEach(derived.countryList) { c in
-                    Button { state.setCountry(c.name) } label: {
-                        Text(c.name)
-                            .font(CFont.sans(13, weight: .medium))
-                            .foregroundStyle(c.selected ? .white : columnInk)
-                            .padding(.horizontal, 12).padding(.vertical, 8)
-                            .background(c.selected ? ClassicTheme.ink : .clear)
-                            .clipShape(Capsule())
-                            .overlay(Capsule().stroke(c.selected ? ClassicTheme.ink : ClassicTheme.border, lineWidth: 1))
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-
-            VStack(alignment: .leading, spacing: 14) {
-                ForEach(derived.countryFacts) { f in
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(f.key).font(CFont.sans(13)).foregroundStyle(columnFaint)
-                        Text(f.value).font(CFont.sans(15, weight: .medium)).foregroundStyle(columnInk)
-                    }
-                }
-            }
-            .padding(.top, 4)
+            PaysCountryBlock(derived: derived, ink: columnInk, faint: columnFaint)
         }
         .padding(columnInnerPadding)
         .background(.regularMaterial.opacity(0.75), in: RoundedRectangle(cornerRadius: 14))
@@ -138,6 +114,50 @@ public struct PaysView: View {
             }
         }
         lastRegion = target
+    }
+}
+
+/// La liste de puces "pays" + fiche de faits — contenu de l'ÉTAPE 1, factorisé
+/// hors de `PaysView` pour être réutilisé tel quel par `BigMacView` (bloc 1).
+public struct PaysCountryBlock: View {
+    @EnvironmentObject var state: ClassicState
+    let derived: ClassicDerived
+    let ink: Color
+    let faint: Color
+
+    public init(derived: ClassicDerived, ink: Color, faint: Color) {
+        self.derived = derived
+        self.ink = ink
+        self.faint = faint
+    }
+
+    public var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            FlowLayout(spacing: 8, rowSpacing: 8) {
+                ForEach(derived.countryList) { c in
+                    Button { state.setCountry(c.name) } label: {
+                        Text(c.name)
+                            .font(CFont.sans(13, weight: .medium))
+                            .foregroundStyle(c.selected ? .white : ink)
+                            .padding(.horizontal, 12).padding(.vertical, 8)
+                            .background(c.selected ? ClassicTheme.ink : .clear)
+                            .clipShape(Capsule())
+                            .overlay(Capsule().stroke(c.selected ? ClassicTheme.ink : ClassicTheme.border, lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 14) {
+                ForEach(derived.countryFacts) { f in
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(f.key).font(CFont.sans(13)).foregroundStyle(faint)
+                        Text(f.value).font(CFont.sans(15, weight: .medium)).foregroundStyle(ink)
+                    }
+                }
+            }
+            .padding(.top, 4)
+        }
     }
 }
 

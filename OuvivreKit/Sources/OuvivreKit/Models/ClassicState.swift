@@ -1,7 +1,7 @@
 import SwiftUI
 
 public enum ClassicScreen: String, CaseIterable, Identifiable, Hashable {
-    case pays, geo, geo2, meteo, affiner, ville, compare, profil, sources
+    case pays, geo, geo2, bigMac, meteo, affiner, ville, compare, profil, sources
     public var id: Self { self }
 }
 
@@ -18,6 +18,14 @@ public final class ClassicState: ObservableObject {
     @Published public var geo2: [Int] = ClassicStatic.geo.map { _ in 0 }
     @Published public var excludeOverseas: Bool = true
     @Published public var excludeCorse: Bool = true
+    /// Filtres de taille de commune pour "Big Mac" (Block 2) — non branchés
+    /// à un filtrage carte réel (aucune couche par commune n'existe encore),
+    /// juste un état fonctionnel + un décompte sur l'échantillon
+    /// `CommuneSizeData`.
+    @Published public var includeVillage: Bool = true
+    @Published public var includePetiteVille: Bool = true
+    @Published public var includeVilleMoyenne: Bool = true
+    @Published public var includeGrandeVille: Bool = true
     @Published public var meteo: [Int] = ClassicStatic.meteo.map(\.1)
     /// One weight array per group, indexed like `ClassicStatic.groups`.
     @Published public var groups: [[Int]] = ClassicStatic.groups.map { $0.rows.map(\.1) }

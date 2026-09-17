@@ -135,10 +135,7 @@ public struct GeoView2: View {
     private var topContent: some View {
         VStack(alignment: .leading, spacing: 12) {
             Eyebrow("ÉTAPE 2", color: theme.accent)
-            VStack(alignment: .leading, spacing: 8) {
-                exclusionToggle("Exclure les Territoires ultramarins", isOn: $state.excludeOverseas)
-                exclusionToggle("Exclure la Corse", isOn: $state.excludeCorse)
-            }
+            RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody)
             HStack(alignment: .firstTextBaseline) {
                 Eyebrow("PROXIMITÉS", color: columnFaint)
                 Spacer()
@@ -292,26 +289,6 @@ public struct GeoView2: View {
             .overlay(Capsule().stroke(columnFaint.opacity(0.5), lineWidth: 1))
     }
 
-    private func exclusionToggle(_ label: String, isOn: Binding<Bool>) -> some View {
-        Button { isOn.wrappedValue.toggle() } label: {
-            HStack(spacing: 8) {
-                RoundedRectangle(cornerRadius: 3)
-                    .fill(isOn.wrappedValue ? theme.accent : .white)
-                    .frame(width: 16, height: 16)
-                    .overlay(RoundedRectangle(cornerRadius: 3).stroke(isOn.wrappedValue ? theme.accent : ClassicTheme.border, lineWidth: 1))
-                    .overlay {
-                        if isOn.wrappedValue {
-                            Image(systemName: "checkmark")
-                                .font(.system(size: 10, weight: .bold))
-                                .foregroundStyle(.white)
-                        }
-                    }
-                Text(label).font(CFont.sans(13)).foregroundStyle(columnBody)
-            }
-        }
-        .buttonStyle(.plain)
-    }
-
     /// Shifts the camera center west of the focused coordinate so the
     /// marker renders roughly centered in the space to the right of the
     /// settings column, instead of behind it.
@@ -373,5 +350,49 @@ public struct GeoView2: View {
             }
         }
         lastRegion = target
+    }
+}
+
+/// Les deux bascules d'exclusion (Territoires ultramarins / Corse) de
+/// Géographie 2 — factorisées pour être réutilisées telles quelles par
+/// `BigMacView` (bloc 2).
+public struct RegionExclusionToggles: View {
+    @Binding var excludeOverseas: Bool
+    @Binding var excludeCorse: Bool
+    let accent: Color
+    let ink: Color
+
+    public init(excludeOverseas: Binding<Bool>, excludeCorse: Binding<Bool>, accent: Color, ink: Color) {
+        self._excludeOverseas = excludeOverseas
+        self._excludeCorse = excludeCorse
+        self.accent = accent
+        self.ink = ink
+    }
+
+    public var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            row("Exclure les Territoires ultramarins", isOn: $excludeOverseas)
+            row("Exclure la Corse", isOn: $excludeCorse)
+        }
+    }
+
+    private func row(_ label: String, isOn: Binding<Bool>) -> some View {
+        Button { isOn.wrappedValue.toggle() } label: {
+            HStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(isOn.wrappedValue ? accent : .white)
+                    .frame(width: 16, height: 16)
+                    .overlay(RoundedRectangle(cornerRadius: 3).stroke(isOn.wrappedValue ? accent : ClassicTheme.border, lineWidth: 1))
+                    .overlay {
+                        if isOn.wrappedValue {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundStyle(.white)
+                        }
+                    }
+                Text(label).font(CFont.sans(13)).foregroundStyle(ink)
+            }
+        }
+        .buttonStyle(.plain)
     }
 }

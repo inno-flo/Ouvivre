@@ -25,7 +25,7 @@ public struct ClassicRootView: View {
     /// on Pays regardless, it's just a no-op there for now.
     private var inspectorBinding: Binding<Bool> {
         Binding(
-            get: { mapState.isVisible && state.screen != .sources && state.screen != .geo2 && state.screen != .pays },
+            get: { mapState.isVisible && state.screen != .sources && state.screen != .geo2 && state.screen != .pays && state.screen != .bigMac },
             set: { mapState.isVisible = $0 }
         )
     }
@@ -41,6 +41,8 @@ public struct ClassicRootView: View {
                     PaysView(derived: derived)
                 } else if state.screen == .geo2 {
                     GeoView2(derived: derived)
+                } else if state.screen == .bigMac {
+                    BigMacView(derived: derived)
                 } else {
                     ScrollView { content(derived) }
                         .frame(maxWidth: .infinity)
@@ -51,7 +53,7 @@ public struct ClassicRootView: View {
                     // combined MapZoomStepper, and no custom capsule/frame
                     // wrapping either — those both caused trouble before).
                     // Only meaningful while Géographie 2's Map is on screen.
-                    if state.screen == .geo2 {
+                    if state.screen == .geo2 || state.screen == .bigMac {
                         ToolbarItem {
                             Button { mapState.zoomOut() } label: {
                                 Image(systemName: "minus.magnifyingglass")
@@ -105,6 +107,7 @@ public struct ClassicRootView: View {
             case .pays: EmptyView() // rendered full-bleed outside content(), see body
             case .geo: GeoView(derived: derived)
             case .geo2: EmptyView() // rendered full-bleed outside content(), see body
+            case .bigMac: EmptyView() // rendered full-bleed outside content(), see body
             case .meteo: MeteoView(derived: derived)
             case .affiner: AffinerView(derived: derived)
             case .ville: VilleView(derived: derived)
