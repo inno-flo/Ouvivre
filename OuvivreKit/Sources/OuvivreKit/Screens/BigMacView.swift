@@ -22,6 +22,7 @@ public struct BigMacView: View {
     @State private var position: MapCameraPosition = .automatic
     @State private var lastRegion: MKCoordinateRegion?
     @State private var transitionGeneration = 0
+    @State private var columnContentHeight: CGFloat = 0
 
     // Un seul bloc ouvert par défaut : "Pays".
     @State private var expandedPays = true
@@ -55,10 +56,19 @@ public struct BigMacView: View {
                 .onMapCameraChange { context in lastRegion = context.region }
                 .ignoresSafeArea(edges: [.horizontal, .bottom])
 
+                let maxColumnHeight = geo.size.height - columnOuterPadding * 2
                 ScrollView {
                     settingsColumn
+                        .background(
+                            GeometryReader { contentGeo in
+                                Color.clear.preference(key: ColumnHeightPreferenceKey.self, value: contentGeo.size.height)
+                            }
+                        )
                 }
-                .frame(width: columnWidth, height: min(geo.size.height - columnOuterPadding * 2, 780))
+                .onPreferenceChange(ColumnHeightPreferenceKey.self) { newValue in
+                    withAnimation(.easeInOut(duration: 0.2)) { columnContentHeight = newValue }
+                }
+                .frame(width: columnWidth, height: min(columnContentHeight, maxColumnHeight))
                 .padding(columnOuterPadding)
             }
             .onAppear { moveCamera(totalWidth: geo.size.width, animated: false) }
@@ -353,6 +363,15 @@ public struct BigMacView: View {
         }
         lastRegion = target
     }
+}
+
+/// Mesure la hauteur naturelle de la colonne de réglages, pour que son
+/// conteneur s'étende quand des blocs dépliés dépassent sa hauteur
+/// actuelle (jusqu'à la hauteur disponible, au-delà de quoi le `ScrollView`
+/// prend le relais).
+private struct ColumnHeightPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
 }
 
 /// Petit bouton `info.circle` qui affiche une description au clic, via
