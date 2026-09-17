@@ -9,6 +9,9 @@ public struct ClassicRootView: View {
     @StateObject private var state = ClassicState()
     @StateObject private var mapState = MapPanelState.shared
     @State private var columnVisibility: NavigationSplitViewVisibility = .automatic
+    /// Shared with `GeoView2`'s full-bleed `Map` so the native
+    /// `MapZoomStepper` in the toolbar stays wired to it.
+    @Namespace private var mapScope
 
     public init() {}
 
@@ -40,13 +43,20 @@ public struct ClassicRootView: View {
                 if state.screen == .pays {
                     PaysView(derived: derived)
                 } else if state.screen == .geo2 {
-                    GeoView2(derived: derived)
+                    GeoView2(derived: derived, mapScope: mapScope)
                 } else {
                     ScrollView { content(derived) }
                         .frame(maxWidth: .infinity)
                 }
             }
                 .toolbar {
+                    // Native control, only wired while Géographie 2's Map
+                    // (sharing mapScope) is actually on screen.
+                    if state.screen == .geo2 {
+                        ToolbarItem {
+                            MapZoomStepper(scope: mapScope)
+                        }
+                    }
                     ToolbarItem {
                         Menu {
                             ForEach(MapPlanType.allCases) { type in

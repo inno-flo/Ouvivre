@@ -12,6 +12,9 @@ public struct GeoView2: View {
     @EnvironmentObject var mapState: MapPanelState
     @Environment(\.colorScheme) private var colorScheme
     let derived: ClassicDerived
+    /// Shared with `ClassicRootView`'s toolbar so its native `MapZoomStepper`
+    /// (to the left of the Inspecteur button) stays wired to this `Map`.
+    let mapScope: Namespace.ID
 
     /// The settings column sits on a translucent system material, which
     /// tints dark in system Dark Mode — unlike the rest of the app's fixed
@@ -39,8 +42,9 @@ public struct GeoView2: View {
     private let topDepartementsCount = 10
     private let moreDepartementsMaxHeight: CGFloat = 440
 
-    public init(derived: ClassicDerived) {
+    public init(derived: ClassicDerived, mapScope: Namespace.ID) {
         self.derived = derived
+        self.mapScope = mapScope
     }
 
     public var body: some View {
@@ -68,6 +72,7 @@ public struct GeoView2: View {
                 }
                 .mapStyle(mapState.planType.style(elevation: .automatic))
                 .mapControls {}
+                .mapScope(mapScope)
                 .onMapCameraChange { context in lastRegion = context.region }
                 // Tapping the map (not a control — those live in the
                 // toolbar now, off the map entirely) deselects the top-N
