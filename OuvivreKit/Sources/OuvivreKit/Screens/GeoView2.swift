@@ -86,7 +86,10 @@ public struct GeoView2: View {
                     .frame(width: columnWidth)
                     .padding(columnOuterPadding)
             }
-            .onAppear { moveCamera(totalWidth: geo.size.width, animated: false) }
+            .onAppear {
+                moveCamera(totalWidth: geo.size.width, animated: false)
+                showTopDepartementsOnMap()
+            }
             .onChange(of: mapState.coordinate.latitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: mapState.coordinate.longitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: geo.size.width) { _, newValue in moveCamera(totalWidth: newValue, animated: false) }
@@ -96,14 +99,26 @@ public struct GeoView2: View {
         }
     }
 
+    private var currentTop10Names: [String] {
+        Array(derived.rankedDepartements(weights: state.geo2).prefix(topDepartementsCount)).map(\.dep.nom)
+    }
+
+    /// Shows the top 10 départements on the map right away — the sliders
+    /// start at 0 (Indifférent), but their ranking should still be visible
+    /// and update live as soon as the user touches one, without first
+    /// having to press "Afficher sur la carte".
+    private func showTopDepartementsOnMap() {
+        mapState.focusOnDepartements(currentTop10Names)
+        isShowingTopDepartements = true
+    }
+
     /// Keeps the map's top-10 perimeters in sync with the sliders while
-    /// "Afficher sur la carte" is active — moving a curseur re-sorts the
-    /// list live already (it's just a computed property); this does the
-    /// same for what's drawn on the map, without moving the camera.
+    /// the top 10 are showing — moving a curseur re-sorts the list live
+    /// already (it's just a computed property); this does the same for
+    /// what's drawn on the map, without moving the camera.
     private func refreshTopDepartementsOnMap() {
         guard isShowingTopDepartements else { return }
-        let names = Array(derived.rankedDepartements(weights: state.geo2).prefix(topDepartementsCount)).map(\.dep.nom)
-        mapState.updateDepartementRingGroups(names)
+        mapState.updateDepartementRingGroups(currentTop10Names)
     }
 
     private var settingsColumn: some View {
@@ -174,7 +189,7 @@ public struct GeoView2: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, 2)
 
-            showOnMapButton(names: top10.map(\.dep.nom))
+            showOnMapButton
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 .padding(.top, 20)
                 .padding(.bottom, 8)
@@ -216,10 +231,9 @@ public struct GeoView2: View {
         }
     }
 
-    private func showOnMapButton(names: [String]) -> some View {
+    private var showOnMapButton: some View {
         Button {
-            mapState.focusOnDepartements(names)
-            isShowingTopDepartements = true
+            showTopDepartementsOnMap()
         } label: {
             Text("Afficher sur la carte")
                 .font(.system(size: 13))
