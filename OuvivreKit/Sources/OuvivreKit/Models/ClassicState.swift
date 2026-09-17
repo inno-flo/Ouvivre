@@ -10,7 +10,7 @@ public enum ClassicScreen: String, CaseIterable, Identifiable, Hashable {
 /// (0...5), all mutated in place and re-derived on read.
 @MainActor
 public final class ClassicState: ObservableObject {
-    @Published public var screen: ClassicScreen = .pays
+    @Published public var screen: ClassicScreen = .bigMac
     @Published public var country: String = "France"
     @Published public var query: String = "France"
     @Published public var geo: [Int] = ClassicStatic.geo.map(\.1)
@@ -26,6 +26,13 @@ public final class ClassicState: ObservableObject {
     @Published public var includePetiteVille: Bool = true
     @Published public var includeVilleMoyenne: Bool = true
     @Published public var includeGrandeVille: Bool = true
+    /// Ouverture/fermeture des 4 blocs "Big Mac" — dans `ClassicState`
+    /// plutôt qu'en `@State` sur `BigMacView` pour persister quand on quitte
+    /// puis revient sur cet écran (un seul bloc ouvert par défaut : Pays).
+    @Published public var bigMacExpandedPays: Bool = true
+    @Published public var bigMacExpandedRegions: Bool = false
+    @Published public var bigMacExpandedCulture: Bool = false
+    @Published public var bigMacExpandedMobilite: Bool = false
     @Published public var meteo: [Int] = ClassicStatic.meteo.map(\.1)
     /// One weight array per group, indexed like `ClassicStatic.groups`. Les 3
     /// critères CULTURE repris par "Big Mac" (Musées, Lieux du patrimoine,
@@ -54,7 +61,17 @@ public final class ClassicState: ObservableObject {
     public func setGeo2(_ index: Int, value: Int) { geo2[index] = max(0, min(4, value)) }
     public func setMeteo(_ index: Int, value: Int) { meteo[index] = max(0, min(5, value)) }
     public func setGroup(_ groupIndex: Int, _ rowIndex: Int, value: Int) {
-        groups[groupIndex][rowIndex] = max(0, min(5, value))
+        // Différé au prochain tick : appelé en direct depuis le
+        // `DragGesture.onChanged` de `CriterionRow`, muter `groups`
+        // (@Published) pendant que SwiftUI traite encore la mise à jour de
+        // vue en cours déclenche "Publishing changes from within view
+        // updates is not allowed" — observé sur les réglettes Culture de
+        // Big Mac, dont le `.onChange(of: state.groups)` redessine aussitôt
+        // les départements pendant le même cycle.
+        let clamped = max(0, min(5, value))
+        DispatchQueue.main.async { [weak self] in
+            self?.groups[groupIndex][rowIndex] = clamped
+        }
     }
 
     public func setCountry(_ name: String) { country = name; query = name }

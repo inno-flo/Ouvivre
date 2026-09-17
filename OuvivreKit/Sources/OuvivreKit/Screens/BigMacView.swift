@@ -23,11 +23,10 @@ public struct BigMacView: View {
     @State private var lastRegion: MKCoordinateRegion?
     @State private var transitionGeneration = 0
 
-    // Un seul bloc ouvert par défaut : "Pays".
-    @State private var expandedPays = true
-    @State private var expandedRegions = false
-    @State private var expandedCulture = false
-    @State private var expandedMobilite = false
+    // L'ouverture/fermeture des blocs vit dans `ClassicState` (pas un
+    // `@State` local) pour rester persistante en quittant puis en revenant
+    // sur cet écran — sinon `BigMacView` est recréée à chaque fois et tout
+    // se replie.
 
     // Liste des communes correspondantes (bloc Régions) : les 30 premières
     // s'affichent directement, le reste se déplie — même pattern que
@@ -46,7 +45,7 @@ public struct BigMacView: View {
     /// aucun effet visible (même bug que "0 communes" : effet invisible
     /// plutôt qu'absent). Même convention que `topDepartementsCount` dans
     /// GeoView2.
-    private let topDepartementsCount = 10
+    private let topDepartementsCount = 25
 
     public init(derived: ClassicDerived) { self.derived = derived }
 
@@ -148,23 +147,30 @@ public struct BigMacView: View {
         cultureRows.map(\.row.value)
     }
 
+    /// Tant qu'aucun critère (proximité ou Culture) n'est réglé, tous les
+    /// scores retombent à 50/100 pour chaque département : un "top 10" y
+    /// serait arbitraire (ordre de tri stable, sans rapport avec un critère
+    /// visible) et donnerait l'impression trompeuse d'un classement. Dans ce
+    /// cas, on affiche tous les départements correspondants, sans plafond.
+    private var hasActiveRankingCriterion: Bool {
+        state.geo2.contains { $0 > 0 } || cultureWeights.contains { $0 > 0 }
+    }
+
     /// Ces départements, classés par pertinence en combinant les réglages de
     /// proximité (`state.geo2`) et les poids Culture (moyenne des deux
-    /// scores 0-100) — filtrés à l'ensemble issu des tailles de commune.
-    /// Tant qu'aucun poids Culture n'est réglé (curseurs à 0), le score
-    /// Culture retombe à 50 pour tous les départements et n'influence donc
-    /// pas le classement, qui reste piloté par les seules proximités.
+    /// scores 0-100) — filtrés à l'ensemble issu des tailles de commune, et
+    /// plafonnés aux 10 mieux classés seulement si un critère est réglé.
     private var matchingDepartementNames: [String] {
         let weights = cultureWeights
-        return derived.rankedDepartements(weights: state.geo2)
+        let ranked = derived.rankedDepartements(weights: state.geo2)
             .filter { matchingDepartementCodes.contains($0.dep.codeInsee) }
             .map { entry -> (name: String, score: Double) in
                 let cultureScore = CultureScores.weightedScore(forDepartementCode: entry.dep.codeInsee, weights: weights)
                 return (entry.dep.nom, (entry.score + cultureScore) / 2)
             }
             .sorted { $0.score > $1.score }
-            .prefix(topDepartementsCount)
-            .map(\.name)
+        let capped = hasActiveRankingCriterion ? Array(ranked.prefix(topDepartementsCount)) : ranked
+        return capped.map(\.name)
     }
 
     /// Redessine les périmètres des départements correspondants — appelé à
@@ -199,15 +205,12 @@ public struct BigMacView: View {
             mobiliteBlock
         }
         .padding(columnInnerPadding)
-        .background(.regularMaterial.opacity(0.75), in: RoundedRectangle(cornerRadius: 14))
-        .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(ClassicTheme.border, lineWidth: 1))
-        .shadow(color: .black.opacity(0.15), radius: 12, y: 4)
     }
 
     // MARK: Bloc 1 — Pays
 
     private var paysBlock: some View {
-        blockDisclosure(title: "Pays", isExpanded: $expandedPays, enabled: true) {
+        blockDisclosure(title: "Pays", isExpanded: $state.bigMacExpandedPays, enabled: true) {
             PaysCountryBlock(derived: derived, ink: columnInk, faint: columnFaint)
         }
     }
@@ -230,7 +233,7 @@ public struct BigMacView: View {
     private var moreCommunes: [CommuneSizeEntry] { Array(matchingCommunes.dropFirst(topCommunesCount)) }
 
     private var regionsBlock: some View {
-        blockDisclosure(title: "Régions", isExpanded: $expandedRegions, enabled: paysHasSelection) {
+        blockDisclosure(title: "Régions", isExpanded: $state.bigMacExpandedRegions, enabled: paysHasSelection) {
             VStack(alignment: .leading, spacing: 14) {
                 RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody)
 
@@ -244,6 +247,12 @@ public struct BigMacView: View {
                 .padding(.top, 4)
 
                 Text("\(communeCount) communes correspondantes")
+                    .font(CFont.mono(11, weight: .medium))
+                    .foregroundStyle(columnFaint)
+
+                Text(hasActiveRankingCriterion
+                     ? "\(matchingDepartementNames.count) départements affichés — les mieux classés selon vos réglages ci-dessous"
+                     : "\(matchingDepartementNames.count) départements affichés — tous, en l'absence de critère de proximité ou de culture réglé")
                     .font(CFont.mono(11, weight: .medium))
                     .foregroundStyle(columnFaint)
 
@@ -374,7 +383,7 @@ public struct BigMacView: View {
     }
 
     private var cultureBlock: some View {
-        blockDisclosure(title: "Culture", isExpanded: $expandedCulture, enabled: regionsHasSelection) {
+        blockDisclosure(title: "Culture", isExpanded: $state.bigMacExpandedCulture, enabled: regionsHasSelection) {
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(cultureRows, id: \.rowIndex) { entry in
                     CriterionRow(row: entry.row, thumbSize: 12, trackHeight: 3, labelFont: CFont.sans(13), labelColor: columnInk) {
@@ -396,7 +405,7 @@ public struct BigMacView: View {
     }
 
     private var mobiliteBlock: some View {
-        blockDisclosure(title: "Mobilité", isExpanded: $expandedMobilite, enabled: cultureHasSelection) {
+        blockDisclosure(title: "Mobilité", isExpanded: $state.bigMacExpandedMobilite, enabled: cultureHasSelection) {
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(mobiliteRows) { row in
                     CriterionRow(row: row, thumbSize: 12, trackHeight: 3, labelFont: CFont.sans(13), labelColor: columnInk) {
@@ -430,7 +439,7 @@ public struct BigMacView: View {
         }
         .padding(.vertical, 10)
         .padding(.horizontal, 12)
-        .background(ClassicTheme.background.opacity(colorScheme == .dark ? 0.06 : 0.5), in: RoundedRectangle(cornerRadius: 10))
+        .background(ClassicTheme.background.opacity(0.75), in: RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(ClassicTheme.border.opacity(0.6), lineWidth: 1))
         .opacity(enabled ? 1 : 0.55)
     }
