@@ -45,35 +45,102 @@ public struct BigMacView: View {
     public var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .topLeading) {
-                Map(position: $position) {
-                    Marker(mapState.title, coordinate: mapState.coordinate)
-                    ForEach(shownCommunes) { entry in
-                        Marker(entry.name, coordinate: entry.coordinate)
-                    }
-                }
+                Map(position: $position) { mapContent }
                 .mapStyle(mapState.planType.style(elevation: .automatic))
                 .mapControls {}
                 .onMapCameraChange { context in lastRegion = context.region }
                 .ignoresSafeArea(edges: [.horizontal, .bottom])
 
-                let maxColumnHeight = geo.size.height - columnOuterPadding * 2
-                // `ViewThatFits` essaie d'abord la colonne à sa hauteur
-                // naturelle (elle grandit avec les blocs dépliés) ; si elle
-                // dépasse `maxColumnHeight`, il bascule sur la variante
-                // scrollable — sans mesure manuelle ni dépendance circulaire.
-                ViewThatFits(in: .vertical) {
-                    settingsColumn
-                    ScrollView { settingsColumn }
-                }
-                .frame(width: columnWidth, height: maxColumnHeight, alignment: .top)
-                .padding(columnOuterPadding)
+                // Colonne à largeur fixe, hauteur naturelle plafonnée à
+                // l'espace disponible (sans mesure ni `ViewThatFits` — ce
+                // dernier mesure mal les vues contenant un `GeometryReader`,
+                // comme les réglettes `CriterionRow`, et leur fait perdre
+                // leur largeur réelle).
+                settingsScrollView(maxHeight: geo.size.height - columnOuterPadding * 2)
+                    .padding(columnOuterPadding)
             }
-            .onAppear { moveCamera(totalWidth: geo.size.width, animated: false) }
+            .onAppear {
+                moveCamera(totalWidth: geo.size.width, animated: false)
+                refreshDepartementsOnMap()
+            }
             .onChange(of: mapState.coordinate.latitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: mapState.coordinate.longitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
-            .onChange(of: state.excludeOverseas) { _, _ in }
+            .onChange(of: state.excludeOverseas) { _, _ in refreshDepartementsOnMap() }
+            .onChange(of: state.excludeCorse) { _, _ in refreshDepartementsOnMap() }
+            .onChange(of: state.geo2) { _, _ in refreshDepartementsOnMap() }
+            .onChange(of: state.includeVillage) { _, _ in refreshDepartementsOnMap() }
+            .onChange(of: state.includePetiteVille) { _, _ in refreshDepartementsOnMap() }
+            .onChange(of: state.includeVilleMoyenne) { _, _ in refreshDepartementsOnMap() }
+            .onChange(of: state.includeGrandeVille) { _, _ in refreshDepartementsOnMap() }
             .onChange(of: geo.size.width) { _, newValue in moveCamera(totalWidth: newValue, animated: false) }
         }
+    }
+
+    /// Colonne scrollable si nécessaire — extraite du `body` pour aider le
+    /// type-checker (l'expression combinée dépassait son délai).
+    private func settingsScrollView(maxHeight: CGFloat) -> some View {
+        ScrollView {
+            settingsColumn
+        }
+        .frame(width: columnWidth)
+        .frame(maxHeight: maxHeight, alignment: .top)
+    }
+
+    // MARK: Contenu carte (départements des communes filtrées, ou pin pays)
+
+    /// Extrait en `@MapContentBuilder` séparé — le corps de `Map` avec les
+    /// deux branches (rings région simple vs. groupes de départements)
+    /// inline dépassait le temps de type-check du compilateur.
+    @MapContentBuilder
+    private var mapContent: some MapContent {
+        if mapState.departementRingGroups.isEmpty {
+            ForEach(Array(mapState.regionRings.enumerated()), id: \.offset) { _, ring in
+                MapPolygon(coordinates: ring)
+                    .foregroundStyle(theme.accent.opacity(0.16))
+                    .stroke(theme.accent, lineWidth: 2)
+            }
+            if mapState.regionRings.isEmpty {
+                Marker(mapState.title, coordinate: mapState.coordinate)
+            }
+        } else {
+            ForEach(mapState.departementRingGroups, id: \.name) { group in
+                departementRings(group.rings)
+            }
+        }
+    }
+
+    @MapContentBuilder
+    private func departementRings(_ rings: [[CLLocationCoordinate2D]]) -> some MapContent {
+        ForEach(Array(rings.enumerated()), id: \.offset) { _, ring in
+            MapPolygon(coordinates: ring)
+                .foregroundStyle(theme.accent.opacity(0.16))
+                .stroke(theme.accent, lineWidth: 2)
+        }
+    }
+
+    // MARK: Départements correspondant aux communes filtrées
+
+    /// Codes département (2 premiers caractères du code INSEE) des communes
+    /// qui correspondent aux tailles cochées.
+    private var matchingDepartementCodes: Set<String> {
+        Set(matchingCommunes.map { String($0.inseeCode.prefix(2)) })
+    }
+
+    /// Ces départements, classés par pertinence via les réglages de
+    /// proximité (`state.geo2`) — mêmes calculs que Régions, filtrés à
+    /// l'ensemble issu des tailles de commune.
+    private var matchingDepartementNames: [String] {
+        derived.rankedDepartements(weights: state.geo2)
+            .filter { matchingDepartementCodes.contains($0.dep.codeInsee) }
+            .map(\.dep.nom)
+    }
+
+    /// Redessine les périmètres des départements correspondants — appelé à
+    /// l'apparition et à chaque changement de taille de commune ou de
+    /// réglage de proximité (comme `refreshTopDepartementsOnMap` dans
+    /// GeoView2), sans déplacer la caméra.
+    private func refreshDepartementsOnMap() {
+        mapState.updateDepartementRingGroups(matchingDepartementNames)
     }
 
     // MARK: Dépendances légères entre blocs
