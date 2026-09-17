@@ -79,8 +79,8 @@ public struct ClassicDerived {
     public var navSteps: [NavItem] {
         let defs: [(String, String, ClassicScreen, String?)] = [
             ("01", "Pays", .pays, "France"),
+            ("01b", "Régions", .geo2, nil),
             ("02", "Services", .affiner, "14"),
-            ("02b", "Géographie 2", .geo2, nil),
             ("04", "Climat", .meteo, "9")
         ]
         return defs.map { NavItem(num: $0.0, label: $0.1, meta: $0.3, screen: $0.2, active: state.screen == $0.2) }
