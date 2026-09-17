@@ -85,7 +85,7 @@ public struct BigMacView: View {
                 // dernier mesure mal les vues contenant un `GeometryReader`,
                 // comme les réglettes `CriterionRow`, et leur fait perdre
                 // leur largeur réelle).
-                settingsScrollView(maxHeight: geo.size.height - columnOuterPadding * 2)
+                settingsScrollView(maxHeight: max(0, geo.size.height - columnOuterPadding * 2))
                     .padding(columnOuterPadding)
             }
             .onAppear {
@@ -95,6 +95,12 @@ public struct BigMacView: View {
             .onChange(of: mapState.coordinate.latitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: mapState.coordinate.longitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: mapState.spanDegrees) { _, newSpan in applyZoom(newSpan) }
+            // Accordéon : Pays se replie dès qu'un autre bloc s'ouvre (mais
+            // ouvrir Pays ne referme pas les autres — seul Pays a ce
+            // comportement, pour rester l'état "par défaut" au premier bloc).
+            .onChange(of: state.bigMacExpandedRegions) { _, isExpanded in if isExpanded { state.bigMacExpandedPays = false } }
+            .onChange(of: state.bigMacExpandedCulture) { _, isExpanded in if isExpanded { state.bigMacExpandedPays = false } }
+            .onChange(of: state.bigMacExpandedMobilite) { _, isExpanded in if isExpanded { state.bigMacExpandedPays = false } }
             .onChange(of: state.excludeOverseas) { _, _ in refreshDepartementsOnMap() }
             .onChange(of: state.excludeCorse) { _, _ in refreshDepartementsOnMap() }
             .onChange(of: state.geo2) { _, _ in refreshDepartementsOnMap() }

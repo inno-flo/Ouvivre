@@ -131,6 +131,16 @@ public struct ClassicDerived {
         }
     }
 
+    /// Noms des 3 critères Culture repris par "Big Mac" (Musées, Lieux du
+    /// patrimoine, Festivals) dont le réglage est au-dessus de 0
+    /// (différent d'"Indifférent") — utilisé par l'inspecteur pour lister
+    /// les critères actifs sur le département cliqué.
+    public var bigMacActiveCultureCriteria: [String] {
+        guard let cultureGroup = groups.first(where: { $0.title == "CULTURE" }) else { return [] }
+        let keep: Set<String> = ["Musées", "Lieux du patrimoine", "Festivals"]
+        return cultureGroup.rows.filter { keep.contains($0.label) && $0.value > 0 }.map(\.label)
+    }
+
     public struct RegionRow: Identifiable {
         public var id: String { name }
         public let rank: String

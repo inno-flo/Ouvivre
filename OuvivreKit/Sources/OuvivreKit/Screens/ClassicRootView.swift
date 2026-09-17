@@ -98,8 +98,11 @@ public struct ClassicRootView: View {
                     }
                 }
                 .inspector(isPresented: inspectorBinding) {
-                    MapPanelView(mapState: mapState)
-                        .inspectorColumnWidth(min: 220, ideal: 320, max: 800)
+                    InspectorPanelView(
+                        title: mapState.title,
+                        activeCultureCriteria: state.screen == .bigMac ? derived.bigMacActiveCultureCriteria : []
+                    )
+                    .inspectorColumnWidth(min: 220, ideal: 320, max: 800)
                 }
         }
         .navigationTitle("")
