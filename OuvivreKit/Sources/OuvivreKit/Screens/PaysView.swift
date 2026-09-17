@@ -49,7 +49,7 @@ public struct PaysView: View {
 
     private var settingsColumn: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Eyebrow("ÉTAPE 01 — TERRITOIRE", color: theme.accent)
+            Eyebrow("ÉTAPE 01", color: theme.accent)
 
             FlowLayout(spacing: 8, rowSpacing: 8) {
                 ForEach(derived.countryList) { c in

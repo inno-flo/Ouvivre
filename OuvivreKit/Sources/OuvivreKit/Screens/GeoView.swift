@@ -12,7 +12,7 @@ public struct GeoView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Eyebrow("ÉTAPE 03 — GÉOGRAPHIE · FRANCE", color: theme.accent).padding(.bottom, 16)
+            Eyebrow("ÉTAPE 03", color: theme.accent).padding(.bottom, 16)
             Text("Pondérez chaque critère de 0 (indifférent) à 5 (déterminant). Le classement des régions se recalcule à chaque mouvement.")
                 .font(CFont.sans(15))
                 .foregroundStyle(ClassicTheme.sub)

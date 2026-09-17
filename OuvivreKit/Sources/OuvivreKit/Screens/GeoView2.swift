@@ -103,7 +103,7 @@ public struct GeoView2: View {
 
     private var topContent: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Eyebrow("ÉTAPE 02 BIS — GÉOGRAPHIE · FRANCE", color: theme.accent)
+            Eyebrow("ÉTAPE 02 BIS", color: theme.accent)
             VStack(alignment: .leading, spacing: 8) {
                 exclusionToggle("Exclure les Territoires ultramarins", isOn: $state.excludeOverseas)
                 exclusionToggle("Exclure la Corse", isOn: $state.excludeCorse)
