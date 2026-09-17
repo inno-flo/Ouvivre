@@ -61,12 +61,7 @@ public struct GeoView2: View {
                     }
                 }
                 .mapStyle(mapState.planType.style(elevation: .automatic))
-                .mapControls {
-                    MapCompass()
-                    MapPitchToggle()
-                    MapZoomStepper()
-                    MapPlanTypeMenuButton(planType: $mapState.planType)
-                }
+                .overlay(alignment: .topTrailing) { mapControlColumn.padding(10) }
                 .onMapCameraChange { context in lastRegion = context.region }
                 .ignoresSafeArea(edges: [.horizontal, .bottom])
 
@@ -157,7 +152,7 @@ public struct GeoView2: View {
                 VStack(spacing: 0) {
                     ForEach(derived.regionRows(weights: state.geo2)) { r in
                         Button {
-                            mapState.focusOnRegion(r.nomRegion)
+                            mapState.focusOnDepartement(r.name)
                         } label: {
                             HStack(spacing: 10) {
                                 Text("\(r.score)").font(CFont.mono(12, weight: .medium)).foregroundStyle(columnInk).frame(width: 20, alignment: .leading)
@@ -207,6 +202,22 @@ public struct GeoView2: View {
             }
         }
         .buttonStyle(.plain)
+    }
+
+    /// A single, explicit vertical column (rather than the default
+    /// `.mapControls` auto-layout, which was inconsistently omitting
+    /// `MapPitchToggle`/the custom menu button) so the four controls always
+    /// appear together, top-trailing, in this fixed order — type de carte,
+    /// zoom, 2D/3D, compas — at the same opacity as `settingsColumn`.
+    private var mapControlColumn: some View {
+        VStack(spacing: 8) {
+            MapPlanTypeMenuButton(planType: $mapState.planType)
+            MapZoomStepper().opacity(0.75)
+            MapPitchToggle()
+                .mapControlVisibility(.visible)
+                .opacity(0.75)
+            MapCompass().opacity(0.75)
+        }
     }
 
     /// Shifts the camera center west of the focused coordinate so the

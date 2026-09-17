@@ -68,10 +68,11 @@ private struct RoundMapControlStyle: ViewModifier {
             content
                 .buttonStyle(.glass)
                 .buttonBorderShape(.circle)
+                .opacity(0.75)
         } else {
             content
                 .buttonStyle(.plain)
-                .background(.regularMaterial, in: Circle())
+                .background(.regularMaterial.opacity(0.75), in: Circle())
                 .overlay(Circle().strokeBorder(.separator, lineWidth: 0.5))
                 .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
         }
@@ -106,12 +107,7 @@ public struct MapPanelView: View {
                 }
             }
             .mapStyle(mapState.planType.style(elevation: .automatic))
-            .mapControls {
-                MapCompass()
-                MapPitchToggle()
-                MapZoomStepper()
-                MapPlanTypeMenuButton(planType: $mapState.planType)
-            }
+            .overlay(alignment: .topTrailing) { mapControlColumn.padding(10) }
             .onMapCameraChange { context in lastRegion = context.region }
         }
         .frame(maxHeight: .infinity)
@@ -119,6 +115,22 @@ public struct MapPanelView: View {
         .onAppear { moveCamera(animated: false) }
         .onChange(of: mapState.coordinate.latitude) { _, _ in moveCamera(animated: true) }
         .onChange(of: mapState.coordinate.longitude) { _, _ in moveCamera(animated: true) }
+    }
+
+    /// A single, explicit vertical column (rather than the default
+    /// `.mapControls` auto-layout, which was inconsistently omitting
+    /// `MapPitchToggle`/the custom menu button) so the four controls always
+    /// appear together, top-trailing, in this fixed order — type de carte,
+    /// zoom, 2D/3D, compas — at the same opacity as the settings block.
+    private var mapControlColumn: some View {
+        VStack(spacing: 8) {
+            MapPlanTypeMenuButton(planType: $mapState.planType)
+            MapZoomStepper().opacity(0.75)
+            MapPitchToggle()
+                .mapControlVisibility(.visible)
+                .opacity(0.75)
+            MapCompass().opacity(0.75)
+        }
     }
 
     private func moveCamera(animated: Bool) {

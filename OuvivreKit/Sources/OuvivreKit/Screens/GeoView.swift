@@ -12,7 +12,7 @@ public struct GeoView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Eyebrow("ÉTAPE 02 — GÉOGRAPHIE · FRANCE", color: theme.accent).padding(.bottom, 16)
+            Eyebrow("ÉTAPE 03 — GÉOGRAPHIE · FRANCE", color: theme.accent).padding(.bottom, 16)
             Text("Pondérez chaque critère de 0 (indifférent) à 5 (déterminant). Le classement des régions se recalcule à chaque mouvement.")
                 .font(CFont.sans(15))
                 .foregroundStyle(ClassicTheme.sub)
@@ -101,7 +101,7 @@ public struct GeoView: View {
                 Eyebrow("AUTRES DÉPARTEMENTS", color: ClassicTheme.faint).padding(.top, 14).padding(.horizontal, theme.cardPadX).padding(.bottom, 10)
                 ForEach(derived.regionRows()) { r in
                     Button {
-                        mapState.focusOnRegion(r.nomRegion)
+                        mapState.focusOnDepartement(r.name)
                     } label: {
                         HStack(spacing: 12) {
                             Text(r.rank).font(CFont.mono(10, weight: .medium)).foregroundStyle(ClassicTheme.faint2).frame(width: 18, alignment: .leading)

@@ -46,4 +46,16 @@ public final class MapPanelState: ObservableObject {
         spanDegrees = place.span
         regionRings = RegionBoundaries.rings[nomRegion] ?? []
     }
+
+    /// Same idea as `focusOnRegion`, one administrative level finer — no
+    /// hand-authored camera place exists for départements, so both the
+    /// camera and the perimeter come from `DepartementBoundaries` (computed
+    /// geometrically, see geo_pipeline).
+    public func focusOnDepartement(_ nom: String) {
+        guard let place = DepartementBoundaries.places[nom] else { return }
+        title = nom
+        coordinate = place.coordinate
+        spanDegrees = place.span
+        regionRings = DepartementBoundaries.rings[nom] ?? []
+    }
 }
