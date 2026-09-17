@@ -146,17 +146,17 @@ public struct GeoView2: View {
         let rest = Array(ranked.dropFirst(topDepartementsCount))
 
         return VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .firstTextBaseline) {
-                Eyebrow("DÉPARTEMENTS", color: columnFaint)
-                Spacer()
-                showOnMapButton(names: top10.map(\.dep.nom))
-            }
+            Eyebrow("DÉPARTEMENTS", color: columnFaint)
 
             Text("Un score de 100 représente une correspondance parfaite")
                 .font(CFont.sans(11))
                 .foregroundStyle(columnFaint)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, 2)
+
+            showOnMapButton(names: top10.map(\.dep.nom))
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .padding(.top, 20)
                 .padding(.bottom, 8)
 
             VStack(spacing: 0) {
@@ -201,11 +201,9 @@ public struct GeoView2: View {
             mapState.focusOnDepartements(names)
             isShowingTopDepartements = true
         } label: {
-            HStack(spacing: 4) {
-                Image(systemName: "map").font(.system(size: 10, weight: .semibold))
-                Text("Afficher sur la carte").font(CFont.sans(11, weight: .medium))
-            }
-            .foregroundStyle(columnFaint)
+            Text("Afficher sur la carte")
+                .font(.system(size: 13))
+                .foregroundStyle(columnFaint)
         }
         .buttonStyle(.plain)
     }
