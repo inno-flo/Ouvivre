@@ -43,6 +43,7 @@ public enum MapPlanType: String, CaseIterable, Identifiable {
 /// so this fills that one gap without introducing a different-looking control.
 struct MapPlanTypeMenuButton: View {
     @Binding var planType: MapPlanType
+    var tint: Color = .black
 
     var body: some View {
         Menu {
@@ -52,7 +53,7 @@ struct MapPlanTypeMenuButton: View {
         } label: {
             Image(systemName: "globe.desk")
                 .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(.black)
+                .foregroundStyle(tint)
                 .frame(width: 32, height: 32)
         }
         .menuIndicator(.hidden)
@@ -70,11 +71,11 @@ private struct RoundMapControlStyle: ViewModifier {
                 .buttonStyle(.glass)
                 .buttonBorderShape(.circle)
                 .tint(.black)
-                .opacity(0.75)
+                .opacity(1.0)
         } else {
             content
                 .buttonStyle(.plain)
-                .background(.regularMaterial.opacity(0.75), in: Circle())
+                .background(.regularMaterial.opacity(1.0), in: Circle())
                 .overlay(Circle().strokeBorder(.separator, lineWidth: 0.5))
                 .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
         }
@@ -91,6 +92,11 @@ public struct MapPanelView: View {
     @State private var position: MapCameraPosition = .automatic
     @State private var lastRegion: MKCoordinateRegion?
     @State private var transitionGeneration = 0
+    /// Ties `mapControlColumn`'s native controls (placed in a plain
+    /// `.overlay`, for full custom layout) back to this specific `Map` —
+    /// without it they're inert (zoom +/− do nothing) and MapKit still
+    /// shows its own default, unwired compass underneath ours.
+    @Namespace private var mapScope
 
     public init(mapState: MapPanelState) {
         self.mapState = mapState
@@ -109,6 +115,8 @@ public struct MapPanelView: View {
                 }
             }
             .mapStyle(mapState.planType.style(elevation: .automatic))
+            .mapControls {}
+            .mapScope(mapScope)
             .overlay(alignment: .topTrailing) { mapControlColumn.padding(10) }
             .onMapCameraChange { context in lastRegion = context.region }
         }
@@ -126,14 +134,14 @@ public struct MapPanelView: View {
     /// zoom, 2D/3D, compas — at the same opacity as the settings block.
     private var mapControlColumn: some View {
         VStack(spacing: 8) {
-            MapPlanTypeMenuButton(planType: $mapState.planType)
-            MapZoomStepper().opacity(0.75)
-            MapPitchToggle()
+            MapPlanTypeMenuButton(planType: $mapState.planType, tint: theme.accent)
+            MapZoomStepper(scope: mapScope)
+            MapPitchToggle(scope: mapScope)
                 .mapControlVisibility(.visible)
-                .opacity(0.75)
-            MapCompass().opacity(0.75)
+                .tint(.black)
+            MapCompass(scope: mapScope)
         }
-        .tint(.black)
+        .tint(theme.accent)
     }
 
     private func moveCamera(animated: Bool) {

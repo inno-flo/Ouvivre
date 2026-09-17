@@ -25,6 +25,11 @@ public struct GeoView2: View {
     @State private var lastRegion: MKCoordinateRegion?
     @State private var transitionGeneration = 0
     @State private var showMoreDepartements = false
+    /// Ties `mapControlColumn`'s native controls (placed in a plain
+    /// `.overlay`, for full custom layout) back to this specific `Map` —
+    /// without it they're inert (zoom +/− do nothing) and MapKit still
+    /// shows its own default, unwired compass underneath ours.
+    @Namespace private var mapScope
     /// True right after "Afficher sur la carte" — the map shows all 10 top
     /// départements' perimeters at once. Cleared by tapping the map (just
     /// deselects) or a département row (deselects and focuses that one).
@@ -65,6 +70,8 @@ public struct GeoView2: View {
                     }
                 }
                 .mapStyle(mapState.planType.style(elevation: .automatic))
+                .mapControls {}
+                .mapScope(mapScope)
                 .overlay(alignment: .topTrailing) { mapControlColumn.padding(10) }
                 .onMapCameraChange { context in lastRegion = context.region }
                 .onTapGesture {
@@ -280,14 +287,14 @@ public struct GeoView2: View {
     /// zoom, 2D/3D, compas — at the same opacity as `settingsColumn`.
     private var mapControlColumn: some View {
         VStack(spacing: 8) {
-            MapPlanTypeMenuButton(planType: $mapState.planType)
-            MapZoomStepper().opacity(0.75)
-            MapPitchToggle()
+            MapPlanTypeMenuButton(planType: $mapState.planType, tint: theme.accent)
+            MapZoomStepper(scope: mapScope)
+            MapPitchToggle(scope: mapScope)
                 .mapControlVisibility(.visible)
-                .opacity(0.75)
-            MapCompass().opacity(0.75)
+                .tint(.black)
+            MapCompass(scope: mapScope)
         }
-        .tint(.black)
+        .tint(theme.accent)
     }
 
     /// Shifts the camera center west of the focused coordinate so the
