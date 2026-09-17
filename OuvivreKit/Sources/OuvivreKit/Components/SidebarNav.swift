@@ -21,19 +21,19 @@ public struct SidebarNav: View {
                     NavItemRow(item: item).tag(item.screen)
                 }
             } header: {
-                Text("Sélecteur").font(CFont.sans(11)).foregroundStyle(.secondary)
+                Text("Sélecteur").font(.system(size: 11)).foregroundStyle(.secondary)
             }
             Section {
                 ForEach(derived.navTools) { item in
                     NavItemRow(item: item).tag(item.screen)
                 }
             } header: {
-                Text("Outils").font(CFont.sans(11)).foregroundStyle(.secondary)
+                Text("Outils").font(.system(size: 11)).foregroundStyle(.secondary)
             }
             if !derived.countrySources.isEmpty {
                 Section {
                     Text("Sources")
-                        .font(CFont.sans(13, weight: .medium))
+                        .font(.system(size: 13))
                         .tag(ClassicScreen.sources)
                 }
             }
@@ -63,7 +63,7 @@ private struct NavItemRow: View {
             if let icon {
                 Image(systemName: icon).frame(width: 16)
             }
-            Text(item.label).font(CFont.sans(13, weight: .medium))
+            Text(item.label).font(.system(size: 13, weight: item.active ? .semibold : .regular))
             Spacer(minLength: 4)
             if let meta = item.meta {
                 Text(meta).font(CFont.mono(10)).opacity(0.5)

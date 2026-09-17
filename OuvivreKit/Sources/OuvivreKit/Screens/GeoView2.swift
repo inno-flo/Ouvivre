@@ -218,6 +218,7 @@ public struct GeoView2: View {
                 .opacity(0.75)
             MapCompass().opacity(0.75)
         }
+        .tint(.black)
     }
 
     /// Shifts the camera center west of the focused coordinate so the

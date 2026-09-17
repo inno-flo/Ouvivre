@@ -52,6 +52,7 @@ struct MapPlanTypeMenuButton: View {
         } label: {
             Image(systemName: "globe.desk")
                 .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(.black)
                 .frame(width: 32, height: 32)
         }
         .menuIndicator(.hidden)
@@ -68,6 +69,7 @@ private struct RoundMapControlStyle: ViewModifier {
             content
                 .buttonStyle(.glass)
                 .buttonBorderShape(.circle)
+                .tint(.black)
                 .opacity(0.75)
         } else {
             content
@@ -131,6 +133,7 @@ public struct MapPanelView: View {
                 .opacity(0.75)
             MapCompass().opacity(0.75)
         }
+        .tint(.black)
     }
 
     private func moveCamera(animated: Bool) {
