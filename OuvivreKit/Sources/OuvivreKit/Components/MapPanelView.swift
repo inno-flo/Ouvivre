@@ -63,23 +63,18 @@ struct MapPlanTypeMenuButton: View {
     }
 }
 
-/// Circular, system-material chrome matching MapKit's own control buttons —
-/// real Liquid Glass on macOS 26/iOS 26, a plain material circle before that.
+/// Circular, solid-opaque chrome matching MapKit's own native control
+/// buttons (e.g. `MapZoomStepper`) — translucent glass/material reads as
+/// "no background" next to their solid look, so this uses a plain opaque
+/// fill on every OS version instead of the (translucent-by-design) glass
+/// button style.
 private struct RoundMapControlStyle: ViewModifier {
     func body(content: Content) -> some View {
-        if #available(macOS 26, iOS 26, *) {
-            content
-                .buttonStyle(.glass)
-                .buttonBorderShape(.circle)
-                .tint(.black)
-                .opacity(1.0)
-        } else {
-            content
-                .buttonStyle(.plain)
-                .background(.regularMaterial.opacity(1.0), in: Circle())
-                .overlay(Circle().strokeBorder(.separator, lineWidth: 0.5))
-                .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
-        }
+        content
+            .buttonStyle(.plain)
+            .background(Color.white, in: Circle())
+            .overlay(Circle().strokeBorder(.separator, lineWidth: 0.5))
+            .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
     }
 }
 

@@ -80,12 +80,18 @@ public struct GeoView2: View {
                         .padding(.trailing, 20)
                 }
                 .onMapCameraChange { context in lastRegion = context.region }
-                .onTapGesture {
-                    guard isShowingTopDepartements else { return }
-                    mapState.clearRegionRings()
-                    isShowingTopDepartements = false
-                    hoveredDepartementName = nil
-                }
+                // .simultaneousGesture (not .onTapGesture) so this doesn't
+                // steal taps from the native zoom/map-type buttons in the
+                // overlay above — .onTapGesture claimed the whole Map's hit
+                // area exclusively, which was silently swallowing their clicks.
+                .simultaneousGesture(
+                    TapGesture().onEnded {
+                        guard isShowingTopDepartements else { return }
+                        mapState.clearRegionRings()
+                        isShowingTopDepartements = false
+                        hoveredDepartementName = nil
+                    }
+                )
                 .ignoresSafeArea(edges: [.horizontal, .bottom])
 
                 settingsColumn
