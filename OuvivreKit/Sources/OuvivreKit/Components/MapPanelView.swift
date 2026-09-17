@@ -142,6 +142,8 @@ public struct MapPanelView: View {
             MapCompass(scope: mapScope)
         }
         .tint(theme.accent)
+        .padding(6)
+        .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.black.opacity(0.7), lineWidth: 1))
     }
 
     private func moveCamera(animated: Bool) {

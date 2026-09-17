@@ -309,6 +309,8 @@ public struct GeoView2: View {
             MapCompass(scope: mapScope)
         }
         .tint(theme.accent)
+        .padding(6)
+        .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.black.opacity(0.7), lineWidth: 1))
     }
 
     /// Shifts the camera center west of the focused coordinate so the
