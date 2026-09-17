@@ -9,20 +9,22 @@ public struct CriterionRow: View {
     var thumbSize: CGFloat = 16
     var trackHeight: CGFloat = 4
     var labelFont: Font = CFont.sans(14, weight: .medium)
+    var labelColor: Color = ClassicTheme.ink
     let onChange: (Int) -> Void
 
-    public init(row: WeightedRow, thumbSize: CGFloat = 16, trackHeight: CGFloat = 4, labelFont: Font = CFont.sans(14, weight: .medium), onChange: @escaping (Int) -> Void) {
+    public init(row: WeightedRow, thumbSize: CGFloat = 16, trackHeight: CGFloat = 4, labelFont: Font = CFont.sans(14, weight: .medium), labelColor: Color = ClassicTheme.ink, onChange: @escaping (Int) -> Void) {
         self.row = row
         self.thumbSize = thumbSize
         self.trackHeight = trackHeight
         self.labelFont = labelFont
+        self.labelColor = labelColor
         self.onChange = onChange
     }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 9) {
             HStack(alignment: .firstTextBaseline) {
-                Text(row.label).font(labelFont).foregroundStyle(ClassicTheme.ink)
+                Text(row.label).font(labelFont).foregroundStyle(labelColor)
                 Spacer()
                 Text(row.tag)
                     .font(CFont.mono(11, weight: .medium))

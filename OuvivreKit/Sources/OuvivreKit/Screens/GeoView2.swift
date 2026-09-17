@@ -20,7 +20,16 @@ public struct GeoView2: View {
     @EnvironmentObject var theme: ClassicTheme
     @EnvironmentObject var state: ClassicState
     @EnvironmentObject var mapState: MapPanelState
+    @Environment(\.colorScheme) private var colorScheme
     let derived: ClassicDerived
+
+    /// The settings column sits on a translucent system material, which
+    /// tints dark in system Dark Mode — unlike the rest of the app's fixed
+    /// light palette, its text needs to flip to off-white there to stay
+    /// legible.
+    private var columnInk: Color { colorScheme == .dark ? Color(hex: 0xF4F2EE) : ClassicTheme.ink }
+    private var columnBody: Color { colorScheme == .dark ? Color(hex: 0xD9D4C9) : ClassicTheme.body }
+    private var columnFaint: Color { colorScheme == .dark ? Color(hex: 0xA39D91) : ClassicTheme.faint }
 
     @State private var position: MapCameraPosition = .automatic
     @State private var lastRegion: MKCoordinateRegion?
@@ -102,9 +111,9 @@ public struct GeoView2: View {
                 exclusionToggle("Exclure les Territoires ultramarins", isOn: $state.excludeOverseas)
                 exclusionToggle("Exclure la Corse", isOn: $state.excludeCorse)
             }
-            Eyebrow("PROXIMITÉS", color: ClassicTheme.faint).padding(.top, 4)
+            Eyebrow("PROXIMITÉS", color: columnFaint).padding(.top, 4)
             ForEach(derived.geo2Rows) { row in
-                CriterionRow(row: row) { state.setGeo2(row.id, value: $0) }
+                CriterionRow(row: row, labelColor: columnInk) { state.setGeo2(row.id, value: $0) }
             }
 
             regionHero.padding(.top, 8)
@@ -141,7 +150,7 @@ public struct GeoView2: View {
     /// ceiling on its own, so a short list doesn't pad out to empty space.
     private func otherRegionsCard(maxHeight: CGFloat) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Eyebrow("AUTRES DÉPARTEMENTS", color: ClassicTheme.faint).padding(.bottom, 8)
+            Eyebrow("AUTRES DÉPARTEMENTS", color: columnFaint).padding(.bottom, 8)
             ScrollView {
                 VStack(spacing: 0) {
                     ForEach(derived.regionRows(weights: state.geo2)) { r in
@@ -149,8 +158,8 @@ public struct GeoView2: View {
                             mapState.focusOnRegion(r.nomRegion)
                         } label: {
                             HStack(spacing: 10) {
-                                Text("\(r.score)").font(CFont.mono(12, weight: .medium)).foregroundStyle(ClassicTheme.ink).frame(width: 20, alignment: .leading)
-                                Text(r.name).font(CFont.sans(14, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+                                Text("\(r.score)").font(CFont.mono(12, weight: .medium)).foregroundStyle(columnInk).frame(width: 20, alignment: .leading)
+                                Text(r.name).font(CFont.sans(14, weight: .medium)).foregroundStyle(columnInk)
                                 Spacer()
                             }
                             .padding(.vertical, 6)
@@ -171,7 +180,7 @@ public struct GeoView2: View {
             if otherRegionsContentHeight > maxHeight {
                 Image(systemName: "chevron.down")
                     .font(.system(size: 10, weight: .semibold))
-                    .foregroundStyle(ClassicTheme.faint)
+                    .foregroundStyle(columnFaint)
                     .frame(maxWidth: .infinity)
                     .padding(.top, 4)
             }
@@ -192,7 +201,7 @@ public struct GeoView2: View {
                                 .foregroundStyle(.white)
                         }
                     }
-                Text(label).font(CFont.sans(13)).foregroundStyle(ClassicTheme.body)
+                Text(label).font(CFont.sans(13)).foregroundStyle(columnBody)
             }
         }
         .buttonStyle(.plain)
@@ -218,7 +227,7 @@ public struct GeoView2: View {
         } label: {
             Image(systemName: planType.icon)
                 .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(.primary)
+                .foregroundStyle(ClassicTheme.ink)
                 .frame(width: 29, height: 29)
         }
         .menuStyle(.button)
@@ -241,7 +250,7 @@ public struct GeoView2: View {
             }
         }
         .buttonStyle(.plain)
-        .foregroundStyle(.primary)
+        .foregroundStyle(ClassicTheme.ink)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
         .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(.separator, lineWidth: 0.5))
         .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
@@ -252,7 +261,7 @@ public struct GeoView2: View {
         Button(action: action) {
             Image(systemName: icon)
                 .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(active ? Color.accentColor : .primary)
+                .foregroundStyle(active ? theme.accent : ClassicTheme.ink)
                 .frame(width: 29, height: 29)
         }
         .buttonStyle(.plain)
