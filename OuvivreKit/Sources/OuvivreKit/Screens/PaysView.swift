@@ -1,59 +1,144 @@
 import SwiftUI
+import MapKit
 
-/// Étape 01 — Territoire: country search + suggestions + facts, and a
-/// selection summary card with a "Définir les critères…" CTA.
+/// Étape 01 — Territoire: same full-bleed map presentation as Géographie 2
+/// (GeoView2) — the country chips + facts float in a translucent column over
+/// a MapKit background, with the camera kept shifted so the focused country
+/// stays visible to the right of that column.
 public struct PaysView: View {
     @EnvironmentObject var theme: ClassicTheme
     @EnvironmentObject var state: ClassicState
+    @EnvironmentObject var mapState: MapPanelState
+    @Environment(\.colorScheme) private var colorScheme
     let derived: ClassicDerived
+
+    private var columnInk: Color { colorScheme == .dark ? Color(hex: 0xF4F2EE) : ClassicTheme.ink }
+    private var columnFaint: Color { colorScheme == .dark ? Color(hex: 0xA39D91) : ClassicTheme.faint }
+
+    @State private var position: MapCameraPosition = .automatic
+    @State private var lastRegion: MKCoordinateRegion?
+    @State private var transitionGeneration = 0
+
+    private let columnWidth: CGFloat = 320
+    private let columnOuterPadding: CGFloat = 20
+    private let columnInnerPadding: CGFloat = 16
 
     public init(derived: ClassicDerived) { self.derived = derived }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Eyebrow("ÉTAPE 01 — TERRITOIRE", color: theme.accent).padding(.bottom, 16)
-            Text("Tapez un nom de pays. Ouvivre croise ensuite relief, hydrographie, climat, culture et mobilité pour en extraire une région, puis cinq villes.")
-                .font(CFont.sans(15))
-                .foregroundStyle(ClassicTheme.sub)
-                .frame(maxWidth: 420, alignment: .leading)
-                .padding(.bottom, 26)
+        GeometryReader { geo in
+            ZStack(alignment: .topLeading) {
+                Map(position: $position) {
+                    Marker(mapState.title, coordinate: mapState.coordinate)
+                }
+                .mapStyle(mapState.planType.style(elevation: .automatic))
+                .overlay(alignment: .topTrailing) { mapControlColumn.padding(10) }
+                .onMapCameraChange { context in lastRegion = context.region }
+                .ignoresSafeArea(edges: [.horizontal, .bottom])
 
-            searchCard
+                settingsColumn
+                    .frame(width: columnWidth)
+                    .padding(columnOuterPadding)
+            }
+            .onAppear { moveCamera(totalWidth: geo.size.width, animated: false) }
+            .onChange(of: mapState.coordinate.latitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
+            .onChange(of: mapState.coordinate.longitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
+            .onChange(of: geo.size.width) { _, newValue in moveCamera(totalWidth: newValue, animated: false) }
         }
     }
 
-    private var searchCard: some View {
-        Card(padding: theme.cardPad) {
-            VStack(alignment: .leading, spacing: 0) {
-                FlowLayout(spacing: 8, rowSpacing: 8) {
-                    ForEach(derived.countryList) { c in
-                        Button { state.setCountry(c.name) } label: {
-                            Text(c.name)
-                                .font(CFont.sans(13, weight: .medium))
-                                .foregroundStyle(c.selected ? .white : ClassicTheme.body)
-                                .padding(.horizontal, 12).padding(.vertical, 8)
-                                .background(c.selected ? ClassicTheme.ink : .white)
-                                .clipShape(Capsule())
-                                .overlay(Capsule().stroke(c.selected ? ClassicTheme.ink : ClassicTheme.border, lineWidth: 1))
-                        }
-                        .buttonStyle(.plain)
+    private var settingsColumn: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Eyebrow("ÉTAPE 01 — TERRITOIRE", color: theme.accent)
+
+            FlowLayout(spacing: 8, rowSpacing: 8) {
+                ForEach(derived.countryList) { c in
+                    Button { state.setCountry(c.name) } label: {
+                        Text(c.name)
+                            .font(CFont.sans(13, weight: .medium))
+                            .foregroundStyle(c.selected ? .white : columnInk)
+                            .padding(.horizontal, 12).padding(.vertical, 8)
+                            .background(c.selected ? ClassicTheme.ink : .clear)
+                            .clipShape(Capsule())
+                            .overlay(Capsule().stroke(c.selected ? ClassicTheme.ink : ClassicTheme.border, lineWidth: 1))
                     }
+                    .buttonStyle(.plain)
                 }
+            }
 
-                Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1).padding(.vertical, 20)
-
-                VStack(alignment: .leading, spacing: 14) {
-                    ForEach(derived.countryFacts) { f in
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(f.key).font(CFont.sans(13)).foregroundStyle(ClassicTheme.faint)
-                            Text(f.value).font(CFont.sans(15, weight: .medium)).foregroundStyle(ClassicTheme.ink)
-                        }
+            VStack(alignment: .leading, spacing: 14) {
+                ForEach(derived.countryFacts) { f in
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(f.key).font(CFont.sans(13)).foregroundStyle(columnFaint)
+                        Text(f.value).font(CFont.sans(15, weight: .medium)).foregroundStyle(columnInk)
                     }
                 }
             }
+            .padding(.top, 4)
+        }
+        .padding(columnInnerPadding)
+        .background(.regularMaterial.opacity(0.75), in: RoundedRectangle(cornerRadius: 14))
+        .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(ClassicTheme.border, lineWidth: 1))
+        .shadow(color: .black.opacity(0.15), radius: 12, y: 4)
+    }
+
+    private var mapControlColumn: some View {
+        VStack(spacing: 8) {
+            MapPlanTypeMenuButton(planType: $mapState.planType)
+            MapZoomStepper().opacity(0.75)
+            MapPitchToggle()
+                .mapControlVisibility(.visible)
+                .opacity(0.75)
+            MapCompass().opacity(0.75)
         }
     }
 
+    private func moveCamera(totalWidth: CGFloat, animated: Bool) {
+        guard totalWidth > 0 else { return }
+        let columnFraction = min(0.85, (columnWidth + 40) / totalWidth)
+        let desiredScreenFraction = columnFraction + (1 - columnFraction) / 2
+        let span = mapState.spanDegrees
+        let lonShift = (desiredScreenFraction - 0.5) * span
+
+        let target = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(
+                latitude: mapState.coordinate.latitude,
+                longitude: mapState.coordinate.longitude - lonShift
+            ),
+            span: MKCoordinateSpan(latitudeDelta: span, longitudeDelta: span)
+        )
+
+        guard animated, let old = lastRegion else {
+            position = .region(target)
+            lastRegion = target
+            return
+        }
+
+        let midCoordinate = CLLocationCoordinate2D(
+            latitude: (old.center.latitude + target.center.latitude) / 2,
+            longitude: (old.center.longitude + target.center.longitude) / 2
+        )
+        let spread = max(old.span.latitudeDelta, target.span.latitudeDelta)
+            + abs(old.center.latitude - target.center.latitude)
+            + abs(old.center.longitude - target.center.longitude)
+        let midRegion = MKCoordinateRegion(
+            center: midCoordinate,
+            span: MKCoordinateSpan(latitudeDelta: spread * 1.5, longitudeDelta: spread * 1.5)
+        )
+
+        transitionGeneration += 1
+        let generation = transitionGeneration
+
+        withAnimation(.easeInOut(duration: 0.35)) {
+            position = .region(midRegion)
+        } completion: {
+            guard generation == transitionGeneration else { return }
+            withAnimation(.easeInOut(duration: 0.45)) {
+                position = .region(target)
+            }
+        }
+        lastRegion = target
+    }
 }
 
 /// A responsive 2-column row that stacks to 1 column under `breakpoint`

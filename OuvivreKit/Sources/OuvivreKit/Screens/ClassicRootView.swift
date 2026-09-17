@@ -19,12 +19,12 @@ public struct ClassicRootView: View {
     }
 
     /// Mirrors the old `showMapPanel` rule: force-hidden on the Sources
-    /// screen (and on Géographie 2, which embeds its own full-bleed map
-    /// instead of using the inspector) regardless of the user's last
-    /// visibility choice.
+    /// screen, and on Pays/Géographie 2, which embed their own full-bleed
+    /// map instead of using the inspector — the toolbar icon stays visible
+    /// on Pays regardless, it's just a no-op there for now.
     private var inspectorBinding: Binding<Bool> {
         Binding(
-            get: { mapState.isVisible && state.screen != .sources && state.screen != .geo2 },
+            get: { mapState.isVisible && state.screen != .sources && state.screen != .geo2 && state.screen != .pays },
             set: { mapState.isVisible = $0 }
         )
     }
@@ -36,7 +36,9 @@ public struct ClassicRootView: View {
             SidebarNav(derived: derived, selection: sidebarSelectionBinding)
         } detail: {
             Group {
-                if state.screen == .geo2 {
+                if state.screen == .pays {
+                    PaysView(derived: derived)
+                } else if state.screen == .geo2 {
                     GeoView2(derived: derived)
                 } else {
                     ScrollView { content(derived) }
@@ -71,7 +73,7 @@ public struct ClassicRootView: View {
     private func content(_ derived: ClassicDerived) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             switch state.screen {
-            case .pays: PaysView(derived: derived)
+            case .pays: EmptyView() // rendered full-bleed outside content(), see body
             case .geo: GeoView(derived: derived)
             case .geo2: EmptyView() // rendered full-bleed outside content(), see body
             case .meteo: MeteoView(derived: derived)
