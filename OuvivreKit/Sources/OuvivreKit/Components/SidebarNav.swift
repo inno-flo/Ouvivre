@@ -1,7 +1,10 @@
 import SwiftUI
 
-/// The native sidebar list: "PARCOURS" (steps 1-4) + "OUTILS" (5-7) sections,
-/// plus a "Sources" row — selection and highlighting are driven by `List`.
+/// The native sidebar list: "Sélecteur" (steps) + "Outils" sections, plus a
+/// "Sources" row — selection and highlighting are driven by `List`. Row and
+/// header font sizes mirror the PierreVincent project's sidebar convention:
+/// 13pt (`NSFont.systemFontSize`) for row labels, 11pt for section headers,
+/// headers always staying smaller than the labels they group.
 public struct SidebarNav: View {
     let derived: ClassicDerived
     let selection: Binding<ClassicScreen?>
@@ -13,15 +16,19 @@ public struct SidebarNav: View {
 
     public var body: some View {
         List(selection: selection) {
-            Section("Sélecteur") {
+            Section {
                 ForEach(derived.navSteps) { item in
                     NavItemRow(item: item).tag(item.screen)
                 }
+            } header: {
+                Text("Sélecteur").font(CFont.sans(11)).foregroundStyle(.secondary)
             }
-            Section("Outils") {
+            Section {
                 ForEach(derived.navTools) { item in
                     NavItemRow(item: item).tag(item.screen)
                 }
+            } header: {
+                Text("Outils").font(CFont.sans(11)).foregroundStyle(.secondary)
             }
             if !derived.countrySources.isEmpty {
                 Section {
@@ -38,8 +45,24 @@ public struct SidebarNav: View {
 private struct NavItemRow: View {
     let item: NavItem
 
+    /// Icons for the "Sélecteur" screens only — matches the request's list;
+    /// other rows (Outils, Sources) render without a leading icon.
+    private var icon: String? {
+        switch item.screen {
+        case .pays: "globe.europe.africa"
+        case .geo2: "map"
+        case .affiner: "bus"
+        case .meteo: "thermometer.sun"
+        case .ville: "mappin.and.ellipse"
+        default: nil
+        }
+    }
+
     var body: some View {
         HStack(spacing: 9) {
+            if let icon {
+                Image(systemName: icon).frame(width: 16)
+            }
             Text(item.label).font(CFont.sans(13, weight: .medium))
             Spacer(minLength: 4)
             if let meta = item.meta {
