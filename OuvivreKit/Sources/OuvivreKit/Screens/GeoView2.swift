@@ -72,7 +72,13 @@ public struct GeoView2: View {
                 .mapStyle(mapState.planType.style(elevation: .automatic))
                 .mapControls {}
                 .mapScope(mapScope)
-                .overlay(alignment: .topTrailing) { mapControlColumn.padding(10) }
+                .overlay(alignment: .topTrailing) {
+                    // Trailing inset approximates the toolbar's own "Inspecteur"
+                    // button so this column lines up under it horizontally.
+                    mapControlColumn
+                        .padding(.top, 10)
+                        .padding(.trailing, 20)
+                }
                 .onMapCameraChange { context in lastRegion = context.region }
                 .onTapGesture {
                     guard isShowingTopDepartements else { return }
@@ -140,12 +146,13 @@ public struct GeoView2: View {
                 exclusionToggle("Exclure les Territoires ultramarins", isOn: $state.excludeOverseas)
                 exclusionToggle("Exclure la Corse", isOn: $state.excludeCorse)
             }
-            Eyebrow("PROXIMITÉS", color: columnFaint).padding(.top, 4)
-
-            resetButton
-                .frame(maxWidth: .infinity, alignment: .trailing)
-                .padding(.top, 20)
-                .padding(.bottom, 8)
+            HStack(alignment: .firstTextBaseline) {
+                Eyebrow("PROXIMITÉS", color: columnFaint)
+                Spacer()
+                resetButton
+            }
+            .padding(.top, 4)
+            .padding(.bottom, 8)
 
             ForEach(derived.geo2Rows) { row in
                 CriterionRow(row: row, labelColor: columnInk) { state.setGeo2(row.id, value: $0) }
@@ -312,25 +319,14 @@ public struct GeoView2: View {
         .buttonStyle(.plain)
     }
 
-    /// A single, explicit vertical column (rather than the default
-    /// `.mapControls` auto-layout, which was inconsistently omitting
-    /// `MapPitchToggle`/the custom menu button) so the four controls always
-    /// appear together, top-trailing, in this fixed order — type de carte,
-    /// zoom, 2D/3D, compas — at the same opacity as `settingsColumn`.
+    /// Only two controls here (map-type menu + zoom) — pitch toggle and
+    /// compass were dropped. Same chrome opacity as before (kept via
+    /// `RoundMapControlStyle`, unchanged at 1.0) and 100% black icons.
     private var mapControlColumn: some View {
         VStack(spacing: 8) {
-            MapPlanTypeMenuButton(planType: $mapState.planType, tint: .black)
+            MapPlanTypeMenuButton(planType: $mapState.planType, icon: "map.fill", tint: .black)
                 .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
             MapZoomStepper(scope: mapScope)
-                .frame(height: 32)
-                .overlay(Capsule().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
-            MapPitchToggle(scope: mapScope)
-                .mapControlVisibility(.visible)
-                .frame(width: 32, height: 32)
-                .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
-            MapCompass(scope: mapScope)
-                .frame(width: 32, height: 32)
-                .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
         }
         .tint(.black)
     }

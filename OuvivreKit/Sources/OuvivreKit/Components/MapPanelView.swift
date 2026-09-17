@@ -43,6 +43,7 @@ public enum MapPlanType: String, CaseIterable, Identifiable {
 /// so this fills that one gap without introducing a different-looking control.
 struct MapPlanTypeMenuButton: View {
     @Binding var planType: MapPlanType
+    var icon: String = "globe.desk"
     var tint: Color = .black
 
     var body: some View {
@@ -51,7 +52,7 @@ struct MapPlanTypeMenuButton: View {
                 Button { planType = type } label: { Label(type.label, systemImage: type.icon) }
             }
         } label: {
-            Image(systemName: "globe.desk")
+            Image(systemName: icon)
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(tint)
         }
@@ -137,8 +138,6 @@ public struct MapPanelView: View {
             MapPlanTypeMenuButton(planType: $mapState.planType, tint: .black)
                 .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
             MapZoomStepper(scope: mapScope)
-                .frame(height: 32)
-                .overlay(Capsule().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
             MapPitchToggle(scope: mapScope)
                 .mapControlVisibility(.visible)
                 .frame(width: 32, height: 32)
