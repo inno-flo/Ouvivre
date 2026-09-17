@@ -34,8 +34,6 @@ public struct GeoView2: View {
     @State private var position: MapCameraPosition = .automatic
     @State private var lastRegion: MKCoordinateRegion?
     @State private var transitionGeneration = 0
-    @State private var planType: MapPlanType = .explorer
-    @State private var is3D: Bool = false
     @State private var otherRegionsContentHeight: CGFloat = 0
     @State private var topContentHeight: CGFloat = 0
 
@@ -62,11 +60,15 @@ public struct GeoView2: View {
                         Marker(mapState.title, coordinate: mapState.coordinate)
                     }
                 }
-                .mapStyle(planType.style(elevation: is3D ? .realistic : .flat))
-                .mapControls { MapCompass() }
+                .mapStyle(mapState.planType.style(elevation: .automatic))
+                .mapControls {
+                    MapCompass()
+                    MapPitchToggle()
+                    MapZoomStepper()
+                    MapPlanTypeMenuButton(planType: $mapState.planType)
+                }
                 .onMapCameraChange { context in lastRegion = context.region }
                 .ignoresSafeArea(edges: [.horizontal, .bottom])
-                .overlay(alignment: .topTrailing) { controlCluster.padding(10) }
 
                 settingsColumn(columnAvailableHeight: geo.size.height - columnOuterPadding * 2)
                     .frame(width: columnWidth)
@@ -205,83 +207,6 @@ public struct GeoView2: View {
             }
         }
         .buttonStyle(.plain)
-    }
-
-    // MARK: Map display controls (same as the inspector's MapPanelView)
-
-    private var controlCluster: some View {
-        VStack(spacing: 8) {
-            mapStyleMenu
-            zoomControl
-            nativeControlButton(icon: is3D ? "view.2d" : "view.3d", active: is3D, help: is3D ? "Passer en 2D" : "Passer en 3D") {
-                is3D.toggle()
-            }
-        }
-    }
-
-    private var mapStyleMenu: some View {
-        Menu {
-            ForEach(MapPlanType.allCases) { type in
-                Button { planType = type } label: { Label(type.label, systemImage: type.icon) }
-            }
-        } label: {
-            Image(systemName: planType.icon)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(ClassicTheme.ink)
-                .frame(width: 29, height: 29)
-        }
-        .menuStyle(.button)
-        .menuIndicator(.hidden)
-        .buttonStyle(.plain)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
-        .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(.separator, lineWidth: 0.5))
-        .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
-        .help("Type de carte")
-    }
-
-    private var zoomControl: some View {
-        VStack(spacing: 0) {
-            Button { zoom(by: 0.5) } label: {
-                Image(systemName: "plus").font(.system(size: 13, weight: .medium)).frame(width: 29, height: 22)
-            }
-            Divider().frame(width: 18)
-            Button { zoom(by: 2) } label: {
-                Image(systemName: "minus").font(.system(size: 13, weight: .medium)).frame(width: 29, height: 22)
-            }
-        }
-        .buttonStyle(.plain)
-        .foregroundStyle(ClassicTheme.ink)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
-        .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(.separator, lineWidth: 0.5))
-        .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
-        .help("Zoom")
-    }
-
-    private func nativeControlButton(icon: String, active: Bool, help: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: icon)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(active ? theme.accent : ClassicTheme.ink)
-                .frame(width: 29, height: 29)
-        }
-        .buttonStyle(.plain)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
-        .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(.separator, lineWidth: 0.5))
-        .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
-        .help(help)
-    }
-
-    private func zoom(by factor: Double) {
-        guard let region = lastRegion else { return }
-        let newRegion = MKCoordinateRegion(
-            center: region.center,
-            span: MKCoordinateSpan(
-                latitudeDelta: max(0.002, region.span.latitudeDelta * factor),
-                longitudeDelta: max(0.002, region.span.longitudeDelta * factor)
-            )
-        )
-        withAnimation(.easeInOut(duration: 0.25)) { position = .region(newRegion) }
-        lastRegion = newRegion
     }
 
     /// Shifts the camera center west of the focused coordinate so the

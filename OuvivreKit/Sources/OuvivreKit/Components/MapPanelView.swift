@@ -36,6 +36,48 @@ public enum MapPlanType: String, CaseIterable, Identifiable {
     }
 }
 
+/// A round map-type selector, styled to match MapKit's own native controls
+/// (`MapCompass`, `MapPitchToggle`, `MapZoomStepper`) so it can sit in the
+/// same `.mapControls` stack as them — MapKit has no built-in equivalent for
+/// switching between named map styles (Explorer/Voiture/Transports/Satellite),
+/// so this fills that one gap without introducing a different-looking control.
+struct MapPlanTypeMenuButton: View {
+    @Binding var planType: MapPlanType
+
+    var body: some View {
+        Menu {
+            ForEach(MapPlanType.allCases) { type in
+                Button { planType = type } label: { Label(type.label, systemImage: type.icon) }
+            }
+        } label: {
+            Image(systemName: "globe.desk")
+                .font(.system(size: 13, weight: .medium))
+                .frame(width: 32, height: 32)
+        }
+        .menuIndicator(.hidden)
+        .modifier(RoundMapControlStyle())
+        .help("Type de carte")
+    }
+}
+
+/// Circular, system-material chrome matching MapKit's own control buttons —
+/// real Liquid Glass on macOS 26/iOS 26, a plain material circle before that.
+private struct RoundMapControlStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(macOS 26, iOS 26, *) {
+            content
+                .buttonStyle(.glass)
+                .buttonBorderShape(.circle)
+        } else {
+            content
+                .buttonStyle(.plain)
+                .background(.regularMaterial, in: Circle())
+                .overlay(Circle().strokeBorder(.separator, lineWidth: 0.5))
+                .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
+        }
+    }
+}
+
 /// The "Carte" side panel — a MapKit view (via MapKit for SwiftUI) that
 /// stays in sync with `MapPanelState`, animating a zoom-out/zoom-in transition
 /// whenever the focused place changes (country in Pays, région in Géographie).
@@ -46,7 +88,6 @@ public struct MapPanelView: View {
     @State private var position: MapCameraPosition = .automatic
     @State private var lastRegion: MKCoordinateRegion?
     @State private var transitionGeneration = 0
-    @State private var planType: MapPlanType = .explorer
 
     public init(mapState: MapPanelState) {
         self.mapState = mapState
@@ -64,40 +105,20 @@ public struct MapPanelView: View {
                     Marker(mapState.title, coordinate: mapState.coordinate)
                 }
             }
-            .mapStyle(planType.style(elevation: .automatic))
+            .mapStyle(mapState.planType.style(elevation: .automatic))
             .mapControls {
                 MapCompass()
                 MapPitchToggle()
                 MapZoomStepper()
+                MapPlanTypeMenuButton(planType: $mapState.planType)
             }
             .onMapCameraChange { context in lastRegion = context.region }
-            .overlay(alignment: .topTrailing) { mapStyleMenu.padding(10) }
         }
         .frame(maxHeight: .infinity)
         .background(ClassicTheme.sidebarBg)
         .onAppear { moveCamera(animated: false) }
         .onChange(of: mapState.coordinate.latitude) { _, _ in moveCamera(animated: true) }
         .onChange(of: mapState.coordinate.longitude) { _, _ in moveCamera(animated: true) }
-    }
-
-    /// Groups the four plan types (Explorer/Voiture/Transports/Satellite)
-    /// behind one system `Menu`, styled with the stock bordered control look
-    /// (no hand-rolled material/border) — like Plans' own layers picker.
-    /// Zoom (`MapZoomStepper`) and the 2D/3D toggle (`MapPitchToggle`) are
-    /// MapKit's own native controls, added via `.mapControls` above.
-    private var mapStyleMenu: some View {
-        Menu {
-            ForEach(MapPlanType.allCases) { type in
-                Button { planType = type } label: { Label(type.label, systemImage: type.icon) }
-            }
-        } label: {
-            Image(systemName: planType.icon)
-        }
-        .menuIndicator(.hidden)
-        .buttonStyle(.bordered)
-        .buttonBorderShape(.circle)
-        .controlSize(.large)
-        .help("Type de carte")
     }
 
     private func moveCamera(animated: Bool) {

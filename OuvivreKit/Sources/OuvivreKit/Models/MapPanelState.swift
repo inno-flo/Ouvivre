@@ -16,6 +16,10 @@ public final class MapPanelState: ObservableObject {
     @Published public var title: String = "France"
     @Published public var coordinate: CLLocationCoordinate2D
     @Published public var spanDegrees: Double
+    /// The plan type shown in the panel — lifted here (rather than local
+    /// `@State` on `MapPanelView`) so the real macOS toolbar (in
+    /// `ClassicRootView`, with genuine Liquid Glass chrome) can drive it too.
+    @Published public var planType: MapPlanType = .explorer
     /// The focused région's real perimeter (one ring per landmass), if any —
     /// empty outside Géographie/Géographie 2, or for a place with no
     /// boundary data (a country, or a région not found).
