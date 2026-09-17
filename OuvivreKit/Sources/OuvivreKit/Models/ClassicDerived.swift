@@ -78,10 +78,10 @@ public struct ClassicDerived {
 
     public var navSteps: [NavItem] {
         let defs: [(String, String, ClassicScreen, String?)] = [
+            ("01d", "Big Mac", .bigMac, nil),
             ("01", "Pays", .pays, nil),
             ("01c", "Communes et services", .affiner, nil),
             ("01b", "Régions", .geo2, nil),
-            ("01d", "Big Mac", .bigMac, nil),
             ("04", "Climat", .meteo, nil),
             ("05", "Villes", .ville, nil)
         ]
