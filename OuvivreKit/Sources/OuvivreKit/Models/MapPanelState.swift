@@ -83,4 +83,10 @@ public final class MapPanelState: ObservableObject {
         regionRings = []
         departementRingGroups = []
     }
+
+    /// Redraws the top-N départements' perimeters without touching the
+    /// camera — keeps "Afficher sur la carte" in sync as weights change.
+    public func updateDepartementRingGroups(_ noms: [String]) {
+        departementRingGroups = noms.map { ($0, DepartementBoundaries.rings[$0] ?? []) }
+    }
 }

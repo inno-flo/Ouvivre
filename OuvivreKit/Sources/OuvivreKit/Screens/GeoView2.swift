@@ -58,7 +58,7 @@ public struct GeoView2: View {
                         ForEach(mapState.departementRingGroups, id: \.name) { group in
                             ForEach(Array(group.rings.enumerated()), id: \.offset) { _, ring in
                                 MapPolygon(coordinates: ring)
-                                    .foregroundStyle(theme.accent.opacity(group.name == hoveredDepartementName ? 0.45 : 0.16))
+                                    .foregroundStyle(theme.accent.opacity(group.name == hoveredDepartementName ? 0.54 : 0.16))
                                     .stroke(theme.accent, lineWidth: 2)
                             }
                         }
@@ -83,7 +83,20 @@ public struct GeoView2: View {
             .onChange(of: mapState.coordinate.latitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: mapState.coordinate.longitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: geo.size.width) { _, newValue in moveCamera(totalWidth: newValue, animated: false) }
+            .onChange(of: state.geo2) { _, _ in refreshTopDepartementsOnMap() }
+            .onChange(of: state.excludeOverseas) { _, _ in refreshTopDepartementsOnMap() }
+            .onChange(of: state.excludeCorse) { _, _ in refreshTopDepartementsOnMap() }
         }
+    }
+
+    /// Keeps the map's top-10 perimeters in sync with the sliders while
+    /// "Afficher sur la carte" is active — moving a curseur re-sorts the
+    /// list live already (it's just a computed property); this does the
+    /// same for what's drawn on the map, without moving the camera.
+    private func refreshTopDepartementsOnMap() {
+        guard isShowingTopDepartements else { return }
+        let names = Array(derived.rankedDepartements(weights: state.geo2).prefix(topDepartementsCount)).map(\.dep.nom)
+        mapState.updateDepartementRingGroups(names)
     }
 
     private var settingsColumn: some View {
