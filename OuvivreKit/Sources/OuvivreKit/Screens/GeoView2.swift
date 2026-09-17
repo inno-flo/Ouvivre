@@ -125,6 +125,7 @@ public struct GeoView2: View {
         VStack(alignment: .leading, spacing: 12) {
             topContent
             departementsCard
+                .padding(.top, 20)
         }
         .padding(columnInnerPadding)
         .background(.regularMaterial.opacity(0.75), in: RoundedRectangle(cornerRadius: 14))
@@ -140,6 +141,12 @@ public struct GeoView2: View {
                 exclusionToggle("Exclure la Corse", isOn: $state.excludeCorse)
             }
             Eyebrow("PROXIMITÉS", color: columnFaint).padding(.top, 4)
+
+            resetButton
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .padding(.top, 20)
+                .padding(.bottom, 8)
+
             ForEach(derived.geo2Rows) { row in
                 CriterionRow(row: row, labelColor: columnInk) { state.setGeo2(row.id, value: $0) }
             }
@@ -147,6 +154,17 @@ public struct GeoView2: View {
             // "Région la plus probante" masqué à titre de test — la logique
             // (`regionHero`) reste disponible ci-dessous, juste non affichée.
         }
+    }
+
+    private var resetButton: some View {
+        Button {
+            state.resetGeo2()
+        } label: {
+            Text("Réinitialiser")
+                .font(.system(size: 13))
+                .foregroundStyle(columnFaint)
+        }
+        .buttonStyle(.plain)
     }
 
     private var regionHero: some View {
@@ -301,16 +319,20 @@ public struct GeoView2: View {
     /// zoom, 2D/3D, compas — at the same opacity as `settingsColumn`.
     private var mapControlColumn: some View {
         VStack(spacing: 8) {
-            MapPlanTypeMenuButton(planType: $mapState.planType, tint: theme.accent)
+            MapPlanTypeMenuButton(planType: $mapState.planType, tint: .black)
+                .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
             MapZoomStepper(scope: mapScope)
+                .overlay(Capsule().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
             MapPitchToggle(scope: mapScope)
                 .mapControlVisibility(.visible)
                 .tint(.black)
+                .frame(width: 32, height: 32)
+                .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
             MapCompass(scope: mapScope)
+                .frame(width: 32, height: 32)
+                .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
         }
         .tint(theme.accent)
-        .padding(6)
-        .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.black.opacity(0.7), lineWidth: 1))
     }
 
     /// Shifts the camera center west of the focused coordinate so the

@@ -134,16 +134,20 @@ public struct MapPanelView: View {
     /// zoom, 2D/3D, compas — at the same opacity as the settings block.
     private var mapControlColumn: some View {
         VStack(spacing: 8) {
-            MapPlanTypeMenuButton(planType: $mapState.planType, tint: theme.accent)
+            MapPlanTypeMenuButton(planType: $mapState.planType, tint: .black)
+                .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
             MapZoomStepper(scope: mapScope)
+                .overlay(Capsule().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
             MapPitchToggle(scope: mapScope)
                 .mapControlVisibility(.visible)
                 .tint(.black)
+                .frame(width: 32, height: 32)
+                .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
             MapCompass(scope: mapScope)
+                .frame(width: 32, height: 32)
+                .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
         }
         .tint(theme.accent)
-        .padding(6)
-        .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.black.opacity(0.7), lineWidth: 1))
     }
 
     private func moveCamera(animated: Bool) {
