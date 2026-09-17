@@ -1,4 +1,5 @@
 import SwiftUI
+import MapKit
 
 /// Entry point for the "classic" theme — owns `ClassicTheme`/`ClassicState`
 /// and lays out a native sidebar + detail split, with the map shown as a
@@ -46,6 +47,16 @@ public struct ClassicRootView: View {
                 }
             }
                 .toolbar {
+                    ToolbarItem {
+                        Menu {
+                            ForEach(MapPlanType.allCases) { type in
+                                Button { mapState.planType = type } label: { Label(type.label, systemImage: type.icon) }
+                            }
+                        } label: {
+                            Image(systemName: "map")
+                        }
+                        .help("Type de carte")
+                    }
                     ToolbarItem {
                         Button {
                             inspectorBinding.wrappedValue.toggle()

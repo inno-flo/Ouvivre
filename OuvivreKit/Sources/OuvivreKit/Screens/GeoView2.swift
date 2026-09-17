@@ -25,11 +25,6 @@ public struct GeoView2: View {
     @State private var lastRegion: MKCoordinateRegion?
     @State private var transitionGeneration = 0
     @State private var showMoreDepartements = false
-    /// Ties `mapControlColumn`'s native controls (placed in a plain
-    /// `.overlay`, for full custom layout) back to this specific `Map` —
-    /// without it they're inert (zoom +/− do nothing) and MapKit still
-    /// shows its own default, unwired compass underneath ours.
-    @Namespace private var mapScope
     /// True right after "Afficher sur la carte" — the map shows all 10 top
     /// départements' perimeters at once. Cleared by tapping the map (just
     /// deselects) or a département row (deselects and focuses that one).
@@ -44,7 +39,9 @@ public struct GeoView2: View {
     private let topDepartementsCount = 10
     private let moreDepartementsMaxHeight: CGFloat = 440
 
-    public init(derived: ClassicDerived) { self.derived = derived }
+    public init(derived: ClassicDerived) {
+        self.derived = derived
+    }
 
     public var body: some View {
         GeometryReader { geo in
@@ -71,27 +68,16 @@ public struct GeoView2: View {
                 }
                 .mapStyle(mapState.planType.style(elevation: .automatic))
                 .mapControls {}
-                .mapScope(mapScope)
-                .overlay(alignment: .topTrailing) {
-                    // Trailing inset approximates the toolbar's own "Inspecteur"
-                    // button so this column lines up under it horizontally.
-                    mapControlColumn
-                        .padding(.top, 10)
-                        .padding(.trailing, 20)
-                }
                 .onMapCameraChange { context in lastRegion = context.region }
-                // .simultaneousGesture (not .onTapGesture) so this doesn't
-                // steal taps from the native zoom/map-type buttons in the
-                // overlay above — .onTapGesture claimed the whole Map's hit
-                // area exclusively, which was silently swallowing their clicks.
-                .simultaneousGesture(
-                    TapGesture().onEnded {
-                        guard isShowingTopDepartements else { return }
-                        mapState.clearRegionRings()
-                        isShowingTopDepartements = false
-                        hoveredDepartementName = nil
-                    }
-                )
+                // Tapping the map (not a control — those live in the
+                // toolbar now, off the map entirely) deselects the top-N
+                // départements' perimeters.
+                .onTapGesture {
+                    guard isShowingTopDepartements else { return }
+                    mapState.clearRegionRings()
+                    isShowingTopDepartements = false
+                    hoveredDepartementName = nil
+                }
                 .ignoresSafeArea(edges: [.horizontal, .bottom])
 
                 settingsColumn
@@ -323,18 +309,6 @@ public struct GeoView2: View {
             }
         }
         .buttonStyle(.plain)
-    }
-
-    /// Only two controls here (map-type menu + zoom) — pitch toggle and
-    /// compass were dropped. Same chrome opacity as before (kept via
-    /// `RoundMapControlStyle`, unchanged at 1.0) and 100% black icons.
-    private var mapControlColumn: some View {
-        VStack(spacing: 8) {
-            MapPlanTypeMenuButton(planType: $mapState.planType, icon: "map.fill", tint: .black)
-                .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
-            MapZoomStepper(scope: mapScope)
-        }
-        .tint(.black)
     }
 
     /// Shifts the camera center west of the focused coordinate so the

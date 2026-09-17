@@ -132,7 +132,7 @@ public struct MapPanelView: View {
         VStack(spacing: 8) {
             MapPlanTypeMenuButton(planType: $mapState.planType, tint: .black)
                 .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
-            MapZoomStepper(scope: mapScope)
+            customZoomControl
             MapPitchToggle(scope: mapScope)
                 .mapControlVisibility(.visible)
                 .frame(width: 32, height: 32)
@@ -142,6 +142,41 @@ public struct MapPanelView: View {
                 .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
         }
         .tint(.black)
+    }
+
+    /// The native `MapZoomStepper` never responded to clicks here — even
+    /// wired via `.mapScope` — so this drives the camera directly instead:
+    /// guaranteed to work since it's entirely our own code.
+    private var customZoomControl: some View {
+        VStack(spacing: 0) {
+            Button { zoom(by: 0.5) } label: {
+                Image(systemName: "plus").font(.system(size: 13, weight: .medium)).foregroundStyle(.black)
+                    .frame(width: 32, height: 26)
+            }
+            Divider().frame(width: 20)
+            Button { zoom(by: 2) } label: {
+                Image(systemName: "minus").font(.system(size: 13, weight: .medium)).foregroundStyle(.black)
+                    .frame(width: 32, height: 26)
+            }
+        }
+        .buttonStyle(.plain)
+        .background(Color.white, in: Capsule())
+        .overlay(Capsule().strokeBorder(.separator, lineWidth: 0.5))
+        .overlay(Capsule().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
+        .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
+    }
+
+    private func zoom(by factor: Double) {
+        guard let region = lastRegion else { return }
+        let newRegion = MKCoordinateRegion(
+            center: region.center,
+            span: MKCoordinateSpan(
+                latitudeDelta: max(0.002, region.span.latitudeDelta * factor),
+                longitudeDelta: max(0.002, region.span.longitudeDelta * factor)
+            )
+        )
+        withAnimation(.easeInOut(duration: 0.25)) { position = .region(newRegion) }
+        lastRegion = newRegion
     }
 
     private func moveCamera(animated: Bool) {
