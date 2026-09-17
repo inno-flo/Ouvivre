@@ -322,17 +322,17 @@ public struct GeoView2: View {
             MapPlanTypeMenuButton(planType: $mapState.planType, tint: .black)
                 .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
             MapZoomStepper(scope: mapScope)
+                .frame(height: 32)
                 .overlay(Capsule().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
             MapPitchToggle(scope: mapScope)
                 .mapControlVisibility(.visible)
-                .tint(.black)
                 .frame(width: 32, height: 32)
                 .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
             MapCompass(scope: mapScope)
                 .frame(width: 32, height: 32)
                 .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
         }
-        .tint(theme.accent)
+        .tint(.black)
     }
 
     /// Shifts the camera center west of the focused coordinate so the

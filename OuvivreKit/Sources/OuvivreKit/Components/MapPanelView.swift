@@ -54,10 +54,10 @@ struct MapPlanTypeMenuButton: View {
             Image(systemName: "globe.desk")
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(tint)
-                .frame(width: 32, height: 32)
         }
         .menuIndicator(.hidden)
         .modifier(RoundMapControlStyle())
+        .frame(width: 32, height: 32)
         .help("Type de carte")
     }
 }
@@ -137,17 +137,17 @@ public struct MapPanelView: View {
             MapPlanTypeMenuButton(planType: $mapState.planType, tint: .black)
                 .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
             MapZoomStepper(scope: mapScope)
+                .frame(height: 32)
                 .overlay(Capsule().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
             MapPitchToggle(scope: mapScope)
                 .mapControlVisibility(.visible)
-                .tint(.black)
                 .frame(width: 32, height: 32)
                 .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
             MapCompass(scope: mapScope)
                 .frame(width: 32, height: 32)
                 .overlay(Circle().strokeBorder(Color.black.opacity(0.35), lineWidth: 1))
         }
-        .tint(theme.accent)
+        .tint(.black)
     }
 
     private func moveCamera(animated: Bool) {
