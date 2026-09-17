@@ -48,7 +48,7 @@ public struct ClassicRootView: View {
                         Button {
                             inspectorBinding.wrappedValue.toggle()
                         } label: {
-                            Image(systemName: "globe.europe.africa")
+                            Image(systemName: "info.circle")
                         }
                         .help("Afficher/masquer la carte")
                     }

@@ -40,7 +40,6 @@ private struct NavItemRow: View {
 
     var body: some View {
         HStack(spacing: 9) {
-            Text(item.num).font(CFont.mono(10, weight: .medium)).opacity(0.6).frame(width: 14, alignment: .leading)
             Text(item.label).font(CFont.sans(13, weight: .medium))
             Spacer(minLength: 4)
             if let meta = item.meta {
