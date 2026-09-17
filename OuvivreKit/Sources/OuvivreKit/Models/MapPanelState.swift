@@ -24,6 +24,10 @@ public final class MapPanelState: ObservableObject {
     /// empty outside Géographie/Géographie 2, or for a place with no
     /// boundary data (a country, or a région not found).
     @Published public var regionRings: [[CLLocationCoordinate2D]] = []
+    /// "Afficher sur la carte" on the top-N list — each département's rings
+    /// kept separate (rather than flattened into `regionRings`) so the map
+    /// can raise just the hovered one's shading.
+    @Published public var departementRingGroups: [(name: String, rings: [[CLLocationCoordinate2D]])] = []
 
     public init() {
         let place = GeoCoordinates.countries["France"]!
@@ -37,6 +41,7 @@ public final class MapPanelState: ObservableObject {
         coordinate = place.coordinate
         spanDegrees = place.span
         regionRings = []
+        departementRingGroups = []
     }
 
     public func focusOnRegion(_ nomRegion: String) {
@@ -45,6 +50,7 @@ public final class MapPanelState: ObservableObject {
         coordinate = place.coordinate
         spanDegrees = place.span
         regionRings = RegionBoundaries.rings[nomRegion] ?? []
+        departementRingGroups = []
     }
 
     /// Same idea as `focusOnRegion`, one administrative level finer — no
@@ -57,5 +63,24 @@ public final class MapPanelState: ObservableObject {
         coordinate = place.coordinate
         spanDegrees = place.span
         regionRings = DepartementBoundaries.rings[nom] ?? []
+        departementRingGroups = []
+    }
+
+    /// Draws every named département's perimeter at once and zooms out to
+    /// show all of France — "Afficher sur la carte" on the top-N list.
+    public func focusOnDepartements(_ noms: [String]) {
+        guard let france = GeoCoordinates.countries["France"] else { return }
+        title = "France"
+        coordinate = france.coordinate
+        spanDegrees = france.span
+        regionRings = []
+        departementRingGroups = noms.map { ($0, DepartementBoundaries.rings[$0] ?? []) }
+    }
+
+    /// Clears whatever perimeter is drawn, without moving the camera —
+    /// tapping the map to deselect the top-N départements.
+    public func clearRegionRings() {
+        regionRings = []
+        departementRingGroups = []
     }
 }

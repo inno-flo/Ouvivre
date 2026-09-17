@@ -25,6 +25,13 @@ public struct GeoView2: View {
     @State private var lastRegion: MKCoordinateRegion?
     @State private var transitionGeneration = 0
     @State private var showMoreDepartements = false
+    /// True right after "Afficher sur la carte" — the map shows all 10 top
+    /// départements' perimeters at once. Cleared by tapping the map (just
+    /// deselects) or a département row (deselects and focuses that one).
+    @State private var isShowingTopDepartements = false
+    /// The département row currently under the mouse pointer, if its
+    /// perimeter is one of the ones drawn — raises its shading on the map.
+    @State private var hoveredDepartementName: String?
 
     private let columnWidth: CGFloat = 320
     private let columnOuterPadding: CGFloat = 20
@@ -38,18 +45,34 @@ public struct GeoView2: View {
         GeometryReader { geo in
             ZStack(alignment: .topLeading) {
                 Map(position: $position) {
-                    ForEach(Array(mapState.regionRings.enumerated()), id: \.offset) { _, ring in
-                        MapPolygon(coordinates: ring)
-                            .foregroundStyle(theme.accent.opacity(0.16))
-                            .stroke(theme.accent, lineWidth: 2)
-                    }
-                    if mapState.regionRings.isEmpty {
-                        Marker(mapState.title, coordinate: mapState.coordinate)
+                    if mapState.departementRingGroups.isEmpty {
+                        ForEach(Array(mapState.regionRings.enumerated()), id: \.offset) { _, ring in
+                            MapPolygon(coordinates: ring)
+                                .foregroundStyle(theme.accent.opacity(0.16))
+                                .stroke(theme.accent, lineWidth: 2)
+                        }
+                        if mapState.regionRings.isEmpty {
+                            Marker(mapState.title, coordinate: mapState.coordinate)
+                        }
+                    } else {
+                        ForEach(mapState.departementRingGroups, id: \.name) { group in
+                            ForEach(Array(group.rings.enumerated()), id: \.offset) { _, ring in
+                                MapPolygon(coordinates: ring)
+                                    .foregroundStyle(theme.accent.opacity(group.name == hoveredDepartementName ? 0.20 : 0.16))
+                                    .stroke(theme.accent, lineWidth: 2)
+                            }
+                        }
                     }
                 }
                 .mapStyle(mapState.planType.style(elevation: .automatic))
                 .overlay(alignment: .topTrailing) { mapControlColumn.padding(10) }
                 .onMapCameraChange { context in lastRegion = context.region }
+                .onTapGesture {
+                    guard isShowingTopDepartements else { return }
+                    mapState.clearRegionRings()
+                    isShowingTopDepartements = false
+                    hoveredDepartementName = nil
+                }
                 .ignoresSafeArea(edges: [.horizontal, .bottom])
 
                 settingsColumn
@@ -126,9 +149,15 @@ public struct GeoView2: View {
             HStack(alignment: .firstTextBaseline) {
                 Eyebrow("DÉPARTEMENTS", color: columnFaint)
                 Spacer()
-                sortMenu
+                showOnMapButton(names: top10.map(\.dep.nom))
             }
-            .padding(.bottom, 8)
+
+            Text("Un score de 100 représente une correspondance parfaite")
+                .font(CFont.sans(11))
+                .foregroundStyle(columnFaint)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, 2)
+                .padding(.bottom, 8)
 
             VStack(spacing: 0) {
                 ForEach(top10, id: \.dep.nom) { entry in
@@ -167,34 +196,50 @@ public struct GeoView2: View {
         }
     }
 
-    private var sortMenu: some View {
-        Menu {
-            Button("Département") {}
-            Button("Région") {}
+    private func showOnMapButton(names: [String]) -> some View {
+        Button {
+            mapState.focusOnDepartements(names)
+            isShowingTopDepartements = true
         } label: {
             HStack(spacing: 4) {
-                Text("Classer").font(CFont.sans(11, weight: .medium))
-                Image(systemName: "chevron.up.chevron.down").font(.system(size: 9, weight: .semibold))
+                Image(systemName: "map").font(.system(size: 10, weight: .semibold))
+                Text("Afficher sur la carte").font(CFont.sans(11, weight: .medium))
             }
             .foregroundStyle(columnFaint)
         }
-        .menuStyle(.borderlessButton)
-        .fixedSize()
+        .buttonStyle(.plain)
     }
 
     private func departementRow(name: String, score: Double) -> some View {
         Button {
             mapState.focusOnDepartement(name)
+            isShowingTopDepartements = false
+            hoveredDepartementName = nil
         } label: {
             HStack(spacing: 10) {
-                Text("\(Int(score.rounded()))").font(CFont.mono(12, weight: .medium)).foregroundStyle(columnInk).frame(width: 20, alignment: .leading)
                 Text(name).font(CFont.sans(14, weight: .medium)).foregroundStyle(columnInk)
                 Spacer()
+                scoreBadge(Int(score.rounded()))
             }
             .padding(.vertical, 6)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .onHover { isHovering in
+            guard isShowingTopDepartements else { return }
+            hoveredDepartementName = isHovering ? name : (hoveredDepartementName == name ? nil : hoveredDepartementName)
+        }
+    }
+
+    /// The rank/score, in a pill outline with no fill ("pastille, fond
+    /// transparent") — opposite side from the département name.
+    private func scoreBadge(_ score: Int) -> some View {
+        Text("\(score)")
+            .font(CFont.mono(11, weight: .medium))
+            .foregroundStyle(columnInk)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
+            .overlay(Capsule().stroke(columnFaint.opacity(0.5), lineWidth: 1))
     }
 
     private func exclusionToggle(_ label: String, isOn: Binding<Bool>) -> some View {
