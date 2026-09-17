@@ -12,9 +12,6 @@ public struct GeoView2: View {
     @EnvironmentObject var mapState: MapPanelState
     @Environment(\.colorScheme) private var colorScheme
     let derived: ClassicDerived
-    /// Shared with `ClassicRootView`'s toolbar so its native `MapZoomStepper`
-    /// (to the left of the Inspecteur button) stays wired to this `Map`.
-    let mapScope: Namespace.ID
 
     /// The settings column sits on a translucent system material, which
     /// tints dark in system Dark Mode — unlike the rest of the app's fixed
@@ -42,9 +39,8 @@ public struct GeoView2: View {
     private let topDepartementsCount = 10
     private let moreDepartementsMaxHeight: CGFloat = 440
 
-    public init(derived: ClassicDerived, mapScope: Namespace.ID) {
+    public init(derived: ClassicDerived) {
         self.derived = derived
-        self.mapScope = mapScope
     }
 
     public var body: some View {
@@ -72,7 +68,6 @@ public struct GeoView2: View {
                 }
                 .mapStyle(mapState.planType.style(elevation: .automatic))
                 .mapControls {}
-                .mapScope(mapScope)
                 .onMapCameraChange { context in lastRegion = context.region }
                 // Tapping the map (not a control — those live in the
                 // toolbar now, off the map entirely) deselects the top-N
@@ -95,6 +90,7 @@ public struct GeoView2: View {
             }
             .onChange(of: mapState.coordinate.latitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: mapState.coordinate.longitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
+            .onChange(of: mapState.spanDegrees) { _, newSpan in applyZoom(newSpan) }
             .onChange(of: geo.size.width) { _, newValue in moveCamera(totalWidth: newValue, animated: false) }
             .onChange(of: state.geo2) { _, _ in refreshTopDepartementsOnMap() }
             .onChange(of: state.excludeOverseas) { _, _ in refreshTopDepartementsOnMap() }
@@ -319,6 +315,19 @@ public struct GeoView2: View {
     /// Shifts the camera center west of the focused coordinate so the
     /// marker renders roughly centered in the space to the right of the
     /// settings column, instead of behind it.
+    /// A plain, direct zoom (same center, new span) for the toolbar's
+    /// zoom-in/zoom-out buttons — unlike `moveCamera`'s dézoom/rezoom
+    /// transition, which is for jumping to a different place.
+    private func applyZoom(_ newSpan: Double) {
+        guard let current = lastRegion else { return }
+        let updated = MKCoordinateRegion(
+            center: current.center,
+            span: MKCoordinateSpan(latitudeDelta: newSpan, longitudeDelta: newSpan)
+        )
+        withAnimation(.easeInOut(duration: 0.25)) { position = .region(updated) }
+        lastRegion = updated
+    }
+
     private func moveCamera(totalWidth: CGFloat, animated: Bool) {
         guard totalWidth > 0 else { return }
         let columnFraction = min(0.85, (columnWidth + 40) / totalWidth)

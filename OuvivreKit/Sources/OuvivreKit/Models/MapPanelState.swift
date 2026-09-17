@@ -89,4 +89,10 @@ public final class MapPanelState: ObservableObject {
     public func updateDepartementRingGroups(_ noms: [String]) {
         departementRingGroups = noms.map { ($0, DepartementBoundaries.rings[$0] ?? []) }
     }
+
+    /// Drive the toolbar's separate zoom-in/zoom-out buttons — halves/
+    /// doubles the span, clamped so it can't zoom past street level or
+    /// wider than the globe.
+    public func zoomIn() { spanDegrees = max(0.005, spanDegrees * 0.5) }
+    public func zoomOut() { spanDegrees = min(60, spanDegrees * 2) }
 }

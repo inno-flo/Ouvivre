@@ -9,9 +9,6 @@ public struct ClassicRootView: View {
     @StateObject private var state = ClassicState()
     @StateObject private var mapState = MapPanelState.shared
     @State private var columnVisibility: NavigationSplitViewVisibility = .automatic
-    /// Shared with `GeoView2`'s full-bleed `Map` so the native
-    /// `MapZoomStepper` in the toolbar stays wired to it.
-    @Namespace private var mapScope
 
     public init() {}
 
@@ -43,18 +40,29 @@ public struct ClassicRootView: View {
                 if state.screen == .pays {
                     PaysView(derived: derived)
                 } else if state.screen == .geo2 {
-                    GeoView2(derived: derived, mapScope: mapScope)
+                    GeoView2(derived: derived)
                 } else {
                     ScrollView { content(derived) }
                         .frame(maxWidth: .infinity)
                 }
             }
                 .toolbar {
-                    // Native control, only wired while Géographie 2's Map
-                    // (sharing mapScope) is actually on screen.
+                    // Two separate, plain toolbar buttons (not the native
+                    // combined MapZoomStepper, and no custom capsule/frame
+                    // wrapping either — those both caused trouble before).
+                    // Only meaningful while Géographie 2's Map is on screen.
                     if state.screen == .geo2 {
                         ToolbarItem {
-                            MapZoomStepper(scope: mapScope)
+                            Button { mapState.zoomOut() } label: {
+                                Image(systemName: "minus.magnifyingglass")
+                            }
+                            .help("Dézoomer")
+                        }
+                        ToolbarItem {
+                            Button { mapState.zoomIn() } label: {
+                                Image(systemName: "plus.magnifyingglass")
+                            }
+                            .help("Zoomer")
                         }
                     }
                     ToolbarItem {
