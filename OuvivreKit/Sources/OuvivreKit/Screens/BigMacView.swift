@@ -152,6 +152,26 @@ public struct BigMacView: View {
                     .foregroundStyle(columnFaint)
 
                 communesList
+
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack(alignment: .firstTextBaseline) {
+                        Eyebrow("PROXIMITÉS", color: columnFaint)
+                        Spacer()
+                        Button {
+                            state.resetGeo2()
+                        } label: {
+                            Text("Réinitialiser")
+                                .font(.system(size: 13))
+                                .foregroundStyle(columnFaint)
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    ForEach(derived.geo2Rows) { row in
+                        CriterionRow(row: row, labelColor: columnInk) { state.setGeo2(row.id, value: $0) }
+                    }
+                }
+                .padding(.top, 12)
             }
         }
     }
