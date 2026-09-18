@@ -63,68 +63,95 @@ public enum FranceGeoData {
         return weightTotal > 0 ? weightedSum / weightTotal : 50.0
     }
 
-    /// Criteria that get a hard score-band eligibility filter on top of the
-    /// usual weighted-average blend, indexed into `criterionKeys` — just
-    /// "mer": it's computed as a hop-count to the nearest coastal
-    /// département, quantized into 5 buckets (0/25/50/75/100 — see
-    /// geo_pipeline/recompute_mer_score.py). Blending it lets an inland
-    /// département 2 hops from the coast (e.g. Loire, Marne — score 50)
-    /// outrank a truly coastal one once other criteria tip the average, so
-    /// "déterminant" needs a hard floor, not just a weight in the average.
-    /// ("paysEtranger" has its own km-based filter below — see
-    /// `maxPaysEtrangerKm` — because unlike "mer" its score is a genuine
-    /// but *compressed* continuous distance, not a handful of discrete
-    /// buckets, so a score-band floor doesn't line up with real-world
-    /// closeness the way it does for "mer".)
-    public static let hardFilterCriteria: Set<String> = ["mer"]
+    /// Criteria that get a hard eligibility filter on top of the usual
+    /// weighted-average blend, indexed into `criterionKeys` — every geo
+    /// criterion except "paysEtranger" (it has its own km-based filter
+    /// below, see `maxPaysEtrangerKm`: unlike the others its score is a
+    /// genuine but *compressed* continuous distance, so a score-band floor
+    /// doesn't line up with real-world closeness the way it does here).
+    /// Fires only at "déterminant" (see `passesHardFilter`'s `maxWeight`) —
+    /// the whole point is that "déterminant" means AND/must-have, while
+    /// "souhaitable"/"important" stay a pure weight in the average.
+    public static let hardFilterCriteria: Set<String> = ["mer", "montagne", "lacs", "fleuves", "forets"]
 
-    /// Minimum raw score (0-100) a département must have on a hard-filtered
-    /// criterion to pass at this slider weight — `nil` means no filter
-    /// (weight 0, "indifférent"). Each step up raises the floor by 25
-    /// points, the same bucket width "mer"'s hop-count is already quantized
-    /// into: weight 1 ("souhaitable") -> 50, 2 ("important") -> 75, 3
-    /// ("déterminant") -> 100, i.e. hop 0 exactly.
-    public static func minHardFilterScore(forWeight weight: Int) -> Double? {
-        guard weight > 0 else { return nil }
-        return Double(25 * (weight + 1))
+    /// Per-criterion floor a département must clear to pass its hard filter
+    /// at "déterminant" — the 85th percentile of that criterion's real
+    /// score distribution across the 101 départements, i.e. only the top
+    /// ~15% pass. A fixed floor (e.g. "score == 100") works for "mer" (a
+    /// hop-count quantized into 5 buckets) but leaves almost nothing for
+    /// continuous criteria like "forets" or "lacs" where near-101 depts sit
+    /// well under 100 — the percentile keeps "déterminant" meaningfully
+    /// strict without emptying the result for every criterion but "mer".
+    public static func hardFilterThreshold(forKey key: String) -> Double? {
+        guard hardFilterCriteria.contains(key) else { return nil }
+        let values = departements.compactMap { $0.scores[key] }.sorted()
+        guard !values.isEmpty else { return nil }
+        let index = min(values.count - 1, Int((Double(values.count) * 0.85).rounded(.down)))
+        return values[index]
     }
 
-    /// Whether `dep` passes the hard filter for `key` at `weight` (see
-    /// `minHardFilterScore`). Criteria not in `hardFilterCriteria` always
-    /// pass — they stay purely a weight in `weightedScore`'s average.
-    public static func passesHardFilter(_ dep: DepartementScore, key: String, weight: Int) -> Bool {
-        guard hardFilterCriteria.contains(key), let minScore = minHardFilterScore(forWeight: weight) else { return true }
-        return (dep.scores[key] ?? 50.0) >= minScore
+    /// Whether `dep` passes the hard filter for `key` at `weight` — only
+    /// engages once `weight` reaches `maxWeight` (the slider's top value,
+    /// "déterminant"); anything below stays a pure weight in
+    /// `weightedScore`'s average. Criteria not in `hardFilterCriteria`
+    /// always pass.
+    public static func passesHardFilter(_ dep: DepartementScore, key: String, weight: Int, maxWeight: Int) -> Bool {
+        guard maxWeight > 0, weight >= maxWeight, let threshold = hardFilterThreshold(forKey: key) else { return true }
+        return (dep.scores[key] ?? 50.0) >= threshold
     }
 
     /// Max real-world distance (km) to the nearest foreign country — land
     /// border or short sea crossing alike, since that's exactly what
     /// `distancesKm["paysEtranger"]` already measures (build_france_geo_scores.py
     /// picks whichever neighboring country, e.g. the UK across the Manche,
-    /// is geometrically nearest, regardless of land vs. sea) — a
-    /// département may have and still pass the "pays étranger" filter at
-    /// this slider weight. `nil` means no filter (weight 0, "indifférent").
-    /// Thresholds are picked off the real distribution of distances (not
-    /// the compressed score): 30 km already covers every land border (0 km)
+    /// is geometrically nearest, regardless of land vs. sea). Only engages
+    /// at "déterminant" (`weight >= maxWeight`), same AND/must-have rule as
+    /// `passesHardFilter` — 30 km already covers every land border (0 km)
     /// plus the closest sea crossings (Pas-de-Calais 5 km from Belgium,
-    /// Manche 22 km from Jersey); 100 km adds the next tier (e.g.
-    /// Seine-Maritime, ~100 km from the UK across the Manche); 250 km is a
-    /// loose "not too far from a border" cutoff for the weakest setting.
-    public static func maxPaysEtrangerKm(forWeight weight: Int) -> Double? {
-        switch weight {
-        case ..<1: return nil
-        case 1: return 250
-        case 2: return 100
-        default: return 30
-        }
+    /// Manche 22 km from Jersey).
+    public static func maxPaysEtrangerKm(forWeight weight: Int, maxWeight: Int) -> Double? {
+        guard maxWeight > 0, weight >= maxWeight else { return nil }
+        return 30
     }
 
     /// Whether `dep` passes the "pays étranger" km filter for `weight` (see
     /// `maxPaysEtrangerKm`). Falls back to passing when the raw distance is
     /// missing (shouldn't happen — every département has one).
-    public static func passesPaysEtrangerFilter(_ dep: DepartementScore, weight: Int) -> Bool {
-        guard let maxKm = maxPaysEtrangerKm(forWeight: weight) else { return true }
+    public static func passesPaysEtrangerFilter(_ dep: DepartementScore, weight: Int, maxWeight: Int) -> Bool {
+        guard let maxKm = maxPaysEtrangerKm(forWeight: weight, maxWeight: maxWeight) else { return true }
         guard let km = dep.distancesKm["paysEtranger"] else { return true }
         return km <= maxKm
     }
+
+    /// Chef-lieu (préfecture) de chaque département, par code INSEE —
+    /// géographie officielle établie, liste statique (aucune donnée de ce
+    /// type dans `france_geo_scores.json` ni ailleurs dans le pipeline).
+    public static let chefsLieux: [String: String] = [
+        "01": "Bourg-en-Bresse", "02": "Laon", "03": "Moulins", "04": "Digne-les-Bains",
+        "05": "Gap", "06": "Nice", "07": "Privas", "08": "Charleville-Mézières",
+        "09": "Foix", "10": "Troyes", "11": "Carcassonne", "12": "Rodez",
+        "13": "Marseille", "14": "Caen", "15": "Aurillac", "16": "Angoulême",
+        "17": "La Rochelle", "18": "Bourges", "19": "Tulle", "2A": "Ajaccio",
+        "2B": "Bastia", "21": "Dijon", "22": "Saint-Brieuc", "23": "Guéret",
+        "24": "Périgueux", "25": "Besançon", "26": "Valence", "27": "Évreux",
+        "28": "Chartres", "29": "Quimper", "30": "Nîmes", "31": "Toulouse",
+        "32": "Auch", "33": "Bordeaux", "34": "Montpellier", "35": "Rennes",
+        "36": "Châteauroux", "37": "Tours", "38": "Grenoble", "39": "Lons-le-Saunier",
+        "40": "Mont-de-Marsan", "41": "Blois", "42": "Saint-Étienne", "43": "Le Puy-en-Velay",
+        "44": "Nantes", "45": "Orléans", "46": "Cahors", "47": "Agen",
+        "48": "Mende", "49": "Angers", "50": "Saint-Lô", "51": "Châlons-en-Champagne",
+        "52": "Chaumont", "53": "Laval", "54": "Nancy", "55": "Bar-le-Duc",
+        "56": "Vannes", "57": "Metz", "58": "Nevers", "59": "Lille",
+        "60": "Beauvais", "61": "Alençon", "62": "Arras", "63": "Clermont-Ferrand",
+        "64": "Pau", "65": "Tarbes", "66": "Perpignan", "67": "Strasbourg",
+        "68": "Colmar", "69": "Lyon", "70": "Vesoul", "71": "Mâcon",
+        "72": "Le Mans", "73": "Chambéry", "74": "Annecy", "75": "Paris",
+        "76": "Rouen", "77": "Melun", "78": "Versailles", "79": "Niort",
+        "80": "Amiens", "81": "Albi", "82": "Montauban", "83": "Toulon",
+        "84": "Avignon", "85": "La Roche-sur-Yon", "86": "Poitiers", "87": "Limoges",
+        "88": "Épinal", "89": "Auxerre", "90": "Belfort", "91": "Évry-Courcouronnes",
+        "92": "Nanterre", "93": "Bobigny", "94": "Créteil", "95": "Cergy",
+        "971": "Basse-Terre", "972": "Fort-de-France", "973": "Cayenne",
+        "974": "Saint-Denis", "976": "Mamoudzou",
+    ]
 }

@@ -45,7 +45,7 @@ public struct ClassicDerived {
     /// formula. `excluding` drops criteria (by index into
     /// `FranceGeoData.criterionKeys`) from the average. Géographie 2 passes
     /// its own `state.geo2` (4-level scale) as `weights`.
-    public func rankedDepartements(weights: [Int]? = nil, excluding: Set<Int> = []) -> [(dep: FranceGeoData.DepartementScore, score: Double)] {
+    public func rankedDepartements(weights: [Int]? = nil, excluding: Set<Int> = [], maxWeight: Int = 5) -> [(dep: FranceGeoData.DepartementScore, score: Double)] {
         let weights = weights ?? state.geo
         // Hard-filtered criteria (see `FranceGeoData.hardFilterCriteria`) get
         // an eligibility floor on top of the weighted average below — a
@@ -64,8 +64,8 @@ public struct ClassicDerived {
         return FranceGeoData.departements
             .filter { !(state.excludeOverseas && $0.isOverseas) }
             .filter { !(state.excludeCorse && $0.isCorse) }
-            .filter { dep in hardFilterWeights.allSatisfy { FranceGeoData.passesHardFilter(dep, key: $0.key, weight: $0.weight) } }
-            .filter { FranceGeoData.passesPaysEtrangerFilter($0, weight: paysEtrangerWeight) }
+            .filter { dep in hardFilterWeights.allSatisfy { FranceGeoData.passesHardFilter(dep, key: $0.key, weight: $0.weight, maxWeight: maxWeight) } }
+            .filter { FranceGeoData.passesPaysEtrangerFilter($0, weight: paysEtrangerWeight, maxWeight: maxWeight) }
             .map { ($0, FranceGeoData.weightedScore($0, weights: weights, excluding: excluding)) }
             .sorted { $0.1 > $1.1 }
     }
@@ -74,8 +74,8 @@ public struct ClassicDerived {
     /// primary "région la plus probante" ranking is at région level, backed
     /// by a finer per-département computation (see plan: région ranking,
     /// département detail).
-    public func rankedRegions(weights: [Int]? = nil, excluding: Set<Int> = []) -> [(nomRegion: String, score: Double, bestDept: FranceGeoData.DepartementScore)] {
-        let ranked = rankedDepartements(weights: weights, excluding: excluding)
+    public func rankedRegions(weights: [Int]? = nil, excluding: Set<Int> = [], maxWeight: Int = 5) -> [(nomRegion: String, score: Double, bestDept: FranceGeoData.DepartementScore)] {
+        let ranked = rankedDepartements(weights: weights, excluding: excluding, maxWeight: maxWeight)
         var byRegion: [String: [(dep: FranceGeoData.DepartementScore, score: Double)]] = [:]
         for entry in ranked { byRegion[entry.dep.nomRegion, default: []].append(entry) }
         return byRegion.map { nomRegion, entries in
@@ -86,11 +86,11 @@ public struct ClassicDerived {
     }
 
     public struct WinningRegion { public let nomRegion: String; public let bestDept: String; public let score: Int }
-    public func winningRegion(weights: [Int]? = nil, excluding: Set<Int> = []) -> WinningRegion? {
-        guard let top = rankedRegions(weights: weights, excluding: excluding).first else { return nil }
+    public func winningRegion(weights: [Int]? = nil, excluding: Set<Int> = [], maxWeight: Int = 5) -> WinningRegion? {
+        guard let top = rankedRegions(weights: weights, excluding: excluding, maxWeight: maxWeight).first else { return nil }
         return WinningRegion(nomRegion: top.nomRegion, bestDept: top.bestDept.nom, score: Int(top.score.rounded()))
     }
-    public func topScore(weights: [Int]? = nil, excluding: Set<Int> = []) -> Int { winningRegion(weights: weights, excluding: excluding)?.score ?? 0 }
+    public func topScore(weights: [Int]? = nil, excluding: Set<Int> = [], maxWeight: Int = 5) -> Int { winningRegion(weights: weights, excluding: excluding, maxWeight: maxWeight)?.score ?? 0 }
 
     public var navSteps: [NavItem] {
         let defs: [(String, String, ClassicScreen, String?)] = [
@@ -170,9 +170,9 @@ public struct ClassicDerived {
     }
     /// Top départements nationally by weighted score, skipping the one
     /// already shown as the winning région's headline pick.
-    public func regionRows(weights: [Int]? = nil, excluding: Set<Int> = []) -> [RegionRow] {
-        let bestDeptName = winningRegion(weights: weights, excluding: excluding)?.bestDept
-        return rankedDepartements(weights: weights, excluding: excluding)
+    public func regionRows(weights: [Int]? = nil, excluding: Set<Int> = [], maxWeight: Int = 5) -> [RegionRow] {
+        let bestDeptName = winningRegion(weights: weights, excluding: excluding, maxWeight: maxWeight)?.bestDept
+        return rankedDepartements(weights: weights, excluding: excluding, maxWeight: maxWeight)
             .filter { $0.dep.nom != bestDeptName && $0.score >= 35 }
             .enumerated()
             .map { i, entry in RegionRow(rank: String(format: "%02d", i + 2), name: entry.dep.nom, nomRegion: entry.dep.nomRegion, score: Int(entry.score.rounded())) }

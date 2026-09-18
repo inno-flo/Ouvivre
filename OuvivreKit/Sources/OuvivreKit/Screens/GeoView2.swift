@@ -99,7 +99,7 @@ public struct GeoView2: View {
     }
 
     private var currentTop10Names: [String] {
-        Array(derived.rankedDepartements(weights: state.geo2).prefix(topDepartementsCount)).map(\.dep.nom)
+        Array(derived.rankedDepartements(weights: state.geo2, maxWeight: 3).prefix(topDepartementsCount)).map(\.dep.nom)
     }
 
     /// Shows the top 10 départements on the map right away — the sliders
@@ -166,15 +166,15 @@ public struct GeoView2: View {
 
     private var regionHero: some View {
         Button {
-            if let nomRegion = derived.winningRegion(weights: state.geo2)?.nomRegion { mapState.focusOnRegion(nomRegion) }
+            if let nomRegion = derived.winningRegion(weights: state.geo2, maxWeight: 3)?.nomRegion { mapState.focusOnRegion(nomRegion) }
         } label: {
             VStack(alignment: .leading, spacing: 0) {
                 Eyebrow("RÉGION LA PLUS PROBANTE", color: ClassicTheme.darkPanelFaint).padding(.bottom, 8)
-                Text(derived.winningRegion(weights: state.geo2)?.nomRegion ?? "—").font(CFont.sans(20, weight: .semibold)).foregroundStyle(.white)
-                Text("Département le plus probant : \(derived.winningRegion(weights: state.geo2)?.bestDept ?? "—")")
+                Text(derived.winningRegion(weights: state.geo2, maxWeight: 3)?.nomRegion ?? "—").font(CFont.sans(20, weight: .semibold)).foregroundStyle(.white)
+                Text("Département le plus probant : \(derived.winningRegion(weights: state.geo2, maxWeight: 3)?.bestDept ?? "—")")
                     .font(CFont.sans(12)).foregroundStyle(ClassicTheme.darkPanelSub).padding(.top, 4)
                 HStack(alignment: .lastTextBaseline, spacing: 6) {
-                    Text("\(derived.topScore(weights: state.geo2))").font(CFont.mono(24, weight: .medium)).foregroundStyle(theme.accentLight)
+                    Text("\(derived.topScore(weights: state.geo2, maxWeight: 3))").font(CFont.mono(24, weight: .medium)).foregroundStyle(theme.accentLight)
                     Text("/100 CORRESPONDANCE").font(CFont.mono(10)).foregroundStyle(ClassicTheme.darkPanelFaint)
                 }
                 .padding(.top, 10)
@@ -191,7 +191,7 @@ public struct GeoView2: View {
     /// the top 10 always show; the rest sit behind a collapsible
     /// "Autres départements" header with a disclosure chevron.
     private var departementsCard: some View {
-        let ranked = derived.rankedDepartements(weights: state.geo2)
+        let ranked = derived.rankedDepartements(weights: state.geo2, maxWeight: 3)
         let top10 = Array(ranked.prefix(topDepartementsCount))
         let rest = Array(ranked.dropFirst(topDepartementsCount))
 

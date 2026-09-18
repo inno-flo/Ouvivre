@@ -66,6 +66,29 @@ public enum CultureScores {
         return weightTotal > 0 ? weightedSum / weightTotal : 50.0
     }
 
+    /// Floor a département must clear on `key` to pass its hard filter at
+    /// "déterminant" — the 85th percentile of that criterion's real score
+    /// distribution, same convention as `FranceGeoData.hardFilterThreshold`.
+    /// Only the top ~15% of départements pass once a Big Mac criterion
+    /// (Musées/Lieux du patrimoine/Festivals) is pushed to "déterminant" —
+    /// see `passesHardFilter`.
+    public static func hardFilterThreshold(forKey key: String) -> Double? {
+        let values = departements.compactMap { $0.scores[key] }.sorted()
+        guard !values.isEmpty else { return nil }
+        let index = min(values.count - 1, Int((Double(values.count) * 0.85).rounded(.down)))
+        return values[index]
+    }
+
+    /// Whether the département at `code` passes the hard filter for `key`
+    /// at `weight` — only engages once `weight` reaches `maxWeight` (the
+    /// slider's top value, "déterminant"); below that it's a pure weight in
+    /// `weightedScore`'s average, same AND/must-have rule as
+    /// `FranceGeoData.passesHardFilter`.
+    public static func passesHardFilter(forDepartementCode code: String, key: String, weight: Int, maxWeight: Int) -> Bool {
+        guard maxWeight > 0, weight >= maxWeight, let threshold = hardFilterThreshold(forKey: key), let dep = byDepartementCode[code] else { return true }
+        return (dep.scores[key] ?? 50.0) >= threshold
+    }
+
     /// Noms des sites/événements d'un critère ("musees", "patrimoine",
     /// "festivals") pour un département donné — utilisé par l'inspecteur
     /// pour lister le contenu culturel du département cliqué.

@@ -243,8 +243,23 @@ public struct BigMacSFView: View {
     private var matchingDepartementNames: [String] {
         let weights = cultureWeights
         let mWeights = mobiliteWeights
-        let ranked = derived.rankedDepartements(weights: state.geo2)
+        // Un critère Culture/Mobilité à "déterminant" (poids 3) devient lui
+        // aussi une condition ET, au même titre que Mer/Pays étranger côté
+        // proximité (voir `rankedDepartements(maxWeight:)`) — sinon Festivals
+        // à "déterminant" ne fait que réordonner les départements qui ont
+        // déjà passé les filtres de proximité, sans jamais en écarter aucun.
+        let ranked = derived.rankedDepartements(weights: state.geo2, maxWeight: 3)
             .filter { matchingDepartementCodes.contains($0.dep.codeInsee) }
+            .filter { entry in
+                CultureScores.criterionKeys.enumerated().allSatisfy { i, key in
+                    i >= weights.count || CultureScores.passesHardFilter(forDepartementCode: entry.dep.codeInsee, key: key, weight: weights[i], maxWeight: 3)
+                }
+            }
+            .filter { entry in
+                MobiliteScores.criterionKeys.enumerated().allSatisfy { i, key in
+                    i >= mWeights.count || MobiliteScores.passesHardFilter(forDepartementCode: entry.dep.codeInsee, key: key, weight: mWeights[i], maxWeight: 3)
+                }
+            }
             .map { entry -> (name: String, score: Double) in
                 let cultureScore = CultureScores.weightedScore(forDepartementCode: entry.dep.codeInsee, weights: weights)
                 let mobiliteScore = MobiliteScores.weightedScore(forDepartementCode: entry.dep.codeInsee, weights: mWeights)
