@@ -1,4 +1,7 @@
 import SwiftUI
+#if os(macOS)
+import AppKit
+#endif
 
 /// Contenu de l'inspecteur — panneau d'informations texte, sans carte
 /// (retirée de l'inspecteur sur tous les écrans : chaque écran qui a besoin
@@ -6,12 +9,17 @@ import SwiftUI
 /// propres boutons de contrôle dans la toolbar).
 public struct InspectorPanelView: View {
     @EnvironmentObject var theme: ClassicTheme
+    @Environment(\.openURL) private var openURL
     let title: String
     /// Critère (libellé + clé `CultureScores.criterionKeys`) et département
     /// courant — `nil` en dehors de Big Mac ou tant qu'aucun département
     /// n'a de code résolu (nom non trouvé dans `FranceGeoData`).
     let activeCultureCriteria: [(label: String, key: String)]
     let departementCode: String?
+
+    // Chaque section démarre dépliée — l'utilisateur replie celles qui ne
+    // l'intéressent pas plutôt que l'inverse.
+    @State private var collapsedKeys: Set<String> = []
 
     public init(title: String, activeCultureCriteria: [(label: String, key: String)], departementCode: String?) {
         self.title = title
@@ -40,33 +48,92 @@ public struct InspectorPanelView: View {
         .background(ClassicTheme.sidebarBg)
     }
 
-    /// Le libellé du critère, suivi des noms des sites/événements de ce
-    /// département pour ce critère (musées, festivals, ou "communes du site
-    /// patrimonial remarquable" pour la Culture "Lieux du patrimoine").
+    /// Le libellé du critère (repliable), suivi des noms des sites/événements
+    /// de ce département pour ce critère (musées, festivals, ou communes du
+    /// site patrimonial remarquable pour "Lieux du patrimoine").
     private func criterionSection(_ criterion: (label: String, key: String)) -> some View {
         let names = departementCode.map { CultureScores.names(forDepartementCode: $0, criterionKey: criterion.key) } ?? []
+        let isCollapsed = collapsedKeys.contains(criterion.key)
         return VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 6) {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(theme.accent)
-                Text(criterion.label.uppercased())
-                    .font(CFont.mono(11, weight: .semibold))
-                    .foregroundStyle(ClassicTheme.faint)
+            Button {
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    if isCollapsed { collapsedKeys.remove(criterion.key) } else { collapsedKeys.insert(criterion.key) }
+                }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(theme.accent)
+                    Text(criterion.label.uppercased())
+                        .font(CFont.mono(11, weight: .semibold))
+                        .foregroundStyle(ClassicTheme.faint)
+                    Spacer()
+                    Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(ClassicTheme.faint)
+                }
+                .contentShape(Rectangle())
             }
-            if names.isEmpty {
-                Text("Aucune donnée pour ce département.")
-                    .font(CFont.sans(13))
-                    .foregroundStyle(ClassicTheme.faint)
-            } else {
-                VStack(alignment: .leading, spacing: 4) {
-                    ForEach(names, id: \.self) { name in
-                        Text(name)
-                            .font(CFont.sans(13))
-                            .foregroundStyle(ClassicTheme.body)
+            .buttonStyle(.plain)
+
+            if !isCollapsed {
+                if names.isEmpty {
+                    Text("Aucune donnée pour ce département.")
+                        .font(CFont.sans(13))
+                        .foregroundStyle(ClassicTheme.faint)
+                } else {
+                    VStack(alignment: .leading, spacing: 4) {
+                        ForEach(names, id: \.self) { name in
+                            nameRow(name)
+                        }
                     }
                 }
             }
         }
         .padding(.top, 4)
+    }
+
+    /// Nom cliquable (curseur pointeur, mais pas de style lien visible sur
+    /// le texte) — ouvre une recherche web sur ce nom dans le navigateur par
+    /// défaut. macOS n'expose pas d'API publique pour interroger le moteur
+    /// de recherche par défaut d'une app tierce (seule Safari applique ce
+    /// réglage à sa propre barre d'adresse) ; on utilise donc une recherche
+    /// Google, ouverte via le navigateur par défaut du système.
+    private func nameRow(_ name: String) -> some View {
+        Button {
+            let query = Self.titleCased(name).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+            if let url = URL(string: "https://www.google.com/search?q=\(query)") { openURL(url) }
+        } label: {
+            Text(Self.titleCased(name))
+                .font(CFont.sans(13))
+                .foregroundStyle(ClassicTheme.body)
+                .multilineTextAlignment(.leading)
+        }
+        .buttonStyle(.plain)
+        .onHover { isHovering in
+            #if os(macOS)
+            if isHovering { NSCursor.pointingHand.push() } else { NSCursor.pop() }
+            #endif
+        }
+    }
+
+    /// Prépositions/articles français qui restent en minuscules dans une
+    /// casse de titre, sauf en position initiale (ex. "Château de Chambord",
+    /// mais "Le Havre").
+    private static let lowercasedParticles: Set<String> = [
+        "de", "du", "des", "d'", "la", "le", "les", "l'", "et", "en", "à", "au", "aux", "sur"
+    ]
+
+    /// Les noms bruts mélangent TOUT MAJUSCULES et tout minuscules — on les
+    /// remet en casse de titre (mot par mot, prépositions/articles en
+    /// minuscules sauf en premier mot) pour un affichage cohérent. Simplifié :
+    /// suffisant pour des noms de lieux/événements affichés en liste, sans
+    /// prétendre à une capitalisation typographique parfaite (ex. les
+    /// apostrophes type "d'Azur" ne sont pas toutes détectées).
+    private static func titleCased(_ name: String) -> String {
+        let words = name.lowercased().split(separator: " ")
+        return words.enumerated().map { index, word -> String in
+            if index > 0, lowercasedParticles.contains(String(word)) { return String(word) }
+            return word.prefix(1).uppercased() + word.dropFirst()
+        }.joined(separator: " ")
     }
 }
