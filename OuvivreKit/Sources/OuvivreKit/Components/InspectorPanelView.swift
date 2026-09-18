@@ -28,23 +28,35 @@ public struct InspectorPanelView: View {
     }
 
     public var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                Eyebrow("SÉLECTION", color: ClassicTheme.faint)
-                Text(title)
-                    .font(CFont.sans(20, weight: .semibold))
-                    .foregroundStyle(ClassicTheme.ink)
+        Group {
+            if title.isEmpty {
+                // Titre vide : rien n'est sélectionné (clic hors de tout
+                // département sur Big Mac) — panneau vide avec message
+                // centré verticalement, plutôt que de fermer l'inspecteur.
+                Text("Sélectionnez un département")
+                    .font(CFont.sans(14))
+                    .foregroundStyle(ClassicTheme.faint)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Eyebrow("SÉLECTION", color: ClassicTheme.faint)
+                        Text(title)
+                            .font(CFont.sans(20, weight: .semibold))
+                            .foregroundStyle(ClassicTheme.ink)
 
-                ForEach(activeCultureCriteria, id: \.key) { criterion in
-                    criterionSection(criterion)
+                        ForEach(activeCultureCriteria, id: \.key) { criterion in
+                            criterionSection(criterion)
+                        }
+
+                        Spacer(minLength: 0)
+                    }
+                    .padding(16)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
                 }
-
-                Spacer(minLength: 0)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .padding(16)
-            .frame(maxWidth: .infinity, alignment: .topLeading)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(ClassicTheme.sidebarBg)
     }
 
@@ -129,10 +141,24 @@ public struct InspectorPanelView: View {
     /// suffisant pour des noms de lieux/événements affichés en liste, sans
     /// prétendre à une capitalisation typographique parfaite (ex. les
     /// apostrophes type "d'Azur" ne sont pas toutes détectées).
+    /// Élisions françaises ("d'", "l'", "n'", "j'", "c'", "m'", "t'", "s'",
+    /// "qu'") collées au mot suivant (ex. "d'Histoire", "l'Aventure") — la
+    /// particule reste en minuscule (sauf en tout premier mot), la lettre
+    /// après l'apostrophe se capitalise comme un mot normal.
+    private static let elisionPrefixes = ["qu'", "d'", "l'", "n'", "j'", "c'", "m'", "t'", "s'"]
+
     private static func titleCased(_ name: String) -> String {
         let words = name.lowercased().split(separator: " ")
         return words.enumerated().map { index, word -> String in
-            if index > 0, lowercasedParticles.contains(String(word)) { return String(word) }
+            let word = String(word)
+            if index > 0, lowercasedParticles.contains(word) { return word }
+            if let prefix = elisionPrefixes.first(where: { word.hasPrefix($0) }), word.count > prefix.count {
+                let rest = word.dropFirst(prefix.count)
+                let capitalizedRest = rest.prefix(1).uppercased() + rest.dropFirst()
+                // Premier mot : la particule elle-même se capitalise aussi
+                // (ex. "D'Histoire naturelle du Muséum").
+                return (index == 0 ? prefix.prefix(1).uppercased() + prefix.dropFirst() : prefix) + capitalizedRest
+            }
             return word.prefix(1).uppercased() + word.dropFirst()
         }.joined(separator: " ")
     }

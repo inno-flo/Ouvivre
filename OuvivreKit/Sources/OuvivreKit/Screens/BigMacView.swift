@@ -27,6 +27,9 @@ public struct BigMacView: View {
     /// propose pas de survol par forme, donc on hit-teste manuellement le
     /// point de la souris contre les polygones via `MapReader`.
     @State private var hoveredDepartementName: String?
+    /// Département cliqué, dont le polygone reste opaque tant qu'on ne
+    /// clique pas ailleurs (contrairement au survol, transitoire).
+    @State private var selectedDepartementName: String?
 
     // L'ouverture/fermeture des blocs vit dans `ClassicState` (pas un
     // `@State` local) pour rester persistante en quittant puis en revenant
@@ -72,9 +75,17 @@ public struct BigMacView: View {
                         }
                         .gesture(
                             SpatialTapGesture().onEnded { value in
-                                guard let name = departementName(at: value.location, proxy: proxy) else { return }
-                                mapState.title = name
-                                mapState.bigMacInspectorVisible = true
+                                if let name = departementName(at: value.location, proxy: proxy) {
+                                    selectedDepartementName = name
+                                    mapState.title = name
+                                    mapState.bigMacInspectorVisible = true
+                                } else {
+                                    // Clic hors de tout département dessiné : désélectionne,
+                                    // sans fermer l'inspecteur (il affiche un message à la
+                                    // place, voir InspectorPanelView).
+                                    selectedDepartementName = nil
+                                    mapState.title = ""
+                                }
                             }
                         )
                 }
@@ -141,7 +152,7 @@ public struct BigMacView: View {
             }
         } else {
             ForEach(mapState.departementRingGroups, id: \.name) { group in
-                departementRings(group.rings, isHovered: group.name == hoveredDepartementName)
+                departementRings(group.rings, isHovered: group.name == hoveredDepartementName || group.name == selectedDepartementName)
             }
         }
     }
@@ -237,7 +248,15 @@ public struct BigMacView: View {
     /// de proximité ou de poids Culture (comme `refreshTopDepartementsOnMap`
     /// dans GeoView2), sans déplacer la caméra.
     private func refreshDepartementsOnMap() {
-        mapState.updateDepartementRingGroups(matchingDepartementNames)
+        let names = matchingDepartementNames
+        mapState.updateDepartementRingGroups(names)
+        // Si le département sélectionné disparaît du nouvel ensemble (les
+        // filtres ont changé), on désélectionne plutôt que de garder
+        // l'inspecteur sur un département qui n'est plus affiché.
+        if let selected = selectedDepartementName, !names.contains(selected) {
+            selectedDepartementName = nil
+            mapState.title = ""
+        }
     }
 
     // MARK: Dépendances légères entre blocs

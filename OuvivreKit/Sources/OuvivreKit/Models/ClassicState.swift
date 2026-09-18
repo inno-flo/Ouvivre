@@ -16,16 +16,15 @@ public final class ClassicState: ObservableObject {
     @Published public var geo: [Int] = ClassicStatic.geo.map(\.1)
     /// Géographie 2's own weights, on its 5-level (0...4) scale.
     @Published public var geo2: [Int] = ClassicStatic.geo.map { _ in 0 }
-    @Published public var excludeOverseas: Bool = true
-    @Published public var excludeCorse: Bool = true
-    /// Filtres de taille de commune pour "Big Mac" (Block 2) — non branchés
-    /// à un filtrage carte réel (aucune couche par commune n'existe encore),
-    /// juste un état fonctionnel + un décompte sur l'échantillon
-    /// `CommuneSizeData`.
-    @Published public var includeVillage: Bool = true
-    @Published public var includePetiteVille: Bool = true
-    @Published public var includeVilleMoyenne: Bool = true
-    @Published public var includeGrandeVille: Bool = true
+    @Published public var excludeOverseas: Bool = false
+    @Published public var excludeCorse: Bool = false
+    /// Filtres de taille de commune pour "Big Mac" (Block 2) — tout
+    /// désélectionné par défaut au premier lancement, l'utilisateur choisit
+    /// activement les tailles qui l'intéressent.
+    @Published public var includeVillage: Bool = false
+    @Published public var includePetiteVille: Bool = false
+    @Published public var includeVilleMoyenne: Bool = false
+    @Published public var includeGrandeVille: Bool = false
     /// Ouverture/fermeture des 4 blocs "Big Mac" — dans `ClassicState`
     /// plutôt qu'en `@State` sur `BigMacView` pour persister quand on quitte
     /// puis revient sur cet écran (un seul bloc ouvert par défaut : Pays).
