@@ -57,7 +57,7 @@ public struct InspectorPanelView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .background(ClassicTheme.sidebarBg.opacity(0.9))
+        .background(ClassicTheme.sidebarBg.opacity(0.8))
     }
 
     /// Le libellé du critère (repliable), suivi des noms des sites/événements

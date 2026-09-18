@@ -239,8 +239,7 @@ public struct BigMacView: View {
                 return (entry.dep.nom, (entry.score + cultureScore) / 2)
             }
             .sorted { $0.score > $1.score }
-        let capped = hasActiveRankingCriterion ? Array(ranked.prefix(topDepartementsCount)) : ranked
-        return capped.map(\.name)
+        return ranked.map(\.name)
     }
 
     /// Redessine les périmètres des départements correspondants — appelé à
@@ -451,12 +450,19 @@ public struct BigMacView: View {
     /// - Musées : https://culture.data.gouv.fr/datasets/61777ddaa9101d073e5506cd
     /// - Lieux du patrimoine : https://culture.data.gouv.fr/datasets/628da9ff836d8bf454c7fd48
     /// - Festivals : https://culture.data.gouv.fr/datasets/62cf95993d99f22480f49334
+    /// Mêmes 4 niveaux que "Proximités" (indifférent/souhaitable/important/
+    /// déterminant, 0...3) plutôt que l'échelle à 6 niveaux par défaut des
+    /// groupes — `WeightedRow` est reconstruite avec `maxValue`/`tags`
+    /// substitués, la valeur brute de `state.groups` étant déjà clampée à 3
+    /// par `setGroup` côté écriture (voir `cultureBlock`).
     private var cultureRows: [(rowIndex: Int, row: WeightedRow)] {
         guard let cultureGroup = derived.groups.first(where: { $0.title == "CULTURE" }) else { return [] }
         let keep: Set<String> = ["Musées", "Lieux du patrimoine", "Festivals"]
         return cultureGroup.rows.enumerated()
             .filter { keep.contains($0.element.label) }
-            .map { (rowIndex: $0.offset, row: $0.element) }
+            .map { offset, row in
+                (rowIndex: offset, row: WeightedRow(id: row.id, label: row.label, value: min(row.value, 3), maxValue: 3, tags: ClassicStatic.tagsGeo2))
+            }
     }
     private var cultureGroupIndex: Int {
         ClassicStatic.groups.firstIndex { $0.title == "CULTURE" } ?? 0
@@ -467,7 +473,7 @@ public struct BigMacView: View {
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(cultureRows, id: \.rowIndex) { entry in
                     CriterionRow(row: entry.row, thumbSize: 12, trackHeight: 3, labelFont: CFont.sans(13), labelColor: columnInk) {
-                        state.setGroup(cultureGroupIndex, entry.rowIndex, value: $0)
+                        state.setGroup(cultureGroupIndex, entry.rowIndex, value: min($0, 3))
                     }
                     .padding(.vertical, 4)
                     .padding(.trailing, 8)
@@ -481,8 +487,16 @@ public struct BigMacView: View {
     private var mobiliteGroupIndex: Int {
         ClassicStatic.groups.firstIndex { $0.title == "MOBILITÉ" } ?? 0
     }
+    /// Bus et Aéroports retirés pour ce bloc — Pistes cyclables et Gares
+    /// uniquement. `ClassicData.swift` reste inchangé (le groupe MOBILITÉ
+    /// complet sert aussi "Communes et services"). Mêmes 4 niveaux que
+    /// Proximités/Culture (0...3, indifférent/souhaitable/important/
+    /// déterminant) plutôt que l'échelle à 6 niveaux par défaut.
     private var mobiliteRows: [WeightedRow] {
-        derived.groups.first { $0.title == "MOBILITÉ" }?.rows ?? []
+        let keep: Set<String> = ["Pistes cyclables", "Gares"]
+        return (derived.groups.first { $0.title == "MOBILITÉ" }?.rows ?? [])
+            .filter { keep.contains($0.label) }
+            .map { WeightedRow(id: $0.id, label: $0.label, value: min($0.value, 3), maxValue: 3, tags: ClassicStatic.tagsGeo2) }
     }
 
     private var mobiliteBlock: some View {
@@ -490,7 +504,7 @@ public struct BigMacView: View {
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(mobiliteRows) { row in
                     CriterionRow(row: row, thumbSize: 12, trackHeight: 3, labelFont: CFont.sans(13), labelColor: columnInk) {
-                        state.setGroup(mobiliteGroupIndex, row.id, value: $0)
+                        state.setGroup(mobiliteGroupIndex, row.id, value: min($0, 3))
                     }
                     .padding(.vertical, 4)
                     .padding(.trailing, 8)
