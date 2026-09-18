@@ -16,48 +16,85 @@ public struct InspectorPanelView: View {
     /// n'a de code résolu (nom non trouvé dans `FranceGeoData`).
     let activeCultureCriteria: [(label: String, key: String)]
     let departementCode: String?
+    /// Fiche pays (nom + faits) déplacée ici depuis le bloc "Pays" de Big
+    /// Mac, qui ne garde que les capsules de choix — vide en dehors de Big
+    /// Mac. Toujours affichée (indépendante de la sélection de département).
+    let countryName: String
+    let countryFacts: [LabeledValue]
 
     // Chaque section démarre dépliée — l'utilisateur replie celles qui ne
     // l'intéressent pas plutôt que l'inverse.
     @State private var collapsedKeys: Set<String> = []
 
-    public init(title: String, activeCultureCriteria: [(label: String, key: String)], departementCode: String?) {
+    public init(title: String, activeCultureCriteria: [(label: String, key: String)], departementCode: String?, countryName: String = "", countryFacts: [LabeledValue] = []) {
         self.title = title
         self.activeCultureCriteria = activeCultureCriteria
         self.departementCode = departementCode
+        self.countryName = countryName
+        self.countryFacts = countryFacts
     }
 
     public var body: some View {
-        Group {
-            if title.isEmpty {
-                // Titre vide : rien n'est sélectionné (clic hors de tout
-                // département sur Big Mac) — panneau vide avec message
-                // centré verticalement, plutôt que de fermer l'inspecteur.
-                Text("Sélectionnez un département")
-                    .font(CFont.sans(14))
-                    .foregroundStyle(ClassicTheme.faint)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Eyebrow("DÉPARTEMENT", color: ClassicTheme.faint)
-                        Text(title)
-                            .font(CFont.sans(20, weight: .semibold))
-                            .foregroundStyle(ClassicTheme.ink)
-
-                        ForEach(activeCultureCriteria, id: \.key) { criterion in
-                            criterionSection(criterion)
-                        }
-
-                        Spacer(minLength: 0)
-                    }
-                    .padding(16)
-                    .frame(maxWidth: .infinity, alignment: .topLeading)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                if !countryName.isEmpty {
+                    countrySection
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                if !title.isEmpty {
+                    Eyebrow("DÉPARTEMENT", color: ClassicTheme.faint)
+                    Text(title)
+                        .font(CFont.sans(20, weight: .semibold))
+                        .foregroundStyle(ClassicTheme.ink)
+
+                    ForEach(activeCultureCriteria, id: \.key) { criterion in
+                        criterionSection(criterion)
+                    }
+                }
+
+                Spacer(minLength: 0)
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(ClassicTheme.sidebarBg.opacity(0.935))
+    }
+
+    private var countrySection: some View {
+        let isCollapsed = collapsedKeys.contains("pays")
+        return VStack(alignment: .leading, spacing: 14) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    if isCollapsed { collapsedKeys.remove("pays") } else { collapsedKeys.insert("pays") }
+                }
+            } label: {
+                HStack(spacing: 6) {
+                    Eyebrow("PAYS", color: ClassicTheme.faint)
+                    Spacer()
+                    Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(ClassicTheme.faint)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
+            if !isCollapsed {
+                Text(countryName)
+                    .font(CFont.sans(20, weight: .semibold))
+                    .foregroundStyle(ClassicTheme.ink)
+                VStack(alignment: .leading, spacing: 14) {
+                    ForEach(countryFacts) { f in
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(f.key).font(CFont.sans(13)).foregroundStyle(ClassicTheme.faint)
+                            Text(f.value).font(CFont.sans(15, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+                        }
+                    }
+                }
             }
         }
-        .background(ClassicTheme.sidebarBg.opacity(0.8))
+        .padding(.bottom, 8)
     }
 
     /// Le libellé du critère (repliable), suivi des noms des sites/événements
@@ -92,6 +129,23 @@ public struct InspectorPanelView: View {
                     Text("Aucune donnée pour ce département.")
                         .font(CFont.sans(13))
                         .foregroundStyle(ClassicTheme.faint)
+                } else if criterion.key == "musees" {
+                    // Les Micro-Folies (réseau de petits équipements
+                    // numériques, distinct des musées classiques) sont
+                    // reléguées en fin de liste, séparées par un filet.
+                    let microFolies = names.filter { $0.localizedCaseInsensitiveContains("micro-folie") || $0.localizedCaseInsensitiveContains("microfolie") }
+                    let regular = names.filter { !microFolies.contains($0) }
+                    VStack(alignment: .leading, spacing: 4) {
+                        ForEach(regular, id: \.self) { name in
+                            nameRow(name)
+                        }
+                        if !regular.isEmpty, !microFolies.isEmpty {
+                            Divider().padding(.vertical, 4)
+                        }
+                        ForEach(microFolies, id: \.self) { name in
+                            nameRow(name)
+                        }
+                    }
                 } else {
                     VStack(alignment: .leading, spacing: 4) {
                         ForEach(names, id: \.self) { name in

@@ -288,7 +288,7 @@ public struct BigMacView: View {
 
     private var paysBlock: some View {
         blockDisclosure(title: "Pays", isExpanded: $state.bigMacExpandedPays, enabled: true) {
-            PaysCountryBlock(derived: derived, ink: columnInk, faint: columnFaint)
+            PaysCountryBlock(derived: derived, ink: columnInk, faint: columnFaint, showFacts: false)
         }
     }
 
@@ -528,7 +528,7 @@ public struct BigMacView: View {
             } label: {
                 Text(title.uppercased())
                     .font(CFont.mono(11, weight: .semibold))
-                    .foregroundStyle(enabled ? columnInk : columnFaint)
+                    .foregroundStyle(enabled && isExpanded.wrappedValue ? columnInk : columnFaint)
             }
             .disabled(!enabled)
             .tint(columnFaint)

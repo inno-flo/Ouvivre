@@ -124,11 +124,16 @@ public struct PaysCountryBlock: View {
     let derived: ClassicDerived
     let ink: Color
     let faint: Color
+    /// `false` sur Big Mac : seules les capsules de choix du pays restent
+    /// dans le bloc, la fiche de faits est déplacée dans l'inspecteur (voir
+    /// `InspectorPanelView`/`ClassicRootView`).
+    var showFacts: Bool = true
 
-    public init(derived: ClassicDerived, ink: Color, faint: Color) {
+    public init(derived: ClassicDerived, ink: Color, faint: Color, showFacts: Bool = true) {
         self.derived = derived
         self.ink = ink
         self.faint = faint
+        self.showFacts = showFacts
     }
 
     public var body: some View {
@@ -148,15 +153,17 @@ public struct PaysCountryBlock: View {
                 }
             }
 
-            VStack(alignment: .leading, spacing: 14) {
-                ForEach(derived.countryFacts) { f in
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(f.key).font(CFont.sans(13)).foregroundStyle(faint)
-                        Text(f.value).font(CFont.sans(15, weight: .medium)).foregroundStyle(ink)
+            if showFacts {
+                VStack(alignment: .leading, spacing: 14) {
+                    ForEach(derived.countryFacts) { f in
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(f.key).font(CFont.sans(13)).foregroundStyle(faint)
+                            Text(f.value).font(CFont.sans(15, weight: .medium)).foregroundStyle(ink)
+                        }
                     }
                 }
+                .padding(.top, 4)
             }
-            .padding(.top, 4)
         }
     }
 }

@@ -14,10 +14,11 @@ public final class MapPanelState: ObservableObject {
 
     @Published public var isVisible: Bool = true
     /// Visibilité de l'inspecteur spécifique à Big Mac — séparée de
-    /// `isVisible` (qui vaut `true` par défaut pour les autres écrans) pour
-    /// que l'inspecteur reste fermé tant qu'aucun département n'a été
-    /// cliqué sur la carte de cet écran.
-    @Published public var bigMacInspectorVisible: Bool = false
+    /// `isVisible` pour ne pas dépendre du réglage des autres écrans.
+    /// Ouvert par défaut : il affiche la fiche pays dès l'arrivée sur
+    /// l'écran (déplacée hors du bloc "Pays"), même avant tout clic sur un
+    /// département.
+    @Published public var bigMacInspectorVisible: Bool = true
     @Published public var title: String = "France"
     @Published public var coordinate: CLLocationCoordinate2D
     @Published public var spanDegrees: Double
