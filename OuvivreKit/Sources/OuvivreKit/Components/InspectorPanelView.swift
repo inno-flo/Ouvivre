@@ -140,7 +140,12 @@ public struct InspectorPanelView: View {
 
             if !isCollapsed {
                 if names.isEmpty {
-                    Text("Aucune donnée pour ce département.")
+                    // Si `departementCode` est `nil`, l'absence de données ne
+                    // vient pas d'un vrai département sans musées/festivals/
+                    // patrimoine, mais de l'absence de département résolu
+                    // (aucun clic sur la carte, ou nom non retrouvé dans
+                    // `FranceGeoData`) — message différent dans ce cas.
+                    Text(departementCode == nil ? "Sélectionnez un département." : "Aucune donnée pour ce département.")
                         .font(CFont.sans(13))
                         .foregroundStyle(ClassicTheme.faint)
                 } else if criterion.key == "musees" {
