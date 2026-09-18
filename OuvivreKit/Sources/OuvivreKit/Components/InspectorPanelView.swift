@@ -114,7 +114,8 @@ public struct InspectorPanelView: View {
     /// de ce département pour ce critère (musées, festivals, ou communes du
     /// site patrimonial remarquable pour "Lieux du patrimoine").
     private func criterionSection(_ criterion: (label: String, key: String)) -> some View {
-        let names = departementCode.map { CultureScores.names(forDepartementCode: $0, criterionKey: criterion.key) } ?? []
+        let rawNames = departementCode.map { CultureScores.names(forDepartementCode: $0, criterionKey: criterion.key) } ?? []
+        let names = Self.dedupedNames(rawNames, mergeVariants: criterion.key == "musees")
         let isCollapsed = collapsedKeys.contains(criterion.key)
         return VStack(alignment: .leading, spacing: 8) {
             Button {
@@ -214,8 +215,32 @@ public struct InspectorPanelView: View {
     /// après l'apostrophe se capitalise comme un mot normal.
     private static let elisionPrefixes = ["qu'", "d'", "l'", "n'", "j'", "c'", "m'", "t'", "s'"]
 
+    /// Élisions sans apostrophe : certaines sources (ex. le CSV des sites
+    /// patrimoniaux remarquables) séparent la particule élidée par une
+    /// espace au lieu d'une apostrophe collée ("ST SYMPHORIEN D OZON" plutôt
+    /// que "St Symphorien d'Ozon"), ce qui fait capitaliser le "D" comme un
+    /// mot à part entière. On rejoint ces mots isolés au suivant avec une
+    /// apostrophe avant la casse de titre normale.
+    private static let standaloneElisionLetters: Set<String> = ["d", "l", "n", "j", "c", "m", "t", "s", "qu"]
+
+    private static func mergeStandaloneElisions(_ words: [Substring]) -> [String] {
+        var merged: [String] = []
+        var i = 0
+        while i < words.count {
+            let word = String(words[i])
+            if standaloneElisionLetters.contains(word), i + 1 < words.count {
+                merged.append(word + "'" + words[i + 1])
+                i += 2
+            } else {
+                merged.append(word)
+                i += 1
+            }
+        }
+        return merged
+    }
+
     private static func titleCased(_ name: String) -> String {
-        let words = name.lowercased().split(separator: " ")
+        let words = mergeStandaloneElisions(name.lowercased().split(separator: " "))
         return words.enumerated().map { index, word -> String in
             let word = String(word)
             if index > 0, lowercasedParticles.contains(word) { return word }
@@ -228,5 +253,37 @@ public struct InspectorPanelView: View {
             }
             return word.prefix(1).uppercased() + word.dropFirst()
         }.joined(separator: " ")
+    }
+
+    /// Déduplique les noms bruts : d'abord les doublons exacts (ex. deux
+    /// sites patrimoniaux distincts d'une même commune s'affichent tous les
+    /// deux sous le simple nom de la commune, ex. "Lyon" en double dans le
+    /// Rhône), puis, pour les musées uniquement (`mergeVariants`), les
+    /// variantes où un nom est entièrement contenu dans un autre (ex.
+    /// "Musée des Confluences" / "Muséum - Musée des Confluences") — on
+    /// garde alors le plus court des deux, jugé le nom usuel.
+    private static func dedupedNames(_ names: [String], mergeVariants: Bool) -> [String] {
+        var exactDeduped: [String] = []
+        var seenTitleCased = Set<String>()
+        for name in names {
+            let key = titleCased(name)
+            if seenTitleCased.insert(key).inserted { exactDeduped.append(name) }
+        }
+        guard mergeVariants else { return exactDeduped }
+
+        var result: [String] = []
+        for name in exactDeduped {
+            let candidate = titleCased(name)
+            if let existingIndex = result.firstIndex(where: { existing in
+                let existingKey = titleCased(existing)
+                return existingKey.localizedCaseInsensitiveContains(candidate) || candidate.localizedCaseInsensitiveContains(existingKey)
+            }) {
+                // Garde la variante la plus courte des deux.
+                if name.count < result[existingIndex].count { result[existingIndex] = name }
+            } else {
+                result.append(name)
+            }
+        }
+        return result
     }
 }
