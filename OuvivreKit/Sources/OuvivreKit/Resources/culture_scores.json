@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-09-17T17:20:27.470357+00:00",
+ "generatedAt": "2026-09-17T21:06:25.162757+00:00",
  "source": "culture.data.gouv.fr — Base des lieux et équipements culturels (Basilic, filtré Musée): https://static.data.gouv.fr/resources/base-des-lieux-et-equipements-culturels-basilic/20260218-084338/base-des-lieux-et-des-equipements-culturels.csv | Liste des sites patrimoniaux remarquables (SPR): https://ministere-culture.s3.sbg.io.cloud.ovh.net/SPR/liste_sites_patrimoniaux_remarquables.csv | Liste des festivals en France: https://static.data.gouv.fr/resources/liste-des-festivals-en-france/20250827-132958/festivals-global-festivals-pl.csv",
  "departements": [
   {
@@ -14,6 +14,39 @@
     "musees": 19,
     "patrimoine": 7,
     "festivals": 0
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE BOURG-EN-BRESSE",
+     "MICRO-FOLIE BRESSE VALLONS",
+     "MICRO-FOLIE CHAZEY-SUR-AIN",
+     "MICRO-FOLIE CHÂTILLON-SUR-CHALARONNE",
+     "MICRO-FOLIE OBATALA BUGEY SUD",
+     "MICRO-FOLIE OYONNAX",
+     "domaine des Saveurs – Les Planons",
+     "musée Chintreuil",
+     "musée Louis Jourdan",
+     "musée archéologique",
+     "musée de Brou",
+     "musée de la résistance et de la déportation de l'Ain",
+     "musée de la société d'histoire et d'archéologie",
+     "musée du Bugey-Valromey",
+     "musée du Revermont",
+     "musée du bois",
+     "musée du peigne et de la plasturgie",
+     "musée du vieux Pérouges",
+     "musées des pays de l'Ain"
+    ],
+    "patrimoine": [
+     "AMBRONAY",
+     "BELLEY",
+     "MERIGNAT",
+     "MIRIBEL",
+     "MONTLUEL",
+     "NANTUA",
+     "TREVOUX"
+    ],
+    "festivals": []
    }
   },
   {
@@ -28,6 +61,44 @@
     "musees": 24,
     "patrimoine": 7,
     "festivals": 0
+   },
+   "names": {
+    "musees": [
+     "Familistère de Guise",
+     "MICRO-FOLIE CC THIÉRACHE SAMBRE ET OISE",
+     "MICRO-FOLIE CHAUNY",
+     "MICRO-FOLIE HIRSON",
+     "MICRO-FOLIE LAON",
+     "MICRO-FOLIE SAINT-MICHEL",
+     "MICRO-FOLIE TERGNIER",
+     "MICRO-FOLIE THIÉRACHE DU CENTRE",
+     "MICRO-FOLIE VERVINS",
+     "MICRO-FOLIE VILLENEUVE-SUR-AISNE",
+     "musée - centre de documentation Alfred Desmasures",
+     "musée Alexandre Dumas",
+     "musée Jean de la Fontaine",
+     "musée Jeanne d'Aboville",
+     "musée Monseigneur Pigneau de Behaine",
+     "musée archéologique municipal",
+     "musée bibliothèque",
+     "musée de la Thiérache",
+     "musée de la résistance et de la déportation",
+     "musée de la vie rurale et forestière",
+     "musée des beaux-arts Antoine Lécuyer",
+     "musée entomologique",
+     "musée franco-américain du château de Blérancourt",
+     "musée municipal"
+    ],
+    "patrimoine": [
+     "CHATEAU THIERRY",
+     "CONDE EN BRIE",
+     "ESSOMES SUR MARNE",
+     "LA FERTE MILON",
+     "LAON",
+     "OIGNY EN VALOIS",
+     "SOISSONS"
+    ],
+    "festivals": []
    }
   },
   {
@@ -42,6 +113,43 @@
     "musees": 16,
     "patrimoine": 14,
     "festivals": 0
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE COMMENTRY",
+     "MICRO-FOLIE COSNE D'ALLIER",
+     "MICRO-FOLIE COUZON",
+     "MICRO-FOLIE MONTLUÇON MÉDIATHÈQUE",
+     "MICRO-FOLIE PAYS D'HURIEL",
+     "MICRO-FOLIE PAYS DE LAPALISSE",
+     "Musée Rieckotter",
+     "centre national du costume de scène et de la scénographie",
+     "musée Anne de Beaujeu",
+     "musée Charles-Louis Philippe",
+     "musée Saint-Marc",
+     "musée des arts africains et asiatiques (maison du missionnaire)",
+     "musée des musiques populaires (vieux château)",
+     "musée gallo-romain",
+     "musée municipal",
+     "musée rural de la Sologne bourbonnaise"
+    ],
+    "patrimoine": [
+     "BESSON",
+     "BILLY",
+     "BOURBON L ARCHAMBAULT",
+     "CHARROUX",
+     "HERISSON",
+     "HURIEL",
+     "LAPALISSE",
+     "MONTLUCON",
+     "MOULINS",
+     "NERIS LES BAINS",
+     "SOUVIGNY",
+     "ST PRIX",
+     "VERNEUIL EN BOURBONNAIS",
+     "VICHY"
+    ],
+    "festivals": []
    }
   },
   {
@@ -56,6 +164,28 @@
     "musees": 11,
     "patrimoine": 4,
     "festivals": 0
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE ALPES-PROVENCE-VERDON",
+     "MICRO-FOLIE CÉRESTE-EN-LUBERON",
+     "musée Gassendi",
+     "musée archéologique",
+     "musée archéologique",
+     "musée de Salagon",
+     "musée de la faïence",
+     "musée de la vallée",
+     "musée départemental de préhistoire",
+     "musée gallo-romain Sisteron",
+     "musée municipal"
+    ],
+    "patrimoine": [
+     "ANNOT",
+     "BARCELONNETTE",
+     "MANOSQUE",
+     "QUINSON"
+    ],
+    "festivals": []
    }
   },
   {
@@ -70,6 +200,29 @@
     "musees": 5,
     "patrimoine": 11,
     "festivals": 0
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE CC BRIANÇONNAIS",
+     "MICRO-FOLIE HAUTES-ALPES",
+     "MICRO-FOLIE SAINT-BONNET-EN-CHAMPSAUR",
+     "MICRO-FOLIE TALLARD",
+     "musée départemental des Hautes-Alpes"
+    ],
+    "patrimoine": [
+     "BRIANCON",
+     "CERVIERES",
+     "CHATEAUVIEUX",
+     "EMBRUN",
+     "GARDE COLOMBE",
+     "GUILLESTRE",
+     "LE MONETIER LES BAINS",
+     "REMOLLON",
+     "SERRES",
+     "ST VERAN",
+     "TALLARD"
+    ],
+    "festivals": []
    }
   },
   {
@@ -84,6 +237,63 @@
     "musees": 43,
     "patrimoine": 7,
     "festivals": 0
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE BEAUSOLEIL",
+     "MICRO-FOLIE CAGNES-SUR-MER",
+     "MICRO-FOLIE DEPARTEMENT 06",
+     "MICRO-FOLIE ESPACES MIMONT CANNES",
+     "MICRO-FOLIE GRASSE",
+     "MICRO-FOLIE PAYS DE GRASSE",
+     "MICRO-FOLIE ROQUEFORT-LES-PINS",
+     "MICRO-FOLIE SAINT-PAUL-DE-VENCE",
+     "MICRO-FOLIE VENCE",
+     "MICRO-FOLIE VILLENEUVE LOUBET",
+     "musée Bonnard",
+     "musée Fragonard",
+     "musée Jean Cocteau",
+     "musée Magnelli - musée de la céramique",
+     "musée Masséna",
+     "musée Matisse",
+     "musée Picasso",
+     "musée Renoir",
+     "musée archéologique de Cimiez",
+     "musée d'archéologie",
+     "musée d'art et d'histoire",
+     "musée d'art et d'histoire de Provence",
+     "musée d'art moderne et d'art contemporain",
+     "musée d'art naïf Anatole Jakovsky",
+     "musée d'histoire locale",
+     "musée de paléontologie de Terra Amata",
+     "musée de préhistoire régionale",
+     "musée des beaux-arts",
+     "musée des beaux-arts Jules Chéret",
+     "musée des explorations du monde (MEM)",
+     "musée des merveilles",
+     "musée du Masque de fer et du Fort Royal",
+     "musée du palais Lascaris",
+     "musée du vieux logis",
+     "musée départemental des arts asiatiques",
+     "musée international de la parfumerie",
+     "musée national Fernand Léger",
+     "musée national Message biblique Marc Chagall",
+     "musée national de Vallauris (la Guerre et la Paix de Picasso)",
+     "musée national du sport",
+     "musée-château",
+     "muséum d'histoire naturelle",
+     "écomusée de la Roudoule"
+    ],
+    "patrimoine": [
+     "ANTIBES",
+     "GRASSE",
+     "LE BAR SUR LOUP",
+     "MENTON",
+     "NICE",
+     "NICE",
+     "NICE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -98,6 +308,41 @@
     "musees": 13,
     "patrimoine": 15,
     "festivals": 0
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE AUBENAS",
+     "MICRO-FOLIE CARREFOUR DES ARTS VAL D'AY",
+     "MICRO-FOLIE LE TILT LE TEIL D'ARDECHE",
+     "MICRO-FOLIE POLINNO",
+     "MICRO-FOLIE VAL'EYRIEUX",
+     "cité de préhistoire",
+     "muséAL musée départemental archéologique",
+     "musée archéologique",
+     "musée de la batellerie du Rhône",
+     "musée de la terre ardéchoise",
+     "musée du Rhône",
+     "musée régional",
+     "musée vivarois César Filhol"
+    ],
+    "patrimoine": [
+     "AJOUX",
+     "ANNONAY",
+     "BALAZUC",
+     "CHAMBONAS",
+     "CHOMERAC",
+     "JOYEUSE",
+     "LARGENTIERE",
+     "LARNAS",
+     "PAYZAC",
+     "RIBES",
+     "ROCHECOLOMBE",
+     "ST LAURENT SOUS COIRON",
+     "ST MAURICE D IBIE",
+     "VILLENEUVE DE BERG",
+     "VIVIERS"
+    ],
+    "festivals": []
    }
   },
   {
@@ -112,6 +357,34 @@
     "musees": 13,
     "patrimoine": 8,
     "festivals": 0
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE ARDENNES THIERACHE",
+     "MICRO-FOLIE CARIGNAN",
+     "MICRO-FOLIE CHARLEVILLE-MÉZIÈRES",
+     "MICRO-FOLIE PIX'IN - LA LOCOMOTIVE",
+     "MICRO-FOLIE VILLERS-SEMEUSE",
+     "Maison des Ailleurs - Arthur Rimbaud",
+     "musée",
+     "musée Arthur Rimbaud",
+     "musée de l'Ardenne",
+     "musée de la maison de la dernière cartouche",
+     "musée du Rethelois et du Porcien",
+     "musée du château-fort",
+     "musée du feutre"
+    ],
+    "patrimoine": [
+     "ASFELD",
+     "CHARLEVILLE MEZIERES",
+     "GIVET",
+     "MOUZON",
+     "REVIN",
+     "ROCROI",
+     "SEDAN",
+     "VOUZIERS"
+    ],
+    "festivals": []
    }
   },
   {
@@ -126,6 +399,30 @@
     "musees": 8,
     "patrimoine": 9,
     "festivals": 0
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE SAINT GIRONS",
+     "MICRO-FOLIE SAVERDUN",
+     "Musée du Fer",
+     "musée d'archéologie",
+     "musée de la préhistoire",
+     "musée du palais des évêques",
+     "musée du textile et du peigne en corne",
+     "musée départemental de l'Ariège"
+    ],
+    "patrimoine": [
+     "ALZEN",
+     "AX LES THERMES",
+     "CARLA BAYLE",
+     "FOIX",
+     "LE PORT",
+     "MIREPOIX",
+     "MONTSEGUR",
+     "ROQUEFIXADE",
+     "ST LIZIER"
+    ],
+    "festivals": []
    }
   },
   {
@@ -140,6 +437,39 @@
     "musees": 19,
     "patrimoine": 7,
     "festivals": 49
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE AIX-VILLEMAUR-PALIS",
+     "MICRO-FOLIE ARCIS-MAILLY-RAMERUPT",
+     "MICRO-FOLIE BAR-SUR-AUBE",
+     "MICRO-FOLIE ERVY-LE-CHATEL",
+     "MICRO-FOLIE LA CHAPELLE SAINT-LUC",
+     "MICRO-FOLIE PONT-SAINTE-MARIE",
+     "MICRO-FOLIE QUAI DES ARTS - POLISOT",
+     "MICRO-FOLIE ROMILLY SUR SEINE",
+     "Musée de la Renaissance en Champagne ; musée historique de Troyes et de la Champagne",
+     "Musée de la maille - mode et industrie",
+     "apothicairerie de l'hôtel-Dieu-le-Comte",
+     "maison de l'outil et de la pensée ouvrière",
+     "musée Camille Claudel",
+     "musée Napoléon 1er",
+     "musée d'art moderne",
+     "musée de la Résistance de l'Aube",
+     "musée des beaux-arts et d'archéologie",
+     "musée municipal",
+     "muséum d'histoire naturelle"
+    ],
+    "patrimoine": [
+     "ERVY LE CHATEL",
+     "ESSOYES",
+     "MUSSY SUR SEINE",
+     "NOGENT SUR SEINE",
+     "STE SAVINE",
+     "TROYES",
+     "TROYES"
+    ],
+    "festivals": []
    }
   },
   {
@@ -154,6 +484,36 @@
     "musees": 13,
     "patrimoine": 10,
     "festivals": 114
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE CARCASSONNE AGGLO",
+     "MICRO-FOLIE GRAND NARBONNE",
+     "MICRO-FOLIE LEZIGNAN-CORBIERES",
+     "MICRO-FOLIE LIMOUX",
+     "Palais-musée des Archevêques de Narbonne",
+     "musée Narbo Via",
+     "musée Petiet",
+     "musée archéologique",
+     "musée archéologique du Lauragais",
+     "musée des Corbières",
+     "musée des beaux-arts",
+     "musée municipal",
+     "musée municipal \"Eburomagus, musée archéologique\""
+    ],
+    "patrimoine": [
+     "ARAGON",
+     "BAGES",
+     "CARCASSONNE",
+     "CASTELNAUDARY",
+     "CHALABRE",
+     "DUILHAC SOUS PEYREPERTUSE",
+     "LEUCATE",
+     "MONTREAL",
+     "NARBONNE",
+     "VILLEROUGE TERMENES"
+    ],
+    "festivals": []
    }
   },
   {
@@ -168,6 +528,43 @@
     "musees": 13,
     "patrimoine": 17,
     "festivals": 53
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE ESPALION",
+     "MICRO-FOLIE MILLAU",
+     "musée Fenaille",
+     "musée Joseph Vaylet",
+     "musée Soulages",
+     "musée Urbain Cabrol",
+     "musée des arts et métiers traditionnels",
+     "musée des beaux-arts Denys Puech",
+     "musée des mœurs et coutumes",
+     "musée du charroi rural",
+     "musée municipal",
+     "musée municipal",
+     "musée régional de géologie Pierre Vetter"
+    ],
+    "patrimoine": [
+     "DRUELLE BALSAC",
+     "LA COUVERTOIRADE",
+     "LE BAS SEGALA",
+     "LE MONASTERE",
+     "LUC LA PRIMAUBE",
+     "MUR DE BARREZ",
+     "OLEMPS",
+     "ONET LE CHATEAU",
+     "RODEZ",
+     "RODEZ",
+     "SAUVETERRE DE ROUERGUE",
+     "SEBAZAC CONCOURES",
+     "ST ROME DE TARN",
+     "STE RADEGONDE",
+     "VILLEFRANCHE DE ROUERGUE",
+     "VILLEFRANCHE DE ROUERGUE",
+     "VILLENEUVE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -182,6 +579,79 @@
     "musees": 53,
     "patrimoine": 13,
     "festivals": 310
+   },
+   "names": {
+    "musees": [
+     "Cabinet des Monnaies Et Médailles de Marseille",
+     "MICRO-FOLIE CIAM AIX-EN-PROVENCE",
+     "MICRO-FOLIE DEPARTEMENTALE DES BOUCHES-DU-RHÔNE",
+     "MICRO-FOLIE ISTRES",
+     "MICRO-FOLIE LA CIOTAT",
+     "MICRO-FOLIE MARSEILLE LA FABULERIE",
+     "MICRO-FOLIE MIRAMAS",
+     "MICRO-FOLIE PORT DE BOUC",
+     "Musée Baroncelli",
+     "Musée de L'uniforme - Musée de La Légion Etrangère",
+     "Musée des Beaux-Arts de Marseille",
+     "Musée des Civilisations de L'europe Et de La Méditerranée",
+     "cabinet des monnaies et médailles",
+     "fondation Vasarely",
+     "museon Arlaten",
+     "musée Alphonse Daudet",
+     "musée Cantini",
+     "musée Estrine",
+     "musée Frédéric Mistral",
+     "musée Granet",
+     "musée Grobet-Labadié",
+     "musée Paul Arbaud",
+     "musée René Beaucaire",
+     "musée Réattu",
+     "musée Suffren et du vieux Saint-Cannat",
+     "musée Ziem",
+     "musée camarguais",
+     "musée ciotaden",
+     "musée d'archéologie méditerranéenne",
+     "musée d'art contemporain - galeries contemporaines",
+     "musée d'histoire de Marseille",
+     "musée d'histoire et d'archéologie des Baux-de-Provence",
+     "musée de Salon et de la Crau",
+     "musée de l'Arles antique",
+     "musée de l'Emperi",
+     "musée de l'atelier de Paul Cézanne",
+     "musée de la Légion étrangère",
+     "musée des Alpilles Pierre de Brun",
+     "musée des Saintes-Maries-de-la-Mer",
+     "musée des arts africains, océaniens, amérindiens",
+     "musée des arts décoratifs, de la faïence et de la mode",
+     "musée des beaux-arts",
+     "musée des civilisations de l'Europe et de la méditerranée",
+     "musée des docks romains",
+     "musée des tapisseries",
+     "musée du pavillon de Vendôme",
+     "musée du vieil Aix",
+     "musée du vieux Saint-Chamas",
+     "musée folklorique du vieux Lambesc",
+     "musée municipal d'arts et traditions populaires",
+     "musée-fondation Louis Jou",
+     "muséum d'histoire naturelle",
+     "muséum d'histoire naturelle"
+    ],
+    "patrimoine": [
+     "AIX EN PROVENCE",
+     "AIX EN PROVENCE",
+     "ARLES",
+     "BARBENTANE",
+     "CORNILLON CONFOUX",
+     "JOUQUES",
+     "LE THOLONET",
+     "LES BAUX DE PROVENCE",
+     "MARSEILLE",
+     "PEYROLLES EN PROVENCE",
+     "ROGNES",
+     "ST REMY DE PROVENCE",
+     "VAUVENARGUES"
+    ],
+    "festivals": []
    }
   },
   {
@@ -196,6 +666,55 @@
     "musees": 31,
     "patrimoine": 11,
     "festivals": 90
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE BELLENGREVILLE",
+     "MICRO-FOLIE CAUMONT-SUR-AURE",
+     "MICRO-FOLIE COLOMBELLES",
+     "MICRO-FOLIE DEAUVILLE",
+     "MICRO-FOLIE DU BESSIN",
+     "MICRO-FOLIE FALAISE",
+     "MICRO-FOLIE LISIEUX NORMANDIE",
+     "MICRO-FOLIE NORMANDIE CABOURG PAYS D'AUGE",
+     "MICRO-FOLIE PONT-LEVEQUE",
+     "Tapisserie de Bayeux - MAHB musée d'art et d'histoire Baron Gérard",
+     "château",
+     "musée Eugène Boudin",
+     "musée Langlois",
+     "musée d'art et d'histoire",
+     "musée d'ethnographie et d'arts populaires et musée de la marine",
+     "musée d'initiation à la nature",
+     "musée de Normandie",
+     "musée de la Société des antiquaires",
+     "musée de la bataille de Tilly-sur-Seulles",
+     "musée de la meunerie - moulin de Marcy",
+     "musée de la mine",
+     "musée de la villa Montebello",
+     "musée des beaux-arts",
+     "musée des techniques fromagères",
+     "musée du Débarquement",
+     "musée du château",
+     "musée et sites archéologiques de Vieux-la-Romaine",
+     "musée municipal",
+     "musée municipal le vieux manoir",
+     "musée paléontologique",
+     "mémorial de Caen, un musée pour la paix"
+    ],
+    "patrimoine": [
+     "BAYEUX",
+     "BERNIERES SUR MER",
+     "CABOURG",
+     "CAEN",
+     "DEAUVILLE",
+     "HONFLEUR",
+     "ORBEC",
+     "PONT L EVEQUE",
+     "PONTS SUR SEULLES",
+     "TROUVILLE SUR MER",
+     "VILLERS SUR MER"
+    ],
+    "festivals": []
    }
   },
   {
@@ -210,6 +729,33 @@
     "musees": 11,
     "patrimoine": 9,
     "festivals": 21
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE CHATAIGNERAIE CANTALIENNE",
+     "MICRO-FOLIE DU CARLADÈS",
+     "MICRO-FOLIE HAUTES TERRES COMMUNAUTE",
+     "MICRO-FOLIE NAUCELLES & AUTHRE",
+     "MICRO-FOLIE PAYS GENTIANE",
+     "MICRO-FOLIE SUMÈNE-ARTENSE",
+     "musée Alfred Douët",
+     "musée d'art et d'archéologie",
+     "musée de la Haute Auvergne",
+     "musée des sciences",
+     "écomusée de la Margeride"
+    ],
+    "patrimoine": [
+     "AURILLAC",
+     "FONTANGES",
+     "LAROQUEBROU",
+     "MAURIAC",
+     "MOLOMPIZE",
+     "MONTSALVY",
+     "MURAT",
+     "SALERS",
+     "ST FLOUR"
+    ],
+    "festivals": []
    }
   },
   {
@@ -224,6 +770,34 @@
     "musees": 10,
     "patrimoine": 11,
     "festivals": 52
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE GRAND COGNAC",
+     "MICRO-FOLIE LE CAJ - CITÉ DE LA BD",
+     "MICRO-FOLIE NOMADE SUD CHARENTE",
+     "MICRO-FOLIE RUELLE-SUR-TOUVRE",
+     "Musée des Arts du Cognac",
+     "atelier-musée du papier",
+     "musée archéologique et historique",
+     "musée de la bande dessinée - centre national de la bande dessinée et de l'image",
+     "musée des beaux-arts",
+     "musée municipal du Cognac"
+    ],
+    "patrimoine": [
+     "ANGOULEME",
+     "ANGOULEME",
+     "AUBETERRE SUR DRONNE",
+     "BARBEZIEUX ST HILAIRE",
+     "COGNAC",
+     "CONFOLENS",
+     "JARNAC",
+     "LA ROCHEFOUCAULD EN ANGOUMOIS",
+     "LA ROCHEFOUCAULD EN ANGOUMOIS",
+     "VERTEUIL SUR CHARENTE",
+     "VILLEBOIS LAVALETTE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -238,6 +812,67 @@
     "musees": 26,
     "patrimoine": 28,
     "festivals": 98
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE 3 MONTS DE LA HAUTE-SAINTONGE",
+     "MICRO-FOLIE JONZAC",
+     "MICRO-FOLIE PONS",
+     "MICRO-FOLIE SAINT-GEORGES-D'OLERON",
+     "MICRO-FOLIE SAINT-JEAN-D'ANGELY",
+     "MICRO-FOLIE SURGERES",
+     "Musée National de La Marine",
+     "Musée National de La Marine - Ancienne école de médecine navale",
+     "musée Capon",
+     "musée Dupuy-Mestreau",
+     "musée Ernest Cognacq",
+     "musée archéologique",
+     "musée d'Orbigny-Bernon",
+     "musée d'art et d'histoire",
+     "musée de l'Echevinage",
+     "musée de la maison de Pierre Loti",
+     "musée de la mytiliculture",
+     "musée des beaux-arts",
+     "musée du Présidial",
+     "musée du nouveau monde",
+     "musée municipal des cordeliers",
+     "musée napoléonien et musée africain (annexes du musée national des châteaux de Malmaison et de Bois Préau)",
+     "musée oléronais Aliénor d'Aquitaine",
+     "musée protestant",
+     "musée régional",
+     "muséum d'histoire naturelle et d'ethnographie"
+    ],
+    "patrimoine": [
+     "JONZAC",
+     "LA FLOTTE",
+     "LA ROCHELLE",
+     "LA ROCHELLE",
+     "LE BOIS PLAGE EN RE",
+     "LE CHATEAU D OLERON",
+     "MARANS",
+     "MARENNES HIERS BROUAGE",
+     "MARENNES HIERS BROUAGE",
+     "MORNAC SUR SEUDRE",
+     "NEUVICQ LE CHATEAU",
+     "PONS",
+     "ROCHEFORT",
+     "ROCHEFORT",
+     "ROYAN",
+     "SAINTES",
+     "SAINTES",
+     "ST GEORGES D OLERON",
+     "ST JEAN D ANGELY",
+     "ST JEAN D ANGELY",
+     "ST MARTIN DE RE",
+     "ST PALAIS SUR MER",
+     "ST SAVINIEN",
+     "ST SULPICE DE ROYAN",
+     "STE MARIE DE RE",
+     "SURGERES",
+     "TAILLEBOURG",
+     "TALMONT SUR GIRONDE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -252,6 +887,31 @@
     "musees": 13,
     "patrimoine": 5,
     "festivals": 38
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE AUBIGNY-SUR-NÈRE",
+     "MICRO-FOLIE SAINT-FLORENT-SUR-CHER",
+     "MICRO-FOLIE SANCERRE",
+     "MICRO-FOLIE VIERZON",
+     "musée Emile Chénon",
+     "musée Estève",
+     "musée Saint-Vic",
+     "musée des arts décoratifs",
+     "musée des meilleurs ouvriers de France",
+     "musée du Berry",
+     "musée du château Charles VII",
+     "musée municipal",
+     "muséum d'histoire naturelle Gabriel Foucher"
+    ],
+    "patrimoine": [
+     "AUBIGNY SUR NERE",
+     "BOURGES",
+     "MENETREOL SOUS SANCERRE",
+     "SANCERRE",
+     "ST SATUR"
+    ],
+    "festivals": []
    }
   },
   {
@@ -266,6 +926,30 @@
     "musees": 10,
     "patrimoine": 7,
     "festivals": 37
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE EGLETONS - CDMA",
+     "MICRO-FOLIE LUBERSAC-POMPADOUR",
+     "MICRO-FOLIE MEYMAC",
+     "MICRO-FOLIE MONEDIERES",
+     "MICRO-FOLIE USSEL - LA GRANGE",
+     "musée Labenche",
+     "musée de la mémoire et des industries tullistes",
+     "musée du cloître",
+     "musée du pays d'Ussel",
+     "musée du président Jacques Chirac"
+    ],
+    "patrimoine": [
+     "BEAULIEU SUR DORDOGNE",
+     "BRIVE LA GAILLARDE",
+     "LIGNEYRAC",
+     "SEGUR LE CHATEAU",
+     "TREIGNAC",
+     "TULLE",
+     "UZERCHE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -280,6 +964,59 @@
     "musees": 24,
     "patrimoine": 19,
     "festivals": 74
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE ARTKARAVANE BOURGOGNE-FRANCHE-COMTÉ",
+     "MICRO-FOLIE IS SUR TILLE",
+     "MICRO-FOLIE SAULIEU",
+     "musée Alésia - centre d'interprétation",
+     "musée Bonaparte",
+     "musée Buffon",
+     "musée François Pompon",
+     "musée Marey",
+     "musée Noisot",
+     "musée Rude",
+     "musée archéologique",
+     "musée d'art sacré",
+     "musée de la sidérurgie en Bourgogne du Nord",
+     "musée de la vie bourguignonne",
+     "musée des arts et traditions des Hautes-Côtes",
+     "musée des beaux-arts",
+     "musée des beaux-arts",
+     "musée des beaux-arts",
+     "musée du Châtillonnais",
+     "musée du vin de Bourgogne",
+     "musée municipal",
+     "musée municipal",
+     "musée national Magnin",
+     "muséum d'histoire naturelle"
+    ],
+    "patrimoine": [
+     "ARNAY LE DUC",
+     "AUXONNE",
+     "BEAUNE",
+     "BROCHON",
+     "CHENOVE",
+     "CHOREY LES BEAUNE",
+     "COUCHEY",
+     "DIJON",
+     "DIJON",
+     "FIXIN",
+     "FLAVIGNY SUR OZERAIN",
+     "FONTAINE LES DIJON",
+     "GEVREY CHAMBERTIN",
+     "IS SUR TILLE",
+     "MARSANNAY LA COTE",
+     "MEURSAULT",
+     "NUITS ST GEORGES",
+     "PULIGNY MONTRACHET",
+     "SANTENAY",
+     "SEMUR EN AUXOIS",
+     "ST ROMAIN",
+     "STE MARIE LA BLANCHE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -294,6 +1031,36 @@
     "musees": 6,
     "patrimoine": 17,
     "festivals": 136
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE LANNION",
+     "MICRO-FOLIE LOUDEAC",
+     "MICRO-FOLIE PLÉRIN-SUR-MER",
+     "musée Mathurin Meheut",
+     "musée d'art et d'histoire",
+     "musée de Dinan"
+    ],
+    "patrimoine": [
+     "CHATELAUDREN PLOUAGAT",
+     "DINAN",
+     "ERQUY",
+     "GUINGAMP",
+     "JUGON LES LACS",
+     "LA ROCHE JAUDY",
+     "LAMBALLE ARMOR",
+     "LANNION",
+     "LANVALLAY",
+     "MONCONTOUR",
+     "PAIMPOL",
+     "PERROS GUIREC",
+     "PONTRIEUX",
+     "QUINTIN",
+     "ST BRIEUC",
+     "TREDREZ LOCQUEMEAU",
+     "TREGUIER"
+    ],
+    "festivals": []
    }
   },
   {
@@ -308,6 +1075,23 @@
     "musees": 8,
     "patrimoine": 2,
     "festivals": 40
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE BOURGANEUF",
+     "MICRO-FOLIE BÉNÉVENT-GRAND-BOURG",
+     "MICRO-FOLIE GOUZON",
+     "MICRO-FOLIE GUÉRET",
+     "MICRO-FOLIE LA SOUTERRAINE",
+     "MICRO-FOLIE PAYS DUNOIS",
+     "musée d'art et d'archéologie",
+     "musée départemental de la tapisserie"
+    ],
+    "patrimoine": [
+     "AUBUSSON",
+     "BENEVENT L ABBAYE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -322,6 +1106,77 @@
     "musees": 25,
     "patrimoine": 39,
     "festivals": 70
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE BASTIDES DORDOGNE PERIGORD",
+     "MICRO-FOLIE CAB",
+     "MICRO-FOLIE DRONNE ET BELLE",
+     "MICRO-FOLIE EYMET ET ISSIGEAC",
+     "MICRO-FOLIE HÔTEL-DIEU DE HAUTEFORT",
+     "MICRO-FOLIE MUSSIDAN",
+     "MICRO-FOLIE NEUVIC-SUR-L'ISLE",
+     "MICRO-FOLIE NONTRON",
+     "MICRO-FOLIE PERIGORD NOIR",
+     "MICRO-FOLIE SAINT-AULAYE EN PERIGORD",
+     "château de Bourdeilles",
+     "musée Eugène Le Roy",
+     "musée Fernand Desmoulin",
+     "musée Paul Reclus",
+     "musée d'art et d'archéologie du Périgord",
+     "musée de Sarlat et du Périgord noir",
+     "musée de site médiéval",
+     "musée des arts et traditions populaires",
+     "musée du tabac",
+     "musée départemental de la poupée et du jouet",
+     "musée gallo-romain de Vésunna",
+     "musée militaire - souvenirs du Périgord",
+     "musée municipal",
+     "musée national de préhistoire",
+     "musée-aquarium"
+    ],
+    "patrimoine": [
+     "BANEUIL",
+     "BERGERAC",
+     "BEYNAC ET CAZENAC",
+     "BIRON",
+     "BOULAZAC ISLE MANOIRE",
+     "BRANTOME EN PERIGORD",
+     "CAPDROT",
+     "CASTELNAUD LA CHAPELLE",
+     "CENAC ET ST JULIEN",
+     "CHANCELADE",
+     "DOMME",
+     "EXCIDEUIL",
+     "GROLEJAC",
+     "ISSIGEAC",
+     "LA ROQUE GAGEAC",
+     "LALINDE",
+     "LANQUAIS",
+     "LES EYZIES",
+     "MARSAC SUR L ISLE",
+     "MARSALES",
+     "MAUZAC ET GRAND CASTANG",
+     "MONPAZIER",
+     "MONPAZIER",
+     "MOULEYDIER",
+     "NONTRON",
+     "PAYS DE BELVES",
+     "PERIGUEUX",
+     "PERIGUEUX",
+     "RIBERAC",
+     "SARLAT LA CANEDA",
+     "ST ASTIER",
+     "ST CAPRAISE DE LALINDE",
+     "ST CYPRIEN",
+     "ST RAPHAEL",
+     "TERRASSON LAVILLEDIEU",
+     "THIVIERS",
+     "VAL DE LOUYRE ET CAUDEAU",
+     "VEZAC",
+     "VITRAC"
+    ],
+    "festivals": []
    }
   },
   {
@@ -336,6 +1191,32 @@
     "musees": 11,
     "patrimoine": 6,
     "festivals": 78
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE MELI'ART",
+     "musée Beurnier-Rossel",
+     "musée Gustave Courbet",
+     "musée comtois",
+     "musée de la résistance et de la déportation",
+     "musée de plein air des maisons comtoises",
+     "musée des beaux-arts et d'archéologie",
+     "musée du château",
+     "musée du temps",
+     "musée municipal",
+     "muséum d'histoire naturelle"
+    ],
+    "patrimoine": [
+     "AUDINCOURT",
+     "BAUME LES DAMES",
+     "BESANCON",
+     "BESANCON",
+     "MAICHE",
+     "MONTBELIARD",
+     "MONTFAUCON",
+     "VALENTIGNEY"
+    ],
+    "festivals": []
    }
   },
   {
@@ -350,6 +1231,46 @@
     "musees": 14,
     "patrimoine": 19,
     "festivals": 83
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE BUIS-LES-BARONNIES",
+     "MICRO-FOLIE CHARPEY",
+     "MICRO-FOLIE DIEULEFIT - MONTELIMAR",
+     "MICRO-FOLIE LES TRACOLS",
+     "MICRO-FOLIE LORIOL-SUR-DROME",
+     "MICRO-FOLIE PIERRELATTE",
+     "musée archéologique",
+     "musée d'art sacré",
+     "musée d'histoire et d'archéologie",
+     "musée de la chaussure",
+     "musée des beaux-arts",
+     "musée du château des Adhémar",
+     "musée du site préhistorique",
+     "musée départemental du château"
+    ],
+    "patrimoine": [
+     "DIE",
+     "ESPELUCHE",
+     "GRIGNAN",
+     "HOSTUN",
+     "LES TONILS",
+     "LES TOURRETTES",
+     "LIVRON SUR DROME",
+     "LORIOL SUR DROME",
+     "MIRMANDE",
+     "MONTBRUN LES BAINS",
+     "MONTELIMAR",
+     "ROCHEBRUNE",
+     "ROMANS SUR ISERE",
+     "SAUZET",
+     "ST PAUL TROIS CHATEAUX",
+     "ST PAUL TROIS CHATEAUX",
+     "ST RESTITUT",
+     "ST VALLIER",
+     "VALENCE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -364,6 +1285,31 @@
     "musees": 11,
     "patrimoine": 7,
     "festivals": 36
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE CONCHES-EN-OUCHE",
+     "MICRO-FOLIE EVREUX",
+     "MICRO-FOLIE PONT-AUDEMER",
+     "musée Alfred Canel",
+     "musée Blanche Hoschedé-Monet",
+     "musée Nicolas Poussin",
+     "musée des instruments à vent",
+     "musée du verre François Décorchemont",
+     "musée d’art, histoire et archéologie d’Evreux",
+     "musée municipal",
+     "musée municipal"
+    ],
+    "patrimoine": [
+     "BERNAY",
+     "EVREUX",
+     "GAILLON",
+     "GIVERNY",
+     "NONANCOURT",
+     "PONT AUDEMER",
+     "VERNEUIL D AVRE ET D ITON"
+    ],
+    "festivals": []
    }
   },
   {
@@ -378,6 +1324,39 @@
     "musees": 14,
     "patrimoine": 11,
     "festivals": 28
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE BERCHERES-SUR-VESGRE",
+     "MICRO-FOLIE DREUX",
+     "MICRO-FOLIE FRAZÉ - LA PASSERELLE",
+     "MICRO-FOLIE LA LOUPE",
+     "MICRO-FOLIE MAINVILLIERS",
+     "conservatoire du machinisme et des pratiques agricoles",
+     "musée Farcot",
+     "musée Marcel Proust",
+     "musée bonnevallais",
+     "musée d'art et d'histoire de Dreux",
+     "musée de l'histoire du Perche",
+     "musée des beaux-arts",
+     "musée des beaux-arts et d'histoire naturelle",
+     "muséum des sciences naturelles et de préhistoire"
+    ],
+    "patrimoine": [
+     "ANET",
+     "AUNAY SOUS CRECY",
+     "BERCHERES SUR VESGRE",
+     "BONCOURT",
+     "CHARTRES",
+     "CHATEAUDUN",
+     "CRECY COUVE",
+     "EPERNON",
+     "ILLIERS COMBRAY",
+     "MONTREUIL",
+     "ROUVRES",
+     "ST OUEN MARCHEFROY"
+    ],
+    "festivals": []
    }
   },
   {
@@ -392,6 +1371,72 @@
     "musees": 20,
     "patrimoine": 38,
     "festivals": 144
+   },
+   "names": {
+    "musees": [
+     "Ecomusée des Monts D'arrée - Maison Cornec",
+     "MICRO-FOLIE LESNEVEN CÔTE DES LÉGENDES",
+     "MICRO-FOLIE MORLAIX",
+     "MICRO-FOLIE PLOUHINEC",
+     "MICRO-FOLIE ROSPORDEN",
+     "MICRO-FOLIE SCAËR",
+     "Musée National de La Marine",
+     "musée",
+     "musée bigouden",
+     "musée de l'ancienne abbaye de Landévennec",
+     "musée de l'école rurale en Bretagne",
+     "musée de la pêche",
+     "musée des beaux-arts",
+     "musée des beaux-arts",
+     "musée des jacobins",
+     "musée des phares et balises",
+     "musée départemental breton",
+     "port-musée",
+     "écomusée d'Ouessant - Vivre sur une île",
+     "écomusée des monts d'Arrée"
+    ],
+    "patrimoine": [
+     "BENODET",
+     "BERRIEN",
+     "BRENNILIS",
+     "BREST",
+     "CHATEAULIN",
+     "CLOHARS CARNOET",
+     "COMBRIT",
+     "COMMANA",
+     "CONCARNEAU",
+     "DAOULAS",
+     "DOUARNENEZ",
+     "GUERLESQUIN",
+     "HUELGOAT",
+     "LA FEUILLEE",
+     "LANDEDA",
+     "LANDERNEAU",
+     "LANNILIS",
+     "LE CONQUET",
+     "LE FAOU",
+     "LOCRONAN",
+     "MOELAN SUR MER",
+     "MORLAIX",
+     "MORLAIX",
+     "OUESSANT",
+     "PENMARCH",
+     "PLOBANNALEC LESCONIL",
+     "PLOEVEN",
+     "PLOMEUR",
+     "PLOUGONVEN",
+     "PLOUGUERNEAU",
+     "PLOURIN LES MORLAIX",
+     "PONT AVEN",
+     "PONT CROIX",
+     "PONT L ABBE",
+     "QUIMPER",
+     "QUIMPERLE",
+     "ROSCOFF",
+     "ROSPORDEN",
+     "TREMAOUEZAN"
+    ],
+    "festivals": []
    }
   },
   {
@@ -406,6 +1451,30 @@
     "musees": 13,
     "patrimoine": 4,
     "festivals": 33
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE AJACCIO",
+     "MICRO-FOLIE APF-CORSE",
+     "MICRO-FOLIE BONIFACIO",
+     "MICRO-FOLIE CARGHJESE",
+     "MICRO-FOLIE COZZANO",
+     "MICRO-FOLIE PORTICCIO",
+     "MICRO-FOLIE PORTIVECHJU",
+     "MICRO-FOLIE ZONZA",
+     "musée de l'Alta-Rocca",
+     "musée de préhistoire corse",
+     "musée napoléonien",
+     "musée national de la maison Bonaparte",
+     "musée palais Fesch"
+    ],
+    "patrimoine": [
+     "AJACCIO",
+     "BONIFACIO",
+     "FORCIOLO",
+     "SARTENE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -420,6 +1489,26 @@
     "musees": 8,
     "patrimoine": 5,
     "festivals": 36
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE BASTIA - Una Volta",
+     "MICRO-FOLIE CALVI",
+     "MICRO-FOLIE UNIVERSITE DE CORTE",
+     "musée Jérôme Carcopino",
+     "musée Pascal Paoli",
+     "musée archéologique de Mariana - Prince Rainier III de Monaco",
+     "musée d'ethnographie corse",
+     "musée de la Corse"
+    ],
+    "patrimoine": [
+     "BASTIA",
+     "CORBARA",
+     "LAMA",
+     "PIGNA",
+     "SPELONCATO"
+    ],
+    "festivals": []
    }
   },
   {
@@ -434,6 +1523,56 @@
     "musees": 24,
     "patrimoine": 19,
     "festivals": 106
+   },
+   "names": {
+    "musees": [
+     "Carré d'art - musée d'art contemporain",
+     "MICRO-FOLIE BEAUCAIRE BOOSTER 3.0",
+     "MICRO-FOLIE CALVISSON",
+     "MICRO-FOLIE KIT MOBILE BEAUCAIRE TERRE D'ARGENCE",
+     "MICRO-FOLIE NEGPOS-NIMES",
+     "MICRO-FOLIE RAIA ALES",
+     "MICRO-FOLIE ROCHEFORT-DU-GARD",
+     "MICRO-FOLIE SAINT GILLES",
+     "Musée des Cultures Taurines (Annexe du Vieux Nîmes)",
+     "maison Rouge - musée des vallées cévenoles",
+     "musée Albert André",
+     "musée Léon Alègre",
+     "musée Pierre de Luxembourg",
+     "musée cévenol",
+     "musée de la Romanité",
+     "musée de la maison Romane",
+     "musée des beaux-arts",
+     "musée du Colombier",
+     "musée du vieux Nîmes",
+     "musée départemental d'art sacré",
+     "musée municipal Georges Borias",
+     "musée municipal de la Vignasse",
+     "musée-bibliothèque Pierre-André Benoit",
+     "muséum d'histoire naturelle et de préhistoire"
+    ],
+    "patrimoine": [
+     "AIGUES MORTES",
+     "BAGNOLS SUR CEZE",
+     "BEAUCAIRE",
+     "BERNIS",
+     "FOURQUES",
+     "NIMES",
+     "PONT ST ESPRIT",
+     "SAUVE",
+     "SOMMIERES",
+     "ST GILLES",
+     "ST LAURENT DES ARBRES",
+     "THARAUX",
+     "UZES",
+     "VAUVERT",
+     "VAUVERT",
+     "VERGEZE",
+     "VESTRIC ET CANDIAC",
+     "VEZENOBRES",
+     "VILLENEUVE LES AVIGNON"
+    ],
+    "festivals": []
    }
   },
   {
@@ -448,6 +1587,33 @@
     "musees": 14,
     "patrimoine": 6,
     "festivals": 164
+   },
+   "names": {
+    "musees": [
+     "Le Musée - Arts et Figures des Pyrénées Centrales",
+     "Les Abattoirs, musée d'art moderne et contemporain",
+     "MICRO-FOLIE TOULOUSE ERNEST-RENAN",
+     "MICRO-FOLIE TOULOUSE ITINERANTE",
+     "musée Georges Labit",
+     "musée Saint-Raymond - musée d’archéologie de Toulouse",
+     "musée archéologique",
+     "musée de l’Aurignacien : la préhistoire en Haute-Garonne",
+     "musée des Augustins",
+     "musée des arts précieux Paul-Dupuy",
+     "musée du pays de Luchon",
+     "musée du vieux Toulouse",
+     "musée municipal",
+     "muséum d'histoire naturelle"
+    ],
+    "patrimoine": [
+     "BAGNERES DE LUCHON",
+     "PLAISANCE DU TOUCH",
+     "REVEL",
+     "ST BERTRAND DE COMMINGES",
+     "TOULOUSE",
+     "VALCABRERE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -462,6 +1628,25 @@
     "musees": 8,
     "patrimoine": 4,
     "festivals": 67
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE SARRANT",
+     "musée Joseph Abeilhe",
+     "musée archéologique",
+     "musée campanaire",
+     "musée d'archéologie",
+     "musée de l'Armagnac",
+     "musée des Amériques - Auch",
+     "musée des beaux-arts et des arts décoratifs"
+    ],
+    "patrimoine": [
+     "AUCH",
+     "LECTOURE",
+     "LECTOURE",
+     "LOMBEZ"
+    ],
+    "festivals": []
    }
   },
   {
@@ -476,6 +1661,65 @@
     "musees": 28,
     "patrimoine": 24,
     "festivals": 193
+   },
+   "names": {
+    "musees": [
+     "CAPC - musée d'art contemporain",
+     "MICRO-FOLIE ARES",
+     "MICRO-FOLIE CADAUJAC",
+     "MICRO-FOLIE CASTILLON LA BATAILLE",
+     "MICRO-FOLIE COUTRAS",
+     "MICRO-FOLIE LANGON",
+     "MICRO-FOLIE LE ROCHER DE PALMER - CENON",
+     "MICRO-FOLIE MARGAUX-MEDOC TOURISME",
+     "MICRO-FOLIE MERIGNAC",
+     "MICRO-FOLIE PAYS FOYEN",
+     "MICRO-FOLIE SAINT-ANDRE-DE-CUBZAC",
+     "MICRO-FOLIE SAUVETERRE-DE-GUYENNE",
+     "MICRO-FOLIE TERRES D'ESTUAIRE",
+     "Musée du pays de Buch et du bassin d'Arcachon",
+     "centre national Jean Moulin",
+     "musée archéologique",
+     "musée d'Aquitaine",
+     "musée d'art et d'histoire du pays blayais",
+     "musée d'histoire et d'archéologie",
+     "musée de la Création Franche",
+     "musée de la voiture à cheval. Au temps des calèches",
+     "musée des arts décoratifs et du design",
+     "musée des beaux-arts",
+     "musée des beaux-arts et d'archéologie",
+     "musée historique du vieux Libourne",
+     "musée municipal",
+     "musée municipal",
+     "muséum d'histoire naturelle"
+    ],
+    "patrimoine": [
+     "BAZAS",
+     "BLAYE",
+     "BORDEAUX",
+     "CADILLAC SUR GARONNE",
+     "CUSSAC FORT MEDOC",
+     "GENSAC",
+     "LA REOLE",
+     "LANGOIRAN",
+     "LIBOURNE",
+     "LORMONT",
+     "PESSAC",
+     "RIONS",
+     "SOULAC SUR MER",
+     "ST CHRISTOPHE DES BARDES",
+     "ST EMILION",
+     "ST EMILION",
+     "ST ETIENNE DE LISSE",
+     "ST HIPPOLYTE",
+     "ST LAURENT DES COMBES",
+     "ST MACAIRE",
+     "ST PEY D ARMENS",
+     "ST SULPICE DE FALEYRENS",
+     "STE FOY LA GRANDE",
+     "VIGNONET"
+    ],
+    "festivals": []
    }
   },
   {
@@ -490,6 +1734,57 @@
     "musees": 24,
     "patrimoine": 20,
     "festivals": 156
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE GRAND ORB",
+     "MICRO-FOLIE GRAND ORB ITINERANTE",
+     "MICRO-FOLIE MONTPELLIER",
+     "musée Fabre",
+     "musée Louis Médard",
+     "musée Paul Valéry",
+     "musée Vulliod de Saint-Germain",
+     "musée agathois",
+     "musée archéologique",
+     "musée de Lodève - hôtel du cardinal de Fleury",
+     "musée de l'Ephèbe",
+     "musée de l'hôtel d'Espeyran",
+     "musée de l'étang de Thau",
+     "musée de la cloche et de la sonnaille",
+     "musée de préhistoire",
+     "musée des beaux-arts",
+     "musée du Pic-Saint-Loup",
+     "musée du biterrois",
+     "musée du vieux Montpellier",
+     "musée languedocien",
+     "musée municipal",
+     "musée municipal",
+     "muséum d'histoire naturelle",
+     "site archéologique Lattara – musée Henri Prades"
+    ],
+    "patrimoine": [
+     "AGDE",
+     "ANIANE",
+     "ARBORAS",
+     "BEZIERS",
+     "BOUZIGUES",
+     "LODEVE",
+     "LOUPIAN",
+     "MINERVE",
+     "MONTPELLIER",
+     "MONTPELLIER",
+     "MONTPELLIER",
+     "MONTPELLIER",
+     "MONTPELLIER",
+     "PEGAIROLLES DE BUEGES",
+     "PEZENAS",
+     "ROQUEBRUN",
+     "SETE",
+     "ST GUILHEM LE DESERT",
+     "ST JEAN DE BUEGES",
+     "VILLENEUVETTE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -504,6 +1799,40 @@
     "musees": 11,
     "patrimoine": 15,
     "festivals": 184
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE GUIPRY-MESSAC CINEMA L'ALLIANCE",
+     "MICRO-FOLIE LOUVIGNE-DU-DESERT",
+     "MICRO-FOLIE VEZIN LE COQUET",
+     "musée d'histoire de la ville et d'ethnographie du pays malouin",
+     "musée de Bretagne",
+     "musée des beaux-arts",
+     "musée des rochers de Sévigné",
+     "musée du Long-Cours Cap-hornier",
+     "musée du château",
+     "écomusée de la Bintinais",
+     "écomusée du pays de Monfort"
+    ],
+    "patrimoine": [
+     "BAZOUGES LA PEROUSE",
+     "BECHEREL",
+     "CHATEAUGIRON",
+     "COMBOURG",
+     "DINARD",
+     "DOL DE BRETAGNE",
+     "FOUGERES",
+     "LA GUERCHE DE BRETAGNE",
+     "MONTREUIL SUR ILLE",
+     "RENNES",
+     "ST AUBIN DU CORMIER",
+     "ST LUNAIRE",
+     "ST MALO",
+     "ST MEEN LE GRAND",
+     "VITRE",
+     "VITRE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -518,6 +1847,29 @@
     "musees": 12,
     "patrimoine": 4,
     "festivals": 49
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE ARTS EN FOLIE",
+     "MICRO-FOLIE CHATILLONAIS-EN-BERRY",
+     "MICRO-FOLIE MARCHE BERRICHONNE",
+     "MICRO-FOLIE REUILLY",
+     "château musée",
+     "musée Bertrand",
+     "musée George Sand et de la vallée noire",
+     "musée archéologique d'Argentomagus",
+     "musée de géologie régionale",
+     "musée de l'hospice Saint Roch",
+     "musée de la chemiserie et de l'élégance masculine",
+     "musée ornithologique"
+    ],
+    "patrimoine": [
+     "CHATEAUROUX",
+     "ISSOUDUN",
+     "LE BLANC",
+     "ST BENOIT DU SAULT"
+    ],
+    "festivals": []
    }
   },
   {
@@ -532,6 +1884,57 @@
     "musees": 26,
     "patrimoine": 18,
     "festivals": 109
+   },
+   "names": {
+    "musees": [
+     "Le Carroi, musée d'arts et d'histoire",
+     "MICRO-FOLIE BALLAN-MIRÉ",
+     "MICRO-FOLIE BOURGUEIL",
+     "MICRO-FOLIE DESCARTES",
+     "MICRO-FOLIE LA RICHE",
+     "MICRO-FOLIE MONTBAZON",
+     "MICRO-FOLIE NEUVY-LE-ROI",
+     "MICRO-FOLIE SAINT-PIERRE-DES-CORPS",
+     "MICRO-FOLIE ÉPEIGNÉ-LES-BOIS",
+     "collections du musée de la société archéologique de Touraine",
+     "musée Balzac",
+     "musée Descartes",
+     "musée Hôtel Morin",
+     "musée Lansyer",
+     "musée Rabelais",
+     "musée de Minerve",
+     "musée de la poste",
+     "musée des beaux-arts",
+     "musée du Savignéen",
+     "musée du Véron",
+     "musée du compagnonnage",
+     "musée du terroir",
+     "musée du vin de Touraine",
+     "musée départemental de préhistoire",
+     "musée municipal",
+     "muséum d'histoire naturelle"
+    ],
+    "patrimoine": [
+     "AMBOISE",
+     "AMBOISE",
+     "BEAULIEU LES LOCHES",
+     "BOUSSAY",
+     "CANDES ST MARTIN",
+     "CHATEAU RENAULT",
+     "CHAUMUSSAY",
+     "CHINON",
+     "CHINON",
+     "CORMERY",
+     "FAYE LA VINEUSE",
+     "LOCHES",
+     "LUYNES",
+     "MONTRESOR",
+     "RICHELIEU",
+     "ROCHECORBON",
+     "SEUILLY",
+     "TOURS"
+    ],
+    "festivals": []
    }
   },
   {
@@ -546,6 +1949,66 @@
     "musees": 33,
     "patrimoine": 20,
     "festivals": 117
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE BOURGOIN-JALLIEU",
+     "MICRO-FOLIE BOUVESSE-QUIRIEU",
+     "MICRO-FOLIE CHASSE-SUR-RHÔNE",
+     "MICRO-FOLIE ENTRE-DEUX-GUIERS",
+     "MICRO-FOLIE LES AVENIERES VEYRINS-THUELLIN",
+     "MICRO-FOLIE OISANS",
+     "MICRO-FOLIE SAINT-MARCELLIN",
+     "MICRO-FOLIE SAINT-PIERRE DE CHARTREUSE",
+     "MICRO-FOLIE VAL-DE-VIRIEU",
+     "Musée d'histoire et d'archéologie de l'Alpe d'Huez",
+     "conservatoire-musée des industries hydroélectriques",
+     "maison du patrimoine",
+     "musée Champollion",
+     "musée Géo-Charles",
+     "musée Hector Berlioz",
+     "musée Hébert - d'Uckermann",
+     "musée Jadis Allevard",
+     "musée Mainssieux",
+     "musée Saint-Laurent",
+     "musée Stendhal",
+     "musée dauphinois",
+     "musée de Bourgoin-Jallieu",
+     "musée de Grenoble",
+     "musée de la Grande Chartreuse",
+     "musée de la résistance et de la déportation",
+     "musée des antiquités gallo-romaines",
+     "musée des beaux-arts et d'archéologie",
+     "musée du cloître Saint-André-le-Bas",
+     "musée du pays matheysin",
+     "musée départemental de la Révolution française",
+     "musée lapidaire Saint-Pierre",
+     "musée-parc archéologique du lac de Paladru",
+     "muséum d'histoire naturelle"
+    ],
+    "patrimoine": [
+     "BARRAUX",
+     "BEAUVOIR EN ROYANS",
+     "BESSE",
+     "BRANGUES",
+     "CREMIEU",
+     "GRENOBLE",
+     "HIERES SUR AMBY",
+     "LA COTE ST ANDRE",
+     "LA VERPILLIERE",
+     "MENS",
+     "REVEL TOURDAN",
+     "ST ANTOINE L ABBAYE",
+     "ST BAUDILLE DE LA TOUR",
+     "ST CHEF",
+     "ST ETIENNE DE ST GEOIRS",
+     "ST GEOIRE EN VALDAINE",
+     "ST QUENTIN FALLAVIER",
+     "VERTRIEU",
+     "VIENNE",
+     "VILLEFONTAINE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -560,6 +2023,42 @@
     "musees": 13,
     "patrimoine": 16,
     "festivals": 43
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE GRAND DOLE",
+     "Viséum-musée de la lunette (collections du musée de la lunette et du musée Jourdain)",
+     "musée Sarret de Grozon",
+     "musée d'archéologie",
+     "musée de beaux-arts",
+     "musée de l'artisanat jurassien",
+     "musée de la Grande Saline",
+     "musée de la vigne et du vin",
+     "musée des beaux-arts",
+     "musée des beaux-arts et d'archéologie",
+     "musée du jouet",
+     "musée municipal",
+     "musée municipal d'archéologie"
+    ],
+    "patrimoine": [
+     "ARBOIS",
+     "ARINTHOD",
+     "BAUME LES MESSIEURS",
+     "BRACON",
+     "CHATEAU CHALON",
+     "CLAIRVAUX LES LACS",
+     "COTEAUX DU LIZON",
+     "DOLE",
+     "DOMBLANS",
+     "LONS LE SAUNIER",
+     "NOZEROY",
+     "ORGELET",
+     "POLIGNY",
+     "SALINS LES BAINS",
+     "ST AMOUR",
+     "ST CLAUDE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -574,6 +2073,33 @@
     "musees": 14,
     "patrimoine": 6,
     "festivals": 65
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE CÔTE LANDES NATURE",
+     "MICRO-FOLIE LABOUHEYRE",
+     "MICRO-FOLIE PAYS MORCENAIS",
+     "MICRO-FOLIE SOUSTONS",
+     "atelier-musée",
+     "musée Despiau-Wlérick",
+     "musée archéologique",
+     "musée d'Art et d'Histoire du Cap de Gascogne",
+     "musée de Borda",
+     "musée des arts et traditions populaires de la Chalosse",
+     "musée départemental d'Histoire et d'Archéologie",
+     "musée départemental de la Faïence et des Arts de la table",
+     "musée historique de l'hydravion",
+     "écomusée de la Grande Lande"
+    ],
+    "patrimoine": [
+     "DAX",
+     "LABASTIDE D ARMAGNAC",
+     "SOLFERINO",
+     "SOORTS HOSSEGOR",
+     "ST SEVER",
+     "TARNOS"
+    ],
+    "festivals": []
    }
   },
   {
@@ -588,6 +2114,34 @@
     "musees": 10,
     "patrimoine": 11,
     "festivals": 72
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE BLOIS",
+     "MICRO-FOLIE CONSEIL DÉPARTEMENTAL DU LOIR-ET-CHER",
+     "atelier musée Louis Leygue",
+     "château musées",
+     "maison de la magie",
+     "musée archéologique",
+     "musée de Sologne",
+     "musée de la Corbillière",
+     "musée municipal",
+     "muséum d'histoire naturelle"
+    ],
+    "patrimoine": [
+     "BLOIS",
+     "CHATEAUVIEUX",
+     "COUR SUR LOIRE",
+     "MONTOIRE SUR LE LOIR",
+     "NOYERS SUR CHER",
+     "ST AIGNAN",
+     "ST DYE SUR LOIRE",
+     "ST JACQUES DES GUERETS",
+     "ST VIATRE",
+     "TROO",
+     "VENDOME"
+    ],
+    "festivals": []
    }
   },
   {
@@ -602,6 +2156,69 @@
     "musees": 27,
     "patrimoine": 29,
     "festivals": 66
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE CENTRE SOCIAL DE MABLY",
+     "MICRO-FOLIE FEURS",
+     "MICRO-FOLIE FOREZ-EST",
+     "MICRO-FOLIE LA TALAUDIERE",
+     "MICRO-FOLIE MONTROND-LES-BAINS",
+     "MICRO-FOLIE PEP SAINT-ETIENNE",
+     "MICRO-FOLIE REGNY",
+     "MICRO-FOLIE ROCHE-LA-MOLIERE",
+     "MICRO-FOLIE SAINT-GENEST MALIFAUX",
+     "MICRO-FOLIE SAVIGNEUX",
+     "château de la Bastie d'Urfé",
+     "musée Alice Taverne",
+     "musée Joseph Déchelette",
+     "musée d'Allard",
+     "musée d'art et d'industrie",
+     "musée d'art moderne et contemporain de Saint-Etienne Métropole - musée d'art moderne",
+     "musée de Feurs",
+     "musée de l'armée secrète et de la résistance",
+     "musée de la Diana",
+     "musée de la mine",
+     "musée de la soierie",
+     "musée des civilisations : Daniel Pouget",
+     "musée du chapeau",
+     "musée du vieux Pommiers",
+     "musée hospitalier",
+     "musée municipal",
+     "musée rural"
+    ],
+    "patrimoine": [
+     "AMBIERLE",
+     "CHAMPDIEU",
+     "CHARLIEU",
+     "CHAZELLES SUR LYON",
+     "FIRMINY",
+     "LA BENISSON DIEU",
+     "LA PACAUDIERE",
+     "LE CROZET",
+     "LEIGNEUX",
+     "MALLEVAL",
+     "MONTBRISON",
+     "PELUSSIN",
+     "POUILLY LES FEURS",
+     "REGNY",
+     "RIORGES",
+     "RIVE DE GIER",
+     "ST BONNET LE CHATEAU",
+     "ST ETIENNE",
+     "ST ETIENNE",
+     "ST ETIENNE",
+     "ST ETIENNE",
+     "ST ETIENNE",
+     "ST GALMIER",
+     "ST GERMAIN LAVAL",
+     "ST HAON LE CHATEL",
+     "ST JEAN ST MAURICE SUR LOIRE",
+     "ST JUST ST RAMBERT",
+     "ST MARCELLIN EN FOREZ",
+     "STE CROIX EN JAREZ"
+    ],
+    "festivals": []
    }
   },
   {
@@ -616,6 +2233,36 @@
     "musees": 14,
     "patrimoine": 9,
     "festivals": 41
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE AUREC-SUR-LOIRE",
+     "MICRO-FOLIE BRIOUDE",
+     "MICRO-FOLIE CRAPONNE-SUR-ARZON",
+     "MICRO-FOLIE DUNIÈRES",
+     "MICRO-FOLIE HAUTE-LOIRE",
+     "MICRO-FOLIE SAINT-JULIEN CHAPTEUIL",
+     "MICRO-FOLIE SAINT-PAUL-DE-TARTAS",
+     "MICRO-FOLIE VOREY",
+     "MICRO-FOLIE YSSINGEAUX",
+     "musée Crozatier",
+     "musée de la ferblanterie",
+     "musée de paléontologie",
+     "musée des arts et traditions populaires",
+     "musée des manufactures de dentelles"
+    ],
+    "patrimoine": [
+     "ALLEGRE",
+     "AUZON",
+     "BRIOUDE",
+     "CHILHAC",
+     "LA CHAISE DIEU",
+     "LANGEAC",
+     "LAVAUDIEU",
+     "LE PUY EN VELAY",
+     "ST PAULIEN"
+    ],
+    "festivals": []
    }
   },
   {
@@ -630,6 +2277,43 @@
     "musees": 17,
     "patrimoine": 13,
     "festivals": 125
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE CHATEAUBRIANT",
+     "MICRO-FOLIE LE POULIGUEN",
+     "MICRO-FOLIE VALLET",
+     "Maison de L'eclusier /Parc Naturel régional de Brière",
+     "Musée du Chaume/Kerhinet - Pnr Brière",
+     "musée Dobrée",
+     "musée de la porte Saint-Michel",
+     "musée des Marais salants",
+     "musée des arts et traditions populaires",
+     "musée du château des ducs de Bretagne",
+     "musée du pays de Retz",
+     "musée du vignoble nantais",
+     "musée municipal",
+     "musées des beaux-arts",
+     "musées du parc naturel régional de Brière",
+     "muséum d'histoire naturelle",
+     "écomusée"
+    ],
+    "patrimoine": [
+     "BATZ SUR MER",
+     "CLISSON",
+     "GUERANDE",
+     "GUERANDE",
+     "LA BAULE ESCOUBLAC",
+     "LA BERNERIE EN RETZ",
+     "LE CROISIC",
+     "LE POULIGUEN",
+     "NANTES",
+     "PIRIAC SUR MER",
+     "PORNIC",
+     "PORNICHET",
+     "ST BREVIN LES PINS"
+    ],
+    "festivals": []
    }
   },
   {
@@ -644,6 +2328,52 @@
     "musees": 21,
     "patrimoine": 18,
     "festivals": 74
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE AGGLOMÉRATION MONTARGOISE",
+     "MICRO-FOLIE BEAUGENCY",
+     "MICRO-FOLIE BERRY LOIRE PUISAYE - BRIARE",
+     "MICRO-FOLIE COURTENAY",
+     "MICRO-FOLIE GIEN",
+     "MICRO-FOLIE LE VERNISSON",
+     "MICRO-FOLIE ORLÉANS",
+     "MICRO-FOLIE PATAY",
+     "MICRO-FOLIE PITHIVIERS",
+     "atelier-musée de l'imprimerie, Le Malesherbois",
+     "château-musée de Gien : chasse, histoire et nature en Val de Loire",
+     "hôtel Cabu, musée d'histoire et d'archéologie",
+     "musée Daniel Vannier",
+     "musée Gaston Couté",
+     "musée Girodet",
+     "musée d'art et d'archéologie",
+     "musée de la marine de Loire",
+     "musée des beaux-arts",
+     "musée municipal",
+     "musée municipal théâtre forain et archéologique",
+     "muséum d'Orléans pour la biodiversité et l'environnement"
+    ],
+    "patrimoine": [
+     "BEAUGENCY",
+     "BEAULIEU SUR LOIRE",
+     "CERDON",
+     "CHATEAU RENARD",
+     "CLERY ST ANDRE",
+     "FERRIERES EN GATINAIS",
+     "LA FERTE ST AUBIN",
+     "MAREAU AUX PRES",
+     "MEUNG SUR LOIRE",
+     "OLIVET",
+     "ORLEANS",
+     "ORLEANS",
+     "PITHIVIERS",
+     "PUISEAUX",
+     "ST BENOIT SUR LOIRE",
+     "ST CYR EN VAL",
+     "ST HILAIRE ST MESMIN",
+     "ST PRYVE ST MESMIN"
+    ],
+    "festivals": []
    }
   },
   {
@@ -658,6 +2388,36 @@
     "musees": 12,
     "patrimoine": 11,
     "festivals": 42
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE GRAMAT",
+     "musée Champollion – les Ecritures du monde",
+     "musée Henri-Martin",
+     "musée Murat",
+     "musée archéologique",
+     "musée d'art sacré",
+     "musée d'histoire de Figeac",
+     "musée de l'automate",
+     "musée de plein air du Quercy",
+     "musée de préhistoire Amédée Lémozi",
+     "musée gallo-romain d'Uxellodunum",
+     "musée municipal"
+    ],
+    "patrimoine": [
+     "ALBAS",
+     "AUJOLS",
+     "AUTOIRE",
+     "BRETENOUX",
+     "CAHORS",
+     "CAJARC",
+     "FIGEAC",
+     "GOUJOUNAC",
+     "GOURDON",
+     "PUY L EVEQUE",
+     "SOUSCEYRAC EN QUERCY"
+    ],
+    "festivals": []
    }
   },
   {
@@ -672,6 +2432,30 @@
     "musees": 9,
     "patrimoine": 8,
     "festivals": 38
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE LAUZUN",
+     "MICRO-FOLIE PRAYSSAS",
+     "MICRO-FOLIE SAINTE-LIVRADE-SUR-LOT",
+     "musée du château",
+     "musée du liège et du bouchon",
+     "musée municipal",
+     "musée municipal Albert Marzelles",
+     "musée municipal de Gajac",
+     "musée municipal des beaux-arts"
+    ],
+    "patrimoine": [
+     "AGEN",
+     "ASTAFFORT",
+     "CASSENEUIL",
+     "CAUDECOSTE",
+     "MOIRAX",
+     "NERAC",
+     "PUJOLS",
+     "VILLENEUVE SUR LOT"
+    ],
+    "festivals": []
    }
   },
   {
@@ -686,6 +2470,22 @@
     "musees": 3,
     "patrimoine": 6,
     "festivals": 20
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE LOZERE",
+     "musée du Gévaudan",
+     "écomusée du mont Lozère"
+    ],
+    "patrimoine": [
+     "BARRE DES CEVENNES",
+     "GORGES DU TARN CAUSSES",
+     "ISPAGNAC",
+     "LE MALZIEU VILLE",
+     "MENDE",
+     "PONT DE MONTVERT SUD MONT LOZERE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -700,6 +2500,62 @@
     "musees": 18,
     "patrimoine": 31,
     "festivals": 55
+   },
+   "names": {
+    "musees": [
+     "Galerie David D'angers",
+     "MICRO-FOLIE BAUGÉ-EN-ANJOU",
+     "MICRO-FOLIE MAUGES-SUR-LOIRE",
+     "MICRO-FOLIE ROCHEFORT-SUR-LOIRE",
+     "MICRO-FOLIE SEGRÉ EN ANJOU BLEU",
+     "château-musée de Saumur",
+     "musée Jean Lurcat et de la tapisserie contemporaine",
+     "musée Joseph Denais",
+     "musée Jules-Desbois",
+     "musée Pincé",
+     "musée d'art et d'histoire",
+     "musée d'art et d'histoire",
+     "musée d'art moderne de Fontevraud - collection Martine et Léon Cligman",
+     "musée de l'ardoise",
+     "musée de la vigne et du vin d'Anjou",
+     "musée des beaux-arts et galerie David-d'Angers",
+     "musée du textile",
+     "muséum des sciences naturelles"
+    ],
+    "patrimoine": [
+     "ANGERS",
+     "ANGERS",
+     "AUBIGNE SUR LAYON",
+     "BAUGE EN ANJOU",
+     "BEAUPREAU EN MAUGES",
+     "BEHUARD",
+     "BLAISON ST SULPICE",
+     "BOUCHEMAINE",
+     "CHOLET",
+     "CORNILLE LES CAVES",
+     "DENEE",
+     "FONTEVRAUD L ABBAYE",
+     "GENNES VAL DE LOIRE",
+     "GENNES VAL DE LOIRE",
+     "GENNES VAL DE LOIRE",
+     "INGRANDES LE FRESNE SUR LOIRE",
+     "JARZE VILLAGES",
+     "JARZE VILLAGES",
+     "LE COUDRAY MACOUARD",
+     "LE PUY NOTRE DAME",
+     "MAUGES SUR LOIRE",
+     "MONTREUIL BELLAY",
+     "MONTSOREAU",
+     "OMBREE D ANJOU",
+     "SAUMUR",
+     "SAUMUR",
+     "SAVENNIERES",
+     "SEVREMOINE",
+     "SEVREMOINE",
+     "THORIGNE D ANJOU",
+     "TURQUANT"
+    ],
+    "festivals": []
    }
   },
   {
@@ -714,6 +2570,41 @@
     "musees": 22,
     "patrimoine": 6,
     "festivals": 96
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE AGNEAUX",
+     "ferme-musée du Cotentin",
+     "musée Barbey d'Aurevilly",
+     "musée Christian Dior",
+     "musée Emmanuel Liais",
+     "musée Quesnel-Morinière",
+     "musée Richard Anacréon",
+     "musée Thomas Henry",
+     "musée d'Art et d'Histoire de Granville",
+     "musée de l'abbaye",
+     "musée de la Libération",
+     "musée de la poêlerie",
+     "musée des beaux-arts",
+     "musée du Granit",
+     "musée du Poiré",
+     "musée du bocage normand, ferme du bois Jugan",
+     "musée du château",
+     "musée du vieux château",
+     "musée maritime de l'île Tatihou",
+     "musée municipal",
+     "musée municipal de l'Avranchin",
+     "musée régional du cidre et du calvados"
+    ],
+    "patrimoine": [
+     "AVRANCHES",
+     "COUTANCES",
+     "GRANVILLE",
+     "GRANVILLE",
+     "JULLOUVILLE",
+     "VILLEDIEU LES POELES ROUFFIGNY"
+    ],
+    "festivals": []
    }
   },
   {
@@ -728,6 +2619,40 @@
     "musees": 15,
     "patrimoine": 12,
     "festivals": 79
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE CHALONS-EN-CHAMPAGNE",
+     "MICRO-FOLIE FAMILLES RURALES DORMANS",
+     "MICRO-FOLIE MOURMELON-LE-GRAND",
+     "MICRO-FOLIE SAINTE-MENEHOULD",
+     "MICRO-FOLIE VITRY-LE-FRANÇOIS",
+     "musée Garinet",
+     "musée Saint-Rémi",
+     "musée de l'Argonne Viard-Morel",
+     "musée de l'ancien collège des jésuites",
+     "musée des beaux-arts de Reims",
+     "musée du cloître de Notre-Dame-en-Vaux",
+     "musée municipal",
+     "musée municipal",
+     "musée-hôtel Le Vergeur – maison Hugues Krafft",
+     "écomusée de la montagne de Reims"
+    ],
+    "patrimoine": [
+     "AY CHAMPAGNE",
+     "CHALONS EN CHAMPAGNE",
+     "CHALONS SUR VESLE",
+     "CHENAY",
+     "CORMICY",
+     "EPERNAY",
+     "HAUTVILLERS",
+     "REIMS",
+     "REIMS",
+     "SEZANNE",
+     "STE MENEHOULD",
+     "TRIGNY"
+    ],
+    "festivals": []
    }
   },
   {
@@ -742,6 +2667,32 @@
     "musees": 10,
     "patrimoine": 9,
     "festivals": 16
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE LA CONCIERGERIE",
+     "MICRO-FOLIE NOGENT",
+     "MICRO-FOLIE SAINT-DIZIER",
+     "maison des Lumières Denis Diderot",
+     "musée d'art et d'histoire",
+     "musée de l'affiche",
+     "musée de la coutellerie",
+     "musée des beaux-arts et d'archéologie",
+     "musée municipal",
+     "musée municipal"
+    ],
+    "patrimoine": [
+     "ARC EN BARROIS",
+     "BOURMONT ENTRE MEUSE ET MOUZON",
+     "CHATEAUVILLAIN",
+     "CHAUMONT",
+     "JOINVILLE",
+     "LANGRES",
+     "LANGRES",
+     "LE MONTSAUGEONNAIS",
+     "VIGNORY"
+    ],
+    "festivals": []
    }
   },
   {
@@ -756,6 +2707,37 @@
     "musees": 10,
     "patrimoine": 14,
     "festivals": 47
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE LAVAL AGGLOMERATION",
+     "musée Robert Tatin",
+     "musée archéologique départemental",
+     "musée d'art et d'archéologie",
+     "musée de l'ardoise",
+     "musée des sciences",
+     "musée des tisserands mayennais",
+     "musée du château",
+     "musée du vieux château",
+     "musée municipal"
+    ],
+    "patrimoine": [
+     "CHAILLAND",
+     "CHATEAU GONTIER SUR MAYENNE",
+     "CHATEAU GONTIER SUR MAYENNE",
+     "CRAON",
+     "ERNEE",
+     "JUBLAINS",
+     "LASSAY LES CHATEAUX",
+     "LAVAL",
+     "PARNE SUR ROC",
+     "SAULGES",
+     "ST DENIS D ANJOU",
+     "ST PIERRE DES NIDS",
+     "ST PIERRE SUR ERVE",
+     "STE SUZANNE ET CHAMMES"
+    ],
+    "festivals": []
    }
   },
   {
@@ -770,6 +2752,36 @@
     "musees": 19,
     "patrimoine": 4,
     "festivals": 64
+   },
+   "names": {
+    "musees": [
+     "Féru des sciences",
+     "MICRO-FOLIE BACCARAT",
+     "MICRO-FOLIE BASSIN DE PONT-A-MOUSSON",
+     "MICRO-FOLIE EST MUSSIPONTAIN & NORD TOULOIS",
+     "MICRO-FOLIE GRAND LONGWY",
+     "MICRO-FOLIE JARNY",
+     "MICRO-FOLIE L'@RTELIER MALIN",
+     "MICRO-FOLIE LE MODULOR - VAL-DE-BRIEY",
+     "MICRO-FOLIE VANDOEUVRE-LÈS-NANCY",
+     "château de Montaigu",
+     "musée \"Au fil du papier\"",
+     "musée Les sources d'Hercule",
+     "musée d'art et d'histoire",
+     "musée de l'Ecole de Nancy",
+     "musée des beaux-arts",
+     "musée du château",
+     "musée historique lorrain",
+     "musée municipal des émaux et faïence",
+     "muséum-aquarium de Nancy"
+    ],
+    "patrimoine": [
+     "LUNEVILLE",
+     "NANCY",
+     "NANCY",
+     "PONT A MOUSSON"
+    ],
+    "festivals": []
    }
   },
   {
@@ -784,6 +2796,30 @@
     "musees": 13,
     "patrimoine": 4,
     "festivals": 22
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE CC PORTES DE MEUSE",
+     "MICRO-FOLIE COPARY",
+     "MICRO-FOLIE GRAND VERDUN",
+     "MICRO-FOLIE SAINT-MIHIEL",
+     "musée Jeanne d'Arc",
+     "musée Jules Bastien-Lepage - musée de la fortification",
+     "musée barrois",
+     "musée d'Argonne",
+     "musée d'art sacré de la Meuse",
+     "musée de la Princerie",
+     "musée de la bière et du pays de Stenay",
+     "musée de la céramique et de l'ivoire",
+     "musée départemental Raymond Poincaré"
+    ],
+    "patrimoine": [
+     "BAR LE DUC",
+     "COMMERCY",
+     "ST MIHIEL",
+     "VERDUN"
+    ],
+    "festivals": []
    }
   },
   {
@@ -798,6 +2834,44 @@
     "musees": 17,
     "patrimoine": 14,
     "festivals": 127
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE GALERIE DU CLOÎTRE - SAINTE-ANNE-D'AURAY",
+     "MICRO-FOLIE LANGUIDIC",
+     "MICRO-FOLIE PLOUHINEC SUD MORBIHAN",
+     "MICRO-FOLIE PLOËRMEL",
+     "MICRO-FOLIE PLUMELIAU-BIEUZY",
+     "MICRO-FOLIE SAINT-PIERRE QUIBERON",
+     "Musée National de La Marine",
+     "musée d'histoire et d'archéologie",
+     "musée de la Compagnie des Indes",
+     "musée de la carte postale",
+     "musée de la résistance bretonne",
+     "musée de préhistoire Miln-le-Rouzic",
+     "musée des beaux-arts",
+     "musée du Faouët",
+     "écomusée de Saint-Degan",
+     "écomusée de l'île de Groix",
+     "écomusée industriel des forges"
+    ],
+    "patrimoine": [
+     "AURAY",
+     "CARNAC",
+     "GUEMENE SUR SCORFF",
+     "HENNEBONT",
+     "JOSSELIN",
+     "LA ROCHE BERNARD",
+     "MALANSAC",
+     "MALESTROIT",
+     "PEILLAC",
+     "PONT SCORFF",
+     "PONTIVY",
+     "PORT LOUIS",
+     "ROCHEFORT EN TERRE",
+     "VANNES"
+    ],
+    "festivals": []
    }
   },
   {
@@ -812,6 +2886,43 @@
     "musees": 25,
     "patrimoine": 5,
     "festivals": 46
+   },
+   "names": {
+    "musees": [
+     "Centre Pompidou de Metz",
+     "Jardin D'hiver, Musée de La Faïence",
+     "MICRO-FOLIE BEHREN-LÈS-FORBACH",
+     "MICRO-FOLIE BITCHE",
+     "MICRO-FOLIE CULTURE ET SPORT",
+     "MICRO-FOLIE FAMILLES RURALES MOSELLE",
+     "MICRO-FOLIE GRAVELOTTE - MUSEE DE LA GUERRE DE 1870 ET DE L'ANNEXION",
+     "MICRO-FOLIE MAISON ROBERT SCHUMAN - SCY-CHAZELLES",
+     "MICRO-FOLIE METZ",
+     "MICRO-FOLIE MOSELLE (NILVANGE)",
+     "MICRO-FOLIE MUSEE GEORGES DE LA TOUR - VIC-SUR-SEILLE",
+     "MICRO-FOLIE TRANSFRONTALIERE DU TERRITOIRE DE FORBACH",
+     "MICRO-FOLIE UCKANGE",
+     "MICRO-FOLIE URHAJ GRAND EST",
+     "maison du verre et du cristal",
+     "musée de la Tour-aux-Puces",
+     "musée de la faïence et des techniques faïencières",
+     "musée de la guerre de 1870",
+     "musée de la mine - carreau Wendel",
+     "musée des mines de fer de Lorraine",
+     "musée du pays de Sarrebourg",
+     "musée du sel",
+     "musée départemental Georges de la Tour",
+     "musée militaire et Erckmann-Chatrian",
+     "musées de la Cour d'or"
+    ],
+    "patrimoine": [
+     "METZ",
+     "MONTIGNY LES METZ",
+     "PHALSBOURG",
+     "SCY CHAZELLES",
+     "VIC SUR SEILLE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -826,6 +2937,39 @@
     "musees": 14,
     "patrimoine": 8,
     "festivals": 50
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE BAZOIS LOIRE MORVAN",
+     "MICRO-FOLIE LA MACHINE",
+     "MICRO-FOLIE NEVERS",
+     "musée Auguste Grasset",
+     "musée Ernest Guedon",
+     "musée archéologique de la porte du Croux",
+     "musée d'art et d'histoire Romain Rolland",
+     "musée de la Loire",
+     "musée de la faïence Frédéric Blandin",
+     "musée de la mine",
+     "musée du Septennat",
+     "musée du costume",
+     "musée du grès",
+     "musée municipal"
+    ],
+    "patrimoine": [
+     "ARQUIAN",
+     "BITRY",
+     "BOUHY",
+     "CLAMECY",
+     "COSNE COURS SUR LOIRE",
+     "DAMPIERRE SOUS BOUHY",
+     "DECIZE",
+     "DONZY",
+     "LA CHARITE SUR LOIRE",
+     "NEVERS",
+     "ST AMAND EN PUISAYE",
+     "ST VERAIN"
+    ],
+    "festivals": []
    }
   },
   {
@@ -840,6 +2984,71 @@
     "musees": 47,
     "patrimoine": 11,
     "festivals": 142
+   },
+   "names": {
+    "musees": [
+     "La Piscine - musée d'art et d'industrie André Diligent de Roubaix",
+     "LaM - Lille Métropole Musée d'art moderne, d'art contemporain et d'art brut",
+     "MICRO-FOLIE ARLEUX",
+     "MICRO-FOLIE BAILLEUL",
+     "MICRO-FOLIE DENAIN",
+     "MICRO-FOLIE FOURMIES",
+     "MICRO-FOLIE FRESNES-SUR-ESCAUT",
+     "MICRO-FOLIE GRANDE-SYNTHE",
+     "MICRO-FOLIE HEM",
+     "MICRO-FOLIE LILLE",
+     "MICRO-FOLIE LOMME",
+     "MICRO-FOLIE MAUBEUGE",
+     "MICRO-FOLIE PÉRONNE-EN-MÉLANTOIS",
+     "MICRO-FOLIE RAIMBEAUCOURT",
+     "MICRO-FOLIE RONCQ",
+     "MICRO-FOLIE VALENCIENNES",
+     "Muba Eugène Leroy Tourcoing / musée des beaux-arts Eugène Leroy de Tourcoing",
+     "MusVerre",
+     "centre historique minier, musée de la mine, centre d'archives, centre de culture scientifique de l'énergie",
+     "forum antique de Bavay",
+     "musée Benoît de Puydt",
+     "musée Henri Boez",
+     "musée Henri Matisse",
+     "musée Théophile Jouglet",
+     "musée d'archéologie et d'histoire locale",
+     "musée d'art contemporain",
+     "musée d'histoire et d'archéologie",
+     "musée d'histoire naturelle et de géologie",
+     "musée de Flandre",
+     "musée de l'Ostrevant",
+     "musée de l'hospice Comtesse",
+     "musée de la Bataille de Fromelles",
+     "musée de la Chartreuse",
+     "musée de la Tour abbatiale",
+     "musée des beaux-arts",
+     "musée des beaux-arts",
+     "musée des beaux-arts",
+     "musée des dentelles et broderies",
+     "musée diocésain d'art sacré",
+     "musée du Mont-de-Piété",
+     "musée du dessin et de l'estampe originale",
+     "musée maritime et portuaire",
+     "musée municipal",
+     "musée municipal",
+     "musée municipal",
+     "musée municipal d'histoire locale",
+     "écomusée de la région"
+    ],
+    "patrimoine": [
+     "BEAUCAMPS LIGNY",
+     "COMINES",
+     "FOURNES EN WEPPES",
+     "HAMEL",
+     "HONDSCHOOTE",
+     "LAMBERSART",
+     "LIESSIES",
+     "LILLE",
+     "ROUBAIX",
+     "TOURCOING",
+     "VALENCIENNES"
+    ],
+    "festivals": []
    }
   },
   {
@@ -854,6 +3063,37 @@
     "musees": 18,
     "patrimoine": 6,
     "festivals": 179
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE BEAUVAIS",
+     "MICRO-FOLIE CREIL",
+     "MUDO - musée de l'Oise",
+     "musée Antoine Vivenel",
+     "musée Calvin",
+     "musée Condé",
+     "musée Gallé-Juillet",
+     "musée Pillon",
+     "musée archéologique de l'Oise",
+     "musée d'art et d'archéologie",
+     "musée de la céramique architecturale et industrielle",
+     "musée de la figurine historique",
+     "musée de la nacre et de la tabletterie",
+     "musée de la voiture et du tourisme (annexe du musée national du château de Compiègne)",
+     "musée de la vénerie",
+     "musée du Noyonnais",
+     "musée du Valois et de l'archerie",
+     "musée national du château de Compiègne"
+    ],
+    "patrimoine": [
+     "COMPIEGNE",
+     "GERBEROY",
+     "MORIENVAL",
+     "NOYON",
+     "SENLIS",
+     "ST MARTIN AUX BOIS"
+    ],
+    "festivals": []
    }
   },
   {
@@ -868,6 +3108,37 @@
     "musees": 10,
     "patrimoine": 13,
     "festivals": 76
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE ARGENTAN",
+     "MICRO-FOLIE DOMFRONT-EN-POIRAIE",
+     "MICRO-FOLIE FLERS",
+     "musée des beaux-arts et de la dentelle",
+     "musée du château de Flers",
+     "musée départemental d'art sacré",
+     "musée départemental des arts et traditions populaires du Perche",
+     "musée municipal - musée du jouet",
+     "musée municipal d'archéologie",
+     "musée percheron"
+    ],
+    "patrimoine": [
+     "ALENCON",
+     "BAGNOLES DE L ORNE NORMANDIE",
+     "BELFORET EN PERCHE",
+     "BELFORET EN PERCHE",
+     "BELLEME",
+     "DOMFRONT EN POIRAIE",
+     "ECOUCHE LES VALLEES",
+     "ESSAY",
+     "LONGNY LES VILLAGES",
+     "MORTAGNE AU PERCHE",
+     "PERCHE EN NOCE",
+     "REMALARD EN PERCHE",
+     "SAP EN AUGE",
+     "ST CENERI LE GEREI"
+    ],
+    "festivals": []
    }
   },
   {
@@ -882,6 +3153,55 @@
     "musees": 25,
     "patrimoine": 17,
     "festivals": 72
+   },
+   "names": {
+    "musees": [
+     "Louvre-Lens",
+     "MICRO-FOLIE BOULOGNE-SUR-MER",
+     "MICRO-FOLIE DES 7 VALLEES",
+     "MICRO-FOLIE GRENAY",
+     "MICRO-FOLIE LENS",
+     "MICRO-FOLIE MERICOURT",
+     "MICRO-FOLIE MONTIGNY-EN-GOHELLE",
+     "MICRO-FOLIE SAINT-OMER",
+     "MICRO-FOLIE SUD-ARTOIS",
+     "cité internationale de la dentelle et de la mode",
+     "musée Cazin",
+     "musée Henri Dupuis",
+     "musée Quentovic",
+     "musée d'Opale Sud",
+     "musée d'art et d'histoire Roger Rodière",
+     "musée d'ethnologie régionale",
+     "musée d'histoire et d'archéologie",
+     "musée de Boulogne-sur-Mer",
+     "musée de l'hôtel Sandelin",
+     "musée de la céramique",
+     "musée des beaux-arts",
+     "musée des beaux-arts et de la dentelle",
+     "musée du Touquet Paris Plage",
+     "musée municipal",
+     "muséum d'histoire naturelle"
+    ],
+    "patrimoine": [
+     "AIRE SUR LA LYS",
+     "ARRAS",
+     "AUXI LE CHATEAU",
+     "BETHUNE",
+     "BOULOGNE SUR MER",
+     "CALAIS",
+     "CARVIN",
+     "CONDETTE",
+     "CONDETTE",
+     "ETAPLES",
+     "FREVENT",
+     "GUARBECQUE",
+     "LABEUVRIERE",
+     "LE TOUQUET PARIS PLAGE",
+     "ST OMER",
+     "VAUDRICOURT",
+     "WIMEREUX"
+    ],
+    "festivals": []
    }
   },
   {
@@ -896,6 +3216,52 @@
     "musees": 20,
     "patrimoine": 20,
     "festivals": 104
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE CHAVANON COMBRAILLES ET VOLCANS",
+     "MICRO-FOLIE COURPIÈRE",
+     "MICRO-FOLIE ISSOIRE",
+     "MICRO-FOLIE LE COLIBRI",
+     "MICRO-FOLIE PAYS DE SAINT-ELOY",
+     "MICRO-FOLIE THIERS",
+     "MICRO-FOLIE UNIVERSITÉ CLERMONT AUVERGNE",
+     "musée Bargoin",
+     "musée Francisque Mandet",
+     "musée Marcel Sahut",
+     "musée d'art Roger-Quillot",
+     "musée de céramique gallo-romaine",
+     "musée de la dentelle",
+     "musée des pénitents blancs",
+     "musée lapidaire",
+     "musée municipal",
+     "musée municipal de la coutellerie",
+     "musée paléontologique",
+     "musée régional d'Auvergne",
+     "muséum d'histoire naturelle Lecoq"
+    ],
+    "patrimoine": [
+     "AMBERT",
+     "ARTONNE",
+     "BESSE ET ST ANASTAISE",
+     "BILLOM",
+     "CHAMPEIX",
+     "CHATEL GUYON",
+     "CHATELDON",
+     "CLERMONT FERRAND",
+     "LA SAUVETAT",
+     "LE BROC",
+     "MONTPEYROUX",
+     "MOZAC",
+     "PONT DU CHATEAU",
+     "RIOM",
+     "ROYAT",
+     "ST PIERRE LA BOURLHONNE",
+     "ST SATURNIN",
+     "THIERS",
+     "VIC LE COMTE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -910,6 +3276,47 @@
     "musees": 17,
     "patrimoine": 17,
     "festivals": 82
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE CAMBO-LES-BAINS",
+     "MICRO-FOLIE LACQ-ORTHEZ",
+     "MICRO-FOLIE MONTARDON",
+     "MICRO-FOLIE PAYS DE NAY",
+     "MICRO-FOLIE SAINT-JEAN-DE-LUZ",
+     "MICRO-FOLIE SCIENCE-ODYSSEE PAU",
+     "musée Bernadotte",
+     "musée Bonnat - Helleu, musée des beaux-arts de Bayonne",
+     "musée Edmond Rostand",
+     "musée basque",
+     "musée béarnais",
+     "musée des beaux-arts",
+     "musée gallo-romain",
+     "musée municipal",
+     "musée municipal",
+     "musée national du château de Pau",
+     "muséum d'histoire naturelle"
+    ],
+    "patrimoine": [
+     "BAYONNE",
+     "BIARRITZ",
+     "BIDACHE",
+     "BOUCAU",
+     "CIBOURE",
+     "ESPELETTE",
+     "GUETHARY",
+     "LA BASTIDE CLAIRENCE",
+     "NAVARRENX",
+     "OLORON STE MARIE",
+     "ORTHEZ",
+     "PAU",
+     "PAU",
+     "SALIES DE BEARN",
+     "SAUVETERRE DE BEARN",
+     "ST JEAN DE LUZ",
+     "ST JEAN PIED DE PORT"
+    ],
+    "festivals": []
    }
   },
   {
@@ -924,6 +3331,29 @@
     "musees": 8,
     "patrimoine": 8,
     "festivals": 38
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE TARBES",
+     "musée Massey",
+     "musée Salies",
+     "musée de la vie quotidienne dans les Pyrénées",
+     "musée municipal",
+     "musée pyrénéen",
+     "musée-château Gaston Phébus",
+     "muséum d'histoire naturelle"
+    ],
+    "patrimoine": [
+     "ARREAU",
+     "BAGNERES DE BIGORRE",
+     "BAGNERES DE BIGORRE",
+     "CAUTERETS",
+     "GALAN",
+     "GAVARNIE GEDRE",
+     "LOURDES",
+     "ST PE DE BIGORRE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -938,6 +3368,38 @@
     "musees": 14,
     "patrimoine": 11,
     "festivals": 95
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE AMELIE-LES-BAINS",
+     "MICRO-FOLIE LE BOULOU",
+     "MICRO-FOLIE PERPIGNAN",
+     "MICRO-FOLIE PORT-VENDRES",
+     "musée Casa Pairal",
+     "musée Hyacinthe Rigaud",
+     "musée Joseph Puig",
+     "musée archéologique de Ruscino",
+     "musée d'archéologie sous-marine",
+     "musée d'art moderne",
+     "musée de Cerdagne",
+     "musée de préhistoire",
+     "musée d’art moderne de Collioure",
+     "muséum d'histoire naturelle"
+    ],
+    "patrimoine": [
+     "ARLES SUR TECH",
+     "BAIXAS",
+     "BANYULS SUR MER",
+     "COLLIOURE",
+     "ELNE",
+     "ILLE SUR TET",
+     "LES ANGLES",
+     "MOSSET",
+     "PERPIGNAN",
+     "PORT VENDRES",
+     "PRATS DE MOLLO LA PRESTE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -952,6 +3414,49 @@
     "musees": 31,
     "patrimoine": 5,
     "festivals": 101
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE BISCHWILLER",
+     "MICRO-FOLIE MARCKOLSHEIM",
+     "MICRO-FOLIE MOBILE WISSEMBOURG",
+     "MICRO-FOLIE OBERNAI",
+     "MICRO-FOLIE RIED MARCKOLSHEIM MOBILE",
+     "MICRO-FOLIE VALLEE DE VILLE",
+     "MICRO-FOLIE WISSEMBOURG",
+     "cabinet des estampes et des dessins",
+     "maison de l'archéologie des Vosges du Nord",
+     "musée Lalique",
+     "musée Oberlin",
+     "musée Tomi Ungerer",
+     "musée Westercamp",
+     "musée alsacien",
+     "musée alsacien",
+     "musée archéologique",
+     "musée d'art moderne et contemporain de Strasbourg",
+     "musée de l'image populaire",
+     "musée de l'Œuvre Notre-Dame",
+     "musée de la Folie Marco",
+     "musée de la bataille du 6 août 1870",
+     "musée de la chartreuse",
+     "musée de la poterie",
+     "musée des arts décoratifs",
+     "musée des beaux-arts",
+     "musée du château des Rohan",
+     "musée du pays de Hanau - histoire et vies d'un territoire",
+     "musée historique",
+     "musée historique",
+     "musée historique et industriel - musée du fer",
+     "musée zoologique de l'université Louis Pasteur et de la ville de Strasbourg"
+    ],
+    "patrimoine": [
+     "BOUXWILLER",
+     "REICHSHOFFEN",
+     "SARRE UNION",
+     "STRASBOURG",
+     "WANGEN"
+    ],
+    "festivals": []
    }
   },
   {
@@ -966,6 +3471,48 @@
     "musees": 31,
     "patrimoine": 4,
     "festivals": 74
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE ENSISHEIM",
+     "MICRO-FOLIE LA FILATURE MULHOUSE",
+     "MICRO-FOLIE MOBILE LA FILATURE",
+     "MICRO-FOLIE THANN",
+     "MICRO-FOLIE VAL D'ARGENT",
+     "MICRO-FOLIE VALLEE DE SAINT-AMARIN",
+     "Musée du Vignoble Et des Vins D'alsace",
+     "musée Bartholdi",
+     "musée Electropolis",
+     "musée Théodore Deck et des pays du Florival",
+     "musée Vauban",
+     "musée d'Unterlinden",
+     "musée de l'impression sur étoffes",
+     "musée de la porte de Thann",
+     "musée de la société d'histoire \"les amis de Thann\"",
+     "musée des beaux-arts",
+     "musée du Dolder",
+     "musée du papier peint",
+     "musée du sapeur-pompier",
+     "musée du vignoble et des vins d'Alsace",
+     "musée français du chemin de fer",
+     "musée gallo-romain",
+     "musée historique",
+     "musée historique",
+     "musée historique et militaire",
+     "musée minéralogique de la société industrielle de Mulhouse",
+     "musée national de l'automobile - collection Schlumpf",
+     "musée paysan",
+     "musée sundgauvien",
+     "muséum d'histoire naturelle et d'ethnographie",
+     "écomusée d'Alsace"
+    ],
+    "patrimoine": [
+     "COLMAR",
+     "MULHOUSE",
+     "MULHOUSE",
+     "NEUF BRISACH"
+    ],
+    "festivals": []
    }
   },
   {
@@ -980,6 +3527,65 @@
     "musees": 37,
     "patrimoine": 15,
     "festivals": 185
+   },
+   "names": {
+    "musees": [
+     "Lugdunum, musée et théâtres romains",
+     "MICRO-FOLIE BRINDAS",
+     "MICRO-FOLIE CENTRES SOCIAUX HALIMI-LÉVÊQUE LYON",
+     "MICRO-FOLIE ECULLY",
+     "MICRO-FOLIE FEYZIN",
+     "MICRO-FOLIE GIVORS",
+     "MICRO-FOLIE LE SINGULIERS",
+     "MICRO-FOLIE LIMONEST",
+     "MICRO-FOLIE MIONS",
+     "MICRO-FOLIE OUEST RHODANIEN - LAMURE-SUR-AZERGUES",
+     "MICRO-FOLIE OUEST RHODANIEN - TARARE",
+     "MICRO-FOLIE OUEST RHODANIEN - THIZY-LES-BOURGS",
+     "MICRO-FOLIE SAINT LAURENT D'AGNY",
+     "MICRO-FOLIE SAÔNE BEAUJOLAIS",
+     "MICRO-FOLIE VAULX-EN-VELIN",
+     "MICRO-FOLIE VILLEURBANNE",
+     "Musée des Confluences",
+     "Musée des Sapeurs-Pompiers de Lyon",
+     "Muséum - Musée des Confluences",
+     "centre d'histoire de la résistance",
+     "musée Barthélemy-Thimonier",
+     "musée Gadagne",
+     "musée Guimet",
+     "musée Henri Malartre",
+     "musée Paul Dini",
+     "musée archéologique",
+     "musée d'art contemporain",
+     "musée de l'imprimerie et de la communication graphique",
+     "musée des Confluences",
+     "musée des arts décoratifs",
+     "musée des beaux-arts",
+     "musée des hospices civils de Lyon",
+     "musée des sapeurs-pompiers de Lyon",
+     "musée folklorique et des traditions populaires",
+     "musée historique des tissus",
+     "muséum d'histoire naturelle",
+     "écomusée du Haut Beaujolais"
+    ],
+    "patrimoine": [
+     "ALBIGNY SUR SAONE",
+     "ANSE",
+     "BELLEVILLE EN BEAUJOLAIS",
+     "LYON",
+     "LYON",
+     "NEUVILLE SUR SAONE",
+     "POMMIERS",
+     "RIVERIE",
+     "SALLES ARBUISSONNAS EN BEAUJOLAIS",
+     "SAVIGNY",
+     "ST SYMPHORIEN D OZON",
+     "ST SYMPHORIEN SUR COISE",
+     "THIZY LES BOURGS",
+     "VILLEFRANCHE SUR SAONE",
+     "VILLEURBANNE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -994,6 +3600,32 @@
     "musees": 9,
     "patrimoine": 10,
     "festivals": 53
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE GALERIE DE LA FILATURE RONCHAMP",
+     "MICRO-FOLIE PAYS D'HERICOURT",
+     "MICRO-FOLIE VESOUL",
+     "musée Baron Martin",
+     "musée de la Tour des échevins",
+     "musée départemental Albert Demard",
+     "musée départemental de la montagne Albert Demard",
+     "musée municipal Georges Garret",
+     "écomusée du pays de la cerise"
+    ],
+    "patrimoine": [
+     "BUCEY LES GY",
+     "CHAMPLITTE",
+     "CHARIEZ",
+     "FAVERNEY",
+     "FONDREMAND",
+     "GRAY",
+     "GY",
+     "MARNAY",
+     "PESMES",
+     "RAY SUR SAONE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1008,6 +3640,50 @@
     "musees": 26,
     "patrimoine": 11,
     "festivals": 116
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE IGUERANDE",
+     "maison du blé et du pain",
+     "musée Greuze - hôtel-Dieu",
+     "musée Guillon du compagnonnage",
+     "musée Nicéphore Niepce",
+     "musée René Davoine",
+     "musée Rolin",
+     "musée Saint-Nazaire",
+     "musée Verger-Tarin",
+     "musée Vivant Denon",
+     "musée bourguignon Perrin de Puycousin",
+     "musée d'art et d'archéologie",
+     "musée de Bibracte",
+     "musée de la mine et des hommes",
+     "musée de la tour du moulin",
+     "musée des ursulines, musée Lamartine",
+     "musée du Prieuré Jean Laronze",
+     "musée du terroir",
+     "musée départemental de préhistoire",
+     "musée eucharistique du Hiéron",
+     "musée lapidaire Saint-Nicolas",
+     "musée municipal",
+     "musée municipal",
+     "muséum d'histoire naturelle",
+     "écomusée de la Bresse bourguignonne",
+     "écomusée de la communauté Le Creusot - Montceau-les-Mines"
+    ],
+    "patrimoine": [
+     "AUTUN",
+     "CHAGNY",
+     "CHALON SUR SAONE",
+     "CHASSELAS",
+     "CLUNY",
+     "CUISEAUX",
+     "FONTAINES",
+     "LE BREUIL",
+     "MACON",
+     "ST GENGOUX LE NATIONAL",
+     "TOURNUS"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1022,6 +3698,43 @@
     "musees": 14,
     "patrimoine": 16,
     "festivals": 70
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE ALLONNES",
+     "MICRO-FOLIE CONNERRÉ",
+     "MICRO-FOLIE FRESNAY-SUR-SARTHE",
+     "MICRO-FOLIE LE LUDE",
+     "MICRO-FOLIE MAYET",
+     "MICRO-FOLIE SABLÉ-SUR-SARTHE",
+     "MICRO-FOLIE SAINT-MARCEAU",
+     "MICRO-FOLIE ÉCOMMOY",
+     "bibliothèque-musée",
+     "musée de Tessé",
+     "musée de la reine Bérengère",
+     "musée espace faïence de Malicorne",
+     "musée municipal",
+     "musée vert Véron-de-Forbonnais"
+    ],
+    "patrimoine": [
+     "ALLONNES",
+     "ASNIERES SUR VEGRE",
+     "ASSE LE BOISNE",
+     "FRESNAY SUR SARTHE",
+     "LA FERTE BERNARD",
+     "LA FLECHE",
+     "LE LUDE",
+     "LE MANS",
+     "LUCHE PRINGE",
+     "MAMERS",
+     "MONTMIRAIL",
+     "MOULINS LE CARBONNEL",
+     "PARCE SUR SARTHE",
+     "SABLE SUR SARTHE",
+     "ST CALAIS",
+     "ST LEONARD DES BOIS"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1036,6 +3749,42 @@
     "musees": 21,
     "patrimoine": 8,
     "festivals": 80
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE AGORA GUIERS",
+     "MICRO-FOLIE ANTROPIA AIME-LA-PLAGNE",
+     "MICRO-FOLIE ARLYSÈRE",
+     "MICRO-FOLIE BOURG SAINT MAURICE LES ARCS",
+     "MICRO-FOLIE CHAMBÉRY",
+     "MICRO-FOLIE CHARTREUSE DAUPHINÉ",
+     "MICRO-FOLIE CHÂLÉE CHAUTAGNARDE",
+     "MICRO-FOLIE COMPAGNIE AUTOCHTONE",
+     "MICRO-FOLIE COURCHEVEL",
+     "MICRO-FOLIE VALLOIRE",
+     "MICRO-FOLIE VALLÉES D'AIGUEBLANCHE",
+     "musée Savoisien",
+     "musée archéologique",
+     "musée archéologique et minéralogique Pierre Borrione",
+     "musée de l'académie de la Val d'Isère",
+     "musée des Charmettes",
+     "musée des beaux-arts",
+     "musée du costume",
+     "musée du docteur Faure",
+     "musée municipal d'Albertville-Conflans",
+     "muséum d'histoire naturelle"
+    ],
+    "patrimoine": [
+     "AIX LES BAINS",
+     "CHAMBERY",
+     "CHAMBERY",
+     "CHANAZ",
+     "COURCHEVEL",
+     "PLANAY",
+     "PRALOGNAN LA VANOISE",
+     "ST JEAN DE MAURIENNE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1050,6 +3799,34 @@
     "musees": 15,
     "patrimoine": 6,
     "festivals": 90
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE ANNEMASSE",
+     "MICRO-FOLIE FAVERGES- SEYTHENEX",
+     "MICRO-FOLIE FILLINGES",
+     "MICRO-FOLIE HAUT-CHABLAIS",
+     "MICRO-FOLIE LA BALME DE SILLINGY",
+     "MICRO-FOLIE MARNAZ VALLÉE DE L'ARVE",
+     "MICRO-FOLIE MEGEVE",
+     "MICRO-FOLIE PAYS DE CRUSEILLES",
+     "Musée du Chablais",
+     "musée Léon Marès",
+     "musée de Rumilly et de l'Albanais",
+     "musée de Thonon-les-Bains",
+     "musée des Vallées de Thônes",
+     "musée du Mont-Blanc",
+     "musée-château"
+    ],
+    "patrimoine": [
+     "ANNECY",
+     "BONNE",
+     "CLERMONT",
+     "FETERNES",
+     "PRESILLY",
+     "YVOIRE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1064,6 +3841,80 @@
     "musees": 65,
     "patrimoine": 2,
     "festivals": 297
+   },
+   "names": {
+    "musees": [
+     "Cité de l'architecture et du patrimoine (CAPA) - Centre d'archives d'architecture contemporaine",
+     "Crypte Archéologique du Parvis Notre-Dame",
+     "Etablissement Public de La Porte Dorée - Aquarium Tropical",
+     "Etablissement Public du Musée des Arts Asiatiques Guimet",
+     "Les Catacombes",
+     "MICRO-FOLIE  ESPOIR CFDJ",
+     "MICRO-FOLIE PARIS 15E",
+     "MICRO-FOLIE PARIS 18E",
+     "MICRO-FOLIE PARIS 20E",
+     "MICRO-FOLIE PARIS 5E",
+     "MICRO-FOLIE SORBONNE NOUVELLE",
+     "Musée Carnavalet-Histoire de Paris",
+     "Musée D'art Moderne de La Ville de Paris",
+     "Musée du Louvre",
+     "Musée du Luxembourg",
+     "Muséum National d'Histoire Naturelle, Galerie D'anatomie Comparée Et de Paléontologie",
+     "Palais Galliera, musée de la mode et de la ville de Paris",
+     "Petit Palais, musée des beaux-arts de la ville de Paris",
+     "maison de Balzac",
+     "maison de Victor Hugo",
+     "musée Bourdelle",
+     "musée Carnavalet - histoire de Paris",
+     "musée Cernuschi, musée des arts de l'Asie de la ville de Paris",
+     "musée Cognacq-Jay, musée du XVIIIe siècle de la ville de Paris",
+     "musée Eugène Delacroix",
+     "musée Gustave Moreau",
+     "musée Hébert",
+     "musée Jean-Jacques Henner",
+     "musée Nissim de Camondo (Union centrale des arts décoratifs)",
+     "musée Picasso",
+     "musée Rodin",
+     "musée Yves Saint Laurent Paris",
+     "musée Zadkine",
+     "musée d'Ennery",
+     "musée d'Orsay",
+     "musée d'art et d'histoire de l'hôpital Sainte-Anne",
+     "musée d'art et d'histoire du judaïsme",
+     "musée d'art moderne de la ville de Paris",
+     "musée de Montmartre",
+     "musée de l'Ecole nationale supérieure des beaux-arts",
+     "musée de l'Orangerie des Tuileries",
+     "musée de l'armée",
+     "musée de l'assistance publique - hôpitaux de Paris",
+     "musée de l'institut du monde arabe",
+     "musée de la Franc-Maçonnerie",
+     "musée de la Grande Loge de France",
+     "musée de la Libération de Paris - musée du général Leclerc - musée Jean Moulin",
+     "musée de la chasse et de la nature",
+     "musée de la musique",
+     "musée de la poste",
+     "musée de la vie romantique",
+     "musée des Plans-reliefs",
+     "musée des arts asiatiques Guimet",
+     "musée des arts décoratifs - MAD",
+     "musée des arts et métiers",
+     "musée des monnaies et médailles",
+     "musée des monuments français - CAPA",
+     "musée du Moyen Âge - thermes et hôtel de Cluny",
+     "musée du Quai Branly - Jacques Chirac",
+     "musée du service de santé des armées du Val-de-Grâce",
+     "musée national d'art moderne (centre national d'art et de culture Georges Pompidou)",
+     "musée national de l'histoire et des cultures de l'immigration",
+     "musée national de la Légion d'honneur et des ordres de chevalerie",
+     "musée national de la marine",
+     "muséum national d'histoire naturelle"
+    ],
+    "patrimoine": [
+     "PARIS",
+     "PARIS"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1078,6 +3929,77 @@
     "musees": 46,
     "patrimoine": 18,
     "festivals": 72
+   },
+   "names": {
+    "musees": [
+     "Ethnothèque, Musée des Boucles de la Seine Normande",
+     "Les Pêcheries, musée de Fécamp",
+     "MICRO-FOLIE BARENTIN",
+     "MICRO-FOLIE BRETTEVILLE DU GRAND CAUX",
+     "MICRO-FOLIE CAMPAGNE DE CAUX",
+     "MICRO-FOLIE CANY-BARVILLE",
+     "MICRO-FOLIE DIEPPE",
+     "MICRO-FOLIE DUCLAIR",
+     "MICRO-FOLIE FALAISES DU TALOU - SAINT-NICOLAS D'ALIERMONT",
+     "MICRO-FOLIE FALAISES DU TALOU MOBILE",
+     "MICRO-FOLIE HALLE AUX POISSONS - ELBEUF",
+     "MICRO-FOLIE LE TRAIT",
+     "MICRO-FOLIE MONTIVILLIERS",
+     "MICRO-FOLIE PORT-JEROME-SUR-SEINE",
+     "MICRO-FOLIE SAINT-ETIENNE DU ROUVRAY",
+     "MICRO-FOLIE YQUEBEUF",
+     "château-musée",
+     "maison des templiers",
+     "musée Flaubert et d'histoire de la médecine",
+     "musée Le Secq des Tournelles",
+     "musée Louis Philippe",
+     "musée Malraux",
+     "musée Mathon-Durand",
+     "musée Pierre Corneille",
+     "musée Pierre Corneille",
+     "musée Victor Hugo",
+     "musée de l'ancien Havre",
+     "musée de l'armateur",
+     "musée de l'horlogerie",
+     "musée de la céramique",
+     "musée de la marine de Seine",
+     "musée des antiquités de la Seine-Maritime",
+     "musée des beaux-arts",
+     "musée des sapeurs pompiers de France",
+     "musée des traditions et arts normands",
+     "musée du prieuré",
+     "musée du prieuré de Graville",
+     "musée industriel de la corderie Valois",
+     "musée municipal",
+     "musée municipal",
+     "musée municipal",
+     "musée municipal des ivoires",
+     "musée national de l'éducation",
+     "muséum d'histoire naturelle",
+     "muséum d'histoire naturelle",
+     "pavillon Flaubert"
+    ],
+    "patrimoine": [
+     "ARQUES LA BATAILLE",
+     "BOIS HEROULT",
+     "DIEPPE",
+     "ETRETAT",
+     "FECAMP",
+     "FRENEUSE",
+     "GOURNAY EN BRAY",
+     "HARFLEUR",
+     "LE HAVRE",
+     "LE TREPORT",
+     "LILLEBONNE",
+     "MALAUNAY",
+     "MONTIVILLIERS",
+     "ROUEN",
+     "SOTTEVILLE SUR MER",
+     "ST MARTIN LE GAILLARD",
+     "STE MARGUERITE SUR MER",
+     "VEULES LES ROSES"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1092,6 +4014,77 @@
     "musees": 39,
     "patrimoine": 23,
     "festivals": 47
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE AVON",
+     "MICRO-FOLIE CENTRE COMMERCIAL VAL D'EUROPE",
+     "MICRO-FOLIE CESSON VERT SAINT DENIS",
+     "MICRO-FOLIE CHAMPS-SUR-MARNE",
+     "MICRO-FOLIE COMBS-LA-VILLE",
+     "MICRO-FOLIE COS CRPF",
+     "MICRO-FOLIE COULOMMIERS",
+     "MICRO-FOLIE L'OREE DE LA BRIE",
+     "MICRO-FOLIE LIEUSAINT",
+     "MICRO-FOLIE MARNE ET GONDOIRE",
+     "MICRO-FOLIE MELUN VAL DE SEINE",
+     "MICRO-FOLIE MONTEREAU-FAULT-YONNE",
+     "MICRO-FOLIE OZOIR-LA-FERRIERE",
+     "MICRO-FOLIE ROISSY-EN-BRIE",
+     "MICRO-FOLIE SAINT-PIERRE-LES-NEMOURS",
+     "MICRO-FOLIE SAMMERON",
+     "MICRO-FOLIE SAVIGNY-LE-TEMPLE",
+     "MICRO-FOLIE VILLENOY",
+     "château musée de Nemours",
+     "maison natale de Louis Braille",
+     "musée Alfred Bonno",
+     "musée Bossuet",
+     "musée Gatien Bonnet",
+     "musée Henri Chapu",
+     "musée d'art et d'histoire militaire",
+     "musée de Melun",
+     "musée de Provins et du Provinois",
+     "musée de l'école de Barbizon - auberge Ganne",
+     "musée de la Gendarmerie",
+     "musée de la Grande Guerre",
+     "musée de préhistoire d'Île-de-France",
+     "musée des pays de Seine-et-Marne",
+     "musée des transports urbains, interurbains et ruraux",
+     "musée départemental Stéphane Mallarmé",
+     "musée municipal",
+     "musée municipal",
+     "musée municipal des Capucins",
+     "musée national du château de Fontainebleau",
+     "écomusée"
+    ],
+    "patrimoine": [
+     "AVON",
+     "BARBIZON",
+     "BOIS LE ROI",
+     "BOURRON MARLOTTE",
+     "BRAY SUR SEINE",
+     "BRIE COMTE ROBERT",
+     "COUILLY PONT AUX DAMES",
+     "COULOMMIERS",
+     "CRECY LA CHAPELLE",
+     "FONTAINEBLEAU",
+     "JOSSIGNY",
+     "LAGNY SUR MARNE",
+     "LARCHANT",
+     "LE CHATELET EN BRIE",
+     "MAINCY",
+     "MEAUX",
+     "MELUN",
+     "MONTCEAUX LES MEAUX",
+     "MORET LOING ET ORVANNE",
+     "PROVINS",
+     "ROZAY EN BRIE",
+     "SEINE PORT",
+     "THOMERY",
+     "VILLENEUVE LE COMTE",
+     "VOULANGIS"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1106,6 +4099,54 @@
     "musees": 27,
     "patrimoine": 14,
     "festivals": 38
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE AUFFARGIS",
+     "MICRO-FOLIE BOIS D'ARCY",
+     "MICRO-FOLIE CROISSY SUR SEINE",
+     "MICRO-FOLIE DE CHANTELOUP-LES-VIGNES",
+     "MICRO-FOLIE LE VESINET",
+     "MICRO-FOLIE LES MUREAUX",
+     "MICRO-FOLIE LIMAY",
+     "MICRO-FOLIE SAINT QUENTIN-EN-YVELINES",
+     "MICRO-FOLIE SAINT-GERMAIN-EN-LAYE",
+     "collections de la fondation de Coubertin",
+     "maison-musée Maurice Ravel",
+     "musée Lambinet",
+     "musée Rambolitrain",
+     "musée Victor Aubert",
+     "musée Zola-Dreyfus",
+     "musée d'archéologie nationale (des origines à l'an mille) - château de Saint-Germain-en-Laye",
+     "musée d'art et d'histoire",
+     "musée de Port-Royal des Champs",
+     "musée de l'hôtel-Dieu",
+     "musée de la batellerie",
+     "musée de la toile de Jouy",
+     "musée de la ville",
+     "musée du domaine royal de Marly Louveciennes/Marly-le-Roi",
+     "musée du jouet Pierre Pinel",
+     "musée départemental Maurice Denis",
+     "musée municipal Ducastel-Vera de Saint-Germain-en-Laye",
+     "musée national des châteaux de Versailles et de Trianon"
+    ],
+    "patrimoine": [
+     "ANDRESY",
+     "AUBERGENVILLE",
+     "CARRIERES SUR SEINE",
+     "CHEVREUSE",
+     "CROISSY SUR SEINE",
+     "CROISSY SUR SEINE",
+     "LE PECQ",
+     "LE VESINET",
+     "MANTES LA JOLIE",
+     "MONTFORT L AMAURY",
+     "NEAUPHLE LE CHATEAU",
+     "RAMBOUILLET",
+     "ST GERMAIN EN LAYE",
+     "VERSAILLES"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1120,6 +4161,39 @@
     "musees": 13,
     "patrimoine": 13,
     "festivals": 54
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE COULONGES-SUR-L'AUTIZE",
+     "MICRO-FOLIE GRANZAY-GRIPT",
+     "MICRO-FOLIE MELLE",
+     "MICRO-FOLIE SAINT-PARDOUX-SOUTIERS",
+     "MICRO-FOLIE SAINT-VARENTAIS",
+     "MICRO-FOLIE VALLEE DU THOUET",
+     "musée Bernard d'Agesci",
+     "musée d'art et d'histoire Georges Turpin",
+     "musée d'art et d'histoire Henri Barré",
+     "musée d'histoire naturelle",
+     "musée des Tumulus",
+     "musée ethnographique et archéologique du Donjon",
+     "musée municipal"
+    ],
+    "patrimoine": [
+     "AIRVAULT",
+     "ARCAIS",
+     "CELLES SUR BELLE",
+     "CHEF BOUTONNE",
+     "LA MOTHE ST HERAY",
+     "MAULEON",
+     "MELLE",
+     "NIORT",
+     "NIORT",
+     "PARTHENAY",
+     "PLAINE ET VALLEES",
+     "ST LOUP LAMAIRE",
+     "THOUARS"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1134,6 +4208,29 @@
     "musees": 13,
     "patrimoine": 3,
     "festivals": 48
+   },
+   "names": {
+    "musees": [
+     "Le Beffoi - musée Boucher de Perthes - Manessier",
+     "MICRO-FOLIE AMIENS - JARDIN ARCHEOLOGIQUE DE SAINT-ACHEUL",
+     "MICRO-FOLIE AMIENS - L'ODYSSÉE",
+     "MICRO-FOLIE CC PAYS-DU-COQUELICOT",
+     "MICRO-FOLIE DOULLENS",
+     "MICRO-FOLIE RIVERY",
+     "musée Danicourt",
+     "musée Lombart",
+     "musée d'histoire naturelle",
+     "musée de Picardie",
+     "musée de l'hôtel de Berny",
+     "musée départemental de la vie rurale",
+     "musée-historial de la Grande Guerre"
+    ],
+    "patrimoine": [
+     "CONTY",
+     "LE CROTOY",
+     "MERS LES BAINS"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1148,6 +4245,49 @@
     "musees": 18,
     "patrimoine": 18,
     "festivals": 68
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE CENTRE TARN",
+     "MICRO-FOLIE GAILLAC GRAULHET",
+     "MICRO-FOLIE TARN AGOUT",
+     "MICRO-FOLIE Ô COEUR D'OCCITANIE",
+     "archéosite de Montans",
+     "château-musée du Cayla",
+     "musée Charles Portal : art, histoire et, patrimoine du pays cordais",
+     "musée Goya",
+     "musée Jean Jaurès",
+     "musée Raymond Lafage",
+     "musée Toulouse-Lautrec",
+     "musée d'histoire naturelle Philadelphe-Thomas",
+     "musée de l'abbaye Saint-Michel",
+     "musée des beaux-arts",
+     "musée du Pays de Cocagne",
+     "musée du pays rabastinois",
+     "musée du protestantisme, de la Réforme à la laïcité",
+     "musée départemental du textile"
+    ],
+    "patrimoine": [
+     "ALBI",
+     "CASTELNAU DE MONTMIRAL",
+     "CASTRES",
+     "CESTAYROLS",
+     "CORDES SUR CIEL",
+     "GAILLAC",
+     "LABRUGUIERE",
+     "LARROQUE",
+     "LAUTREC",
+     "LISLE SUR TARN",
+     "MAZAMET",
+     "MONTANS",
+     "PENNE",
+     "PUYCELSI",
+     "PUYLAURENS",
+     "RABASTENS",
+     "SOREZE",
+     "ST BENOIT DE CARMAUX"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1162,6 +4302,29 @@
     "musees": 7,
     "patrimoine": 9,
     "festivals": 37
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE LIGUE DE L'ENSEIGNEMENT 82",
+     "musée Ingres Bourdelle",
+     "musée Théodore Calbet",
+     "musée d'histoire naturelle Victor-Brun",
+     "musée de préhistoire",
+     "musée des arts et traditions populaires",
+     "musée du vieil Auvillar"
+    ],
+    "patrimoine": [
+     "BRUNIQUEL",
+     "CAYLUS",
+     "GRISOLLES",
+     "LAUZERTE",
+     "MONTAUBAN",
+     "MONTPEZAT DE QUERCY",
+     "MONTRICOUX",
+     "ST ANTONIN NOBLE VAL",
+     "VERDUN SUR GARONNE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1176,6 +4339,56 @@
     "musees": 27,
     "patrimoine": 16,
     "festivals": 194
+   },
+   "names": {
+    "musees": [
+     "La Banque, musée des Cultures et du Paysage",
+     "MHAB, musée d’histoire et d’art de Bormes",
+     "MICRO-FOLIE BANDOL",
+     "MICRO-FOLIE COGOLIN",
+     "MICRO-FOLIE CUERS",
+     "MICRO-FOLIE DRAGUIGNAN",
+     "MICRO-FOLIE LA SEYNE-SUR-MER",
+     "MICRO-FOLIE LE BEAUSSET",
+     "MICRO-FOLIE SAINT RAPHAEL",
+     "MICRO-FOLIE SAINT-MANDRIER-SUR-MER",
+     "Musée Et Site D'olbia",
+     "Musée National de La Marine de Toulon",
+     "l'Annonciade, musée d'art moderne de Saint-Tropez",
+     "musée Jean Aicard",
+     "musée Jean Aicard",
+     "musée archéologique",
+     "musée archéologique",
+     "musée d'archéologie gallo-romaine du Var",
+     "musée d'art de Toulon - M.A.T.",
+     "musée de l'artillerie",
+     "musée de la société d'études scientifiques et archéologiques",
+     "musée des Beaux-Arts",
+     "musée des arts et traditions populaires de moyenne Provence",
+     "musée des tourneurs",
+     "musée des troupes de marine",
+     "musée du pays brignolais",
+     "muséum d'histoire naturelle"
+    ],
+    "patrimoine": [
+     "BRIGNOLES",
+     "BRIGNOLES",
+     "DRAGUIGNAN",
+     "FREJUS",
+     "GRIMAUD",
+     "HYERES",
+     "HYERES",
+     "HYERES",
+     "LA SEYNE SUR MER",
+     "LORGUES",
+     "ST MARTIN DE PALLIERES",
+     "ST RAPHAEL",
+     "ST RAPHAEL",
+     "ST RAPHAEL",
+     "TOULON",
+     "TRANS EN PROVENCE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1190,6 +4403,46 @@
     "musees": 24,
     "patrimoine": 9,
     "festivals": 161
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE APT",
+     "MICRO-FOLIE GRILLON",
+     "MICRO-FOLIE MAZAN",
+     "MICRO-FOLIE MONTEUX",
+     "MICRO-FOLIE PERNES-LES-FONTAINES ET PAYS DU VENTOUX",
+     "MICRO-FOLIE SAULT-EN-PROVENCE",
+     "MICRO-FOLIE VALRÉAS",
+     "bibliothèque-musée Inguimbertine",
+     "musée Calvet (et musée lapidaire)",
+     "musée Jean Garcin 39-45 : l'appel de la liberté",
+     "musée Jouve",
+     "musée Marc Deydier",
+     "musée Philippe de Girard",
+     "musée archéologique Théo Desplans",
+     "musée de l'hôtel-Dieu",
+     "musée du Petit Palais",
+     "musée du cartonnage et de l'imprimerie",
+     "musée d’Apt",
+     "musée municipal",
+     "musée municipal",
+     "musée municipal",
+     "musée-bibliothèque Pétrarque",
+     "muséum d'histoire naturelle Esprit Requien",
+     "synagogue musée juif comtadin"
+    ],
+    "patrimoine": [
+     "AVIGNON",
+     "CARPENTRAS",
+     "CAVAILLON",
+     "MENERBES",
+     "OPPEDE",
+     "ORANGE",
+     "PERNES LES FONTAINES",
+     "PERTUIS",
+     "SORGUES"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1204,6 +4457,58 @@
     "musees": 22,
     "patrimoine": 23,
     "festivals": 48
+   },
+   "names": {
+    "musees": [
+     "Historial de la Vendée",
+     "MICRO-FOLIE BENET",
+     "MICRO-FOLIE L'ILE D'YEU",
+     "MICRO-FOLIE OCÉAN-MARAIS-DE-MONTS",
+     "MICRO-FOLIE PAYS DE CHANTONNAY",
+     "MICRO-FOLIE PAYS DE MORTAGNE",
+     "MICRO-FOLIE PAYS DE POUZAUGES",
+     "MICRO-FOLIE SAINT-MICHEL EN L'HERM",
+     "MICRO-FOLIE SITE SAINT-SAUVEUR",
+     "centre de découverte du marais breton",
+     "centre minier",
+     "musée Clémenceau et de Lattre de Tassigny",
+     "musée La Bourrine du Bois-Juquaud",
+     "musée Milcendeau-Jean Yole",
+     "musée de Fontenay-le-Comte",
+     "musée de l'abbaye Sainte-Croix",
+     "musée de la construction navale artisanale",
+     "musée des traditions",
+     "musée du château",
+     "musée du nord Vendée",
+     "musée municipal",
+     "musée ornithologique Charles-Payraudeau"
+    ],
+    "patrimoine": [
+     "APREMONT",
+     "AVRILLE",
+     "FAYMOREAU",
+     "FONTENAY LE COMTE",
+     "FOUSSAIS PAYRE",
+     "L EPINE",
+     "LA ROCHE SUR YON",
+     "LE BERNARD",
+     "LES HERBIERS",
+     "LES SABLES D OLONNE",
+     "LONGEVILLE SUR MER",
+     "LUCON",
+     "MALLIEVRE",
+     "MORTAGNE SUR SEVRE",
+     "MOUCHAMPS",
+     "NOIRMOUTIER EN L ILE",
+     "POUZAUGES",
+     "POUZAUGES",
+     "RIVES D AUTISE",
+     "ST GILLES CROIX DE VIE",
+     "ST HILAIRE LA FORET",
+     "TIFFAUGES",
+     "VOUVANT"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1218,6 +4523,40 @@
     "musees": 17,
     "patrimoine": 10,
     "festivals": 79
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE CHAUVIGNY CHÂTEAU D'HARCOURT",
+     "MICRO-FOLIE CIVRAY",
+     "MICRO-FOLIE LE MIROIR DE POITIERS",
+     "MICRO-FOLIE MONTMORILLON",
+     "MICRO-FOLIE VALENCE-EN-POITOU",
+     "collection d'histoire naturelle",
+     "musée Charbonneau-Lassay",
+     "musée Rupert de Chièvres",
+     "musée Sainte-Croix",
+     "musée archéologique et d'ethnographie locale",
+     "musée d'art et d'histoire de Montmorillon",
+     "musée de l'hypogée des Dunes",
+     "musée de la Préhistoire Raymond Touchard",
+     "musée de la moto, de l'automobile et du vélo",
+     "musée du baptistère Saint-Jean",
+     "musée municipal",
+     "musée municipal de l'hôtel de Sully"
+    ],
+    "patrimoine": [
+     "CHARROUX",
+     "CHATELLERAULT",
+     "LA ROCHE POSAY",
+     "LOUDUN",
+     "MIREBEAU",
+     "MONTMORILLON",
+     "MONTS SUR GUESNES",
+     "NOUAILLE MAUPERTUIS",
+     "POITIERS",
+     "ST SAVIN"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1232,6 +4571,29 @@
     "musees": 8,
     "patrimoine": 8,
     "festivals": 65
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE HAUT LIMOUSIN",
+     "MICRO-FOLIE PORTES DE VASSIVIERE",
+     "MICRO-FOLIE SAINT-YRIEIX",
+     "musée &amp; jardins Cécile Sabourdy",
+     "musée René Baubérot",
+     "musée de la porcelaine Adrien Dubouché",
+     "musée des beaux-arts de Limoges - Palais de l'évêché",
+     "musée départemental d'art contemporain"
+    ],
+    "patrimoine": [
+     "AIXE SUR VIENNE",
+     "EYMOUTIERS",
+     "FEYTIAT",
+     "LE DORAT",
+     "LIMOGES",
+     "ST LEONARD DE NOBLAT",
+     "ST LEONARD DE NOBLAT",
+     "ST YRIEIX LA PERCHE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1246,6 +4608,35 @@
     "musees": 11,
     "patrimoine": 11,
     "festivals": 32
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE CC VOSGES COTE SUD-OUEST",
+     "MICRO-FOLIE EPINAL",
+     "MICRO-FOLIE MIRECOURT-DOMPAIRE",
+     "MICRO-FOLIE VOSGES SECRETES",
+     "musée Charles Friry",
+     "musée Charles de Bruyères",
+     "musée Louis Français",
+     "musée Pierre Noël - musée de la vie dans les Hautes-Vosges",
+     "musée de l'image",
+     "musée de la lutherie",
+     "musée départemental d'art ancien et contemporain"
+    ],
+    "patrimoine": [
+     "EPINAL",
+     "GERARDMER",
+     "LE VALTIN",
+     "MIRECOURT",
+     "MOYENMOUTIER",
+     "NEUFCHATEAU",
+     "PLOMBIERES LES BAINS",
+     "RAON L ETAPE",
+     "REMIREMONT",
+     "ST DIE DES VOSGES",
+     "ST JEAN D ORMONT"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1260,6 +4651,38 @@
     "musees": 14,
     "patrimoine": 11,
     "festivals": 49
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE AUXERRE",
+     "MICRO-FOLIE PARON",
+     "musée Colette",
+     "musée Leblanc-Duvernoy",
+     "musée d'art et d'histoire Saint-Germain",
+     "musée d'art et d'histoire de Puisaye",
+     "musée d'art naïf",
+     "musée d'histoire naturelle",
+     "musée de l'Avallonnais Jean Després",
+     "musée de l'aventure du son",
+     "musée départemental d’art moderne, collection Zervos",
+     "musée municipal",
+     "musée municipal",
+     "musée villeneuvien"
+    ],
+    "patrimoine": [
+     "AUXERRE",
+     "AVALLON",
+     "DEUX RIVIERES",
+     "JOIGNY",
+     "NOYERS",
+     "ST FLORENTIN",
+     "STIGNY",
+     "TANLAY",
+     "TONNERRE",
+     "VEZELAY",
+     "VILLENEUVE SUR YONNE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1274,6 +4697,16 @@
     "musees": 4,
     "patrimoine": 0,
     "festivals": 23
+   },
+   "names": {
+    "musees": [
+     "cabinet d'un amateur - donation Maurice Jardot",
+     "forge-musée",
+     "musée Frédéric Japy",
+     "musée d'art et d'histoire"
+    ],
+    "patrimoine": [],
+    "festivals": []
    }
   },
   {
@@ -1288,6 +4721,40 @@
     "musees": 17,
     "patrimoine": 10,
     "festivals": 50
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE BRETIGNY-SUR-ORGE",
+     "MICRO-FOLIE BRUNOY",
+     "MICRO-FOLIE CULTURE 360",
+     "MICRO-FOLIE DOURDAN",
+     "MICRO-FOLIE EPINAY-SOUS-SÉNART",
+     "MICRO-FOLIE EVRY COURCOURONNES",
+     "MICRO-FOLIE GRIGNY",
+     "MICRO-FOLIE LES ULIS",
+     "MICRO-FOLIE MAISON D'ARRET FLEURY MEROGIS",
+     "MICRO-FOLIE MENNECY",
+     "MICRO-FOLIE MORSANG-SUR-ORGE",
+     "MICRO-FOLIE SAINT-MICHEL-SUR-ORGE",
+     "musée Dunoyer de Segonzac",
+     "musée du château",
+     "musée français de la photographie",
+     "musée municipal",
+     "musée municipal Robert Dubois-Corneau"
+    ],
+    "patrimoine": [
+     "ARPAJON",
+     "BRUNOY",
+     "CHALO ST MARS",
+     "DOURDAN",
+     "DRAVEIL",
+     "ETAMPES",
+     "ETRECHY",
+     "LONGPONT SUR ORGE",
+     "MASSY",
+     "MILLY LA FORET"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1302,6 +4769,51 @@
     "musees": 32,
     "patrimoine": 6,
     "festivals": 81
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE  VALLEE SUD GRAND PARIS",
+     "MICRO-FOLIE ASNIERES-SUR-SEINE",
+     "MICRO-FOLIE BOURG-LA-REINE",
+     "MICRO-FOLIE CHATENAY MALABRY",
+     "MICRO-FOLIE CO42 CLICHY",
+     "MICRO-FOLIE COLOMBES",
+     "MICRO-FOLIE FONTENAY-AUX-ROSES",
+     "MICRO-FOLIE ISSY-LES-MOULINEAUX",
+     "MICRO-FOLIE LEVALLOIS",
+     "MICRO-FOLIE MEUDON",
+     "MICRO-FOLIE PUTEAUX",
+     "MICRO-FOLIE RUEIL-MALMAISON",
+     "MICRO-FOLIE VAUCRESSON",
+     "MUS - musée d'histoire urbaine et sociale de Suresnes",
+     "Musée - Atelier Rodin",
+     "Musée Franco-Suisse",
+     "château de Sceaux, musée départemental",
+     "fondation Arp",
+     "musée Paul Belmondo et de la sculpture figurative du XXe siècle",
+     "musée Roybet-Fould",
+     "musée d'art et d'histoire",
+     "musée d'histoire locale - mémoire de la ville",
+     "musée des Avelines - musée d'art et d'histoire de Saint-Cloud",
+     "musée des années trente",
+     "musée des travaux publics",
+     "musée du Grand Siècle",
+     "musée départemental Albert-Kahn",
+     "musée français de la carte à jouer et galerie d'histoire de la ville",
+     "musée municipal d'art et d'histoire",
+     "musée national de la céramique",
+     "musée national des châteaux de Malmaison et de Bois Préau",
+     "musée-jardin Paul Landowski"
+    ],
+    "patrimoine": [
+     "CHATENAY MALABRY",
+     "CLAMART",
+     "GENNEVILLIERS",
+     "MARNES LA COQUETTE",
+     "SCEAUX",
+     "SURESNES"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1316,6 +4828,40 @@
     "musees": 26,
     "patrimoine": 1,
     "festivals": 72
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE BOBIGNY",
+     "MICRO-FOLIE BONDY",
+     "MICRO-FOLIE CENTRE COMMERCIAL O'PARINOR",
+     "MICRO-FOLIE CLICHY-SOUS-BOIS",
+     "MICRO-FOLIE DRANCY",
+     "MICRO-FOLIE EDUCATION NATIONALE 93",
+     "MICRO-FOLIE EPINAY-SUR-SEINE",
+     "MICRO-FOLIE FONDATION FIMINCO",
+     "MICRO-FOLIE GOURNAY-SUR-MARNE",
+     "MICRO-FOLIE LIVRY-GARGAN",
+     "MICRO-FOLIE NEUILLY-PLAISANCE",
+     "MICRO-FOLIE NEUILLY-SUR-MARNE",
+     "MICRO-FOLIE NOISY LE SEC",
+     "MICRO-FOLIE NOISY-LE-GRAND",
+     "MICRO-FOLIE NOMADE SHAM DUGNY",
+     "MICRO-FOLIE PANTIN",
+     "MICRO-FOLIE ROMAINVILLE",
+     "MICRO-FOLIE SAINT-DENIS",
+     "MICRO-FOLIE SEINE-SAINT-DENIS LA COURNEUVE",
+     "MICRO-FOLIE SEINE-SAINT-DENIS LES PAVILLONS-SOUS-BOIS",
+     "MICRO-FOLIE SEVRAN",
+     "MICRO-FOLIE SHAM LE BOURGET",
+     "musée d'art et d'histoire Paul Eluard",
+     "musée de l'air et de l'espace",
+     "musée de l'histoire vivante",
+     "musée municipal"
+    ],
+    "patrimoine": [
+     "ST OUEN SUR SEINE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1330,6 +4876,34 @@
     "musees": 17,
     "patrimoine": 4,
     "festivals": 54
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE CHARENTON-LE-PONT",
+     "MICRO-FOLIE GRAND PARIS SUD EST AVENIR",
+     "MICRO-FOLIE IVRY SUR SEINE",
+     "MICRO-FOLIE LE KREMLIN-BICÊTRE",
+     "MICRO-FOLIE SAINT-MANDE",
+     "MICRO-FOLIE THIAIS",
+     "MICRO-FOLIE VILLEJUIF",
+     "MICRO-FOLIE VILLENEUVE-SAINT-GEORGES",
+     "MICRO-FOLIE VILLIERS-SUR-MARNE",
+     "musée",
+     "musée Adrien Mentienne",
+     "musée Emile Jean",
+     "musée Fragonard",
+     "musée d'art contemporain du Val-de-Marne",
+     "musée de Saint-Maur - Villa Médicis",
+     "musée de la résistance nationale",
+     "écomusée"
+    ],
+    "patrimoine": [
+     "FONTENAY SOUS BOIS",
+     "MANDRES LES ROSES",
+     "VILLENEUVE ST GEORGES",
+     "VINCENNES"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1344,6 +4918,43 @@
     "musees": 24,
     "patrimoine": 6,
     "festivals": 42
+   },
+   "names": {
+    "musees": [
+     "ARCHÉA, Archéologie en Pays de France",
+     "MICRO-FOLIE  CARNELLE PAYS DE FRANCE",
+     "MICRO-FOLIE BESSANCOURT",
+     "MICRO-FOLIE CORMEILLES-EN-PARISIS",
+     "MICRO-FOLIE DE MONTIGNY-LES-CORMEILLES",
+     "MICRO-FOLIE ERAGNY-SUR-OISE",
+     "MICRO-FOLIE GONESSE",
+     "MICRO-FOLIE LE CUBE GARGES",
+     "MICRO-FOLIE MARINES",
+     "MICRO-FOLIE MONTMAGNY",
+     "MICRO-FOLIE MÉRY-SUR-OISE",
+     "MICRO-FOLIE SAINT-BRICE-SOUS-FORÊT",
+     "MICRO-FOLIE TAVERNY",
+     "MICRO-FOLIE VAL D'OISE NUMERIQUE",
+     "MICRO-FOLIE VILLIERS-LE-BEL",
+     "musée Daubigny",
+     "musée Jean-Jacques Rousseau",
+     "musée Pissarro",
+     "musée Tavet Delacour",
+     "musée archéologique départemental du Val d'Oise",
+     "musée d'art et d'histoire Louis Senlecq",
+     "musée d'histoire et de société",
+     "musée de la Renaissance - château d'Ecouen",
+     "musée du vieil Argenteuil"
+    ],
+    "patrimoine": [
+     "AUVERS SUR OISE",
+     "BOISEMONT",
+     "CERGY",
+     "ENGHIEN LES BAINS",
+     "GONESSE",
+     "PONTOISE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1358,6 +4969,21 @@
     "musees": 9,
     "patrimoine": 0,
     "festivals": 38
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE ARCHIPEL DE GUADELOUPE",
+     "MICRO-FOLIE CINE WOULE - CINE FOLIE",
+     "MICRO-FOLIE LE MOULE",
+     "MICRO-FOLIE LES ABYMES",
+     "musée Saint-John-Perse",
+     "musée départemental d’art et d’histoire",
+     "musée l'Herminier",
+     "musée précolombien Edgar Clerc",
+     "écomusée de Marie-Galante"
+    ],
+    "patrimoine": [],
+    "festivals": []
    }
   },
   {
@@ -1372,6 +4998,24 @@
     "musees": 9,
     "patrimoine": 2,
     "festivals": 18
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE LA STATION CULTURELLE",
+     "MICRO-FOLIE MOBILE MARTINIQUE",
+     "maison de la canne",
+     "musée Frank A. Perret - mémorial de la catastrophe de 1902",
+     "musée du Père Pinchon",
+     "musée départemental d'archéologie",
+     "musée régional d'histoire et d'ethnologie",
+     "muséum d'histoire naturelle",
+     "écomusée de la Martinique"
+    ],
+    "patrimoine": [
+     "FORT DE FRANCE",
+     "LES TROIS ILETS"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1386,6 +5030,23 @@
     "musees": 7,
     "patrimoine": 3,
     "festivals": 18
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE GUYANE ART FACTORY",
+     "MICRO-FOLIE SAINT-LAURENT DU MARONI",
+     "MICRO-FOLIE TARMAAAC",
+     "MICRO-FOLIE TOTEM",
+     "musée des arts et traditions populaires de la Guyane",
+     "musée départemental Alexandre Franconie",
+     "écomusée de l'Approuague"
+    ],
+    "patrimoine": [
+     "AWALA YALIMAPO",
+     "CAYENNE",
+     "MANA"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1400,6 +5061,24 @@
     "musees": 9,
     "patrimoine": 2,
     "festivals": 41
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE AN VAVANG",
+     "MICRO-FOLIE CITE DES ARTS - LA RENYON",
+     "MICRO-FOLIE FAMILLES RURALES 974",
+     "MICRO-FOLIE LA POSSESSION",
+     "musée Léon Dierx",
+     "musée agricole et industriel Stella Matutina",
+     "musée de Villèle",
+     "musée des arts décoratifs de l'Océan indien",
+     "muséum d'histoire naturelle"
+    ],
+    "patrimoine": [
+     "ST DENIS",
+     "ST PIERRE"
+    ],
+    "festivals": []
    }
   },
   {
@@ -1414,6 +5093,14 @@
     "musees": 2,
     "patrimoine": 0,
     "festivals": 9
+   },
+   "names": {
+    "musees": [
+     "MICRO-FOLIE PAMANDZI",
+     "MuMa - musée de Mayotte"
+    ],
+    "patrimoine": [],
+    "festivals": []
    }
   }
  ]

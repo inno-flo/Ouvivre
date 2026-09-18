@@ -100,7 +100,8 @@ public struct ClassicRootView: View {
                 .inspector(isPresented: inspectorBinding) {
                     InspectorPanelView(
                         title: mapState.title,
-                        activeCultureCriteria: state.screen == .bigMac ? derived.bigMacActiveCultureCriteria : []
+                        activeCultureCriteria: state.screen == .bigMac ? derived.bigMacActiveCultureCriteria : [],
+                        departementCode: FranceGeoData.departements.first { $0.nom == mapState.title }?.codeInsee
                     )
                     .inspectorColumnWidth(min: 220, ideal: 320, max: 800)
                 }

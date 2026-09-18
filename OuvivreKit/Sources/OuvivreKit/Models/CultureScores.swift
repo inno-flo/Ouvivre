@@ -9,6 +9,20 @@ public enum CultureScores {
         public let codeInsee: String
         public let nom: String
         public let scores: [String: Double]
+        /// Noms des sites/événements par critère ("musees", "patrimoine",
+        /// "festivals") — absent des JSON générés avant l'ajout de ce champ,
+        /// d'où le `?` et le fallback à `[:]` au décodage.
+        public let names: [String: [String]]
+
+        enum CodingKeys: String, CodingKey { case codeInsee, nom, scores, names }
+
+        public init(from decoder: Decoder) throws {
+            let c = try decoder.container(keyedBy: CodingKeys.self)
+            codeInsee = try c.decode(String.self, forKey: .codeInsee)
+            nom = try c.decode(String.self, forKey: .nom)
+            scores = try c.decode([String: Double].self, forKey: .scores)
+            names = try c.decodeIfPresent([String: [String]].self, forKey: .names) ?? [:]
+        }
     }
 
     private struct Root: Decodable {
@@ -50,5 +64,12 @@ public enum CultureScores {
             weightTotal += w
         }
         return weightTotal > 0 ? weightedSum / weightTotal : 50.0
+    }
+
+    /// Noms des sites/événements d'un critère ("musees", "patrimoine",
+    /// "festivals") pour un département donné — utilisé par l'inspecteur
+    /// pour lister le contenu culturel du département cliqué.
+    public static func names(forDepartementCode code: String, criterionKey: String) -> [String] {
+        byDepartementCode[code]?.names[criterionKey] ?? []
     }
 }

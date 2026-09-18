@@ -67,6 +67,7 @@ def load_departements():
 
 def count_musees(dept_codes):
     counts = {c: 0 for c in dept_codes}
+    names = {c: [] for c in dept_codes}
     with MUSEES_PATH.open(encoding="utf-8-sig") as f:
         reader = csv.DictReader(f, delimiter=";")
         for row in reader:
@@ -75,11 +76,17 @@ def count_musees(dept_codes):
             code = dept_code_from_insee(row.get("code_insee", "").strip())
             if code in counts:
                 counts[code] += 1
-    return counts
+                name = row.get("Nom", "").strip()
+                if name:
+                    names[code].append(name)
+    return counts, names
 
 
 def count_patrimoine(dept_codes):
     counts = {c: 0 for c in dept_codes}
+    # Le SPR (site patrimonial remarquable) est répertorié par commune, sans
+    # nom propre — "commune" est donc le nom affiché pour chaque entrée.
+    names = {c: [] for c in dept_codes}
     with PATRIMOINE_PATH.open(encoding="utf-8-sig") as f:
         reader = csv.DictReader(f, delimiter=";")
         for row in reader:
@@ -89,18 +96,25 @@ def count_patrimoine(dept_codes):
                     counts[code] += int(row.get("nombre_de_spr", "1") or "1")
                 except ValueError:
                     counts[code] += 1
-    return counts
+                commune = row.get("commune", "").strip()
+                if commune:
+                    names[code].append(commune)
+    return counts, names
 
 
 def count_festivals(dept_codes):
     counts = {c: 0 for c in dept_codes}
+    names = {c: [] for c in dept_codes}
     with FESTIVALS_PATH.open(encoding="utf-8-sig") as f:
         reader = csv.DictReader(f, delimiter=";")
         for row in reader:
             code = dept_code_from_insee(row.get("Code Insee commune", "").strip())
             if code in counts:
                 counts[code] += 1
-    return counts
+                name = row.get("Nom du festival", "").strip()
+                if name:
+                    names[code].append(name)
+    return counts, names
 
 
 def min_max_normalize(counts):
@@ -123,9 +137,9 @@ def main():
     dept_names = load_departements()
     dept_codes = list(dept_names.keys())
 
-    musees_counts = count_musees(dept_codes)
-    patrimoine_counts = count_patrimoine(dept_codes)
-    festivals_counts = count_festivals(dept_codes)
+    musees_counts, musees_names = count_musees(dept_codes)
+    patrimoine_counts, patrimoine_names = count_patrimoine(dept_codes)
+    festivals_counts, festivals_names = count_festivals(dept_codes)
 
     musees_score = min_max_normalize(musees_counts)
     patrimoine_score = min_max_normalize(patrimoine_counts)
@@ -145,6 +159,11 @@ def main():
                 "musees": musees_counts[code],
                 "patrimoine": patrimoine_counts[code],
                 "festivals": festivals_counts[code],
+            },
+            "names": {
+                "musees": sorted(musees_names[code]),
+                "patrimoine": sorted(patrimoine_names[code]),
+                "festivals": sorted(festivals_names[code]),
             },
         })
 
