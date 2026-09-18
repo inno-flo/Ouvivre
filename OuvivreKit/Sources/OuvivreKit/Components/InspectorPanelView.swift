@@ -40,7 +40,7 @@ public struct InspectorPanelView: View {
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        Eyebrow("SÉLECTION", color: ClassicTheme.faint)
+                        Eyebrow("DÉPARTEMENT", color: ClassicTheme.faint)
                         Text(title)
                             .font(CFont.sans(20, weight: .semibold))
                             .foregroundStyle(ClassicTheme.ink)
@@ -57,7 +57,7 @@ public struct InspectorPanelView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .background(ClassicTheme.sidebarBg)
+        .background(ClassicTheme.sidebarBg.opacity(0.9))
     }
 
     /// Le libellé du critère (repliable), suivi des noms des sites/événements

@@ -36,7 +36,9 @@ public struct ClassicRootView: View {
                 return visible && state.screen != .sources && state.screen != .geo2 && state.screen != .pays
             },
             set: { newValue in
-                if state.screen == .bigMac { mapState.bigMacInspectorVisible = newValue } else { mapState.isVisible = newValue }
+                withAnimation(.easeInOut(duration: 0.28)) {
+                    if state.screen == .bigMac { mapState.bigMacInspectorVisible = newValue } else { mapState.isVisible = newValue }
+                }
             }
         )
     }

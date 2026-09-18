@@ -78,7 +78,7 @@ public struct BigMacView: View {
                                 if let name = departementName(at: value.location, proxy: proxy) {
                                     selectedDepartementName = name
                                     mapState.title = name
-                                    mapState.bigMacInspectorVisible = true
+                                    withAnimation(.easeInOut(duration: 0.28)) { mapState.bigMacInspectorVisible = true }
                                 } else {
                                     // Clic hors de tout département dessiné : désélectionne,
                                     // sans fermer l'inspecteur (il affiche un message à la
@@ -356,9 +356,11 @@ public struct BigMacView: View {
 
                     ForEach(derived.geo2Rows) { row in
                         CriterionRow(row: row, labelColor: columnInk) { state.setGeo2(row.id, value: $0) }
+                            .padding(.trailing, 8)
                     }
                 }
                 .padding(.top, 12)
+                .padding(.bottom, 6)
             }
         }
     }
@@ -468,6 +470,7 @@ public struct BigMacView: View {
                         state.setGroup(cultureGroupIndex, entry.rowIndex, value: $0)
                     }
                     .padding(.vertical, 4)
+                    .padding(.trailing, 8)
                 }
             }
         }
@@ -490,6 +493,7 @@ public struct BigMacView: View {
                         state.setGroup(mobiliteGroupIndex, row.id, value: $0)
                     }
                     .padding(.vertical, 4)
+                    .padding(.trailing, 8)
                 }
             }
         }
@@ -517,7 +521,7 @@ public struct BigMacView: View {
         }
         .padding(.vertical, 10)
         .padding(.horizontal, 12)
-        .background(ClassicTheme.sidebarBg.opacity(0.95), in: RoundedRectangle(cornerRadius: 10))
+        .background(ClassicTheme.sidebarBg.opacity(0.925), in: RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(ClassicTheme.border.opacity(0.6), lineWidth: 1))
         .opacity(enabled ? 1 : 0.55)
     }
