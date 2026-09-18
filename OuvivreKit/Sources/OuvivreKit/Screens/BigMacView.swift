@@ -239,8 +239,16 @@ public struct BigMacView: View {
                 return (entry.dep.nom, (entry.score + cultureScore) / 2)
             }
             .sorted { $0.score > $1.score }
-        let capped = hasActiveRankingCriterion ? Array(ranked.prefix(topDepartementsCount)) : ranked
-        return capped.map(\.name)
+        // Ne coupe jamais au milieu d'une égalité : plusieurs critères
+        // (ex. "montagne") ne sont pas continus et donnent le même score à
+        // de nombreux départements (33 départements à 100/100 pour
+        // "montagne" par exemple) — un `prefix` strict couperait alors
+        // arbitrairement des départements qui méritent tout autant leur
+        // place que ceux gardés (observé : Savoie/Haute-Savoie exclues
+        // alors qu'à égalité parfaite avec les 25 premiers).
+        guard hasActiveRankingCriterion, ranked.count > topDepartementsCount else { return ranked.map(\.name) }
+        let cutoffScore = ranked[topDepartementsCount - 1].score
+        return ranked.filter { $0.score >= cutoffScore }.map(\.name)
     }
 
     /// Redessine les périmètres des départements correspondants — appelé à
