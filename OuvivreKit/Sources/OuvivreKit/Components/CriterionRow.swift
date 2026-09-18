@@ -44,10 +44,13 @@ public struct CriterionRow: View {
                         .frame(width: max(thumbSize / 2, thumbCenterX), height: trackHeight)
                     ForEach(0...row.maxValue, id: \.self) { step in
                         let stepX = thumbSize / 2 + trackWidth * CGFloat(step) / CGFloat(row.maxValue)
+                        // Chaque puce est 25 % plus grosse que la précédente
+                        // (la 1ʳᵉ garde la taille de base 4pt).
+                        let dotSize = 4 * pow(1.25, CGFloat(step))
                         Circle()
                             .fill(step <= row.value ? Color.white.opacity(0.9) : ClassicTheme.faint2)
-                            .frame(width: 4, height: 4)
-                            .offset(x: stepX - 2)
+                            .frame(width: dotSize, height: dotSize)
+                            .offset(x: stepX - dotSize / 2)
                     }
                     Circle()
                         .fill(.white)
