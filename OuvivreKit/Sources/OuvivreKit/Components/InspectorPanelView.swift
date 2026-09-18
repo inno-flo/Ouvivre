@@ -21,17 +21,23 @@ public struct InspectorPanelView: View {
     /// Mac. Toujours affichée (indépendante de la sélection de département).
     let countryName: String
     let countryFacts: [LabeledValue]
+    /// Partage l'état ouvert/replié avec le bloc "Pays" de Big Mac
+    /// (`state.bigMacExpandedPays`) plutôt qu'un état local indépendant :
+    /// replier le bloc dans la colonne de réglages replie aussi cette
+    /// section (et inversement).
+    @Binding var isCountryExpanded: Bool
 
-    // Chaque section démarre dépliée — l'utilisateur replie celles qui ne
-    // l'intéressent pas plutôt que l'inverse.
+    // Chaque section Culture démarre dépliée — l'utilisateur replie celles
+    // qui ne l'intéressent pas plutôt que l'inverse.
     @State private var collapsedKeys: Set<String> = []
 
-    public init(title: String, activeCultureCriteria: [(label: String, key: String)], departementCode: String?, countryName: String = "", countryFacts: [LabeledValue] = []) {
+    public init(title: String, activeCultureCriteria: [(label: String, key: String)], departementCode: String?, countryName: String = "", countryFacts: [LabeledValue] = [], isCountryExpanded: Binding<Bool> = .constant(true)) {
         self.title = title
         self.activeCultureCriteria = activeCultureCriteria
         self.departementCode = departementCode
         self.countryName = countryName
         self.countryFacts = countryFacts
+        self._isCountryExpanded = isCountryExpanded
     }
 
     public var body: some View {
@@ -43,9 +49,19 @@ public struct InspectorPanelView: View {
 
                 if !title.isEmpty {
                     Eyebrow("DÉPARTEMENT", color: ClassicTheme.faint)
-                    Text(title)
-                        .font(CFont.sans(20, weight: .semibold))
-                        .foregroundStyle(ClassicTheme.ink)
+                    HStack(spacing: 8) {
+                        Text(title)
+                            .font(CFont.sans(20, weight: .semibold))
+                            .foregroundStyle(ClassicTheme.ink)
+                        if let code = departementCode {
+                            Text(code)
+                                .font(CFont.sans(20, weight: .semibold))
+                                .foregroundStyle(ClassicTheme.ink)
+                                .padding(.horizontal, 7)
+                                .padding(.vertical, 3)
+                                .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
+                        }
+                    }
 
                     ForEach(activeCultureCriteria, id: \.key) { criterion in
                         criterionSection(criterion)
@@ -62,17 +78,14 @@ public struct InspectorPanelView: View {
     }
 
     private var countrySection: some View {
-        let isCollapsed = collapsedKeys.contains("pays")
-        return VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 14) {
             Button {
-                withAnimation(.easeInOut(duration: 0.15)) {
-                    if isCollapsed { collapsedKeys.remove("pays") } else { collapsedKeys.insert("pays") }
-                }
+                withAnimation(.easeInOut(duration: 0.15)) { isCountryExpanded.toggle() }
             } label: {
                 HStack(spacing: 6) {
                     Eyebrow("PAYS", color: ClassicTheme.faint)
                     Spacer()
-                    Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
+                    Image(systemName: isCountryExpanded ? "chevron.down" : "chevron.right")
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(ClassicTheme.faint)
                 }
@@ -80,7 +93,7 @@ public struct InspectorPanelView: View {
             }
             .buttonStyle(.plain)
 
-            if !isCollapsed {
+            if isCountryExpanded {
                 Text(countryName)
                     .font(CFont.sans(20, weight: .semibold))
                     .foregroundStyle(ClassicTheme.ink)

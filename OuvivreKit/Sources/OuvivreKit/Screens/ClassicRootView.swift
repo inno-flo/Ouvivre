@@ -105,7 +105,8 @@ public struct ClassicRootView: View {
                         activeCultureCriteria: state.screen == .bigMac ? derived.bigMacActiveCultureCriteria : [],
                         departementCode: FranceGeoData.departements.first { $0.nom == mapState.title }?.codeInsee,
                         countryName: state.screen == .bigMac ? state.country : "",
-                        countryFacts: state.screen == .bigMac ? derived.countryFacts : []
+                        countryFacts: state.screen == .bigMac ? derived.countryFacts : [],
+                        isCountryExpanded: $state.bigMacExpandedPays
                     )
                     .inspectorColumnWidth(min: 220, ideal: 320, max: 800)
                 }

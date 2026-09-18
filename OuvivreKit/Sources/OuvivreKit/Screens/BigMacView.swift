@@ -239,7 +239,8 @@ public struct BigMacView: View {
                 return (entry.dep.nom, (entry.score + cultureScore) / 2)
             }
             .sorted { $0.score > $1.score }
-        return ranked.map(\.name)
+        let capped = hasActiveRankingCriterion ? Array(ranked.prefix(topDepartementsCount)) : ranked
+        return capped.map(\.name)
     }
 
     /// Redessine les périmètres des départements correspondants — appelé à

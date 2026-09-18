@@ -47,9 +47,18 @@ public struct ClassicDerived {
     /// its own `state.geo2` (4-level scale) as `weights`.
     public func rankedDepartements(weights: [Int]? = nil, excluding: Set<Int> = []) -> [(dep: FranceGeoData.DepartementScore, score: Double)] {
         let weights = weights ?? state.geo
+        // Hard-filtered criteria (see `FranceGeoData.hardFilterCriteria`) get
+        // an eligibility floor on top of the weighted average below — a
+        // weight alone can't make "déterminant" mean "only départements
+        // that actually touch a coast/border".
+        let hardFilterWeights: [(key: String, weight: Int)] = FranceGeoData.criterionKeys.enumerated().compactMap { i, key in
+            guard FranceGeoData.hardFilterCriteria.contains(key), i < weights.count, !excluding.contains(i) else { return nil }
+            return (key, weights[i])
+        }
         return FranceGeoData.departements
             .filter { !(state.excludeOverseas && $0.isOverseas) }
             .filter { !(state.excludeCorse && $0.isCorse) }
+            .filter { dep in hardFilterWeights.allSatisfy { FranceGeoData.passesHardFilter(dep, key: $0.key, weight: $0.weight) } }
             .map { ($0, FranceGeoData.weightedScore($0, weights: weights, excluding: excluding)) }
             .sorted { $0.1 > $1.1 }
     }
