@@ -76,7 +76,9 @@ public struct InspectorPanelView: View {
             .frame(maxWidth: .infinity, alignment: .topLeading)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(ClassicTheme.sidebarBg.opacity(0.935))
+        // Aucun fond personnalisé — comme la sidebar (`.listStyle(.sidebar)`),
+        // l'inspecteur s'appuie sur le matériau translucide natif du système
+        // derrière son contenu plutôt qu'une couleur/opacité fixée ici.
     }
 
     private var countrySection: some View {
