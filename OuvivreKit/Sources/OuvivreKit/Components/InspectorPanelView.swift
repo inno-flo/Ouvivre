@@ -47,20 +47,22 @@ public struct InspectorPanelView: View {
                     countrySection
                 }
 
-                if !title.isEmpty {
+                // `mapState.title` vaut "France" par défaut (avant tout
+                // clic sur un département) — n'affiche la section que
+                // lorsqu'un vrai département est résolu, pas juste un
+                // titre non vide.
+                if let code = departementCode {
                     Eyebrow("DÉPARTEMENT", color: ClassicTheme.faint)
                     HStack(spacing: 8) {
                         Text(title)
                             .font(CFont.sans(20, weight: .semibold))
                             .foregroundStyle(ClassicTheme.ink)
-                        if let code = departementCode {
-                            Text(code)
-                                .font(CFont.sans(20, weight: .semibold))
-                                .foregroundStyle(ClassicTheme.ink)
-                                .padding(.horizontal, 7)
-                                .padding(.vertical, 3)
-                                .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
-                        }
+                        Text(code)
+                            .font(CFont.sans(20, weight: .semibold))
+                            .foregroundStyle(ClassicTheme.ink)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 3)
+                            .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
                     }
 
                     ForEach(activeCultureCriteria, id: \.key) { criterion in
@@ -140,12 +142,11 @@ public struct InspectorPanelView: View {
 
             if !isCollapsed {
                 if names.isEmpty {
-                    // Si `departementCode` est `nil`, l'absence de données ne
-                    // vient pas d'un vrai département sans musées/festivals/
-                    // patrimoine, mais de l'absence de département résolu
-                    // (aucun clic sur la carte, ou nom non retrouvé dans
-                    // `FranceGeoData`) — message différent dans ce cas.
-                    Text(departementCode == nil ? "Sélectionnez un département." : "Aucune donnée pour ce département.")
+                    // Cette section n'est rendue que lorsque `departementCode`
+                    // est résolu (voir `body`) — l'absence de données est
+                    // donc bien celle d'un vrai département sans
+                    // musées/festivals/patrimoine.
+                    Text("Aucune donnée pour ce département.")
                         .font(CFont.sans(13))
                         .foregroundStyle(ClassicTheme.faint)
                 } else if criterion.key == "musees" {
