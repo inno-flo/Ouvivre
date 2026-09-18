@@ -517,7 +517,7 @@ public struct BigMacView: View {
         }
         .padding(.vertical, 10)
         .padding(.horizontal, 12)
-        .background(ClassicTheme.sidebarBg.opacity(0.9), in: RoundedRectangle(cornerRadius: 10))
+        .background(ClassicTheme.sidebarBg.opacity(0.95), in: RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(ClassicTheme.border.opacity(0.6), lineWidth: 1))
         .opacity(enabled ? 1 : 0.55)
     }
