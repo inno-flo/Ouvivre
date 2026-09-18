@@ -15,15 +15,19 @@ public struct CriterionRow: View {
     /// réglettes de proximité, qui veulent des puces 2, 3, 4... 10 % plus
     /// grosses que le reste des réglettes de l'app.
     var extraDotScaleFromSecond: CGFloat = 1.0
+    /// Override for the tag's default IBM Plex Mono font — e.g. Big Mac SF
+    /// swaps in SF Pro Medium here without touching every other caller.
+    var tagFont: Font?
     let onChange: (Int) -> Void
 
-    public init(row: WeightedRow, thumbSize: CGFloat = 16, trackHeight: CGFloat = 4, labelFont: Font = CFont.sans(14, weight: .medium), labelColor: Color = ClassicTheme.ink, extraDotScaleFromSecond: CGFloat = 1.0, onChange: @escaping (Int) -> Void) {
+    public init(row: WeightedRow, thumbSize: CGFloat = 16, trackHeight: CGFloat = 4, labelFont: Font = CFont.sans(14, weight: .medium), labelColor: Color = ClassicTheme.ink, extraDotScaleFromSecond: CGFloat = 1.0, tagFont: Font? = nil, onChange: @escaping (Int) -> Void) {
         self.row = row
         self.thumbSize = thumbSize
         self.trackHeight = trackHeight
         self.labelFont = labelFont
         self.labelColor = labelColor
         self.extraDotScaleFromSecond = extraDotScaleFromSecond
+        self.tagFont = tagFont
         self.onChange = onChange
     }
 
@@ -33,7 +37,7 @@ public struct CriterionRow: View {
                 Text(row.label).font(labelFont).foregroundStyle(labelColor)
                 Spacer()
                 Text(row.tag)
-                    .font(CFont.mono(11, weight: .medium))
+                    .font(tagFont ?? CFont.mono(11, weight: .medium))
                     .foregroundStyle(row.value >= row.maxValue - 1 ? theme.accent : (row.value == 0 ? ClassicTheme.faint2 : ClassicTheme.faint))
             }
             GeometryReader { geo in

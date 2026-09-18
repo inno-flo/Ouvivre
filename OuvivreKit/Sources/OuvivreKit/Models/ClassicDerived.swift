@@ -95,6 +95,7 @@ public struct ClassicDerived {
     public var navSteps: [NavItem] {
         let defs: [(String, String, ClassicScreen, String?)] = [
             ("01d", "Big Mac", .bigMac, nil),
+            ("01e", "Big Mac SF", .bigMacSF, nil),
             ("01c", "Communes et services", .affiner, nil),
             ("04", "Climat", .meteo, nil),
             ("05", "Villes", .ville, nil)

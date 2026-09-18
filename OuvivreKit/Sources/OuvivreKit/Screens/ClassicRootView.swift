@@ -23,6 +23,8 @@ public struct ClassicRootView: View {
     /// screen, and on Pays/Géographie 2, which embed their own full-bleed
     /// map instead of using the inspector — the toolbar icon stays visible
     /// on Pays regardless, it's just a no-op there for now.
+    private var isBigMac: Bool { state.screen == .bigMac || state.screen == .bigMacSF }
+
     private var inspectorBinding: Binding<Bool> {
         Binding(
             get: {
@@ -32,12 +34,12 @@ public struct ClassicRootView: View {
                 // par défaut de `isVisible` = true, utilisée par les autres
                 // écrans). Il ne s'ouvre qu'en cliquant un département sur la
                 // carte de Big Mac (voir `BigMacView`).
-                let visible = state.screen == .bigMac ? mapState.bigMacInspectorVisible : mapState.isVisible
+                let visible = isBigMac ? mapState.bigMacInspectorVisible : mapState.isVisible
                 return visible && state.screen != .sources && state.screen != .geo2 && state.screen != .pays
             },
             set: { newValue in
                 withAnimation(.easeInOut(duration: 0.28)) {
-                    if state.screen == .bigMac { mapState.bigMacInspectorVisible = newValue } else { mapState.isVisible = newValue }
+                    if isBigMac { mapState.bigMacInspectorVisible = newValue } else { mapState.isVisible = newValue }
                 }
             }
         )
@@ -56,6 +58,8 @@ public struct ClassicRootView: View {
                     GeoView2(derived: derived)
                 } else if state.screen == .bigMac {
                     BigMacView(derived: derived)
+                } else if state.screen == .bigMacSF {
+                    BigMacSFView(derived: derived)
                 } else {
                     ScrollView { content(derived) }
                         .frame(maxWidth: .infinity)
@@ -66,7 +70,7 @@ public struct ClassicRootView: View {
                     // combined MapZoomStepper, and no custom capsule/frame
                     // wrapping either — those both caused trouble before).
                     // Only meaningful while Géographie 2's Map is on screen.
-                    if state.screen == .geo2 || state.screen == .bigMac {
+                    if state.screen == .geo2 || isBigMac {
                         ToolbarItem {
                             Button { mapState.zoomOut() } label: {
                                 Image(systemName: "minus.magnifyingglass")
@@ -102,10 +106,10 @@ public struct ClassicRootView: View {
                 .inspector(isPresented: inspectorBinding) {
                     InspectorPanelView(
                         title: mapState.title,
-                        activeCultureCriteria: state.screen == .bigMac ? derived.bigMacActiveCultureCriteria : [],
+                        activeCultureCriteria: isBigMac ? derived.bigMacActiveCultureCriteria : [],
                         departementCode: FranceGeoData.departements.first { $0.nom == mapState.title }?.codeInsee,
-                        countryName: state.screen == .bigMac ? state.country : "",
-                        countryFacts: state.screen == .bigMac ? derived.countryFacts : [],
+                        countryName: isBigMac ? state.country : "",
+                        countryFacts: isBigMac ? derived.countryFacts : [],
                         isCountryExpanded: $state.bigMacExpandedPays
                     )
                     .inspectorColumnWidth(min: 220, ideal: 320, max: 800)
@@ -128,6 +132,7 @@ public struct ClassicRootView: View {
             case .geo: GeoView(derived: derived)
             case .geo2: EmptyView() // rendered full-bleed outside content(), see body
             case .bigMac: EmptyView() // rendered full-bleed outside content(), see body
+            case .bigMacSF: EmptyView() // rendered full-bleed outside content(), see body
             case .meteo: MeteoView(derived: derived)
             case .affiner: AffinerView(derived: derived)
             case .ville: VilleView(derived: derived)
