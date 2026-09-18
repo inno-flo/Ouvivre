@@ -55,10 +55,17 @@ public struct ClassicDerived {
             guard FranceGeoData.hardFilterCriteria.contains(key), i < weights.count, !excluding.contains(i) else { return nil }
             return (key, weights[i])
         }
+        // "pays étranger" gets its own km-based filter (see
+        // `FranceGeoData.maxPaysEtrangerKm`) rather than the score-band one
+        // above — its score is a compressed continuous distance, not a
+        // handful of discrete buckets like "mer".
+        let paysEtrangerIndex = FranceGeoData.criterionKeys.firstIndex(of: "paysEtranger")!
+        let paysEtrangerWeight = (paysEtrangerIndex < weights.count && !excluding.contains(paysEtrangerIndex)) ? weights[paysEtrangerIndex] : 0
         return FranceGeoData.departements
             .filter { !(state.excludeOverseas && $0.isOverseas) }
             .filter { !(state.excludeCorse && $0.isCorse) }
             .filter { dep in hardFilterWeights.allSatisfy { FranceGeoData.passesHardFilter(dep, key: $0.key, weight: $0.weight) } }
+            .filter { FranceGeoData.passesPaysEtrangerFilter($0, weight: paysEtrangerWeight) }
             .map { ($0, FranceGeoData.weightedScore($0, weights: weights, excluding: excluding)) }
             .sorted { $0.1 > $1.1 }
     }
