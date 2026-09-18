@@ -92,3 +92,43 @@ cp data/out/culture_scores.json ../OuvivreKit/Sources/OuvivreKit/Resources/
 
 Totaux vérifiés au dernier run : 1 838 musées, 1 131 SPR, 7 245 festivals
 répartis sur 101 départements (aucune ligne perdue vs. les CSV sources).
+
+## Score "mer" — distance en sauts au littoral (recompute_mer_score.py)
+
+Remplace, dans `france_geo_scores.json`, le score "mer" d'origine (distance
+continue min-max) par un score fondé sur le nombre de départements à
+traverser pour atteindre un vrai littoral : 100 si le département est
+lui-même côtier, puis 75/50/25/0 à mesure qu'on s'en éloigne (un saut =
+un département voisin). Objectif : que "Mer et océan" à "déterminant"
+(poids max) fasse remonter les départements réellement côtiers, et
+"important" ceux à un saut du littoral — l'ancien score continu faisait
+remonter des départements très intérieurs (Haute-Vienne, Loiret, Sarthe)
+autour de 65-80/100 simplement parce que le minimum de la plage se
+trouvait très à l'est (Alsace/Belfort).
+
+Les départements côtiers sont une **liste statique** (`COASTAL_CODES` dans
+le script), pas un calcul géométrique : une première version dérivait le
+littoral par différence entre les polygones IGN et les polygones pays
+voisins (Natural Earth), mais les tracés de frontière des deux jeux de
+données ne coïncident pas assez finement — tous les départements
+frontaliers (Bas-Rhin, Haut-Rhin, Moselle, Meurthe-et-Moselle, Meuse,
+Ardennes, Doubs, Savoie, Haute-Garonne, Ariège, Hautes-Alpes, Territoire de
+Belfort...) ressortaient "côtiers" à cause de résidus de décalage le long
+de leur frontière terrestre, quel que soit le réglage de la marge
+d'exclusion. La question "quels départements ont un littoral" étant une
+géographie parfaitement établie, une liste statique est plus fiable qu'une
+géométrie fragile entre deux sources hétérogènes.
+
+L'adjacence entre départements (pour le calcul des sauts), en revanche,
+reste géométrique (polygones IGN uniquement, internes à la France — pas de
+confrontation à un autre jeu de données), et est vérifiée automatiquement
+(voisins attendus de la Haute-Vienne).
+
+### Run
+
+```bash
+.venv/bin/python recompute_mer_score.py   # relit/réécrit directement france_geo_scores.json
+```
+
+Ne nécessite aucun nouveau téléchargement (réutilise `data/raw/departements.json`,
+déjà en cache depuis `build_france_geo_scores.py`).
