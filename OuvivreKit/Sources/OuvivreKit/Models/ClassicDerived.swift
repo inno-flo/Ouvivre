@@ -44,7 +44,7 @@ public struct ClassicDerived {
     /// geo_pipeline/). Replaces the old fake `topScore = 60 + geoSum*1.6`
     /// formula. `excluding` drops criteria (by index into
     /// `FranceGeoData.criterionKeys`) from the average. Géographie 2 passes
-    /// its own `state.geo2` (5-level scale) as `weights`.
+    /// its own `state.geo2` (4-level scale) as `weights`.
     public func rankedDepartements(weights: [Int]? = nil, excluding: Set<Int> = []) -> [(dep: FranceGeoData.DepartementScore, score: Double)] {
         let weights = weights ?? state.geo
         return FranceGeoData.departements
@@ -110,9 +110,9 @@ public struct ClassicDerived {
     public var geoRows: [WeightedRow] {
         ClassicStatic.geo.enumerated().map { WeightedRow(id: $0, label: $1.0, value: state.geo[$0]) }
     }
-    /// Géographie 2's rows, on its own 5-level (0...4) scale — no "prioritaire".
+    /// Géographie 2's rows, on its own 4-level (0...3) scale — no "prioritaire", "accessoire" fusionné dans "souhaitable".
     public var geo2Rows: [WeightedRow] {
-        ClassicStatic.geo.enumerated().map { WeightedRow(id: $0, label: $1.0, value: state.geo2[$0], maxValue: 4, tags: ClassicStatic.tagsGeo2) }
+        ClassicStatic.geo.enumerated().map { WeightedRow(id: $0, label: $1.0, value: state.geo2[$0], maxValue: 3, tags: ClassicStatic.tagsGeo2) }
     }
     public var meteoRows: [WeightedRow] {
         ClassicStatic.meteo.enumerated().map { WeightedRow(id: $0, label: $1.0, value: state.meteo[$0]) }
