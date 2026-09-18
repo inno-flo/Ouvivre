@@ -355,7 +355,7 @@ public struct BigMacView: View {
                     }
 
                     ForEach(derived.geo2Rows) { row in
-                        CriterionRow(row: row, labelColor: columnInk) { state.setGeo2(row.id, value: $0) }
+                        CriterionRow(row: row, labelColor: columnInk, extraDotScaleFromSecond: 1.1) { state.setGeo2(row.id, value: $0) }
                             .padding(.trailing, 8)
                     }
                 }
