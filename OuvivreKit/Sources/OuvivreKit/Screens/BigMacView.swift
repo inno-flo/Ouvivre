@@ -217,13 +217,19 @@ public struct BigMacView: View {
         cultureRows.map(\.row.value)
     }
 
+    /// Poids Mobilité (Pistes cyclables, Gares) actuellement réglés, dans
+    /// l'ordre de `MobiliteScores.criterionKeys`.
+    private var mobiliteWeights: [Int] {
+        mobiliteRows.map(\.value)
+    }
+
     /// Tant qu'aucun critère (proximité ou Culture) n'est réglé, tous les
     /// scores retombent à 50/100 pour chaque département : un "top 10" y
     /// serait arbitraire (ordre de tri stable, sans rapport avec un critère
     /// visible) et donnerait l'impression trompeuse d'un classement. Dans ce
     /// cas, on affiche tous les départements correspondants, sans plafond.
     private var hasActiveRankingCriterion: Bool {
-        state.geo2.contains { $0 > 0 } || cultureWeights.contains { $0 > 0 }
+        state.geo2.contains { $0 > 0 } || cultureWeights.contains { $0 > 0 } || mobiliteWeights.contains { $0 > 0 }
     }
 
     /// Ces départements, classés par pertinence en combinant les réglages de
@@ -232,11 +238,28 @@ public struct BigMacView: View {
     /// plafonnés aux 10 mieux classés seulement si un critère est réglé.
     private var matchingDepartementNames: [String] {
         let weights = cultureWeights
-        let ranked = derived.rankedDepartements(weights: state.geo2)
+        let mWeights = mobiliteWeights
+        // Un critère Culture/Mobilité à "déterminant" (poids 3) devient lui
+        // aussi une condition ET, au même titre que Mer/Pays étranger côté
+        // proximité (voir `rankedDepartements(maxWeight:)`) — sinon Festivals
+        // à "déterminant" ne fait que réordonner les départements qui ont
+        // déjà passé les filtres de proximité, sans jamais en écarter aucun.
+        let ranked = derived.rankedDepartements(weights: state.geo2, maxWeight: 3)
             .filter { matchingDepartementCodes.contains($0.dep.codeInsee) }
+            .filter { entry in
+                CultureScores.criterionKeys.enumerated().allSatisfy { i, key in
+                    i >= weights.count || CultureScores.passesHardFilter(forDepartementCode: entry.dep.codeInsee, key: key, weight: weights[i], maxWeight: 3)
+                }
+            }
+            .filter { entry in
+                MobiliteScores.criterionKeys.enumerated().allSatisfy { i, key in
+                    i >= mWeights.count || MobiliteScores.passesHardFilter(forDepartementCode: entry.dep.codeInsee, key: key, weight: mWeights[i], maxWeight: 3)
+                }
+            }
             .map { entry -> (name: String, score: Double) in
                 let cultureScore = CultureScores.weightedScore(forDepartementCode: entry.dep.codeInsee, weights: weights)
-                return (entry.dep.nom, (entry.score + cultureScore) / 2)
+                let mobiliteScore = MobiliteScores.weightedScore(forDepartementCode: entry.dep.codeInsee, weights: mWeights)
+                return (entry.dep.nom, (entry.score + cultureScore + mobiliteScore) / 3)
             }
             .sorted { $0.score > $1.score }
         // Plafond top-25 temporairement désactivé pour tester l'affichage
@@ -485,8 +508,12 @@ public struct BigMacView: View {
         }
     }
 
-    // MARK: Bloc 4 — Mobilité (Bus, Pistes cyclables, Gares, Aéroports — inchangé)
+    // MARK: Bloc 4 — Mobilité (Pistes cyclables, Gares — Bus et Aéroports retirés)
 
+    /// Poids réels, sources :
+    /// - Pistes cyclables : https://www.data.gouv.fr/datasets/lineaire-damenagements-cyclables
+    /// - Gares : https://www.data.gouv.fr/datasets/liste-des-gares
+    /// voir `MobiliteScores` et `geo_pipeline/build_mobilite_data.py`.
     private var mobiliteGroupIndex: Int {
         ClassicStatic.groups.firstIndex { $0.title == "MOBILITÉ" } ?? 0
     }
@@ -494,7 +521,9 @@ public struct BigMacView: View {
     /// uniquement. `ClassicData.swift` reste inchangé (le groupe MOBILITÉ
     /// complet sert aussi "Communes et services"). Mêmes 4 niveaux que
     /// Proximités/Culture (0...3, indifférent/souhaitable/important/
-    /// déterminant) plutôt que l'échelle à 6 niveaux par défaut.
+    /// déterminant) plutôt que l'échelle à 6 niveaux par défaut. L'ordre
+    /// (Pistes cyclables, Gares) doit rester synchronisé avec
+    /// `MobiliteScores.criterionKeys`.
     private var mobiliteRows: [WeightedRow] {
         let keep: Set<String> = ["Pistes cyclables", "Gares"]
         return (derived.groups.first { $0.title == "MOBILITÉ" }?.rows ?? [])
@@ -541,14 +570,12 @@ public struct BigMacView: View {
                     .font(CFont.mono(11, weight: .semibold))
                     .foregroundStyle(enabled && isExpanded.wrappedValue ? columnInk : columnFaint)
             }
-            .disabled(!enabled)
             .tint(columnFaint)
         }
         .padding(.vertical, 10)
         .padding(.horizontal, 12)
         .background(ClassicTheme.sidebarBg.opacity(0.935), in: RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(ClassicTheme.border.opacity(0.6), lineWidth: 1))
-        .opacity(enabled ? 1 : 0.55)
     }
 
     // MARK: Caméra (identique à PaysView/GeoView2)

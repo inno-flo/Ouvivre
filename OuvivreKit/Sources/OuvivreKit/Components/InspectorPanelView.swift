@@ -64,6 +64,11 @@ public struct InspectorPanelView: View {
                             .padding(.vertical, 3)
                             .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
                     }
+                    if let chefLieu = FranceGeoData.chefsLieux[code] {
+                        Text("Chef-lieu : \(chefLieu)")
+                            .font(CFont.sans(13))
+                            .foregroundStyle(ClassicTheme.faint)
+                    }
 
                     ForEach(activeCultureCriteria, id: \.key) { criterion in
                         criterionSection(criterion)
