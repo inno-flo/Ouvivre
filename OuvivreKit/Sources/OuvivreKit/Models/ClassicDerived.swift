@@ -125,9 +125,9 @@ public struct ClassicDerived {
     public var geoRows: [WeightedRow] {
         ClassicStatic.geo.enumerated().map { WeightedRow(id: $0, label: $1.0, value: state.geo[$0]) }
     }
-    /// Géographie 2's rows, on its own 4-level (0...3) scale — no "prioritaire", "accessoire" fusionné dans "souhaitable".
+    /// Géographie 2's rows, on its own 3-level (0...2) scale — "souhaitable" et "accessoire" fusionnés dans "important".
     public var geo2Rows: [WeightedRow] {
-        ClassicStatic.geo.enumerated().map { WeightedRow(id: $0, label: $1.0, value: state.geo2[$0], maxValue: 3, tags: ClassicStatic.tagsGeo2) }
+        ClassicStatic.geo.enumerated().map { WeightedRow(id: $0, label: $1.0, value: state.geo2[$0], maxValue: 2, tags: ClassicStatic.tagsGeo2) }
     }
     public var meteoRows: [WeightedRow] {
         ClassicStatic.meteo.enumerated().map { WeightedRow(id: $0, label: $1.0, value: state.meteo[$0]) }

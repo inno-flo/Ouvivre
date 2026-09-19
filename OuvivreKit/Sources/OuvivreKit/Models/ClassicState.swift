@@ -58,7 +58,7 @@ public final class ClassicState: ObservableObject {
     public func resetGeo2() { geo2 = ClassicStatic.geo.map { _ in 0 } }
 
     public func setGeo(_ index: Int, value: Int) { geo[index] = max(0, min(5, value)) }
-    public func setGeo2(_ index: Int, value: Int) { geo2[index] = max(0, min(3, value)) }
+    public func setGeo2(_ index: Int, value: Int) { geo2[index] = max(0, min(2, value)) }
     public func setMeteo(_ index: Int, value: Int) { meteo[index] = max(0, min(5, value)) }
     public func setGroup(_ groupIndex: Int, _ rowIndex: Int, value: Int) {
         // Différé au prochain tick : appelé en direct depuis le

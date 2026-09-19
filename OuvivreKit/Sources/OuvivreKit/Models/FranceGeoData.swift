@@ -71,7 +71,7 @@ public enum FranceGeoData {
     /// doesn't line up with real-world closeness the way it does here).
     /// Fires only at "déterminant" (see `passesHardFilter`'s `maxWeight`) —
     /// the whole point is that "déterminant" means AND/must-have, while
-    /// "souhaitable"/"important" stay a pure weight in the average.
+    /// "important" stays a pure weight in the average.
     public static let hardFilterCriteria: Set<String> = ["mer", "montagne", "lacs", "fleuves", "forets"]
 
     /// Per-criterion floor a département must clear to pass its hard filter

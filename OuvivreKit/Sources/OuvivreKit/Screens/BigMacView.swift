@@ -254,16 +254,16 @@ public struct BigMacView: View {
         // proximité (voir `rankedDepartements(maxWeight:)`) — sinon Festivals
         // à "déterminant" ne fait que réordonner les départements qui ont
         // déjà passé les filtres de proximité, sans jamais en écarter aucun.
-        let ranked = derived.rankedDepartements(weights: state.geo2, maxWeight: 3)
+        let ranked = derived.rankedDepartements(weights: state.geo2, maxWeight: 2)
             .filter { matchingDepartementCodes.contains($0.dep.codeInsee) }
             .filter { entry in
                 CultureScores.criterionKeys.enumerated().allSatisfy { i, key in
-                    i >= weights.count || CultureScores.passesHardFilter(forDepartementCode: entry.dep.codeInsee, key: key, weight: weights[i], maxWeight: 3)
+                    i >= weights.count || CultureScores.passesHardFilter(forDepartementCode: entry.dep.codeInsee, key: key, weight: weights[i], maxWeight: 2)
                 }
             }
             .filter { entry in
                 MobiliteScores.criterionKeys.enumerated().allSatisfy { i, key in
-                    i >= mWeights.count || MobiliteScores.passesHardFilter(forDepartementCode: entry.dep.codeInsee, key: key, weight: mWeights[i], maxWeight: 3)
+                    i >= mWeights.count || MobiliteScores.passesHardFilter(forDepartementCode: entry.dep.codeInsee, key: key, weight: mWeights[i], maxWeight: 2)
                 }
             }
             .map { entry -> (name: String, score: Double) in
@@ -485,10 +485,10 @@ public struct BigMacView: View {
     /// - Musées : https://culture.data.gouv.fr/datasets/61777ddaa9101d073e5506cd
     /// - Lieux du patrimoine : https://culture.data.gouv.fr/datasets/628da9ff836d8bf454c7fd48
     /// - Festivals : https://culture.data.gouv.fr/datasets/62cf95993d99f22480f49334
-    /// Mêmes 4 niveaux que "Proximités" (indifférent/souhaitable/important/
-    /// déterminant, 0...3) plutôt que l'échelle à 6 niveaux par défaut des
+    /// Mêmes 3 niveaux que "Proximités" (indifférent/important/
+    /// déterminant, 0...2) plutôt que l'échelle à 6 niveaux par défaut des
     /// groupes — `WeightedRow` est reconstruite avec `maxValue`/`tags`
-    /// substitués, la valeur brute de `state.groups` étant déjà clampée à 3
+    /// substitués, la valeur brute de `state.groups` étant déjà clampée à 2
     /// par `setGroup` côté écriture (voir `cultureBlock`).
     private var cultureRows: [(rowIndex: Int, row: WeightedRow)] {
         guard let cultureGroup = derived.groups.first(where: { $0.title == "CULTURE" }) else { return [] }
@@ -496,7 +496,7 @@ public struct BigMacView: View {
         return cultureGroup.rows.enumerated()
             .filter { keep.contains($0.element.label) }
             .map { offset, row in
-                (rowIndex: offset, row: WeightedRow(id: row.id, label: row.label, value: min(row.value, 3), maxValue: 3, tags: ClassicStatic.tagsGeo2))
+                (rowIndex: offset, row: WeightedRow(id: row.id, label: row.label, value: min(row.value, 2), maxValue: 2, tags: ClassicStatic.tagsGeo2))
             }
     }
     private var cultureGroupIndex: Int {
@@ -511,7 +511,7 @@ public struct BigMacView: View {
         VStack(alignment: .leading, spacing: 4) {
             ForEach(cultureRows, id: \.rowIndex) { entry in
                 CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: CFont.sans(13), labelColor: columnInk, extraDotScaleFromSecond: 1.1) {
-                    state.setGroup(cultureGroupIndex, entry.rowIndex, value: min($0, 3))
+                    state.setGroup(cultureGroupIndex, entry.rowIndex, value: min($0, 2))
                 }
                 .padding(.vertical, 4)
                 .padding(.trailing, 8)
@@ -550,8 +550,8 @@ public struct BigMacView: View {
     }
     /// Bus et Aéroports retirés pour ce bloc — Pistes cyclables et Gares
     /// uniquement. `ClassicData.swift` reste inchangé (le groupe MOBILITÉ
-    /// complet sert aussi "Communes et services"). Mêmes 4 niveaux que
-    /// Proximités/Culture (0...3, indifférent/souhaitable/important/
+    /// complet sert aussi "Communes et services"). Mêmes 3 niveaux que
+    /// Proximités/Culture (0...2, indifférent/important/
     /// déterminant) plutôt que l'échelle à 6 niveaux par défaut. L'ordre
     /// (Pistes cyclables, Gares) doit rester synchronisé avec
     /// `MobiliteScores.criterionKeys`.
@@ -559,7 +559,7 @@ public struct BigMacView: View {
         let keep: Set<String> = ["Pistes cyclables", "Gares"]
         return (derived.groups.first { $0.title == "MOBILITÉ" }?.rows ?? [])
             .filter { keep.contains($0.label) }
-            .map { WeightedRow(id: $0.id, label: $0.label, value: min($0.value, 3), maxValue: 3, tags: ClassicStatic.tagsGeo2) }
+            .map { WeightedRow(id: $0.id, label: $0.label, value: min($0.value, 2), maxValue: 2, tags: ClassicStatic.tagsGeo2) }
     }
 
     private var mobiliteBlock: some View {
@@ -567,7 +567,7 @@ public struct BigMacView: View {
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(mobiliteRows) { row in
                     CriterionRow(row: row, thumbSize: 16, trackHeight: 4, labelFont: CFont.sans(13), labelColor: columnInk, extraDotScaleFromSecond: 1.1) {
-                        state.setGroup(mobiliteGroupIndex, row.id, value: min($0, 3))
+                        state.setGroup(mobiliteGroupIndex, row.id, value: min($0, 2))
                     }
                     .padding(.vertical, 4)
                     .padding(.trailing, 8)
