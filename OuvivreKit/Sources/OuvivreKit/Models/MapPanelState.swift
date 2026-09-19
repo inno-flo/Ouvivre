@@ -50,6 +50,20 @@ public final class MapPanelState: ObservableObject {
         departementRingGroups = []
     }
 
+    /// Incrémenté à chaque demande de recentrage explicite : `coordinate`
+    /// peut rester identique (l'utilisateur n'a fait que déplacer la carte),
+    /// auquel cas aucun `onChange` sur la coordonnée ne se déclencherait.
+    @Published public var recenterTick: Int = 0
+
+    /// Recentre la caméra sur le pays sans toucher aux périmètres dessinés
+    /// (contrairement à `focusOnCountry`, qui les efface) ni au titre.
+    public func recenterOnCountry(_ name: String) {
+        guard let place = GeoCoordinates.countries[name] else { return }
+        coordinate = place.coordinate
+        spanDegrees = place.span
+        recenterTick += 1
+    }
+
     public func focusOnRegion(_ nomRegion: String) {
         guard let place = GeoCoordinates.regions[nomRegion] else { return }
         title = nomRegion

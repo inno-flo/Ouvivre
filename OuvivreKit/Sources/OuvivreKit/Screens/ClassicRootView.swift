@@ -72,6 +72,12 @@ public struct ClassicRootView: View {
                     // Only meaningful while Géographie 2's Map is on screen.
                     if state.screen == .geo2 || isBigMac {
                         ToolbarItem {
+                            Button { mapState.recenterOnCountry(state.country) } label: {
+                                Image(systemName: "mappin.and.ellipse")
+                            }
+                            .help("Recentrer sur le pays sélectionné")
+                        }
+                        ToolbarItem {
                             Button { mapState.zoomOut() } label: {
                                 Image(systemName: "minus.magnifyingglass")
                             }

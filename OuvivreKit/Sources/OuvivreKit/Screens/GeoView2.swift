@@ -91,6 +91,7 @@ public struct GeoView2: View {
             .onChange(of: mapState.coordinate.latitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: mapState.coordinate.longitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: mapState.spanDegrees) { _, newSpan in applyZoom(newSpan) }
+            .onChange(of: mapState.recenterTick) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: geo.size.width) { _, newValue in moveCamera(totalWidth: newValue, animated: false) }
             .onChange(of: state.geo2) { _, _ in refreshTopDepartementsOnMap() }
             .onChange(of: state.excludeOverseas) { _, _ in refreshTopDepartementsOnMap() }

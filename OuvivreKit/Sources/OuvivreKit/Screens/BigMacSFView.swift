@@ -110,6 +110,7 @@ public struct BigMacSFView: View {
             .onChange(of: mapState.coordinate.latitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: mapState.coordinate.longitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: mapState.spanDegrees) { _, newSpan in applyZoom(newSpan) }
+            .onChange(of: mapState.recenterTick) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             // Accordéon : Pays se replie dès qu'un autre bloc s'ouvre (mais
             // ouvrir Pays ne referme pas les autres — seul Pays a ce
             // comportement, pour rester l'état "par défaut" au premier bloc).
