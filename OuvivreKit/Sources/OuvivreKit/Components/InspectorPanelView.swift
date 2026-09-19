@@ -164,19 +164,41 @@ public struct InspectorPanelView: View {
                     let regular = names.filter { !microFolies.contains($0) }
                     VStack(alignment: .leading, spacing: 4) {
                         ForEach(regular, id: \.self) { name in
-                            nameRow(name)
+                            nameRow(name, criterionKey: criterion.key)
                         }
                         if !regular.isEmpty, !microFolies.isEmpty {
                             Divider().padding(.vertical, 4)
                         }
                         ForEach(microFolies, id: \.self) { name in
-                            nameRow(name)
+                            nameRow(name, criterionKey: criterion.key)
+                        }
+                    }
+                } else if criterion.key == "festivals", let code = departementCode {
+                    // Regroupés par discipline dominante (les plus fournies
+                    // d'abord), festivals sans discipline en dernier.
+                    let byDiscipline = Dictionary(grouping: names) {
+                        CultureScores.discipline(forDepartementCode: code, criterionKey: "festivals", name: $0) ?? "Autre"
+                    }
+                    let ordered = byDiscipline.keys.sorted {
+                        if $0 == "Autre" || $1 == "Autre" { return $1 == "Autre" && $0 != "Autre" }
+                        return byDiscipline[$0]!.count != byDiscipline[$1]!.count ? byDiscipline[$0]!.count > byDiscipline[$1]!.count : $0 < $1
+                    }
+                    VStack(alignment: .leading, spacing: 10) {
+                        ForEach(ordered, id: \.self) { discipline in
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("\(discipline.uppercased()) · \(byDiscipline[discipline]!.count)")
+                                    .font(CFont.mono(10, weight: .semibold))
+                                    .foregroundStyle(ClassicTheme.faint)
+                                ForEach(byDiscipline[discipline]!, id: \.self) { name in
+                                    nameRow(name, criterionKey: criterion.key)
+                                }
+                            }
                         }
                     }
                 } else {
                     VStack(alignment: .leading, spacing: 4) {
                         ForEach(names, id: \.self) { name in
-                            nameRow(name)
+                            nameRow(name, criterionKey: criterion.key)
                         }
                     }
                 }
@@ -191,8 +213,14 @@ public struct InspectorPanelView: View {
     /// de recherche par défaut d'une app tierce (seule Safari applique ce
     /// réglage à sa propre barre d'adresse) ; on utilise donc une recherche
     /// Google, ouverte via le navigateur par défaut du système.
-    private func nameRow(_ name: String) -> some View {
+    private func nameRow(_ name: String, criterionKey: String) -> some View {
         Button {
+            // Site officiel quand les données en fournissent un (festivals),
+            // sinon recherche web sur le nom.
+            if let code = departementCode, let site = CultureScores.url(forDepartementCode: code, criterionKey: criterionKey, name: name) {
+                openURL(site)
+                return
+            }
             let query = Self.titleCased(name).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
             if let url = URL(string: "https://www.google.com/search?q=\(query)") { openURL(url) }
         } label: {

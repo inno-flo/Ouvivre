@@ -19,6 +19,7 @@ Run: .venv/bin/python build_culture_data.py
 """
 import csv
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -102,9 +103,22 @@ def count_patrimoine(dept_codes):
     return counts, names
 
 
+def normalize_url(raw):
+    """Site internet du festival -> URL https exploitable, ou None. Le champ
+    est saisi librement (souvent sans schéma, "www.exemple.fr")."""
+    raw = (raw or "").strip()
+    if not raw or " " in raw or "." not in raw:
+        return None
+    if not re.match(r"^https?://", raw, re.IGNORECASE):
+        raw = "https://" + raw
+    return raw
+
+
 def count_festivals(dept_codes):
     counts = {c: 0 for c in dept_codes}
     names = {c: [] for c in dept_codes}
+    urls = {c: {} for c in dept_codes}
+    disciplines = {c: {} for c in dept_codes}
     with FESTIVALS_PATH.open(encoding="utf-8-sig") as f:
         reader = csv.DictReader(f, delimiter=";")
         # Le fichier source a un double BOM : utf-8-sig n'en retire qu'un, la
@@ -122,7 +136,13 @@ def count_festivals(dept_codes):
                 name = row.get("Nom du festival", "").strip()
                 if name:
                     names[code].append(name)
-    return counts, names
+                    url = normalize_url(row.get("Site internet du festival"))
+                    if url:
+                        urls[code][name] = url
+                    discipline = row.get("Discipline dominante", "").strip()
+                    if discipline:
+                        disciplines[code][name] = discipline
+    return counts, names, urls, disciplines
 
 
 def min_max_normalize(counts):
@@ -147,7 +167,7 @@ def main():
 
     musees_counts, musees_names = count_musees(dept_codes)
     patrimoine_counts, patrimoine_names = count_patrimoine(dept_codes)
-    festivals_counts, festivals_names = count_festivals(dept_codes)
+    festivals_counts, festivals_names, festivals_urls, festivals_disciplines = count_festivals(dept_codes)
 
     musees_score = min_max_normalize(musees_counts)
     patrimoine_score = min_max_normalize(patrimoine_counts)
@@ -173,6 +193,12 @@ def main():
                 "patrimoine": sorted(patrimoine_names[code]),
                 "festivals": sorted(festivals_names[code]),
             },
+            # Seuls les festivals ont une URL dans les données sources ; les
+            # musées (Basilic) et les SPR n'ont pas de colonne site internet.
+            "urls": {"festivals": festivals_urls[code]},
+            # Discipline dominante : seule catégorie thématique présente dans
+            # les données (les musées Basilic n'en ont pas de variable).
+            "disciplines": {"festivals": festivals_disciplines[code]},
         })
 
     final = {

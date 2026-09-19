@@ -13,8 +13,14 @@ public enum CultureScores {
         /// "festivals") — absent des JSON générés avant l'ajout de ce champ,
         /// d'où le `?` et le fallback à `[:]` au décodage.
         public let names: [String: [String]]
+        /// Site officiel par critère puis par nom ("festivals" seulement :
+        /// les données Basilic (musées) et SPR n'ont pas de site internet).
+        public let urls: [String: [String: String]]
+        /// Discipline dominante par critère puis par nom ("festivals"
+        /// seulement : les musées n'ont pas de variable thématique).
+        public let disciplines: [String: [String: String]]
 
-        enum CodingKeys: String, CodingKey { case codeInsee, nom, scores, names }
+        enum CodingKeys: String, CodingKey { case codeInsee, nom, scores, names, urls, disciplines }
 
         public init(from decoder: Decoder) throws {
             let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -22,6 +28,8 @@ public enum CultureScores {
             nom = try c.decode(String.self, forKey: .nom)
             scores = try c.decode([String: Double].self, forKey: .scores)
             names = try c.decodeIfPresent([String: [String]].self, forKey: .names) ?? [:]
+            urls = try c.decodeIfPresent([String: [String: String]].self, forKey: .urls) ?? [:]
+            disciplines = try c.decodeIfPresent([String: [String: String]].self, forKey: .disciplines) ?? [:]
         }
     }
 
@@ -94,5 +102,15 @@ public enum CultureScores {
     /// pour lister le contenu culturel du département cliqué.
     public static func names(forDepartementCode code: String, criterionKey: String) -> [String] {
         byDepartementCode[code]?.names[criterionKey] ?? []
+    }
+
+    /// Site officiel d'un site/événement, si les données sources en fournissent un.
+    public static func url(forDepartementCode code: String, criterionKey: String, name: String) -> URL? {
+        byDepartementCode[code]?.urls[criterionKey]?[name].flatMap(URL.init(string:))
+    }
+
+    /// Discipline dominante d'un festival, si renseignée dans les données.
+    public static func discipline(forDepartementCode code: String, criterionKey: String, name: String) -> String? {
+        byDepartementCode[code]?.disciplines[criterionKey]?[name]
     }
 }
