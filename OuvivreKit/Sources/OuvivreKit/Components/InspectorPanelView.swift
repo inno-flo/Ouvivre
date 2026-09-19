@@ -63,6 +63,12 @@ public struct InspectorPanelView: View {
                             .padding(.horizontal, 7)
                             .padding(.vertical, 3)
                             .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
+                        Spacer(minLength: 8)
+                        // Emplacement de la future fonction favoris — pas
+                        // encore câblé.
+                        Image(systemName: "star.circle")
+                            .font(.system(size: 20))
+                            .foregroundStyle(ClassicTheme.faint)
                     }
                     if let chefLieu = FranceGeoData.chefsLieux[code] {
                         Text("Chef-lieu : \(chefLieu)")
