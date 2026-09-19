@@ -107,8 +107,16 @@ def count_festivals(dept_codes):
     names = {c: [] for c in dept_codes}
     with FESTIVALS_PATH.open(encoding="utf-8-sig") as f:
         reader = csv.DictReader(f, delimiter=";")
+        # Le fichier source a un double BOM : utf-8-sig n'en retire qu'un, la
+        # 1re colonne s'appelle donc "\ufeffNom du festival".
+        reader.fieldnames = [n.lstrip("\ufeff") for n in reader.fieldnames]
         for row in reader:
-            code = dept_code_from_insee(row.get("Code Insee commune", "").strip())
+            insee = row.get("Code Insee commune", "").strip()
+            # Codes à 4 chiffres : le zéro initial des départements 01-09 a
+            # été perdu dans le CSV (ex. "1053" pour l'Ain).
+            if len(insee) == 4 and insee.isdigit():
+                insee = insee.zfill(5)
+            code = dept_code_from_insee(insee)
             if code in counts:
                 counts[code] += 1
                 name = row.get("Nom du festival", "").strip()
