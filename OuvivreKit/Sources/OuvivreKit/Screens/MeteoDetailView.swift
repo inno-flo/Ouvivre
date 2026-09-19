@@ -84,6 +84,14 @@ public struct MeteoDetailView: View {
                                         .symbolSize(p.partial ? 20 : 30)
                                 }
                             }
+                            ForEach(points.filter { selectedMonth == month($0) }) { p in
+                                PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", p.temperature ?? 0))
+                                    .foregroundStyle(ClassicTheme.ink).symbolSize(90)
+                                if let tx = p.maxTemperature {
+                                    PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", tx))
+                                        .foregroundStyle(ClassicTheme.ink).symbolSize(90)
+                                }
+                            }
                             if let p = hoveredPoint(hoveredTemperatureDate, in: points) {
                                 RuleMark(x: .value("Mois", p.date, unit: .month))
                                     .foregroundStyle(ClassicTheme.faint.opacity(0.5))
@@ -94,6 +102,7 @@ public struct MeteoDetailView: View {
                         }
                         .chartForegroundStyleScale(["Moyenne": theme.accent, "Maximale": Color(hex: 0xD98A1F)])
                         .chartXSelection(value: $hoveredTemperatureDate)
+                        .chartGesture { proxy in monthTap(proxy, points: points) }
                         .chartYScale(domain: .automatic(includesZero: false))
                     }
                     chartCard(title: "Précipitations mensuelles (mm)") {
@@ -102,7 +111,7 @@ public struct MeteoDetailView: View {
                             yearBands
                             ForEach(points) { p in
                                 BarMark(x: .value("Mois", p.date, unit: .month), y: .value("mm", p.precipitation ?? 0))
-                                    .foregroundStyle(theme.accent.opacity(p.partial ? 0.4 : 0.8))
+                                    .foregroundStyle((selectedMonth == month(p) ? ClassicTheme.ink : theme.accent).opacity(p.partial ? 0.4 : 0.8))
                             }
                             if let p = hoveredPoint(hoveredPrecipitationDate, in: points) {
                                 RuleMark(x: .value("Mois", p.date, unit: .month))
@@ -113,6 +122,7 @@ public struct MeteoDetailView: View {
                             }
                         }
                         .chartXSelection(value: $hoveredPrecipitationDate)
+                        .chartGesture { proxy in monthTap(proxy, points: points) }
                     }
                     yearlySummary
                     monthTable
@@ -172,6 +182,18 @@ public struct MeteoDetailView: View {
                         .font(CFont.mono(11, weight: .bold)).foregroundStyle(ClassicTheme.ink)
                         .padding(.leading, 6).padding(.top, 3)
                 }
+        }
+    }
+
+    /// Clic sur un graphique : sélectionne le mois cliqué (même sélection que
+    /// le tableau de détail) ; les points/barres du même mois de chaque année
+    /// changent de couleur. Recliquer sur le même mois désélectionne.
+    private func monthTap(_ proxy: ChartProxy, points: [MeteoMensuelle.Point]) -> some Gesture {
+        SpatialTapGesture().onEnded { value in
+            guard let date = proxy.value(atX: value.location.x, as: Date.self),
+                  let p = hoveredPoint(date, in: points) else { return }
+            let m = month(p)
+            selectedMonth = selectedMonth == m ? nil : m
         }
     }
 
