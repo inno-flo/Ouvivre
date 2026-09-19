@@ -32,6 +32,7 @@ public final class ClassicState: ObservableObject {
     @Published public var bigMacExpandedRegions: Bool = false
     @Published public var bigMacExpandedCulture: Bool = false
     @Published public var bigMacExpandedMobilite: Bool = false
+    @Published public var bigMacExpandedClimat: Bool = false
     @Published public var meteo: [Int] = ClassicStatic.meteo.map(\.1)
     /// One weight array per group, indexed like `ClassicStatic.groups`. Les 3
     /// critères CULTURE repris par "Big Mac" (Musées, Lieux du patrimoine,

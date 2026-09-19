@@ -112,6 +112,7 @@ public struct BigMacView: View {
             .onChange(of: state.bigMacExpandedRegions) { _, isExpanded in if isExpanded { state.bigMacExpandedPays = false } }
             .onChange(of: state.bigMacExpandedCulture) { _, isExpanded in if isExpanded { state.bigMacExpandedPays = false } }
             .onChange(of: state.bigMacExpandedMobilite) { _, isExpanded in if isExpanded { state.bigMacExpandedPays = false } }
+            .onChange(of: state.bigMacExpandedClimat) { _, isExpanded in if isExpanded { state.bigMacExpandedPays = false } }
             .onChange(of: state.excludeOverseas) { _, _ in refreshDepartementsOnMap() }
             .onChange(of: state.excludeCorse) { _, _ in refreshDepartementsOnMap() }
             .onChange(of: state.geo2) { _, _ in refreshDepartementsOnMap() }
@@ -299,7 +300,10 @@ public struct BigMacView: View {
         VStack(alignment: .leading, spacing: 10) {
             paysBlock
             regionsBlock
-            cultureBlock
+            if isCultureBlockVisible {
+                cultureBlock
+            }
+            climatBlock
             if isMobiliteEnabled {
                 mobiliteBlock
             }
@@ -333,7 +337,7 @@ public struct BigMacView: View {
     private var moreCommunes: [CommuneSizeEntry] { Array(matchingCommunes.dropFirst(topCommunesCount)) }
 
     private var regionsBlock: some View {
-        blockDisclosure(title: "Géographie", isExpanded: $state.bigMacExpandedRegions, enabled: true) {
+        blockDisclosure(title: "Géographie et Culture", isExpanded: $state.bigMacExpandedRegions, enabled: true) {
             VStack(alignment: .leading, spacing: 14) {
                 RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody)
 
@@ -380,6 +384,14 @@ public struct BigMacView: View {
                         CriterionRow(row: row, labelColor: columnInk, extraDotScaleFromSecond: 1.1) { state.setGeo2(row.id, value: $0) }
                             .padding(.trailing, 8)
                     }
+                }
+                .padding(.top, 12)
+
+                // Réglages Culture transférés ici (après Proximités) depuis
+                // l'ancien bloc "Culture", désormais masqué.
+                VStack(alignment: .leading, spacing: 12) {
+                    Eyebrow("CULTURE", color: columnFaint)
+                    cultureRowsContent
                 }
                 .padding(.top, 12)
                 .padding(.bottom, 6)
@@ -491,17 +503,39 @@ public struct BigMacView: View {
         ClassicStatic.groups.firstIndex { $0.title == "CULTURE" } ?? 0
     }
 
+    /// Les 3 réglettes Culture — affichées dans le bloc "Géographie et
+    /// Culture" (après Proximités). Les réglages restent actifs (ils
+    /// pilotent toujours le classement des départements) ; seul l'ancien
+    /// bloc "Culture" séparé est masqué (`isCultureBlockVisible`).
+    private var cultureRowsContent: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            ForEach(cultureRows, id: \.rowIndex) { entry in
+                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: CFont.sans(13), labelColor: columnInk, extraDotScaleFromSecond: 1.1) {
+                    state.setGroup(cultureGroupIndex, entry.rowIndex, value: min($0, 3))
+                }
+                .padding(.vertical, 4)
+                .padding(.trailing, 8)
+            }
+        }
+    }
+
+    /// Ancien bloc "Culture" séparé : masqué (son contenu vit désormais
+    /// dans "Géographie et Culture"). Repasser à `true` pour le réafficher.
+    private let isCultureBlockVisible = false
+
     private var cultureBlock: some View {
         blockDisclosure(title: "Culture", isExpanded: $state.bigMacExpandedCulture, enabled: true) {
-            VStack(alignment: .leading, spacing: 4) {
-                ForEach(cultureRows, id: \.rowIndex) { entry in
-                    CriterionRow(row: entry.row, thumbSize: 12, trackHeight: 3, labelFont: CFont.sans(13), labelColor: columnInk) {
-                        state.setGroup(cultureGroupIndex, entry.rowIndex, value: min($0, 3))
-                    }
-                    .padding(.vertical, 4)
-                    .padding(.trailing, 8)
-                }
-            }
+            cultureRowsContent
+        }
+    }
+
+    // MARK: Bloc — Climat (contenu à définir)
+
+    private var climatBlock: some View {
+        blockDisclosure(title: "Climat", isExpanded: $state.bigMacExpandedClimat, enabled: true) {
+            Text("Réglages à venir.")
+                .font(CFont.sans(13))
+                .foregroundStyle(columnFaint)
         }
     }
 
@@ -532,7 +566,7 @@ public struct BigMacView: View {
         blockDisclosure(title: "Mobilité", isExpanded: $state.bigMacExpandedMobilite, enabled: true) {
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(mobiliteRows) { row in
-                    CriterionRow(row: row, thumbSize: 12, trackHeight: 3, labelFont: CFont.sans(13), labelColor: columnInk) {
+                    CriterionRow(row: row, thumbSize: 16, trackHeight: 4, labelFont: CFont.sans(13), labelColor: columnInk, extraDotScaleFromSecond: 1.1) {
                         state.setGroup(mobiliteGroupIndex, row.id, value: min($0, 3))
                     }
                     .padding(.vertical, 4)
