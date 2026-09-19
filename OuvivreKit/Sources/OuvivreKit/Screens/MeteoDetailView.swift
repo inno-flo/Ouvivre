@@ -11,7 +11,8 @@ public struct MeteoDetailView: View {
     public static let windowID = "meteo-detail"
 
     private enum Metric: String, CaseIterable, Identifiable {
-        case temperature = "Températures"
+        case temperature = "Moyennes"
+        case maxTemperature = "Maximales"
         case precipitation = "Précipitations"
         var id: String { rawValue }
     }
@@ -46,10 +47,14 @@ public struct MeteoDetailView: View {
     private var years: [Int] { Array(Set(series.map(year))).sorted() }
 
     private func value(_ p: MeteoMensuelle.Point) -> Double? {
-        metric == .temperature ? p.temperature : p.precipitation
+        switch metric {
+        case .temperature: p.temperature
+        case .maxTemperature: p.maxTemperature
+        case .precipitation: p.precipitation
+        }
     }
 
-    private var unit: String { metric == .temperature ? "°C" : "mm" }
+    private var unit: String { metric == .precipitation ? "mm" : "°C" }
 
     public var body: some View {
         ScrollView {
@@ -59,26 +64,35 @@ public struct MeteoDetailView: View {
                     Text("Aucune donnée pour ce département.")
                         .font(CFont.sans(14)).foregroundStyle(ClassicTheme.faint)
                 } else {
-                    chartCard(title: "Température moyenne mensuelle (°C)") {
+                    chartCard(title: "Températures moyennes et maximales mensuelles (°C)") {
                         let points = series.filter { $0.temperature != nil }
                         Chart {
                             yearBands
                             ForEach(points) { p in
-                                LineMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", p.temperature ?? 0))
-                                    .foregroundStyle(theme.accent)
+                                LineMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", p.temperature ?? 0), series: .value("Série", "Moyenne"))
+                                    .foregroundStyle(by: .value("Série", "Moyenne"))
                                     .interpolationMethod(.monotone)
                                 PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", p.temperature ?? 0))
-                                    .foregroundStyle(theme.accent)
+                                    .foregroundStyle(by: .value("Série", "Moyenne"))
                                     .symbolSize(p.partial ? 20 : 30)
+                                if let tx = p.maxTemperature {
+                                    LineMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", tx), series: .value("Série", "Maximale"))
+                                        .foregroundStyle(by: .value("Série", "Maximale"))
+                                        .interpolationMethod(.monotone)
+                                    PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", tx))
+                                        .foregroundStyle(by: .value("Série", "Maximale"))
+                                        .symbolSize(p.partial ? 20 : 30)
+                                }
                             }
                             if let p = hoveredPoint(hoveredTemperatureDate, in: points) {
                                 RuleMark(x: .value("Mois", p.date, unit: .month))
                                     .foregroundStyle(ClassicTheme.faint.opacity(0.5))
                                     .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
-                                        tooltip(p, value: String(format: "%.1f °C", p.temperature ?? 0))
+                                        tooltip(p, value: String(format: "Moy. %.1f °C", p.temperature ?? 0), secondary: p.maxTemperature.map { String(format: "Max. %.1f °C", $0) })
                                     }
                             }
                         }
+                        .chartForegroundStyleScale(["Moyenne": theme.accent, "Maximale": Color(hex: 0xD98A1F)])
                         .chartXSelection(value: $hoveredTemperatureDate)
                         .chartYScale(domain: .automatic(includesZero: false))
                     }
@@ -94,7 +108,7 @@ public struct MeteoDetailView: View {
                                 RuleMark(x: .value("Mois", p.date, unit: .month))
                                     .foregroundStyle(ClassicTheme.faint.opacity(0.5))
                                     .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
-                                        tooltip(p, value: String(format: "%.1f mm", p.precipitation ?? 0))
+                                        tooltip(p, value: String(format: "%.1f mm", p.precipitation ?? 0), secondary: nil)
                                     }
                             }
                         }
@@ -142,19 +156,22 @@ public struct MeteoDetailView: View {
         return start...end
     }
 
-    /// Bandes grisées alternées par année civile (bornées au domaine X), pour
-    /// distinguer d'un coup d'œil les périodes annuelles.
+    /// Bandes grisées alternées par année civile (bornées au domaine X), avec
+    /// l'année en haut à gauche de chaque bande.
     @ChartContentBuilder
     private var yearBands: some ChartContent {
         let domain = xDomain
         ForEach(years, id: \.self) { y in
             let yearStart = Self.calendar.date(from: DateComponents(year: y, month: 1, day: 1))!
             let nextYear = Self.calendar.date(from: DateComponents(year: y + 1, month: 1, day: 1))!
-            if (y - years[0]) % 2 == 0 {
-                RectangleMark(xStart: .value("Début", max(yearStart, domain.lowerBound), unit: .month),
-                              xEnd: .value("Fin", min(nextYear, domain.upperBound), unit: .month))
-                    .foregroundStyle(ClassicTheme.track.opacity(0.45))
-            }
+            RectangleMark(xStart: .value("Début", max(yearStart, domain.lowerBound), unit: .month),
+                          xEnd: .value("Fin", min(nextYear, domain.upperBound), unit: .month))
+                .foregroundStyle((y - years[0]) % 2 == 0 ? ClassicTheme.track.opacity(0.45) : .clear)
+                .annotation(position: .overlay, alignment: .topLeading, spacing: 0) {
+                    Text(String(y))
+                        .font(CFont.mono(11, weight: .bold)).foregroundStyle(ClassicTheme.ink)
+                        .padding(.leading, 6).padding(.top, 3)
+                }
         }
     }
 
@@ -173,11 +190,12 @@ public struct MeteoDetailView: View {
         return f
     }()
 
-    private func tooltip(_ p: MeteoMensuelle.Point, value: String) -> some View {
+    private func tooltip(_ p: MeteoMensuelle.Point, value: String, secondary: String?) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(Self.monthFormatter.string(from: p.date).capitalized)
                 .font(CFont.sans(11)).foregroundStyle(ClassicTheme.faint)
             Text(value).font(CFont.sans(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
+            if let secondary { Text(secondary).font(CFont.sans(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink) }
             if p.partial { Text("mois en cours").font(CFont.sans(10)).foregroundStyle(ClassicTheme.faint2) }
         }
         .padding(.horizontal, 8).padding(.vertical, 5)
@@ -192,21 +210,14 @@ public struct MeteoDetailView: View {
             chart()
                 .chartXScale(domain: xDomain)
                 .chartXAxis {
-                    // Repères mensuels discrets ; janvier (début d'année) en
-                    // trait plein avec l'année en gras, trimestres nommés.
+                    // Repères mensuels discrets, trimestres nommés ; les années
+                    // sont indiquées dans les bandes (voir `yearBands`).
                     AxisMarks(values: .stride(by: .month)) { value in
                         let m = value.as(Date.self).map { Self.calendar.component(.month, from: $0) } ?? 0
-                        if m == 1 {
-                            AxisGridLine(stroke: StrokeStyle(lineWidth: 1.5)).foregroundStyle(ClassicTheme.faint)
-                            AxisTick(length: 8, stroke: StrokeStyle(lineWidth: 1.5)).foregroundStyle(ClassicTheme.faint)
-                            AxisValueLabel(format: .dateTime.year(), centered: false)
-                                .font(CFont.mono(11, weight: .bold)).foregroundStyle(ClassicTheme.ink)
-                        } else {
-                            AxisTick(length: 3).foregroundStyle(ClassicTheme.faint2)
-                            if m == 4 || m == 7 || m == 10 {
-                                AxisValueLabel(format: .dateTime.month(.abbreviated), centered: false)
-                                    .font(CFont.mono(9)).foregroundStyle(ClassicTheme.faint)
-                            }
+                        AxisTick(length: 3).foregroundStyle(ClassicTheme.faint2)
+                        if m == 1 || m == 4 || m == 7 || m == 10 {
+                            AxisValueLabel(format: .dateTime.month(.abbreviated), centered: false)
+                                .font(CFont.mono(9)).foregroundStyle(ClassicTheme.faint)
                         }
                     }
                 }
@@ -273,7 +284,7 @@ public struct MeteoDetailView: View {
                             .frame(width: 110, alignment: .leading)
                         ForEach(years, id: \.self) { y in
                             let p = series.first { year($0) == y && month($0) == m }
-                            Text(p.flatMap(value).map { String(format: metric == .temperature ? "%.1f" : "%.0f", $0) } ?? "–")
+                            Text(p.flatMap(value).map { String(format: metric == .precipitation ? "%.0f" : "%.1f", $0) } ?? "–")
                                 .font(CFont.mono(12))
                                 .foregroundStyle(p?.partial == true ? ClassicTheme.faint : ClassicTheme.ink)
                                 .frame(maxWidth: .infinity, alignment: .trailing)

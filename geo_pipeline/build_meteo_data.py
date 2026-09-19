@@ -13,6 +13,7 @@ https://www.data.gouv.fr/api/1/datasets/r/766dbe58-0c5a-428b-b76e-a24b3cd250e1
 
 Paramètres retenus (une ligne = un poste × un mois, colonne AAAAMM) :
   - TM : moyenne mensuelle des températures quotidiennes (°C)
+  - TX : moyenne mensuelle des températures maximales quotidiennes (°C)
   - RR : cumul mensuel des précipitations (mm)
   - NBRR : nombre de jours renseignés pour RR (sert à repérer un mois en cours)
 
@@ -114,7 +115,7 @@ def build_departement(code, months, wanted, resolve_corsica):
         names.append(f"MENSQ_{file_dep}_previous-1950-2024.csv.gz")
     names.append(f"MENSQ_{file_dep}_latest-2025-2026.csv.gz")
 
-    tm, rr, nbrr = {}, {}, {}
+    tm, tx, rr, nbrr = {}, {}, {}, {}
     for name in names:
         rows = fetch_rows(file_dep, name)
         if rows is None:
@@ -127,6 +128,8 @@ def build_departement(code, months, wanted, resolve_corsica):
                 continue
             if row["TM"]:
                 tm.setdefault(m, []).append(float(row["TM"]))
+            if row["TX"]:
+                tx.setdefault(m, []).append(float(row["TX"]))
             if row["RR"]:
                 rr.setdefault(m, []).append(float(row["RR"]))
                 if row["NBRR"]:
@@ -136,7 +139,7 @@ def build_departement(code, months, wanted, resolve_corsica):
     for m in months:
         if m not in tm and m not in rr:
             continue
-        entry = {"tm": mean(tm.get(m, [])), "rr": mean(rr.get(m, []))}
+        entry = {"tm": mean(tm.get(m, [])), "tx": mean(tx.get(m, [])), "rr": mean(rr.get(m, []))}
         if m == months[-1]:
             entry["partial"] = True
         result[m] = entry

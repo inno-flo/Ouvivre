@@ -10,6 +10,8 @@ public enum MeteoMensuelle {
         public let date: Date
         /// Température moyenne du mois (°C), moyenne des postes du département.
         public let temperature: Double?
+        /// Moyenne des températures maximales quotidiennes du mois (°C).
+        public let maxTemperature: Double?
         /// Cumul de précipitations du mois (mm), moyenne des postes.
         public let precipitation: Double?
         /// Mois en cours : les valeurs ne couvrent pas le mois entier.
@@ -19,6 +21,7 @@ public enum MeteoMensuelle {
 
     private struct RawPoint: Decodable {
         let tm: Double?
+        let tx: Double?
         let rr: Double?
         let partial: Bool?
     }
@@ -56,7 +59,7 @@ public enum MeteoMensuelle {
         return root.departements.mapValues { months in
             months.compactMap { key, raw -> Point? in
                 guard let date = monthStart(key) else { return nil }
-                return Point(date: date, temperature: raw.tm, precipitation: raw.rr, partial: raw.partial ?? false)
+                return Point(date: date, temperature: raw.tm, maxTemperature: raw.tx, precipitation: raw.rr, partial: raw.partial ?? false)
             }
             .sorted { $0.date < $1.date }
         }
