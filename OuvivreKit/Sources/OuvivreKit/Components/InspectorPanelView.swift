@@ -12,6 +12,7 @@ public struct InspectorPanelView: View {
     @EnvironmentObject var theme: ClassicTheme
     @EnvironmentObject var state: ClassicState
     @Environment(\.openURL) private var openURL
+    @Environment(\.openWindow) private var openWindow
     let title: String
     /// Critère (libellé + clé `CultureScores.criterionKeys`) et département
     /// courant — `nil` en dehors de Big Mac ou tant qu'aucun département
@@ -195,6 +196,9 @@ public struct InspectorPanelView: View {
             }
         }
         .padding(.top, 4)
+        // Double-clic : détail dans une fenêtre séparée (scène déclarée par l'app).
+        .simultaneousGesture(TapGesture(count: 2).onEnded { openWindow(id: MeteoDetailView.windowID, value: code) })
+        .help("Double-clic pour ouvrir le détail dans une fenêtre")
     }
 
     private static let meteoKey = "meteo"

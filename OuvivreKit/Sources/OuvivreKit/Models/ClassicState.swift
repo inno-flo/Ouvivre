@@ -55,7 +55,24 @@ public final class ClassicState: ObservableObject {
         return groups
     }()
 
-    public init() {}
+    private var favoritesObserver: NSObjectProtocol?
+
+    public init() {
+        // Les favoris sont partagés entre instances (fenêtre principale et
+        // fenêtre de détail météo, chacune avec sa propre `ClassicState`) via
+        // `UserDefaults` : on recharge quand une autre instance les modifie.
+        favoritesObserver = NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                let stored = Set(UserDefaults.standard.stringArray(forKey: "favoriteDepartementCodes") ?? [])
+                if stored != self.favoriteDepartementCodes { self.favoriteDepartementCodes = stored }
+            }
+        }
+    }
+
+    deinit {
+        if let favoritesObserver { NotificationCenter.default.removeObserver(favoritesObserver) }
+    }
 
     public func go(_ screen: ClassicScreen) { self.screen = screen }
 

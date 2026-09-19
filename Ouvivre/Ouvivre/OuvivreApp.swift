@@ -23,5 +23,11 @@ struct OuvivreApp: App {
                 }
             }
         }
+
+        // Détail météo d'un département (double-clic sur la section Météo de
+        // l'inspecteur) — la valeur de la scène est le code du département.
+        WindowGroup("Météo", id: MeteoDetailView.windowID, for: String.self) { $code in
+            if let code { MeteoDetailView(departementCode: code) }
+        }
     }
 }
