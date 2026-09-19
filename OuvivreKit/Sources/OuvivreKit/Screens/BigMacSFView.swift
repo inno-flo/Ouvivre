@@ -288,20 +288,6 @@ public struct BigMacSFView: View {
         }
     }
 
-    // MARK: Dépendances légères entre blocs
-
-    /// Bloc 1 "actif" dès qu'un pays est choisi — c'est toujours le cas
-    /// (un pays par défaut existe), donc Régions est utilisable d'emblée.
-    private var paysHasSelection: Bool { !state.country.isEmpty }
-    /// Bloc 2 "actif" dès qu'au moins une taille de commune est cochée.
-    private var regionsHasSelection: Bool {
-        state.includeVillage || state.includePetiteVille || state.includeVilleMoyenne || state.includeGrandeVille
-    }
-    /// Bloc 3 "actif" dès qu'un des 3 critères culture retenus a un poids > 0.
-    private var cultureHasSelection: Bool {
-        cultureRows.contains { $0.row.value > 0 }
-    }
-
     // MARK: Colonne
 
     private var settingsColumn: some View {
@@ -340,7 +326,7 @@ public struct BigMacSFView: View {
     private var moreCommunes: [CommuneSizeEntry] { Array(matchingCommunes.dropFirst(topCommunesCount)) }
 
     private var regionsBlock: some View {
-        blockDisclosure(title: "Régions", isExpanded: $state.bigMacExpandedRegions, enabled: paysHasSelection) {
+        blockDisclosure(title: "Régions", isExpanded: $state.bigMacExpandedRegions, enabled: true) {
             VStack(alignment: .leading, spacing: 14) {
                 RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody)
 
@@ -499,7 +485,7 @@ public struct BigMacSFView: View {
     }
 
     private var cultureBlock: some View {
-        blockDisclosure(title: "Culture", isExpanded: $state.bigMacExpandedCulture, enabled: regionsHasSelection) {
+        blockDisclosure(title: "Culture", isExpanded: $state.bigMacExpandedCulture, enabled: true) {
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(cultureRows, id: \.rowIndex) { entry in
                     CriterionRow(row: entry.row, thumbSize: 12, trackHeight: 3, labelFont: sfTitle(13), labelColor: columnInk, tagFont: sfTitle(11)) {
@@ -536,7 +522,7 @@ public struct BigMacSFView: View {
     }
 
     private var mobiliteBlock: some View {
-        blockDisclosure(title: "Mobilité", isExpanded: $state.bigMacExpandedMobilite, enabled: cultureHasSelection) {
+        blockDisclosure(title: "Mobilité", isExpanded: $state.bigMacExpandedMobilite, enabled: true) {
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(mobiliteRows) { row in
                     CriterionRow(row: row, thumbSize: 12, trackHeight: 3, labelFont: sfTitle(13), labelColor: columnInk, tagFont: sfTitle(11)) {

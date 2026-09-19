@@ -6,8 +6,8 @@ import MapKit
 /// blocs rétractables (`DisclosureGroup`) qui reprennent, dans l'ordre,
 /// Pays → Régions (+ tailles de commune) → Culture → Mobilité. Chaque bloc
 /// hérite de l'état partagé `ClassicState`, donc les choix persistent d'un
-/// bloc à l'autre ; un bloc reste désactivé tant que le précédent n'a pas au
-/// moins une sélection active (léger effet de dépendance, sans graphe complexe).
+/// bloc à l'autre ; les blocs sont indépendants (pas d'entonnoir) : chaque réglage
+/// met à jour la carte en direct.
 public struct BigMacView: View {
     @EnvironmentObject var theme: ClassicTheme
     @EnvironmentObject var state: ClassicState
@@ -293,20 +293,6 @@ public struct BigMacView: View {
         }
     }
 
-    // MARK: Dépendances légères entre blocs
-
-    /// Bloc 1 "actif" dès qu'un pays est choisi — c'est toujours le cas
-    /// (un pays par défaut existe), donc Régions est utilisable d'emblée.
-    private var paysHasSelection: Bool { !state.country.isEmpty }
-    /// Bloc 2 "actif" dès qu'au moins une taille de commune est cochée.
-    private var regionsHasSelection: Bool {
-        state.includeVillage || state.includePetiteVille || state.includeVilleMoyenne || state.includeGrandeVille
-    }
-    /// Bloc 3 "actif" dès qu'un des 3 critères culture retenus a un poids > 0.
-    private var cultureHasSelection: Bool {
-        cultureRows.contains { $0.row.value > 0 }
-    }
-
     // MARK: Colonne
 
     private var settingsColumn: some View {
@@ -347,7 +333,7 @@ public struct BigMacView: View {
     private var moreCommunes: [CommuneSizeEntry] { Array(matchingCommunes.dropFirst(topCommunesCount)) }
 
     private var regionsBlock: some View {
-        blockDisclosure(title: "Géographie", isExpanded: $state.bigMacExpandedRegions, enabled: paysHasSelection) {
+        blockDisclosure(title: "Géographie", isExpanded: $state.bigMacExpandedRegions, enabled: true) {
             VStack(alignment: .leading, spacing: 14) {
                 RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody)
 
@@ -506,7 +492,7 @@ public struct BigMacView: View {
     }
 
     private var cultureBlock: some View {
-        blockDisclosure(title: "Culture", isExpanded: $state.bigMacExpandedCulture, enabled: regionsHasSelection) {
+        blockDisclosure(title: "Culture", isExpanded: $state.bigMacExpandedCulture, enabled: true) {
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(cultureRows, id: \.rowIndex) { entry in
                     CriterionRow(row: entry.row, thumbSize: 12, trackHeight: 3, labelFont: CFont.sans(13), labelColor: columnInk) {
@@ -543,7 +529,7 @@ public struct BigMacView: View {
     }
 
     private var mobiliteBlock: some View {
-        blockDisclosure(title: "Mobilité", isExpanded: $state.bigMacExpandedMobilite, enabled: cultureHasSelection) {
+        blockDisclosure(title: "Mobilité", isExpanded: $state.bigMacExpandedMobilite, enabled: true) {
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(mobiliteRows) { row in
                     CriterionRow(row: row, thumbSize: 12, trackHeight: 3, labelFont: CFont.sans(13), labelColor: columnInk) {
