@@ -381,7 +381,7 @@ public struct BigMacView: View {
                     }
 
                     ForEach(derived.geo2Rows) { row in
-                        CriterionRow(row: row, labelColor: columnInk, extraDotScaleFromSecond: 1.1) { state.setGeo2(row.id, value: $0) }
+                        CriterionRow(row: row, labelColor: columnInk, dotGrowthPerStep: 1.5) { state.setGeo2(row.id, value: $0) }
                             .padding(.trailing, 8)
                     }
                 }
@@ -510,7 +510,7 @@ public struct BigMacView: View {
     private var cultureRowsContent: some View {
         VStack(alignment: .leading, spacing: 4) {
             ForEach(cultureRows, id: \.rowIndex) { entry in
-                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: CFont.sans(13), labelColor: columnInk, extraDotScaleFromSecond: 1.1) {
+                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: CFont.sans(13), labelColor: columnInk, dotGrowthPerStep: 1.5) {
                     state.setGroup(cultureGroupIndex, entry.rowIndex, value: min($0, 2))
                 }
                 .padding(.vertical, 4)

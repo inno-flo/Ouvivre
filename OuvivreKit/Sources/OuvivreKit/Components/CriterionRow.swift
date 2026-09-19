@@ -15,18 +15,24 @@ public struct CriterionRow: View {
     /// réglettes de proximité, qui veulent des puces 2, 3, 4... 10 % plus
     /// grosses que le reste des réglettes de l'app.
     var extraDotScaleFromSecond: CGFloat = 1.0
+    /// Facteur de croissance de chaque puce par rapport à la précédente
+    /// (1,25 par défaut = +25 % ; "Géographie et Culture" de Big Mac passe
+    /// 1,5 = +50 % : "important" 50 % plus grosse qu'"indifférent",
+    /// "déterminant" 50 % plus grosse qu'"important").
+    var dotGrowthPerStep: CGFloat = 1.25
     /// Override for the tag's default IBM Plex Mono font — e.g. Big Mac SF
     /// swaps in SF Pro Medium here without touching every other caller.
     var tagFont: Font?
     let onChange: (Int) -> Void
 
-    public init(row: WeightedRow, thumbSize: CGFloat = 16, trackHeight: CGFloat = 4, labelFont: Font = CFont.sans(14, weight: .medium), labelColor: Color = ClassicTheme.ink, extraDotScaleFromSecond: CGFloat = 1.0, tagFont: Font? = nil, onChange: @escaping (Int) -> Void) {
+    public init(row: WeightedRow, thumbSize: CGFloat = 16, trackHeight: CGFloat = 4, labelFont: Font = CFont.sans(14, weight: .medium), labelColor: Color = ClassicTheme.ink, extraDotScaleFromSecond: CGFloat = 1.0, dotGrowthPerStep: CGFloat = 1.25, tagFont: Font? = nil, onChange: @escaping (Int) -> Void) {
         self.row = row
         self.thumbSize = thumbSize
         self.trackHeight = trackHeight
         self.labelFont = labelFont
         self.labelColor = labelColor
         self.extraDotScaleFromSecond = extraDotScaleFromSecond
+        self.dotGrowthPerStep = dotGrowthPerStep
         self.tagFont = tagFont
         self.onChange = onChange
     }
@@ -58,7 +64,7 @@ public struct CriterionRow: View {
                         // (la 1ʳᵉ garde la taille de base 4pt) ; au-delà de la
                         // 1ʳᵉ, `extraDotScaleFromSecond` applique un facteur
                         // supplémentaire (réglettes de proximité : +10 %).
-                        let dotSize = 4 * pow(1.25, CGFloat(step)) * (step > 0 ? extraDotScaleFromSecond : 1)
+                        let dotSize = 4 * pow(dotGrowthPerStep, CGFloat(step)) * (step > 0 ? extraDotScaleFromSecond : 1)
                         Circle()
                             .fill(step <= row.value ? Color.white.opacity(0.9) : ClassicTheme.faint2)
                             .frame(width: dotSize, height: dotSize)
