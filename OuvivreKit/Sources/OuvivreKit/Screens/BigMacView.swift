@@ -217,10 +217,19 @@ public struct BigMacView: View {
         cultureRows.map(\.row.value)
     }
 
+    /// Bloc Mobilité désactivé et masqué pour l'instant : ni affiché, ni pris
+    /// en compte dans le classement/filtrage des départements (ses poids
+    /// par défaut de `ClassicStatic` étant non nuls, il fausserait sinon
+    /// silencieusement le résultat malgré son absence à l'écran). Repasser à
+    /// `true` pour le réactiver tel quel — tout le câblage reste en place.
+    private let isMobiliteEnabled = false
+
     /// Poids Mobilité (Pistes cyclables, Gares) actuellement réglés, dans
-    /// l'ordre de `MobiliteScores.criterionKeys`.
+    /// l'ordre de `MobiliteScores.criterionKeys` — vide tant que le bloc est
+    /// désactivé (les filtres/scores ci-dessous traitent alors l'absence de
+    /// poids comme "aucun critère Mobilité").
     private var mobiliteWeights: [Int] {
-        mobiliteRows.map(\.value)
+        isMobiliteEnabled ? mobiliteRows.map(\.value) : []
     }
 
     /// Tant qu'aucun critère (proximité ou Culture) n'est réglé, tous les
@@ -305,7 +314,9 @@ public struct BigMacView: View {
             paysBlock
             regionsBlock
             cultureBlock
-            mobiliteBlock
+            if isMobiliteEnabled {
+                mobiliteBlock
+            }
         }
         .padding(columnInnerPadding)
     }
@@ -336,7 +347,7 @@ public struct BigMacView: View {
     private var moreCommunes: [CommuneSizeEntry] { Array(matchingCommunes.dropFirst(topCommunesCount)) }
 
     private var regionsBlock: some View {
-        blockDisclosure(title: "Régions", isExpanded: $state.bigMacExpandedRegions, enabled: paysHasSelection) {
+        blockDisclosure(title: "Géographie", isExpanded: $state.bigMacExpandedRegions, enabled: paysHasSelection) {
             VStack(alignment: .leading, spacing: 14) {
                 RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody)
 
