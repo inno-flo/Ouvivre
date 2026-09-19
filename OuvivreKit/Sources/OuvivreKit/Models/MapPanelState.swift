@@ -12,13 +12,13 @@ public final class MapPanelState: ObservableObject {
     /// threading a binding across the SwiftUI/App boundary.
     public static let shared = MapPanelState()
 
-    @Published public var isVisible: Bool = true
+    /// Règle : l'inspecteur est fermé par défaut, sur tous les écrans. Il ne
+    /// s'ouvre que sur action de l'utilisateur (bouton de la toolbar) ou,
+    /// dans Big Mac, en cliquant un département affiché sur la carte.
+    @Published public var isVisible: Bool = false
     /// Visibilité de l'inspecteur spécifique à Big Mac — séparée de
     /// `isVisible` pour ne pas dépendre du réglage des autres écrans.
-    /// Ouvert par défaut : il affiche la fiche pays dès l'arrivée sur
-    /// l'écran (déplacée hors du bloc "Pays"), même avant tout clic sur un
-    /// département.
-    @Published public var bigMacInspectorVisible: Bool = true
+    @Published public var bigMacInspectorVisible: Bool = false
     @Published public var title: String = "France"
     @Published public var coordinate: CLLocationCoordinate2D
     @Published public var spanDegrees: Double
