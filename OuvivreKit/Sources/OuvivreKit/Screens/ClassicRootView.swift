@@ -106,7 +106,7 @@ public struct ClassicRootView: View {
                         } label: {
                             Image(systemName: "info.circle")
                         }
-                        .help("Afficher/masquer la carte")
+                        .help(inspectorBinding.wrappedValue ? "Masquer l'inspecteur" : "Afficher l'inspecteur")
                     }
                 }
                 .inspector(isPresented: inspectorBinding) {
