@@ -1,4 +1,5 @@
 import SwiftUI
+import Charts
 #if os(macOS)
 import AppKit
 #endif
@@ -85,6 +86,8 @@ public struct InspectorPanelView: View {
                     ForEach(activeCultureCriteria, id: \.key) { criterion in
                         criterionSection(criterion)
                     }
+
+                    meteoSection(code)
                 }
 
                 Spacer(minLength: 0)
@@ -129,6 +132,78 @@ public struct InspectorPanelView: View {
             }
         }
         .padding(.bottom, 8)
+    }
+
+    /// Températures moyennes et précipitations mensuelles du département sur
+    /// les 5 dernières années glissantes (données Météo-France, moyenne des
+    /// postes du département — voir `MeteoMensuelle`).
+    @ViewBuilder
+    private func meteoSection(_ code: String) -> some View {
+        let series = MeteoMensuelle.series(forDepartementCode: code)
+        let isCollapsed = collapsedKeys.contains(Self.meteoKey)
+        VStack(alignment: .leading, spacing: 10) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    if isCollapsed { collapsedKeys.remove(Self.meteoKey) } else { collapsedKeys.insert(Self.meteoKey) }
+                }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "cloud.sun.fill").foregroundStyle(theme.accent)
+                    Text("MÉTÉO · 5 DERNIÈRES ANNÉES")
+                        .font(CFont.mono(11, weight: .semibold))
+                        .foregroundStyle(ClassicTheme.faint)
+                    Spacer()
+                    Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(ClassicTheme.faint)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
+            if !isCollapsed {
+                if series.isEmpty {
+                    Text("Aucune donnée pour ce département.")
+                        .font(CFont.sans(13))
+                        .foregroundStyle(ClassicTheme.faint)
+                } else {
+                    Text("Température moyenne (°C)")
+                        .font(CFont.sans(12)).foregroundStyle(ClassicTheme.faint)
+                    Chart(series.filter { $0.temperature != nil }) { point in
+                        LineMark(x: .value("Mois", point.date, unit: .month), y: .value("°C", point.temperature ?? 0))
+                            .foregroundStyle(theme.accent)
+                            .interpolationMethod(.monotone)
+                    }
+                    .chartXAxis { Self.meteoXAxis }
+                    .chartYScale(domain: .automatic(includesZero: false))
+                    .frame(height: 110)
+
+                    Text("Précipitations (mm / mois)")
+                        .font(CFont.sans(12)).foregroundStyle(ClassicTheme.faint)
+                    Chart(series.filter { $0.precipitation != nil }) { point in
+                        BarMark(x: .value("Mois", point.date, unit: .month), y: .value("mm", point.precipitation ?? 0))
+                            .foregroundStyle(theme.accent.opacity(point.partial ? 0.4 : 0.8))
+                    }
+                    .chartXAxis { Self.meteoXAxis }
+                    .frame(height: 110)
+
+                    if series.last?.partial == true {
+                        Text("Dernier mois en cours (données partielles).")
+                            .font(CFont.sans(11)).foregroundStyle(ClassicTheme.faint)
+                    }
+                }
+            }
+        }
+        .padding(.top, 4)
+    }
+
+    private static let meteoKey = "meteo"
+
+    private static var meteoXAxis: some AxisContent {
+        AxisMarks(values: .stride(by: .year)) { _ in
+            AxisGridLine()
+            AxisValueLabel(format: .dateTime.year(), centered: false)
+        }
     }
 
     /// Le libellé du critère (repliable), suivi des noms des sites/événements

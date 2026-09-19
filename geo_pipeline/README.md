@@ -167,3 +167,22 @@ confrontation à un autre jeu de données), et est vérifiée automatiquement
 
 Ne nécessite aucun nouveau téléchargement (réutilise `data/raw/departements.json`,
 déjà en cache depuis `build_france_geo_scores.py`).
+
+## meteo_monthly.json (Inspecteur — section Météo)
+
+Températures moyennes (`TM`, °C) et précipitations (`RR`, mm) mensuelles par
+département sur 5 ans glissants (mois courant de N-5 → mois courant de N),
+depuis les données climatologiques mensuelles de Météo-France :
+https://meteo.data.gouv.fr/datasets/6569b3d7d193b4daf2b43edc
+
+Un fichier CSV.gz par département et par période (`previous-1950-2024`,
+`latest-2025-2026`). Chaque département = moyenne simple des postes ; le mois
+courant est partiel (`partial: true`). Corse : fichier unique "20" réparti en
+2A/2B via la commune INSEE du poste. Mayotte (976) n'est pas publiée.
+
+```bash
+.venv/bin/python build_meteo_data.py   # ~100 fichiers, écrit data/out/meteo_monthly.json
+cp data/out/meteo_monthly.json ../OuvivreKit/Sources/OuvivreKit/Resources/
+```
+
+À relancer pour rafraîchir (la fenêtre glisse avec la date du jour).
