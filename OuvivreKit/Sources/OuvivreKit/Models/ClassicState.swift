@@ -33,6 +33,11 @@ public final class ClassicState: ObservableObject {
     @Published public var bigMacExpandedCulture: Bool = false
     @Published public var bigMacExpandedMobilite: Bool = false
     @Published public var bigMacExpandedClimat: Bool = false
+    /// Codes INSEE des départements mis en favori depuis l'inspecteur,
+    /// persistés dans `UserDefaults` entre les lancements.
+    @Published public var favoriteDepartementCodes: Set<String> = Set(UserDefaults.standard.stringArray(forKey: "favoriteDepartementCodes") ?? []) {
+        didSet { UserDefaults.standard.set(Array(favoriteDepartementCodes).sorted(), forKey: "favoriteDepartementCodes") }
+    }
     @Published public var meteo: [Int] = ClassicStatic.meteo.map(\.1)
     /// One weight array per group, indexed like `ClassicStatic.groups`. Les 3
     /// critères CULTURE repris par "Big Mac" (Musées, Lieux du patrimoine,
@@ -72,6 +77,10 @@ public final class ClassicState: ObservableObject {
         DispatchQueue.main.async { [weak self] in
             self?.groups[groupIndex][rowIndex] = clamped
         }
+    }
+
+    public func toggleFavoriteDepartement(_ code: String) {
+        if favoriteDepartementCodes.contains(code) { favoriteDepartementCodes.remove(code) } else { favoriteDepartementCodes.insert(code) }
     }
 
     public func setCountry(_ name: String) { country = name; query = name }

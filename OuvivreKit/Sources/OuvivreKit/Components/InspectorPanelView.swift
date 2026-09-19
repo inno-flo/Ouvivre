@@ -9,6 +9,7 @@ import AppKit
 /// propres boutons de contrôle dans la toolbar).
 public struct InspectorPanelView: View {
     @EnvironmentObject var theme: ClassicTheme
+    @EnvironmentObject var state: ClassicState
     @Environment(\.openURL) private var openURL
     let title: String
     /// Critère (libellé + clé `CultureScores.criterionKeys`) et département
@@ -64,11 +65,16 @@ public struct InspectorPanelView: View {
                             .padding(.vertical, 3)
                             .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
                         Spacer(minLength: 8)
-                        // Emplacement de la future fonction favoris — pas
-                        // encore câblé.
-                        Image(systemName: "star.circle")
-                            .font(.system(size: 20))
-                            .foregroundStyle(ClassicTheme.faint)
+                        Button {
+                            state.toggleFavoriteDepartement(code)
+                        } label: {
+                            let isFavorite = state.favoriteDepartementCodes.contains(code)
+                            Image(systemName: isFavorite ? "star.fill" : "star")
+                                .font(.system(size: 20))
+                                .foregroundStyle(isFavorite ? theme.accent : ClassicTheme.faint)
+                        }
+                        .buttonStyle(.plain)
+                        .help(state.favoriteDepartementCodes.contains(code) ? "Retirer des favoris" : "Ajouter aux favoris")
                     }
                     if let chefLieu = FranceGeoData.chefsLieux[code] {
                         Text("Chef-lieu : \(chefLieu)")
