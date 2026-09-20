@@ -98,18 +98,12 @@ public struct FavorisView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Eyebrow("FAVORIS", color: theme.accent).padding(.bottom, 16)
             if departements.isEmpty {
                 Text("Aucun favori pour l'instant. Cliquez sur l'étoile d'un département dans l'inspecteur pour l'ajouter ici.")
                     .font(CFont.sans(15))
                     .foregroundStyle(ClassicTheme.sub)
                     .frame(maxWidth: 460, alignment: .leading)
             } else {
-                Text("La meilleure valeur de chaque ligne est mise en avant. Les scores sont sur 100.")
-                    .font(CFont.sans(15))
-                    .foregroundStyle(ClassicTheme.sub)
-                    .frame(maxWidth: 460, alignment: .leading)
-                    .padding(.bottom, 24)
                 ScrollView(.horizontal, showsIndicators: true) {
                     table.frame(width: tableWidth)
                 }
@@ -187,7 +181,7 @@ public struct FavorisView: View {
             Section(id: "chefLieu", title: "", rows: [
                 Row(id: "chefLieu", label: "Chef-lieu", cells: deps.map { Cell(text: FranceGeoData.chefsLieux[$0.codeInsee] ?? "—", value: nil) }, higherIsBetter: nil)
             ]),
-            Section(id: "geo", title: "GÉOGRAPHIE", rows: geoRows),
+            Section(id: "geo", title: "GÉOGRAPHIE (les scores de correspondance entre le département et les critères de choix sont sur 100)", rows: geoRows),
             Section(id: "culture", title: "CULTURE (nombre de lieux et d'événements)", rows: cultureRows),
             Section(id: "meteo", title: "MÉTÉO (valeurs sur les 12 derniers mois)", rows: meteoRows)
         ]
@@ -410,7 +404,7 @@ public struct FavorisView: View {
                             .overlay(alignment: .topTrailing) { detailButton(row: row, code: d.codeInsee) }
                             .overlay(alignment: .bottom) {
                                 Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1)
-                                    .padding(.horizontal, Self.shortSeparatorRowIDs.contains(row.id) ? 56 : 0)
+                                    .padding(.horizontal, Self.shortSeparatorRowIDs.contains(row.id) ? 28 : 0)
                             }
                         }
                     }

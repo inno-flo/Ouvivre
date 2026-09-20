@@ -27,13 +27,13 @@ public struct SidebarNav: View {
             Section {
                 HStack(spacing: 9) {
                     Image(systemName: state.favoriteDepartementCodes.isEmpty ? "star" : "star.fill").frame(width: 16)
-                    Text("Comparatif").font(.system(size: 13, weight: state.screen == .favoris ? .semibold : .regular))
+                    Text("Favoris").font(.system(size: 13, weight: state.screen == .favoris ? .semibold : .regular))
                     Spacer(minLength: 4)
                     Text("\(state.favoriteDepartementCodes.count)").font(CFont.mono(10)).opacity(0.5)
                 }
                 .tag(ClassicScreen.favoris)
             } header: {
-                Text("Favoris").font(.system(size: 11)).foregroundStyle(.secondary)
+                Text("Comparateur").font(.system(size: 11)).foregroundStyle(.secondary)
             }
             if !derived.countrySources.isEmpty {
                 Section {
