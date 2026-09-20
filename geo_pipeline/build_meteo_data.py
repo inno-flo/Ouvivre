@@ -14,6 +14,7 @@ https://www.data.gouv.fr/api/1/datasets/r/766dbe58-0c5a-428b-b76e-a24b3cd250e1
 Paramètres retenus (une ligne = un poste × un mois, colonne AAAAMM) :
   - TM : moyenne mensuelle des températures quotidiennes (°C)
   - TX : moyenne mensuelle des températures maximales quotidiennes (°C)
+  - TXAB / TXDAT : maximum absolu du mois (°C) et jour où il a été relevé
   - UMM : humidité relative moyenne mensuelle (%)
   - FFM : vitesse moyenne mensuelle du vent à 10 m (m/s)
   - RR : cumul mensuel des précipitations (mm)
@@ -137,7 +138,7 @@ def mean(values):
 
 
 def build_departement(code, months, wanted, resolve_corsica):
-    """{AAAAMM: {tm, tx, tr, rr, partial}} pour un département (ou 2A/2B)."""
+    """{AAAAMM: {tm, tx, tr, xa, xn, xd, rr, partial}} pour un département (ou 2A/2B)."""
     file_dep = "20" if code in ("2A", "2B") else code
     years = {m[:4] for m in months}
     names = []
@@ -146,6 +147,7 @@ def build_departement(code, months, wanted, resolve_corsica):
     names.append(f"MENSQ_{file_dep}_latest-2025-2026.csv.gz")
 
     tm, tx, um, ff, rr, nbrr = {}, {}, {}, {}, {}, {}
+    record = {}  # AAAAMM -> (TXAB, nom du poste, jour) du poste le plus chaud
     for name in names:
         rows = fetch_rows(file_dep, name)
         if rows is None:
@@ -160,6 +162,8 @@ def build_departement(code, months, wanted, resolve_corsica):
                 tm.setdefault(m, []).append(float(row["TM"]))
             if row["TX"]:
                 tx.setdefault(m, []).append(float(row["TX"]))
+            if row["TXAB"] and (m not in record or float(row["TXAB"]) > record[m][0]):
+                record[m] = (float(row["TXAB"]), row["NOM_USUEL"], int(row["TXDAT"]) if row["TXDAT"] else None)
             if row["UMM"]:
                 um.setdefault(m, []).append(float(row["UMM"]))
             if row["FFM"]:
@@ -180,6 +184,8 @@ def build_departement(code, months, wanted, resolve_corsica):
             "tr": feels_like(t, mean(um.get(m, [])), mean(ff.get(m, []))),
             "rr": mean(rr.get(m, [])),
         }
+        if m in record:
+            entry["xa"], entry["xn"], entry["xd"] = record[m]
         if m == months[-1]:
             entry["partial"] = True
         result[m] = entry

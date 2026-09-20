@@ -12,6 +12,11 @@ public enum MeteoMensuelle {
         public let temperature: Double?
         /// Moyenne des températures maximales quotidiennes du mois (°C).
         public let maxTemperature: Double?
+        /// Maximum absolu du mois (°C) dans le département, avec le poste et le
+        /// jour du mois où il a été relevé.
+        public let absoluteMax: Double?
+        public let absoluteMaxStation: String?
+        public let absoluteMaxDay: Int?
         /// Température ressentie du mois (°C), calculée hors ligne depuis la
         /// température moyenne, l'humidité et le vent (indice de chaleur /
         /// refroidissement éolien) — estimation, pas une mesure.
@@ -27,6 +32,9 @@ public enum MeteoMensuelle {
         let tm: Double?
         let tx: Double?
         let tr: Double?
+        let xa: Double?
+        let xn: String?
+        let xd: Int?
         let rr: Double?
         let partial: Bool?
     }
@@ -64,7 +72,7 @@ public enum MeteoMensuelle {
         return root.departements.mapValues { months in
             months.compactMap { key, raw -> Point? in
                 guard let date = monthStart(key) else { return nil }
-                return Point(date: date, temperature: raw.tm, maxTemperature: raw.tx, feltTemperature: raw.tr, precipitation: raw.rr, partial: raw.partial ?? false)
+                return Point(date: date, temperature: raw.tm, maxTemperature: raw.tx, absoluteMax: raw.xa, absoluteMaxStation: raw.xn, absoluteMaxDay: raw.xd, feltTemperature: raw.tr, precipitation: raw.rr, partial: raw.partial ?? false)
             }
             .sorted { $0.date < $1.date }
         }

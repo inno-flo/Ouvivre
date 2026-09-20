@@ -14,9 +14,13 @@ public struct MeteoDetailView: View {
     /// dans le JSON, repasser à `true` pour réafficher courbe, infobulle et bouton.
     private static let showFeltTemperature = false
 
+    /// Synthèse rédigée masquée pour le moment : repasser à `true` pour la réafficher.
+    private static let showSynthesis = false
+
     private enum Metric: String, CaseIterable, Identifiable {
         case temperature = "Moyennes"
         case maxTemperature = "Maximales"
+        case record = "Records"
         case felt = "Ressenties"
         case precipitation = "Précipitations"
         var id: String { rawValue }
@@ -25,6 +29,7 @@ public struct MeteoDetailView: View {
             switch self {
             case .temperature: "thermometer.medium"
             case .maxTemperature: "thermometer.high"
+            case .record: "thermometer.sun"
             case .felt: "thermometer.variable.and.figure"
             case .precipitation: "cloud.rain"
             }
@@ -65,6 +70,7 @@ public struct MeteoDetailView: View {
         switch metric {
         case .temperature: p.temperature
         case .maxTemperature: p.maxTemperature
+        case .record: p.absoluteMax
         case .felt: p.feltTemperature
         case .precipitation: p.precipitation
         }
@@ -76,12 +82,12 @@ public struct MeteoDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 header
-                synthesisView
+                if Self.showSynthesis { synthesisView }
                 if series.isEmpty {
                     Text("Aucune donnée pour ce département.")
                         .font(CFont.sans(14)).foregroundStyle(ClassicTheme.faint)
                 } else {
-                    chartCard(title: Self.showFeltTemperature ? "Températures moyennes, ressenties et maximales mensuelles (°C)" : "Températures moyennes et maximales mensuelles (°C)") {
+                    chartCard(title: Self.showFeltTemperature ? "Températures moyennes, ressenties, maximales et records mensuels (°C)" : "Températures moyennes, maximales et records mensuels (°C)") {
                         let points = series.filter { $0.temperature != nil }
                         Chart {
                             yearBands
@@ -97,6 +103,12 @@ public struct MeteoDetailView: View {
                                         .foregroundStyle(by: .value("Série", "Ressentie"))
                                         .interpolationMethod(.monotone)
                                         .lineStyle(StrokeStyle(lineWidth: 2, dash: [5, 3]))
+                                }
+                                if let xa = p.absoluteMax {
+                                    PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", xa))
+                                        .foregroundStyle(by: .value("Série", "Record absolu"))
+                                        .symbol(.diamond)
+                                        .symbolSize(p.partial ? 25 : 45)
                                 }
                                 if let tx = p.maxTemperature {
                                     LineMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", tx), series: .value("Série", "Maximale"))
@@ -115,20 +127,20 @@ public struct MeteoDetailView: View {
                                 PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", p.maxTemperature ?? p.temperature ?? 0))
                                     .foregroundStyle(ClassicTheme.ink).symbolSize(p.maxTemperature == nil ? 0 : 90)
                                     .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .fit(to: .chart))) {
-                                        tooltip(p, value: String(format: "Moy. %.1f °C", p.temperature ?? 0), secondary: [Self.showFeltTemperature ? p.feltTemperature.map { String(format: "Ress. %.1f °C", $0) } : nil, p.maxTemperature.map { String(format: "Max. %.1f °C", $0) }].compactMap { $0 }.joined(separator: "\n"))
+                                        tooltip(p, value: String(format: "Moy. %.1f °C", p.temperature ?? 0), secondary: temperatureLines(p))
                                     }
                             }
                             if let p = hoveredPoint(hoveredTemperatureDate, in: points), selectedMonth != month(p) {
                                 RuleMark(x: .value("Mois", p.date, unit: .month))
                                     .foregroundStyle(ClassicTheme.faint.opacity(0.5))
                                     .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
-                                        tooltip(p, value: String(format: "Moy. %.1f °C", p.temperature ?? 0), secondary: [Self.showFeltTemperature ? p.feltTemperature.map { String(format: "Ress. %.1f °C", $0) } : nil, p.maxTemperature.map { String(format: "Max. %.1f °C", $0) }].compactMap { $0 }.joined(separator: "\n"))
+                                        tooltip(p, value: String(format: "Moy. %.1f °C", p.temperature ?? 0), secondary: temperatureLines(p))
                                     }
                             }
                         }
                         .chartForegroundStyleScale(Self.showFeltTemperature
-                            ? ["Moyenne": theme.accent, "Ressentie": Color(hex: 0x2F7F8F), "Maximale": Color(hex: 0xD98A1F)]
-                            : ["Moyenne": theme.accent, "Maximale": Color(hex: 0xD98A1F)])
+                            ? ["Moyenne": theme.accent, "Ressentie": Color(hex: 0x2F7F8F), "Maximale": Color(hex: 0xD98A1F), "Record absolu": Color(hex: 0x8E3B6E)]
+                            : ["Moyenne": theme.accent, "Maximale": Color(hex: 0xD98A1F), "Record absolu": Color(hex: 0x8E3B6E)])
                         .chartXSelection(value: $hoveredTemperatureDate)
                         .chartGesture { proxy in monthTap(proxy, points: points) }
                         .chartYScale(domain: .automatic(includesZero: false))
@@ -391,6 +403,22 @@ public struct MeteoDetailView: View {
         f.dateFormat = "LLLL yyyy"
         return f
     }()
+
+    /// Lignes complémentaires de l'infobulle de température : ressentie (si
+    /// affichée), maximale moyenne et record absolu avec poste et jour.
+    private func temperatureLines(_ p: MeteoMensuelle.Point) -> String {
+        var lines: [String] = []
+        if Self.showFeltTemperature, let tr = p.feltTemperature { lines.append(String(format: "Ress. %.1f °C", tr)) }
+        if let tx = p.maxTemperature { lines.append(String(format: "Max. %.1f °C", tx)) }
+        if let xa = p.absoluteMax {
+            var line = String(format: "Record %.1f °C", xa)
+            if let station = p.absoluteMaxStation {
+                line += " (\(station.capitalized)" + (p.absoluteMaxDay.map { ", le \($0)" } ?? "") + ")"
+            }
+            lines.append(line)
+        }
+        return lines.joined(separator: "\n")
+    }
 
     private func tooltip(_ p: MeteoMensuelle.Point, value: String, secondary: String?) -> some View {
         VStack(alignment: .leading, spacing: 2) {
