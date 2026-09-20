@@ -15,6 +15,13 @@ public struct MeteoDetailView: View {
         case maxTemperature = "Maximales"
         case precipitation = "Précipitations"
         var id: String { rawValue }
+        var icon: String {
+            switch self {
+            case .temperature: "thermometer.medium"
+            case .maxTemperature: "thermometer.high"
+            case .precipitation: "cloud.rain"
+            }
+        }
     }
 
     @StateObject private var theme = ClassicTheme()
@@ -24,6 +31,7 @@ public struct MeteoDetailView: View {
     @State private var metric: Metric = .temperature
     /// Mois (1...12) sélectionné dans le tableau de détail.
     @State private var selectedMonth: Int?
+    @FocusState private var isFocused: Bool
     /// Date survolée dans chaque graphique (`chartXSelection`), pour l'infobulle.
     @State private var hoveredTemperatureDate: Date?
     @State private var hoveredPrecipitationDate: Date?
@@ -87,12 +95,15 @@ public struct MeteoDetailView: View {
                             ForEach(points.filter { selectedMonth == month($0) }) { p in
                                 PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", p.temperature ?? 0))
                                     .foregroundStyle(ClassicTheme.ink).symbolSize(90)
-                                if let tx = p.maxTemperature {
-                                    PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", tx))
-                                        .foregroundStyle(ClassicTheme.ink).symbolSize(90)
-                                }
+                                // Infobulle permanente sur le point le plus haut du mois
+                                // sélectionné, pour chaque année.
+                                PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", p.maxTemperature ?? p.temperature ?? 0))
+                                    .foregroundStyle(ClassicTheme.ink).symbolSize(p.maxTemperature == nil ? 0 : 90)
+                                    .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .fit(to: .chart))) {
+                                        tooltip(p, value: String(format: "Moy. %.1f °C", p.temperature ?? 0), secondary: p.maxTemperature.map { String(format: "Max. %.1f °C", $0) })
+                                    }
                             }
-                            if let p = hoveredPoint(hoveredTemperatureDate, in: points) {
+                            if let p = hoveredPoint(hoveredTemperatureDate, in: points), selectedMonth != month(p) {
                                 RuleMark(x: .value("Mois", p.date, unit: .month))
                                     .foregroundStyle(ClassicTheme.faint.opacity(0.5))
                                     .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
@@ -113,7 +124,14 @@ public struct MeteoDetailView: View {
                                 BarMark(x: .value("Mois", p.date, unit: .month), y: .value("mm", p.precipitation ?? 0))
                                     .foregroundStyle((selectedMonth == month(p) ? ClassicTheme.ink : theme.accent).opacity(p.partial ? 0.4 : 0.8))
                             }
-                            if let p = hoveredPoint(hoveredPrecipitationDate, in: points) {
+                            ForEach(points.filter { selectedMonth == month($0) }) { p in
+                                PointMark(x: .value("Mois", p.date, unit: .month), y: .value("mm", p.precipitation ?? 0))
+                                    .opacity(0)
+                                    .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .fit(to: .chart))) {
+                                        tooltip(p, value: String(format: "%.1f mm", p.precipitation ?? 0), secondary: nil)
+                                    }
+                            }
+                            if let p = hoveredPoint(hoveredPrecipitationDate, in: points), selectedMonth != month(p) {
                                 RuleMark(x: .value("Mois", p.date, unit: .month))
                                     .foregroundStyle(ClassicTheme.faint.opacity(0.5))
                                     .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
@@ -135,6 +153,16 @@ public struct MeteoDetailView: View {
         }
         .background(ClassicTheme.background)
         .frame(minWidth: 760, minHeight: 640)
+        // Flèches gauche/droite : mois précédent/suivant de la sélection
+        // (graphiques et tableau), sans effet tant qu'aucun mois n'est
+        // sélectionné.
+        .focusable()
+        .focusEffectDisabled()
+        .focused($isFocused)
+        .onAppear { isFocused = true }
+        .onChange(of: selectedMonth) { _, new in if new != nil { isFocused = true } }
+        .onKeyPress(.leftArrow) { moveSelection(by: -1) }
+        .onKeyPress(.rightArrow) { moveSelection(by: 1) }
     }
 
     private var header: some View {
@@ -183,6 +211,12 @@ public struct MeteoDetailView: View {
                         .padding(.leading, 6).padding(.top, 3)
                 }
         }
+    }
+
+    private func moveSelection(by delta: Int) -> KeyPress.Result {
+        guard let m = selectedMonth else { return .ignored }
+        selectedMonth = max(1, min(12, m + delta))
+        return .handled
     }
 
     /// Clic sur un graphique : sélectionne le mois cliqué (même sélection que
@@ -254,7 +288,7 @@ public struct MeteoDetailView: View {
     /// disponibles (première et dernière années partielles).
     private var yearlySummary: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Par année").font(CFont.sans(13, weight: .medium)).foregroundStyle(ClassicTheme.sub)
+            Text("Moyennes annuelles").font(CFont.sans(13, weight: .medium)).foregroundStyle(ClassicTheme.sub)
             HStack(spacing: 12) {
                 ForEach(years, id: \.self) { y in
                     let pts = series.filter { year($0) == y }
@@ -262,10 +296,16 @@ public struct MeteoDetailView: View {
                     let rain = pts.compactMap(\.precipitation)
                     VStack(alignment: .leading, spacing: 4) {
                         Text(String(y)).font(CFont.mono(11, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
-                        Text(temps.isEmpty ? "–" : String(format: "%.1f °C", temps.reduce(0, +) / Double(temps.count)))
-                            .font(CFont.sans(16, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
-                        Text(rain.isEmpty ? "–" : String(format: "%.0f mm", rain.reduce(0, +)))
-                            .font(CFont.sans(13)).foregroundStyle(ClassicTheme.sub)
+                        HStack(spacing: 5) {
+                            Image(systemName: "thermometer.medium").font(.system(size: 13)).foregroundStyle(theme.accent)
+                            Text(temps.isEmpty ? "–" : String(format: "%.1f °C", temps.reduce(0, +) / Double(temps.count)))
+                                .font(CFont.sans(16, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
+                        }
+                        HStack(spacing: 5) {
+                            Image(systemName: "cloud.rain").font(.system(size: 12)).foregroundStyle(theme.accent)
+                            Text(rain.isEmpty ? "–" : String(format: "%.0f mm", rain.reduce(0, +)))
+                                .font(CFont.sans(13)).foregroundStyle(ClassicTheme.sub)
+                        }
                         Text("\(pts.count) mois").font(CFont.sans(11)).foregroundStyle(ClassicTheme.faint2)
                     }
                     .padding(12)
@@ -281,13 +321,22 @@ public struct MeteoDetailView: View {
     /// températures et précipitations.
     private var monthTable: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text("Détail par mois").font(CFont.sans(13, weight: .medium)).foregroundStyle(ClassicTheme.sub)
-                Spacer()
-                Picker("", selection: $metric) {
-                    ForEach(Metric.allCases) { Text($0.rawValue).tag($0) }
+            Text("Détail par mois des températures et précipitations").font(CFont.sans(13, weight: .medium)).foregroundStyle(ClassicTheme.sub)
+            // Sur sa propre ligne, à largeur naturelle : trois boutons avec
+            // icône ne tiennent pas dans un sélecteur segmenté à côté du titre.
+            HStack(spacing: 8) {
+                ForEach(Metric.allCases) { m in
+                    let isOn = metric == m
+                    Button { metric = m } label: {
+                        Label(m.rawValue, systemImage: m.icon)
+                            .font(CFont.sans(12, weight: .medium))
+                            .foregroundStyle(isOn ? Color.white : ClassicTheme.body)
+                            .padding(.horizontal, 10).padding(.vertical, 5)
+                            .background(isOn ? theme.accent : ClassicTheme.track.opacity(0.6), in: Capsule())
+                            .fixedSize()
+                    }
+                    .buttonStyle(.plain)
                 }
-                .pickerStyle(.segmented).labelsHidden().frame(width: 260)
             }
             VStack(spacing: 0) {
                 HStack(spacing: 0) {

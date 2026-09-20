@@ -171,7 +171,7 @@ déjà en cache depuis `build_france_geo_scores.py`).
 ## meteo_monthly.json (Inspecteur — section Météo)
 
 Températures moyennes (`TM`, °C) et précipitations (`RR`, mm) mensuelles par
-département sur 5 ans glissants (mois courant de N-5 → mois courant de N),
+département, de janvier de N-5 (année complète) au mois courant de N,
 depuis les données climatologiques mensuelles de Météo-France :
 https://meteo.data.gouv.fr/datasets/6569b3d7d193b4daf2b43edc
 

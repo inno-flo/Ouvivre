@@ -22,8 +22,8 @@ chaque mois (postes sans valeur ignorés). La composition du réseau de postes
 (et leur altitude) varie d'un département et d'un mois à l'autre — c'est un
 ordre de grandeur départemental, pas une série homogénéisée.
 
-Fenêtre : du mois courant de l'année N-5 au mois courant de l'année N
-(61 mois). Le mois courant est partiel : marqué `partial` dans le JSON.
+Fenêtre : de janvier de l'année N-5 (année complète) au mois courant de
+l'année N (69 mois en septembre 2026). Le mois courant est partiel : marqué `partial` dans le JSON.
 
 Corse : Météo-France publie un seul fichier "20" pour 2A et 2B ; chaque poste
 est rattaché à 2A ou 2B via la commune INSEE de même numéro (communes_data.json),
@@ -55,8 +55,9 @@ YEARS_BACK = 5
 
 
 def window(today):
-    """Liste AAAAMM du mois courant de N-5 au mois courant de N (inclus)."""
-    y, m = today.year - YEARS_BACK, today.month
+    """Liste AAAAMM de janvier N-5 au mois courant de N (inclus) — l'année de
+    départ est prise en entier."""
+    y, m = today.year - YEARS_BACK, 1
     months = []
     while (y, m) <= (today.year, today.month):
         months.append(f"{y}{m:02d}")
