@@ -373,14 +373,14 @@ public struct BigMacTestsView: View {
                             state.resetGeo2()
                         } label: {
                             Text("Réinitialiser")
-                                .font(.custom("SFProRounded-Regular", size: 10))
+                                .font(.custom("SFProRounded-Regular", size: 12))
                                 .foregroundStyle(columnFaint)
                         }
                         .buttonStyle(.plain)
                     }
 
                     ForEach(derived.geo2Rows) { row in
-                        CriterionRow(row: row, labelFont: .custom("SFProRounded-Regular", size: 13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: .custom("SFProRounded-Regular", size: 12)) { state.setGeo2(row.id, value: $0) }
+                        CriterionRow(row: row, labelFont: .custom("SFProRounded-Regular", size: 13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: .custom("SFProRounded-Regular", size: 10)) { state.setGeo2(row.id, value: $0) }
                             .padding(.trailing, 8)
                     }
                 }
@@ -509,7 +509,7 @@ public struct BigMacTestsView: View {
     private var cultureRowsContent: some View {
         VStack(alignment: .leading, spacing: 4) {
             ForEach(cultureRows, id: \.rowIndex) { entry in
-                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: .custom("SFProRounded-Regular", size: 13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: .custom("SFProRounded-Regular", size: 12)) {
+                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: .custom("SFProRounded-Regular", size: 13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: .custom("SFProRounded-Regular", size: 10)) {
                     state.setGroup(cultureGroupIndex, entry.rowIndex, value: min($0, 2))
                 }
                 .padding(.vertical, 4)
@@ -555,7 +555,7 @@ public struct BigMacTestsView: View {
         blockDisclosure(title: "Mobilité", isExpanded: $state.bigMacExpandedMobilite, enabled: true) {
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(mobiliteRows) { row in
-                    CriterionRow(row: row, thumbSize: 16, trackHeight: 4, labelFont: .custom("SFProRounded-Regular", size: 13), labelColor: columnInk, extraDotScaleFromSecond: 1.1, tagFont: .custom("SFProRounded-Regular", size: 12)) {
+                    CriterionRow(row: row, thumbSize: 16, trackHeight: 4, labelFont: .custom("SFProRounded-Regular", size: 13), labelColor: columnInk, extraDotScaleFromSecond: 1.1, tagFont: .custom("SFProRounded-Regular", size: 10)) {
                         state.setGroup(mobiliteGroupIndex, row.id, value: min($0, 2))
                     }
                     .padding(.vertical, 4)
