@@ -22,29 +22,29 @@ public struct SidebarNav: View {
                     NavItemRow(item: item).tag(item.screen)
                 }
             } header: {
-                Text("Sélecteur").font(.system(size: 11)).foregroundStyle(.secondary)
+                Text("Sélecteur").foregroundStyle(.secondary)
             }
             Section {
                 HStack(spacing: 9) {
                     Image(systemName: state.favoriteDepartementCodes.isEmpty ? "star" : "star.fill").frame(width: 16)
-                    Text("Favoris").font(.system(size: 13, weight: state.screen == .favoris ? .semibold : .regular))
+                    Text("Favoris").font(.system(size: 13, weight: state.screen == .favoris ? .bold : .regular))
                     Spacer(minLength: 4)
                     Text("\(state.favoriteDepartementCodes.count)").font(CFont.mono(10)).opacity(0.5)
                 }
                 .tag(ClassicScreen.favoris)
                 HStack(spacing: 9) {
                     Image(systemName: "star").frame(width: 16)
-                    Text("Favoris tests").font(.system(size: 13, weight: state.screen == .favorisTests ? .semibold : .regular))
+                    Text("Favoris tests").font(.system(size: 13, weight: state.screen == .favorisTests ? .bold : .regular))
                     Spacer(minLength: 4)
                 }
                 .tag(ClassicScreen.favorisTests)
             } header: {
-                Text("Comparateur").font(.system(size: 11)).foregroundStyle(.secondary)
+                Text("Comparateur").foregroundStyle(.secondary)
             }
             if !derived.countrySources.isEmpty {
                 Section {
                     Text("Sources")
-                        .font(.system(size: 13))
+                        .font(.system(size: 13, weight: state.screen == .sources ? .bold : .regular))
                         .tag(ClassicScreen.sources)
                 }
             }
@@ -60,6 +60,8 @@ private struct NavItemRow: View {
     /// other rows (Outils, Sources) render without a leading icon.
     private var icon: String? {
         switch item.screen {
+        case .bigMac: "chart.bar.horizontal.page"
+        case .bigMacTests: "testtube.2"
         case .pays: "globe.europe.africa"
         case .geo2: "map"
         case .affiner: "bus"
@@ -74,7 +76,7 @@ private struct NavItemRow: View {
             if let icon {
                 Image(systemName: icon).frame(width: 16)
             }
-            Text(item.label).font(.system(size: 13, weight: item.active ? .semibold : .regular))
+            Text(item.label).font(.system(size: 13, weight: item.active ? .bold : .regular))
             Spacer(minLength: 4)
             if let meta = item.meta {
                 Text(meta).font(CFont.mono(10)).opacity(0.5)
