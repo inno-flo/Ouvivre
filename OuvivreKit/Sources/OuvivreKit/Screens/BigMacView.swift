@@ -598,9 +598,19 @@ public struct BigMacView: View {
                     .padding(.leading, 2)
                     .transition(.opacity.combined(with: .move(edge: .top)))
             } label: {
-                Text(title.uppercased())
-                    .font(CFont.mono(11, weight: .semibold))
-                    .foregroundStyle(enabled && isExpanded.wrappedValue ? columnInk : columnFaint)
+                // Toute la largeur du titre déplie/replie le bloc, pas
+                // seulement le chevron (`DisclosureGroup` ne rend cliquable
+                // que ce dernier sur macOS).
+                HStack(spacing: 0) {
+                    Text(title.uppercased())
+                        .font(CFont.mono(11, weight: .semibold))
+                        .foregroundStyle(enabled && isExpanded.wrappedValue ? columnInk : columnFaint)
+                    Spacer(minLength: 0)
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    if enabled { animatedExpanded.wrappedValue.toggle() }
+                }
             }
             .tint(columnFaint)
         }
