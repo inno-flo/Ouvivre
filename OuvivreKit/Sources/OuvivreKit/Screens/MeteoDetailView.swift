@@ -76,6 +76,7 @@ public struct MeteoDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 header
+                synthesisView
                 if series.isEmpty {
                     Text("Aucune donnée pour ce département.")
                         .font(CFont.sans(14)).foregroundStyle(ClassicTheme.faint)
@@ -181,14 +182,143 @@ public struct MeteoDetailView: View {
         .onKeyPress(.rightArrow) { moveSelection(by: 1) }
     }
 
+    // MARK: Synthèse
+
+    private static func fmt(_ v: Double, _ digits: Int = 1) -> String {
+        String(format: "%.\(digits)f", v).replacingOccurrences(of: ".", with: ",")
+    }
+
+    private static func signed(_ v: Double, _ digits: Int = 1) -> String {
+        (v >= 0 ? "+" : "−") + fmt(abs(v), digits)
+    }
+
+    private func label(_ p: MeteoMensuelle.Point) -> String { "\(Self.monthName(month(p))) \(year(p))" }
+
+    /// Synthèse rédigée à partir des données : écarts entre années complètes,
+    /// année en cours comparée aux mêmes mois des années précédentes, et mois
+    /// atypiques (écart à la moyenne du même mois des autres années).
+    private var synthesis: [(title: String, text: String)] {
+        let pts = series
+        guard let currentYear = years.last, years.count >= 2 else { return [] }
+        let byYear = Dictionary(grouping: pts, by: year)
+        let complete = years.filter { y in
+            let list = byYear[y] ?? []
+            return list.count == 12 && list.allSatisfy { $0.temperature != nil && $0.precipitation != nil && !$0.partial }
+        }
+        func annualTemp(_ y: Int) -> Double { let t = (byYear[y] ?? []).compactMap(\.temperature); return t.reduce(0, +) / Double(t.count) }
+        func annualRain(_ y: Int) -> Double { (byYear[y] ?? []).compactMap(\.precipitation).reduce(0, +) }
+
+        // Année en cours, mois entiers seulement, vs mêmes mois des autres années.
+        let currentPts = (byYear[currentYear] ?? []).filter { !$0.partial }
+        func baseline(_ m: Int, _ v: (MeteoMensuelle.Point) -> Double?, excluding y: Int) -> Double? {
+            let vals = pts.filter { month($0) == m && year($0) != y }.compactMap(v)
+            return vals.count >= 2 ? vals.reduce(0, +) / Double(vals.count) : nil
+        }
+        let ytdMonths = currentPts.map(month)
+        let lastMonthName = ytdMonths.max().map { Self.monthName($0).lowercased() }
+
+        var tempText: [String] = []
+        if complete.count >= 2, let first = complete.first, let last = complete.last,
+           let hot = complete.max(by: { annualTemp($0) < annualTemp($1) }),
+           let cold = complete.min(by: { annualTemp($0) < annualTemp($1) }) {
+            var sentence = "Sur les années complètes \(first)–\(last), la température annuelle moyenne va de \(Self.fmt(annualTemp(cold))) °C (\(cold), la plus fraîche) à \(Self.fmt(annualTemp(hot))) °C (\(hot), la plus chaude)"
+            let delta = annualTemp(last) - annualTemp(first)
+            if abs(delta) >= 0.1 { sentence += ", soit \(Self.signed(delta)) °C entre \(first) et \(last)" }
+            tempText.append(sentence + ".")
+        }
+        let tempPairs = currentPts.compactMap { p -> (Double, Double)? in
+            guard let t = p.temperature, let b = baseline(month(p), { $0.temperature }, excluding: currentYear) else { return nil }
+            return (t, b)
+        }
+        if !tempPairs.isEmpty, let lastMonthName {
+            let cur = tempPairs.map(\.0).reduce(0, +) / Double(tempPairs.count)
+            let base = tempPairs.map(\.1).reduce(0, +) / Double(tempPairs.count)
+            let d = cur - base
+            tempText.append(abs(d) < 0.2
+                ? "De janvier à \(lastMonthName) \(currentYear), la moyenne (\(Self.fmt(cur)) °C) est proche de celle des mêmes mois des années précédentes."
+                : "De janvier à \(lastMonthName) \(currentYear), la moyenne (\(Self.fmt(cur)) °C) est \(Self.fmt(abs(d))) °C \(d > 0 ? "au-dessus" : "en dessous") de celle des mêmes mois des années précédentes.")
+        }
+
+        var rainText: [String] = []
+        if complete.count >= 2,
+           let wet = complete.max(by: { annualRain($0) < annualRain($1) }),
+           let dry = complete.min(by: { annualRain($0) < annualRain($1) }) {
+            var sentence = "Les cumuls annuels vont de \(Self.fmt(annualRain(dry), 0)) mm (\(dry), la plus sèche) à \(Self.fmt(annualRain(wet), 0)) mm (\(wet), la plus arrosée)"
+            if annualRain(dry) > 0 {
+                let gap = (annualRain(wet) / annualRain(dry) - 1) * 100
+                if gap >= 5 { sentence += ", soit \(Self.fmt(gap, 0)) % d'écart" }
+            }
+            rainText.append(sentence + ".")
+        }
+        let rainPairs = currentPts.compactMap { p -> (Double, Double)? in
+            guard let r = p.precipitation, let b = baseline(month(p), { $0.precipitation }, excluding: currentYear) else { return nil }
+            return (r, b)
+        }
+        if !rainPairs.isEmpty, let lastMonthName {
+            let cur = rainPairs.map(\.0).reduce(0, +)
+            let base = rainPairs.map(\.1).reduce(0, +)
+            if base > 0 {
+                let d = (cur / base - 1) * 100
+                rainText.append(abs(d) < 5
+                    ? "De janvier à \(lastMonthName) \(currentYear), \(Self.fmt(cur, 0)) mm sont tombés, un niveau proche de la moyenne des mêmes mois."
+                    : "De janvier à \(lastMonthName) \(currentYear), \(Self.fmt(cur, 0)) mm sont tombés, soit \(Self.fmt(abs(d), 0)) % \(d > 0 ? "de plus" : "de moins") que la moyenne des mêmes mois des années précédentes.")
+            }
+        }
+
+        // Mois atypiques.
+        var notable: [String] = []
+        let complet = pts.filter { !$0.partial }
+        let tempAnoms = complet.compactMap { p -> (MeteoMensuelle.Point, Double)? in
+            guard let t = p.temperature, let b = baseline(month(p), { $0.temperature }, excluding: year(p)) else { return nil }
+            return (p, t - b)
+        }
+        if let top = tempAnoms.max(by: { abs($0.1) < abs($1.1) }), abs(top.1) >= 2 {
+            notable.append("\(label(top.0)) est le mois le plus atypique en température : \(Self.fmt(top.0.temperature ?? 0)) °C, soit \(Self.fmt(abs(top.1))) °C \(top.1 > 0 ? "au-dessus" : "en dessous") de la moyenne des autres \(Self.monthName(month(top.0)).lowercased()).")
+        }
+        let rainAnoms = complet.compactMap { p -> (MeteoMensuelle.Point, Double, Double)? in
+            guard let r = p.precipitation, let b = baseline(month(p), { $0.precipitation }, excluding: year(p)), b >= 15 else { return nil }
+            return (p, r / b, b)
+        }
+        if let wet = rainAnoms.max(by: { $0.1 < $1.1 }), wet.1 >= 2 {
+            notable.append("\(label(wet.0)) est exceptionnellement arrosé : \(Self.fmt(wet.0.precipitation ?? 0, 0)) mm, soit \(Self.fmt(wet.1)) fois la moyenne des autres \(Self.monthName(month(wet.0)).lowercased()) (\(Self.fmt(wet.2, 0)) mm).")
+        }
+        if let dry = rainAnoms.min(by: { $0.1 < $1.1 }), dry.1 <= 0.25 {
+            notable.append("\(label(dry.0)) est quasi sec : \(Self.fmt(dry.0.precipitation ?? 0, 0)) mm contre \(Self.fmt(dry.2, 0)) mm en moyenne pour les autres \(Self.monthName(month(dry.0)).lowercased()).")
+        }
+        if let hottest = complet.compactMap({ p in p.temperature.map { (p, $0) } }).max(by: { $0.1 < $1.1 }),
+           let coldest = complet.compactMap({ p in p.temperature.map { (p, $0) } }).min(by: { $0.1 < $1.1 }) {
+            notable.append("Mois le plus chaud : \(label(hottest.0)) (\(Self.fmt(hottest.1)) °C) ; le plus froid : \(label(coldest.0)) (\(Self.fmt(coldest.1)) °C).")
+        }
+
+        var result: [(String, String)] = []
+        if !tempText.isEmpty { result.append(("Températures.", tempText.joined(separator: " "))) }
+        if !rainText.isEmpty { result.append(("Précipitations.", rainText.joined(separator: " "))) }
+        if !notable.isEmpty { result.append(("À noter.", notable.joined(separator: " "))) }
+        return result
+    }
+
+    @ViewBuilder
+    private var synthesisView: some View {
+        let paragraphs = synthesis
+        if !paragraphs.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(paragraphs, id: \.title) { paragraph in
+                    Text(paragraph.title + " ").font(CFont.sans(13, weight: .semibold)).foregroundColor(ClassicTheme.ink)
+                        + Text(paragraph.text).font(CFont.sans(13)).foregroundColor(ClassicTheme.body)
+                }
+            }
+            .lineSpacing(2)
+            .frame(maxWidth: 820, alignment: .leading)
+        }
+    }
+
     private var header: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 10) {
+        HStack(alignment: .center, spacing: 10) {
             Text(name).font(CFont.sans(26, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
             Text(departementCode)
                 .font(CFont.sans(16, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
                 .padding(.horizontal, 7).padding(.vertical, 3)
                 .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
-            Text("Météo · 5 dernières années").font(CFont.sans(14)).foregroundStyle(ClassicTheme.faint)
             Spacer(minLength: 8)
             let isFavorite = state.favoriteDepartementCodes.contains(departementCode)
             Button {
