@@ -14,6 +14,8 @@ https://www.data.gouv.fr/api/1/datasets/r/766dbe58-0c5a-428b-b76e-a24b3cd250e1
 Paramètres retenus (une ligne = un poste × un mois, colonne AAAAMM) :
   - TM : moyenne mensuelle des températures quotidiennes (°C)
   - TX : moyenne mensuelle des températures maximales quotidiennes (°C)
+  - UMM : humidité relative moyenne mensuelle (%)
+  - FFM : vitesse moyenne mensuelle du vent à 10 m (m/s)
   - RR : cumul mensuel des précipitations (mm)
   - NBRR : nombre de jours renseignés pour RR (sert à repérer un mois en cours)
 
@@ -21,6 +23,13 @@ Méthode : moyenne simple des valeurs de tous les postes du département pour
 chaque mois (postes sans valeur ignorés). La composition du réseau de postes
 (et leur altitude) varie d'un département et d'un mois à l'autre — c'est un
 ordre de grandeur départemental, pas une série homogénéisée.
+
+Température ressentie (`tr`) : non publiée par Météo-France, calculée ici à
+partir des moyennes départementales du mois (voir `feels_like`) — indice de
+chaleur (Rothfusz, NOAA) quand il fait chaud, refroidissement éolien
+(formule canadienne) quand il fait froid, sinon la température moyenne.
+Appliquer ces formules à des moyennes mensuelles lisse les extrêmes : c'est une
+estimation indicative, pas une mesure.
 
 Fenêtre : de janvier de l'année N-5 (année complète) au mois courant de
 l'année N (69 mois en septembre 2026). Le mois courant est partiel : marqué `partial` dans le JSON.
@@ -103,12 +112,32 @@ def corsica_resolver():
     return resolve
 
 
+def feels_like(t, rh, wind_ms):
+    """Température ressentie (°C) depuis la température moyenne `t`, l'humidité
+    relative `rh` (%) et le vent moyen `wind_ms` (m/s) — `None` si `t` manque.
+    Chaud (≥ 27 °C, humidité ≥ 40 %) : indice de chaleur de Rothfusz (NOAA).
+    Froid (≤ 10 °C, vent ≥ 1,3 m/s ≈ 4,8 km/h) : refroidissement éolien
+    canadien. Sinon : `t`. Une donnée d'entrée absente ramène à `t`."""
+    if t is None:
+        return None
+    if t >= 27 and rh is not None and rh >= 40:
+        f = t * 9 / 5 + 32
+        hi = (-42.379 + 2.04901523 * f + 10.14333127 * rh - 0.22475541 * f * rh
+              - 0.00683783 * f * f - 0.05481717 * rh * rh + 0.00122874 * f * f * rh
+              + 0.00085282 * f * rh * rh - 0.00000199 * f * f * rh * rh)
+        return round((hi - 32) * 5 / 9, 1)
+    if t <= 10 and wind_ms is not None and wind_ms * 3.6 >= 4.8:
+        v = (wind_ms * 3.6) ** 0.16
+        return round(13.12 + 0.6215 * t - 11.37 * v + 0.3965 * t * v, 1)
+    return t
+
+
 def mean(values):
     return round(sum(values) / len(values), 1) if values else None
 
 
 def build_departement(code, months, wanted, resolve_corsica):
-    """{AAAAMM: {tm, rr, partial}} pour un département (ou 2A/2B)."""
+    """{AAAAMM: {tm, tx, tr, rr, partial}} pour un département (ou 2A/2B)."""
     file_dep = "20" if code in ("2A", "2B") else code
     years = {m[:4] for m in months}
     names = []
@@ -116,7 +145,7 @@ def build_departement(code, months, wanted, resolve_corsica):
         names.append(f"MENSQ_{file_dep}_previous-1950-2024.csv.gz")
     names.append(f"MENSQ_{file_dep}_latest-2025-2026.csv.gz")
 
-    tm, tx, rr, nbrr = {}, {}, {}, {}
+    tm, tx, um, ff, rr, nbrr = {}, {}, {}, {}, {}, {}
     for name in names:
         rows = fetch_rows(file_dep, name)
         if rows is None:
@@ -131,6 +160,10 @@ def build_departement(code, months, wanted, resolve_corsica):
                 tm.setdefault(m, []).append(float(row["TM"]))
             if row["TX"]:
                 tx.setdefault(m, []).append(float(row["TX"]))
+            if row["UMM"]:
+                um.setdefault(m, []).append(float(row["UMM"]))
+            if row["FFM"]:
+                ff.setdefault(m, []).append(float(row["FFM"]))
             if row["RR"]:
                 rr.setdefault(m, []).append(float(row["RR"]))
                 if row["NBRR"]:
@@ -140,7 +173,13 @@ def build_departement(code, months, wanted, resolve_corsica):
     for m in months:
         if m not in tm and m not in rr:
             continue
-        entry = {"tm": mean(tm.get(m, [])), "tx": mean(tx.get(m, [])), "rr": mean(rr.get(m, []))}
+        t = mean(tm.get(m, []))
+        entry = {
+            "tm": t,
+            "tx": mean(tx.get(m, [])),
+            "tr": feels_like(t, mean(um.get(m, [])), mean(ff.get(m, []))),
+            "rr": mean(rr.get(m, [])),
+        }
         if m == months[-1]:
             entry["partial"] = True
         result[m] = entry

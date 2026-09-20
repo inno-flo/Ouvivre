@@ -185,4 +185,9 @@ courant est partiel (`partial: true`). Corse : fichier unique "20" réparti en
 cp data/out/meteo_monthly.json ../OuvivreKit/Sources/OuvivreKit/Resources/
 ```
 
+La température ressentie (`tr`) n'est pas publiée par Météo-France : elle est
+calculée depuis TM, l'humidité (UMM) et le vent (FFM) moyens du département —
+indice de chaleur ≥ 27 °C, refroidissement éolien ≤ 10 °C, sinon `tm`. Estimation
+indicative sur moyennes mensuelles.
+
 À relancer pour rafraîchir (la fenêtre glisse avec la date du jour).

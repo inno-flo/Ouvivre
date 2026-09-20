@@ -10,15 +10,22 @@ public struct MeteoDetailView: View {
     /// l'app — la valeur passée à `openWindow` est le code du département.
     public static let windowID = "meteo-detail"
 
+    /// Température ressentie masquée pour le moment : les données (`tr`) restent
+    /// dans le JSON, repasser à `true` pour réafficher courbe, infobulle et bouton.
+    private static let showFeltTemperature = false
+
     private enum Metric: String, CaseIterable, Identifiable {
         case temperature = "Moyennes"
         case maxTemperature = "Maximales"
+        case felt = "Ressenties"
         case precipitation = "Précipitations"
         var id: String { rawValue }
+        static var available: [Metric] { allCases.filter { $0 != .felt || MeteoDetailView.showFeltTemperature } }
         var icon: String {
             switch self {
             case .temperature: "thermometer.medium"
             case .maxTemperature: "thermometer.high"
+            case .felt: "thermometer.variable.and.figure"
             case .precipitation: "cloud.rain"
             }
         }
@@ -58,6 +65,7 @@ public struct MeteoDetailView: View {
         switch metric {
         case .temperature: p.temperature
         case .maxTemperature: p.maxTemperature
+        case .felt: p.feltTemperature
         case .precipitation: p.precipitation
         }
     }
@@ -72,7 +80,7 @@ public struct MeteoDetailView: View {
                     Text("Aucune donnée pour ce département.")
                         .font(CFont.sans(14)).foregroundStyle(ClassicTheme.faint)
                 } else {
-                    chartCard(title: "Températures moyennes et maximales mensuelles (°C)") {
+                    chartCard(title: Self.showFeltTemperature ? "Températures moyennes, ressenties et maximales mensuelles (°C)" : "Températures moyennes et maximales mensuelles (°C)") {
                         let points = series.filter { $0.temperature != nil }
                         Chart {
                             yearBands
@@ -83,6 +91,12 @@ public struct MeteoDetailView: View {
                                 PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", p.temperature ?? 0))
                                     .foregroundStyle(by: .value("Série", "Moyenne"))
                                     .symbolSize(p.partial ? 20 : 30)
+                                if Self.showFeltTemperature, let tr = p.feltTemperature {
+                                    LineMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", tr), series: .value("Série", "Ressentie"))
+                                        .foregroundStyle(by: .value("Série", "Ressentie"))
+                                        .interpolationMethod(.monotone)
+                                        .lineStyle(StrokeStyle(lineWidth: 2, dash: [5, 3]))
+                                }
                                 if let tx = p.maxTemperature {
                                     LineMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", tx), series: .value("Série", "Maximale"))
                                         .foregroundStyle(by: .value("Série", "Maximale"))
@@ -100,18 +114,20 @@ public struct MeteoDetailView: View {
                                 PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", p.maxTemperature ?? p.temperature ?? 0))
                                     .foregroundStyle(ClassicTheme.ink).symbolSize(p.maxTemperature == nil ? 0 : 90)
                                     .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .fit(to: .chart))) {
-                                        tooltip(p, value: String(format: "Moy. %.1f °C", p.temperature ?? 0), secondary: p.maxTemperature.map { String(format: "Max. %.1f °C", $0) })
+                                        tooltip(p, value: String(format: "Moy. %.1f °C", p.temperature ?? 0), secondary: [Self.showFeltTemperature ? p.feltTemperature.map { String(format: "Ress. %.1f °C", $0) } : nil, p.maxTemperature.map { String(format: "Max. %.1f °C", $0) }].compactMap { $0 }.joined(separator: "\n"))
                                     }
                             }
                             if let p = hoveredPoint(hoveredTemperatureDate, in: points), selectedMonth != month(p) {
                                 RuleMark(x: .value("Mois", p.date, unit: .month))
                                     .foregroundStyle(ClassicTheme.faint.opacity(0.5))
                                     .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
-                                        tooltip(p, value: String(format: "Moy. %.1f °C", p.temperature ?? 0), secondary: p.maxTemperature.map { String(format: "Max. %.1f °C", $0) })
+                                        tooltip(p, value: String(format: "Moy. %.1f °C", p.temperature ?? 0), secondary: [Self.showFeltTemperature ? p.feltTemperature.map { String(format: "Ress. %.1f °C", $0) } : nil, p.maxTemperature.map { String(format: "Max. %.1f °C", $0) }].compactMap { $0 }.joined(separator: "\n"))
                                     }
                             }
                         }
-                        .chartForegroundStyleScale(["Moyenne": theme.accent, "Maximale": Color(hex: 0xD98A1F)])
+                        .chartForegroundStyleScale(Self.showFeltTemperature
+                            ? ["Moyenne": theme.accent, "Ressentie": Color(hex: 0x2F7F8F), "Maximale": Color(hex: 0xD98A1F)]
+                            : ["Moyenne": theme.accent, "Maximale": Color(hex: 0xD98A1F)])
                         .chartXSelection(value: $hoveredTemperatureDate)
                         .chartGesture { proxy in monthTap(proxy, points: points) }
                         .chartYScale(domain: .automatic(includesZero: false))
@@ -251,7 +267,7 @@ public struct MeteoDetailView: View {
             Text(Self.monthFormatter.string(from: p.date).capitalized)
                 .font(CFont.sans(11)).foregroundStyle(ClassicTheme.faint)
             Text(value).font(CFont.sans(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
-            if let secondary { Text(secondary).font(CFont.sans(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink) }
+            if let secondary, !secondary.isEmpty { Text(secondary).font(CFont.sans(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink) }
             if p.partial { Text("mois en cours").font(CFont.sans(10)).foregroundStyle(ClassicTheme.faint2) }
         }
         .padding(.horizontal, 8).padding(.vertical, 5)
@@ -325,7 +341,7 @@ public struct MeteoDetailView: View {
             // Sur sa propre ligne, à largeur naturelle : trois boutons avec
             // icône ne tiennent pas dans un sélecteur segmenté à côté du titre.
             HStack(spacing: 8) {
-                ForEach(Metric.allCases) { m in
+                ForEach(Metric.available) { m in
                     let isOn = metric == m
                     Button { metric = m } label: {
                         Label(m.rawValue, systemImage: m.icon)
