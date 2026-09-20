@@ -6,6 +6,7 @@ import SwiftUI
 public struct FavorisView: View {
     @EnvironmentObject var theme: ClassicTheme
     @EnvironmentObject var state: ClassicState
+    @Environment(\.undoManager) private var undoManager
 
     public init(derived: ClassicDerived) {}
 
@@ -89,6 +90,11 @@ public struct FavorisView: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Eyebrow("FAVORIS", color: theme.accent).padding(.bottom, 16)
+            if let code = state.lastRemovedFavoriteCode {
+                undoBanner(code)
+                    .padding(.bottom, 16)
+                    .transition(.opacity)
+            }
             if departements.isEmpty {
                 Text("Aucun favori pour l'instant. Cliquez sur l'étoile d'un département dans l'inspecteur pour l'ajouter ici.")
                     .font(CFont.sans(15))
@@ -111,9 +117,35 @@ public struct FavorisView: View {
                         let code = departements.first { $0.nom == name }?.codeInsee
                         if let code { toggleSelection(code) }
                     },
-                    height: 690
+                    height: 690,
+                    actionsFirst: true
                 )
                     .padding(.top, 32)
+            }
+        }
+    }
+
+    private func undoBanner(_ code: String) -> some View {
+        let nom = FranceGeoData.departements.first { $0.codeInsee == code }?.nom ?? code
+        return HStack(spacing: 12) {
+            Text("\(nom) retiré des favoris").font(CFont.sans(13)).foregroundStyle(ClassicTheme.ink)
+            Button("Annuler") {
+                withAnimation {
+                    if let undoManager, undoManager.canUndo { undoManager.undo() } else { state.undoRemoveFavorite() }
+                }
+            }
+                .buttonStyle(.plain)
+                .font(CFont.sans(13, weight: .semibold))
+                .foregroundStyle(theme.accent)
+        }
+        .padding(.horizontal, 14).padding(.vertical, 9)
+        .background(.white, in: RoundedRectangle(cornerRadius: 8))
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(ClassicTheme.border, lineWidth: 1))
+        // Disparaît seul après quelques secondes.
+        .task(id: code) {
+            try? await Task.sleep(for: .seconds(10))
+            if !Task.isCancelled, state.lastRemovedFavoriteCode == code {
+                withAnimation { state.lastRemovedFavoriteCode = nil }
             }
         }
     }
@@ -197,7 +229,7 @@ public struct FavorisView: View {
             Text(d.nom).font(CFont.sans(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
             Text(d.nomRegion).font(CFont.mono(10)).foregroundStyle(ClassicTheme.faint)
             HStack(spacing: 6) {
-                Button { state.toggleFavoriteDepartement(d.codeInsee) } label: {
+                Button { withAnimation { state.setFavorite(d.codeInsee, isOn: false, undoManager: undoManager) } } label: {
                     Image(systemName: "star.fill").foregroundStyle(theme.accent)
                 }
                 .buttonStyle(.plain)

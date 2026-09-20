@@ -37,6 +37,8 @@ public final class ClassicState: ObservableObject {
     @Published public var favoriteDepartementCodes: Set<String> = Set(UserDefaults.standard.stringArray(forKey: "favoriteDepartementCodes") ?? []) {
         didSet { UserDefaults.standard.set(Array(favoriteDepartementCodes).sorted(), forKey: "favoriteDepartementCodes") }
     }
+    /// Dernier favori retiré, proposé à l'annulation (écran Favoris).
+    @Published public var lastRemovedFavoriteCode: String?
     @Published public var meteo: [Int] = ClassicStatic.meteo.map(\.1)
     /// One weight array per group, indexed like `ClassicStatic.groups`. Les 3
     /// critères CULTURE repris par "Big Mac" (Musées, Lieux du patrimoine,
@@ -96,7 +98,36 @@ public final class ClassicState: ObservableObject {
     }
 
     public func toggleFavoriteDepartement(_ code: String) {
-        if favoriteDepartementCodes.contains(code) { favoriteDepartementCodes.remove(code) } else { favoriteDepartementCodes.insert(code) }
+        if favoriteDepartementCodes.contains(code) {
+            favoriteDepartementCodes.remove(code)
+            lastRemovedFavoriteCode = code
+        } else {
+            favoriteDepartementCodes.insert(code)
+            if lastRemovedFavoriteCode == code { lastRemovedFavoriteCode = nil }
+        }
+    }
+
+    /// Ajoute ou retire un favori en enregistrant l'inverse auprès de
+    /// l'`UndoManager` de la fenêtre : Édition > Annuler / Rétablir.
+    public func setFavorite(_ code: String, isOn: Bool, undoManager: UndoManager?) {
+        if isOn {
+            favoriteDepartementCodes.insert(code)
+            if lastRemovedFavoriteCode == code { lastRemovedFavoriteCode = nil }
+        } else {
+            favoriteDepartementCodes.remove(code)
+            lastRemovedFavoriteCode = code
+        }
+        undoManager?.registerUndo(withTarget: self) { state in
+            MainActor.assumeIsolated { state.setFavorite(code, isOn: !isOn, undoManager: undoManager) }
+        }
+        undoManager?.setActionName(isOn ? "Ajout aux favoris" : "Retrait des favoris")
+    }
+
+    /// Annule la dernière suppression de favori.
+    public func undoRemoveFavorite() {
+        guard let code = lastRemovedFavoriteCode else { return }
+        favoriteDepartementCodes.insert(code)
+        lastRemovedFavoriteCode = nil
     }
 
     public func setCountry(_ name: String) { country = name; query = name }

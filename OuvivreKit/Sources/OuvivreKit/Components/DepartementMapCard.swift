@@ -15,6 +15,8 @@ public struct DepartementMapCard: View {
     var selectedName: String?
     var onSelect: ((String) -> Void)?
     var height: CGFloat = 460
+    /// Ordre des boutons : recentrage, zoom −, zoom +, puis Explorer/Satellite.
+    var actionsFirst = false
 
     @State private var mapType: MapPlanType = .explorer
     @State private var mapPosition: MapCameraPosition = .automatic
@@ -27,12 +29,13 @@ public struct DepartementMapCard: View {
         self.accent = accent
     }
 
-    public init(names: [String], accent: Color, selectedName: String? = nil, onSelect: ((String) -> Void)? = nil, height: CGFloat = 460) {
+    public init(names: [String], accent: Color, selectedName: String? = nil, onSelect: ((String) -> Void)? = nil, height: CGFloat = 460, actionsFirst: Bool = false) {
         self.names = names
         self.accent = accent
         self.selectedName = selectedName
         self.onSelect = onSelect
         self.height = height
+        self.actionsFirst = actionsFirst
     }
 
     private static func contains(_ ring: [CLLocationCoordinate2D], _ p: CLLocationCoordinate2D) -> Bool {
@@ -82,31 +85,45 @@ public struct DepartementMapCard: View {
         mapRegion = updated
     }
 
+    private var typeButtons: some View {
+        ForEach([MapPlanType.explorer, MapPlanType.satellite]) { type in
+            Button { mapType = type } label: {
+                Text(type.label)
+                    .font(CFont.sans(12, weight: .medium))
+                    .foregroundStyle(mapType == type ? .white : ClassicTheme.ink)
+                    .padding(.horizontal, 12).padding(.vertical, 5)
+                    .background(mapType == type ? ClassicTheme.ink : .clear)
+                    .clipShape(Capsule())
+                    .overlay(Capsule().stroke(mapType == type ? ClassicTheme.ink : ClassicTheme.border, lineWidth: 1))
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    /// Recentrage, zoom −, zoom + — dans cet ordre quand `actionsFirst`, sinon
+    /// zoom −, zoom +, recentrage.
+    @ViewBuilder
+    private var actionButtons: some View {
+        let recenter = Button {
+            if let rect = departementRect { withAnimation(.easeInOut(duration: 0.25)) { mapPosition = .rect(rect) } }
+        } label: { Image(systemName: "mappin.and.ellipse") }
+            .buttonStyle(.plain).foregroundStyle(ClassicTheme.ink).help("Recentrer sur la sélection")
+        if actionsFirst { recenter }
+        Button { zoomMap(by: 2) } label: { Image(systemName: "minus.magnifyingglass") }
+            .buttonStyle(.plain).foregroundStyle(ClassicTheme.ink).help("Dézoomer")
+        Button { zoomMap(by: 0.5) } label: { Image(systemName: "plus.magnifyingglass") }
+            .buttonStyle(.plain).foregroundStyle(ClassicTheme.ink).help("Zoomer")
+        if !actionsFirst { recenter }
+    }
+
     public var body: some View {
         let rings = allRings
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
                 Spacer()
-                ForEach([MapPlanType.explorer, MapPlanType.satellite]) { type in
-                    Button { mapType = type } label: {
-                        Text(type.label)
-                            .font(CFont.sans(12, weight: .medium))
-                            .foregroundStyle(mapType == type ? .white : ClassicTheme.ink)
-                            .padding(.horizontal, 12).padding(.vertical, 5)
-                            .background(mapType == type ? ClassicTheme.ink : .clear)
-                            .clipShape(Capsule())
-                            .overlay(Capsule().stroke(mapType == type ? ClassicTheme.ink : ClassicTheme.border, lineWidth: 1))
-                    }
-                    .buttonStyle(.plain)
-                }
-                Button { zoomMap(by: 2) } label: { Image(systemName: "minus.magnifyingglass") }
-                    .buttonStyle(.plain).foregroundStyle(ClassicTheme.ink).help("Dézoomer")
-                Button { zoomMap(by: 0.5) } label: { Image(systemName: "plus.magnifyingglass") }
-                    .buttonStyle(.plain).foregroundStyle(ClassicTheme.ink).help("Zoomer")
-                Button {
-                    if let rect = departementRect { withAnimation(.easeInOut(duration: 0.25)) { mapPosition = .rect(rect) } }
-                } label: { Image(systemName: "mappin.and.ellipse") }
-                    .buttonStyle(.plain).foregroundStyle(ClassicTheme.ink).help("Recentrer sur la sélection")
+                if actionsFirst { actionButtons }
+                typeButtons
+                if !actionsFirst { actionButtons }
             }
             if departementRect != nil {
                 MapReader { proxy in
