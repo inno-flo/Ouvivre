@@ -84,6 +84,24 @@ public struct InspectorPanelView: View {
                             .foregroundStyle(ClassicTheme.faint)
                     }
 
+                    // Rubrique CULTURE : regroupe les sous-rubriques actives
+                    // (Musées, Lieux du patrimoine, Festivals) ; l'icône ouvre
+                    // la fenêtre qui les réunit toutes les trois.
+                    HStack(spacing: 8) {
+                        Eyebrow("CULTURE", color: ClassicTheme.faint)
+                        Spacer()
+                        Button {
+                            openWindow(id: CultureDetailView.windowID, value: code)
+                        } label: {
+                            Image(systemName: "interface.window.on.rectangle.dashed")
+                                .font(.system(size: 13))
+                                .foregroundStyle(ClassicTheme.faint)
+                        }
+                        .buttonStyle(.plain)
+                        .help("Ouvrir les données culturelles dans une fenêtre")
+                    }
+                    .padding(.top, 4)
+
                     ForEach(activeCultureCriteria, id: \.key) { criterion in
                         criterionSection(criterion)
                     }
@@ -216,6 +234,16 @@ public struct InspectorPanelView: View {
 
     private static let meteoKey = "meteo"
 
+    /// Icône de l'en-tête de chaque critère Culture.
+    private static func headerIcon(forCriterionKey key: String) -> String {
+        switch key {
+        case "musees": "photo.artframe"
+        case "patrimoine": "building.classical.columns"
+        case "festivals": "fireworks"
+        default: "checkmark.circle.fill"
+        }
+    }
+
     private static var meteoXAxis: some AxisContent {
         AxisMarks(values: .stride(by: .year)) { _ in
             AxisGridLine()
@@ -237,7 +265,7 @@ public struct InspectorPanelView: View {
                 }
             } label: {
                 HStack(spacing: 6) {
-                    Image(systemName: "checkmark.circle.fill")
+                    Image(systemName: Self.headerIcon(forCriterionKey: criterion.key))
                         .foregroundStyle(theme.accent)
                     Text(criterion.label.uppercased())
                         .font(CFont.mono(11, weight: .semibold))
@@ -402,7 +430,7 @@ public struct InspectorPanelView: View {
         return merged
     }
 
-    private static func titleCased(_ name: String) -> String {
+    static func titleCased(_ name: String) -> String {
         let words = mergeStandaloneElisions(name.lowercased().split(separator: " "))
         return words.enumerated().map { index, word -> String in
             let word = String(word)
@@ -425,7 +453,7 @@ public struct InspectorPanelView: View {
     /// variantes où un nom est entièrement contenu dans un autre (ex.
     /// "Musée des Confluences" / "Muséum - Musée des Confluences") — on
     /// garde alors le plus court des deux, jugé le nom usuel.
-    private static func dedupedNames(_ names: [String], mergeVariants: Bool) -> [String] {
+    static func dedupedNames(_ names: [String], mergeVariants: Bool) -> [String] {
         var exactDeduped: [String] = []
         var seenTitleCased = Set<String>()
         for name in names {
