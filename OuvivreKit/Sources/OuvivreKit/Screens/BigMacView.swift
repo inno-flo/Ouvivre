@@ -40,6 +40,8 @@ public struct BigMacView: View {
     // s'affichent directement, le reste se déplie — même pattern que
     // `showMoreDepartements` dans GeoView2.
     @State private var showMoreCommunes = false
+    /// Vrai pendant l'application du dépli par défaut à l'apparition.
+    @State private var isApplyingDefaultExpansion = false
 
     private let columnWidth: CGFloat = 420
     private let columnOuterPadding: CGFloat = 20
@@ -102,6 +104,14 @@ public struct BigMacView: View {
             .onAppear {
                 moveCamera(totalWidth: geo.size.width, animated: false)
                 refreshDepartementsOnMap()
+                // À chaque sélection de la section, Pays et "Géographie et
+                // Culture" sont dépliés. L'accordéon est suspendu le temps
+                // d'appliquer ces valeurs (sinon l'ouverture de Géographie
+                // replierait Pays aussitôt).
+                isApplyingDefaultExpansion = true
+                state.bigMacExpandedPays = true
+                state.bigMacExpandedRegions = true
+                DispatchQueue.main.async { isApplyingDefaultExpansion = false }
             }
             .onChange(of: mapState.coordinate.latitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: mapState.coordinate.longitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
@@ -110,9 +120,9 @@ public struct BigMacView: View {
             // Accordéon : Pays se replie dès qu'un autre bloc s'ouvre (mais
             // ouvrir Pays ne referme pas les autres — seul Pays a ce
             // comportement, pour rester l'état "par défaut" au premier bloc).
-            .onChange(of: state.bigMacExpandedRegions) { _, isExpanded in if isExpanded { state.bigMacExpandedPays = false } }
-            .onChange(of: state.bigMacExpandedCulture) { _, isExpanded in if isExpanded { state.bigMacExpandedPays = false } }
-            .onChange(of: state.bigMacExpandedMobilite) { _, isExpanded in if isExpanded { state.bigMacExpandedPays = false } }
+            .onChange(of: state.bigMacExpandedRegions) { _, isExpanded in if isExpanded && !isApplyingDefaultExpansion { state.bigMacExpandedPays = false } }
+            .onChange(of: state.bigMacExpandedCulture) { _, isExpanded in if isExpanded && !isApplyingDefaultExpansion { state.bigMacExpandedPays = false } }
+            .onChange(of: state.bigMacExpandedMobilite) { _, isExpanded in if isExpanded && !isApplyingDefaultExpansion { state.bigMacExpandedPays = false } }
             .onChange(of: state.excludeOverseas) { _, _ in refreshDepartementsOnMap() }
             .onChange(of: state.excludeCorse) { _, _ in refreshDepartementsOnMap() }
             .onChange(of: state.geo2) { _, _ in refreshDepartementsOnMap() }
