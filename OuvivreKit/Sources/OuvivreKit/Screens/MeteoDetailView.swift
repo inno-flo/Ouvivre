@@ -130,14 +130,14 @@ public struct MeteoDetailView: View {
                                 PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", p.maxTemperature ?? p.temperature ?? 0))
                                     .foregroundStyle(ClassicTheme.ink).symbolSize(p.maxTemperature == nil ? 0 : 90)
                                     .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .fit(to: .chart))) {
-                                        tooltip(p, value: String(format: "Moy. %.1f °C", p.temperature ?? 0), secondary: temperatureLines(p))
+                                        tooltip(p, value: "Moy. \(frDecimal(p.temperature ?? 0)) °C", secondary: temperatureLines(p))
                                     }
                             }
                             if let p = hoveredPoint(hoveredTemperatureDate, in: points), selectedMonth != month(p) {
                                 RuleMark(x: .value("Mois", p.date, unit: .month))
                                     .foregroundStyle(ClassicTheme.faint.opacity(0.5))
                                     .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
-                                        tooltip(p, value: String(format: "Moy. %.1f °C", p.temperature ?? 0), secondary: temperatureLines(p))
+                                        tooltip(p, value: "Moy. \(frDecimal(p.temperature ?? 0)) °C", secondary: temperatureLines(p))
                                     }
                             }
                         }
@@ -160,14 +160,14 @@ public struct MeteoDetailView: View {
                                 PointMark(x: .value("Mois", p.date, unit: .month), y: .value("mm", p.precipitation ?? 0))
                                     .opacity(0)
                                     .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .fit(to: .chart))) {
-                                        tooltip(p, value: String(format: "%.1f mm", p.precipitation ?? 0), secondary: nil)
+                                        tooltip(p, value: "\(frDecimal(p.precipitation ?? 0)) mm", secondary: nil)
                                     }
                             }
                             if let p = hoveredPoint(hoveredPrecipitationDate, in: points), selectedMonth != month(p) {
                                 RuleMark(x: .value("Mois", p.date, unit: .month))
                                     .foregroundStyle(ClassicTheme.faint.opacity(0.5))
                                     .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
-                                        tooltip(p, value: String(format: "%.1f mm", p.precipitation ?? 0), secondary: nil)
+                                        tooltip(p, value: "\(frDecimal(p.precipitation ?? 0)) mm", secondary: nil)
                                     }
                             }
                         }
@@ -200,7 +200,7 @@ public struct MeteoDetailView: View {
     // MARK: Synthèse
 
     private static func fmt(_ v: Double, _ digits: Int = 1) -> String {
-        String(format: "%.\(digits)f", v).replacingOccurrences(of: ".", with: ",")
+        frDecimal(v, digits: digits)
     }
 
     private static func signed(_ v: Double, _ digits: Int = 1) -> String {
@@ -411,10 +411,10 @@ public struct MeteoDetailView: View {
     /// affichée), maximale moyenne et record absolu (sans poste ni date).
     private func temperatureLines(_ p: MeteoMensuelle.Point) -> String {
         var lines: [String] = []
-        if Self.showFeltTemperature, let tr = p.feltTemperature { lines.append(String(format: "Ress. %.1f °C", tr)) }
-        if let tx = p.maxTemperature { lines.append(String(format: "Max. %.1f °C", tx)) }
+        if Self.showFeltTemperature, let tr = p.feltTemperature { lines.append("Ress. \(frDecimal(tr)) °C") }
+        if let tx = p.maxTemperature { lines.append("Max. \(frDecimal(tx)) °C") }
         if let xa = p.absoluteMax {
-            var line = String(format: "Record %.1f °C", xa)
+            var line = "Record \(frDecimal(xa)) °C"
             lines.append(line)
         }
         return lines.joined(separator: "\n")
@@ -484,7 +484,7 @@ public struct MeteoDetailView: View {
                         Text(String(y)).font(CFont.mono(11, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
                         HStack(spacing: 5) {
                             Image(systemName: "thermometer.medium").font(.system(size: 13)).foregroundStyle(theme.accent)
-                            Text(temps.isEmpty ? "–" : String(format: "%.1f °C", temps.reduce(0, +) / Double(temps.count)))
+                            Text(temps.isEmpty ? "–" : "\(frDecimal(temps.reduce(0, +) / Double(temps.count))) °C")
                                 .font(CFont.sans(16, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
                         }
                         HStack(spacing: 5) {
@@ -541,7 +541,7 @@ public struct MeteoDetailView: View {
                             .frame(width: 110, alignment: .leading)
                         ForEach(years, id: \.self) { y in
                             let p = series.first { year($0) == y && month($0) == m }
-                            Text(p.flatMap(value).map { String(format: metric == .precipitation ? "%.0f" : "%.1f", $0) } ?? "–")
+                            Text(p.flatMap(value).map { metric == .precipitation ? String(format: "%.0f", $0) : frDecimal($0) } ?? "–")
                                 .font(CFont.mono(12))
                                 .foregroundStyle(p?.partial == true ? ClassicTheme.faint : ClassicTheme.ink)
                                 .frame(maxWidth: .infinity, alignment: .trailing)

@@ -38,7 +38,7 @@ public struct FavorisView: View {
         /// petite ; `nil` : pas de mise en avant (ligne informative).
         let higherIsBetter: Bool?
         /// Ligne dont seuls les extrêmes sont entourés : la plus haute valeur en
-        /// rouge, la plus basse en vert.
+        /// rouge, la plus basse en bleu ciel.
         var extremes: Bool = false
         /// Icônes affichées en face de la plus haute / de la plus basse valeur.
         var extremeIcons: (high: String, low: String)?
@@ -169,7 +169,7 @@ public struct FavorisView: View {
             let cells = deps.map { d -> Cell in
                 var n = CultureScores.names(forDepartementCode: d.codeInsee, criterionKey: key).count
                 if key == "patrimoine" { n += CultureScores.names(forDepartementCode: d.codeInsee, criterionKey: "spr").count }
-                return Cell(text: "\(n)", value: Double(n))
+                return Cell(text: frThousands(n), value: Double(n))
             }
             return Row(id: "culture-\(key)", label: label, cells: cells, higherIsBetter: true)
         }
@@ -183,11 +183,11 @@ public struct FavorisView: View {
         }
         let meteoRows = [
             Row(id: "meteo-temp", label: "Température moyenne", cells: meteo.map { m in
-                m.temp.map { Cell(text: String(format: "%.1f °C", $0), value: $0) } ?? Cell(text: "—", value: nil)
-            }, higherIsBetter: nil, extremes: true, extremeIcons: (high: "thermometer.high", low: "thermometer.low")),
+                m.temp.map { Cell(text: frDecimal($0) + " °C", value: $0) } ?? Cell(text: "—", value: nil)
+            }, higherIsBetter: nil, extremes: true),
             Row(id: "meteo-rain", label: "Précipitations", cells: meteo.map { m in
-                m.rain.map { Cell(text: "\(Int($0.rounded())) mm", value: $0) } ?? Cell(text: "—", value: nil)
-            }, higherIsBetter: nil, extremeIcons: (high: "cloud.heavyrain.fill", low: "cloud.drizzle.fill"))
+                m.rain.map { Cell(text: "\(frThousands(Int($0.rounded()))) mm", value: $0) } ?? Cell(text: "—", value: nil)
+            }, higherIsBetter: nil, extremeIcons: (high: "cloud.heavyrain.fill", low: "cloud.drizzle"))
         ]
         return [
             Section(id: "chefLieu", title: "", rows: [
@@ -204,7 +204,7 @@ public struct FavorisView: View {
         if row.extremes {
             let values = row.cells.compactMap(\.value)
             guard let v = cell.value, let hi = values.max(), let lo = values.min(), hi != lo else { return nil }
-            return v == hi ? .red : v == lo ? .green : nil
+            return v == hi ? .red : v == lo ? Color(red: 0.35, green: 0.70, blue: 0.95) : nil
         }
         return isBest(cell, in: row) ? ClassicTheme.ink : nil
     }
@@ -235,6 +235,22 @@ public struct FavorisView: View {
         guard let top = counts.max(), top > 0 else { return [] }
         return Set(zip(deps, counts).filter { $0.1 == top }.map(\.0.codeInsee))
     }
+
+    /// Icône de chaque critère, indexée par son libellé.
+    private static let criterionIcons: [String: String] = [
+        "Chef-lieu": "mappin.and.ellipse",
+        "Pays étranger": "globe.desk",
+        "Mer et océan": "figure.sailing",
+        "Montagne": "mountain.2",
+        "Lacs": "water.waves",
+        "Fleuves et rivières": "figure.fishing",
+        "Parcs et forêts": "tree",
+        "Musées": "photo.artframe",
+        "Lieux du patrimoine": "building.classical.columns",
+        "Festivals": "fireworks",
+        "Température moyenne": "thermometer.medium",
+        "Précipitations": "cloud.rain"
+    ]
 
     // MARK: - Éléments de colonne
 
@@ -348,7 +364,11 @@ public struct FavorisView: View {
 
                 ForEach(section.rows) { row in
                     HStack(spacing: 0) {
-                        Text(row.label).font(CFont.sans(13, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+                        HStack(spacing: 8) {
+                            Image(systemName: Self.criterionIcons[row.label] ?? "circle").frame(width: 18)
+                                .foregroundStyle(theme.accent)
+                            Text(row.label).font(CFont.sans(13, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+                        }
                             .frame(width: labelColW, alignment: .leading)
                             .padding(.horizontal, 18).padding(.vertical, 13)
                         ForEach(Array(departements.enumerated()), id: \.element.codeInsee) { i, d in

@@ -145,7 +145,6 @@ public struct DepartementMapCard: View {
                         if nativeControls {
                             MapZoomStepper()
                             MapCompass()
-                            MapScaleView()
                         }
                     }
                     .onTapGesture { point in
@@ -154,6 +153,23 @@ public struct DepartementMapCard: View {
                         onSelect(name)
                     }
                     .onMapCameraChange { context in mapRegion = context.region }
+                    // Contrôles natifs (zoom, boussole) empilés en haut à droite
+                    // par MapKit ; le bouton de recentrage s'aligne en dessous.
+                    .overlay(alignment: .topTrailing) {
+                        if nativeControls {
+                            Button {
+                                if let rect = departementRect { withAnimation(.easeInOut(duration: 0.25)) { mapPosition = .rect(rect) } }
+                            } label: {
+                                Image(systemName: "mappin.and.ellipse")
+                                    .frame(width: 28, height: 28)
+                                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 6))
+                                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(ClassicTheme.border, lineWidth: 1))
+                            }
+                            .buttonStyle(.plain)
+                            .help("Recentrer la carte")
+                            .padding(.top, 84).padding(.trailing, 10)
+                        }
+                    }
                 }
                 .onAppear { if let rect = departementRect { mapPosition = .rect(rect) } }
                 // Sélection modifiée (favori ajouté/retiré) : le cadrage suit
