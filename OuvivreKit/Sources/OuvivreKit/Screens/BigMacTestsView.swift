@@ -323,7 +323,7 @@ public struct BigMacTestsView: View {
     // MARK: Bloc 1 — Pays
 
     private var paysBlock: some View {
-        blockDisclosure(title: "Pays", isExpanded: $state.bigMacExpandedPays, enabled: true) {
+        blockDisclosure(title: "Pays", bold: true, isExpanded: $state.bigMacExpandedPays, enabled: true) {
             PaysCountryBlock(derived: derived, ink: columnInk, faint: columnFaint, showFacts: false)
         }
     }
@@ -346,7 +346,7 @@ public struct BigMacTestsView: View {
     private var moreCommunes: [CommuneSizeEntry] { Array(matchingCommunes.dropFirst(topCommunesCount)) }
 
     private var regionsBlock: some View {
-        blockDisclosure(title: "Géographie et Culture", isExpanded: $state.bigMacExpandedRegions, enabled: true) {
+        blockDisclosure(title: "Géographie et Culture", bold: true, isExpanded: $state.bigMacExpandedRegions, enabled: true) {
             VStack(alignment: .leading, spacing: 14) {
                 RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody)
 
@@ -358,16 +358,6 @@ public struct BigMacTestsView: View {
                     sizeCheckbox("Grande ville", description: CommuneSizeCategory.grandeVille.description, isOn: $state.includeGrandeVille)
                 }
                 .padding(.top, 4)
-
-                Text("\(communeCount) communes correspondantes")
-                    .font(CFont.mono(11, weight: .medium))
-                    .foregroundStyle(columnFaint)
-
-                Text(hasActiveRankingCriterion
-                     ? "\(matchingDepartementNames.count) départements affichés — les mieux classés selon vos réglages ci-dessous"
-                     : "\(matchingDepartementNames.count) départements affichés — tous, en l'absence de critère de proximité ou de culture réglé")
-                    .font(CFont.mono(11, weight: .medium))
-                    .foregroundStyle(columnFaint)
 
                 // La liste des communes (30 premières + "autres" dépliables)
                 // est retirée de l'affichage pour l'instant — on la
@@ -581,7 +571,7 @@ public struct BigMacTestsView: View {
     /// (matériau translucide de la colonne, typographie `Eyebrow`/`CFont`) —
     /// première utilisation de `DisclosureGroup` dans ce module.
     @ViewBuilder
-    private func blockDisclosure<Content: View>(title: String, isExpanded: Binding<Bool>, enabled: Bool, @ViewBuilder content: @escaping () -> Content) -> some View {
+    private func blockDisclosure<Content: View>(title: String, bold: Bool = false, isExpanded: Binding<Bool>, enabled: Bool, @ViewBuilder content: @escaping () -> Content) -> some View {
         // Anime explicitement le dépli/repli : `DisclosureGroup` change son
         // binding directement au clic sur le chevron, sans passer par
         // `withAnimation`, ce qui donnait un repli/dépli instantané et sec.
@@ -601,7 +591,7 @@ public struct BigMacTestsView: View {
                 // que ce dernier sur macOS).
                 HStack(spacing: 0) {
                     Text(title.uppercased())
-                        .font(.custom("SFCompactText-Semibold", size: 11))
+                        .font(.custom(bold ? "SFCompactText-Bold" : "SFCompactText-Semibold", size: 11))
                         .foregroundStyle(enabled && isExpanded.wrappedValue ? columnInk : columnFaint)
                     Spacer(minLength: 0)
                 }

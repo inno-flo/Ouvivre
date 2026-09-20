@@ -359,16 +359,6 @@ public struct BigMacView: View {
                 }
                 .padding(.top, 4)
 
-                Text("\(communeCount) communes correspondantes")
-                    .font(CFont.mono(11, weight: .medium))
-                    .foregroundStyle(columnFaint)
-
-                Text(hasActiveRankingCriterion
-                     ? "\(matchingDepartementNames.count) départements affichés — les mieux classés selon vos réglages ci-dessous"
-                     : "\(matchingDepartementNames.count) départements affichés — tous, en l'absence de critère de proximité ou de culture réglé")
-                    .font(CFont.mono(11, weight: .medium))
-                    .foregroundStyle(columnFaint)
-
                 // La liste des communes (30 premières + "autres" dépliables)
                 // est retirée de l'affichage pour l'instant — on la
                 // réutilisera plus tard. `communesList`/`communeRow` restent
