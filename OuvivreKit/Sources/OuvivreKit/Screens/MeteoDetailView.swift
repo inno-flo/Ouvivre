@@ -413,28 +413,27 @@ public struct MeteoDetailView: View {
     }()
 
     /// Lignes complémentaires de l'infobulle de température : ressentie (si
-    /// affichée), maximale moyenne et record absolu avec son jour (sans le poste).
+    /// affichée), maximale moyenne et record absolu (sans poste ni date).
     private func temperatureLines(_ p: MeteoMensuelle.Point) -> String {
         var lines: [String] = []
         if Self.showFeltTemperature, let tr = p.feltTemperature { lines.append(String(format: "Ress. %.1f °C", tr)) }
         if let tx = p.maxTemperature { lines.append(String(format: "Max. %.1f °C", tx)) }
         if let xa = p.absoluteMax {
             var line = String(format: "Record %.1f °C", xa)
-            if let day = p.absoluteMaxDay { line += " (le \(day))" }
             lines.append(line)
         }
         return lines.joined(separator: "\n")
     }
 
     private func tooltip(_ p: MeteoMensuelle.Point, value: String, secondary: String?) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: 5) {
             Text(Self.monthFormatter.string(from: p.date).capitalized)
                 .font(CFont.sans(11)).foregroundStyle(ClassicTheme.faint)
             Text(value).font(CFont.sans(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
-            if let secondary, !secondary.isEmpty { Text(secondary).font(CFont.sans(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink) }
+            if let secondary, !secondary.isEmpty { Text(secondary).font(CFont.sans(13, weight: .semibold)).lineSpacing(4).foregroundStyle(ClassicTheme.ink) }
             if p.partial { Text("mois en cours").font(CFont.sans(10)).foregroundStyle(ClassicTheme.faint2) }
         }
-        .padding(.horizontal, 8).padding(.vertical, 5)
+        .padding(.horizontal, 8).padding(.vertical, 7)
         .background(.white, in: RoundedRectangle(cornerRadius: 6))
         .overlay(RoundedRectangle(cornerRadius: 6).stroke(ClassicTheme.border, lineWidth: 1))
         .shadow(color: .black.opacity(0.08), radius: 3, y: 1)
