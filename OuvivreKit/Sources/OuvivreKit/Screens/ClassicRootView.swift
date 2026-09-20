@@ -145,6 +145,7 @@ public struct ClassicRootView: View {
             case .compare: CompareView(derived: derived)
             case .profil: ProfilView(derived: derived)
             case .sources: SourcesView(derived: derived)
+            case .favoris: FavorisView(derived: derived)
             }
         }
         .padding(.horizontal, theme.mainPadding)

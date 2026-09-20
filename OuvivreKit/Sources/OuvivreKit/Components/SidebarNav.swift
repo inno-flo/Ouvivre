@@ -8,6 +8,7 @@ import SwiftUI
 public struct SidebarNav: View {
     let derived: ClassicDerived
     let selection: Binding<ClassicScreen?>
+    @EnvironmentObject private var state: ClassicState
 
     public init(derived: ClassicDerived, selection: Binding<ClassicScreen?>) {
         self.derived = derived
@@ -29,6 +30,17 @@ public struct SidebarNav: View {
                 }
             } header: {
                 Text("Outils").font(.system(size: 11)).foregroundStyle(.secondary)
+            }
+            Section {
+                HStack(spacing: 9) {
+                    Image(systemName: state.favoriteDepartementCodes.isEmpty ? "star" : "star.fill").frame(width: 16)
+                    Text("Comparatif").font(.system(size: 13, weight: state.screen == .favoris ? .semibold : .regular))
+                    Spacer(minLength: 4)
+                    Text("\(state.favoriteDepartementCodes.count)").font(CFont.mono(10)).opacity(0.5)
+                }
+                .tag(ClassicScreen.favoris)
+            } header: {
+                Text("Favoris").font(.system(size: 11)).foregroundStyle(.secondary)
             }
             if !derived.countrySources.isEmpty {
                 Section {
