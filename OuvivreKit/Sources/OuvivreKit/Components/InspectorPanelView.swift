@@ -30,11 +30,11 @@ public struct InspectorPanelView: View {
     /// section (et inversement).
     @Binding var isCountryExpanded: Bool
 
-    // Les catégories (Musées, Lieux du patrimoine, Festivals, Météo) sont
-    // toujours repliées par défaut : seules les clés dépliées par
-    // l'utilisateur sont mémorisées, et remises à zéro à chaque nouveau
-    // département.
-    @State private var expandedKeys: Set<String> = []
+    // Les catégories sont repliées par défaut, sauf Météo (toujours dépliée
+    // par défaut) : seules les clés dépliées sont mémorisées, et remises à
+    // cet état initial à chaque nouveau département.
+    private static let defaultExpandedKeys: Set<String> = [meteoKey]
+    @State private var expandedKeys: Set<String> = InspectorPanelView.defaultExpandedKeys
 
     public init(title: String, activeCultureCriteria: [(label: String, key: String)], departementCode: String?, countryName: String = "", countryFacts: [LabeledValue] = [], isCountryExpanded: Binding<Bool> = .constant(true)) {
         self.title = title
@@ -117,7 +117,7 @@ public struct InspectorPanelView: View {
             .frame(maxWidth: .infinity, alignment: .topLeading)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .onChange(of: departementCode) { _, _ in expandedKeys = [] }
+        .onChange(of: departementCode) { _, _ in expandedKeys = Self.defaultExpandedKeys }
         // Aucun fond personnalisé — comme la sidebar (`.listStyle(.sidebar)`),
         // l'inspecteur s'appuie sur le matériau translucide natif du système
         // derrière son contenu plutôt qu'une couleur/opacité fixée ici.
@@ -176,9 +176,6 @@ public struct InspectorPanelView: View {
                             .font(CFont.mono(11, weight: .semibold))
                             .foregroundStyle(ClassicTheme.faint)
                         Spacer()
-                        Text("\(series.count)")
-                            .font(CFont.mono(11, weight: .medium))
-                            .foregroundStyle(ClassicTheme.faint)
                         Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
                             .font(.system(size: 10, weight: .semibold))
                             .foregroundStyle(ClassicTheme.faint)
