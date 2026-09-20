@@ -17,7 +17,7 @@ public struct DepartementMapCard: View {
     var height: CGFloat = 460
     /// Ordre des boutons : recentrage, zoom −, zoom +, puis Explorer/Satellite.
     var actionsFirst = false
-    /// Ajoute les contrôles natifs de MapKit (zoom, boussole, échelle).
+    /// Ajoute le contrôle de zoom natif de MapKit (sans boussole).
     var nativeControls = false
 
     @State private var mapType: MapPlanType = .explorer
@@ -144,7 +144,6 @@ public struct DepartementMapCard: View {
                     .mapControls {
                         if nativeControls {
                             MapZoomStepper()
-                            MapCompass()
                         }
                     }
                     .onTapGesture { point in
@@ -153,21 +152,22 @@ public struct DepartementMapCard: View {
                         onSelect(name)
                     }
                     .onMapCameraChange { context in mapRegion = context.region }
-                    // Contrôles natifs (zoom, boussole) empilés en haut à droite
-                    // par MapKit ; le bouton de recentrage s'aligne en dessous.
-                    .overlay(alignment: .topTrailing) {
+                    // Contrôle de zoom natif empilé par MapKit en bas à
+                    // droite (emplacement non configurable) ; le bouton de
+                    // recentrage s'aligne au-dessus, dans la même colonne.
+                    .overlay(alignment: .bottomTrailing) {
                         if nativeControls {
                             Button {
                                 if let rect = departementRect { withAnimation(.easeInOut(duration: 0.25)) { mapPosition = .rect(rect) } }
                             } label: {
                                 Image(systemName: "mappin.and.ellipse")
                                     .frame(width: 28, height: 28)
-                                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 6))
-                                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(ClassicTheme.border, lineWidth: 1))
+                                    .background(.regularMaterial, in: Circle())
+                                    .overlay(Circle().stroke(ClassicTheme.border, lineWidth: 1))
                             }
                             .buttonStyle(.plain)
                             .help("Recentrer la carte")
-                            .padding(.top, 84).padding(.trailing, 10)
+                            .padding(.bottom, 104).padding(.trailing, 10)
                         }
                     }
                 }
