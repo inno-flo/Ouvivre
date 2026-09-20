@@ -478,7 +478,7 @@ public struct BigMacTestsView: View {
                                     .foregroundStyle(.white)
                             }
                         }
-                    Text(label).font(CFont.sans(13)).foregroundStyle(columnBody)
+                    Text(label).font(.custom("SFProDisplay-Regular", size: 13)).foregroundStyle(columnBody)
                 }
             }
             .buttonStyle(.plain)
@@ -519,7 +519,7 @@ public struct BigMacTestsView: View {
     private var cultureRowsContent: some View {
         VStack(alignment: .leading, spacing: 4) {
             ForEach(cultureRows, id: \.rowIndex) { entry in
-                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: CFont.sans(13), labelColor: columnInk, dotGrowthPerStep: 1.5) {
+                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: .custom("SFProDisplay-Regular", size: 13), labelColor: columnInk, dotGrowthPerStep: 1.5) {
                     state.setGroup(cultureGroupIndex, entry.rowIndex, value: min($0, 2))
                 }
                 .padding(.vertical, 4)
@@ -565,7 +565,7 @@ public struct BigMacTestsView: View {
         blockDisclosure(title: "Mobilité", isExpanded: $state.bigMacExpandedMobilite, enabled: true) {
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(mobiliteRows) { row in
-                    CriterionRow(row: row, thumbSize: 16, trackHeight: 4, labelFont: CFont.sans(13), labelColor: columnInk, extraDotScaleFromSecond: 1.1) {
+                    CriterionRow(row: row, thumbSize: 16, trackHeight: 4, labelFont: .custom("SFProDisplay-Regular", size: 13), labelColor: columnInk, extraDotScaleFromSecond: 1.1) {
                         state.setGroup(mobiliteGroupIndex, row.id, value: min($0, 2))
                     }
                     .padding(.vertical, 4)
@@ -601,7 +601,7 @@ public struct BigMacTestsView: View {
                 // que ce dernier sur macOS).
                 HStack(spacing: 0) {
                     Text(title.uppercased())
-                        .font(CFont.mono(11, weight: .semibold))
+                        .font(.custom("SFCompactText-Semibold", size: 11))
                         .foregroundStyle(enabled && isExpanded.wrappedValue ? columnInk : columnFaint)
                     Spacer(minLength: 0)
                 }
