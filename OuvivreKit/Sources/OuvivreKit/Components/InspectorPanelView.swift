@@ -33,7 +33,7 @@ public struct InspectorPanelView: View {
     // Les catégories sont repliées par défaut, sauf Météo (toujours dépliée
     // par défaut) : seules les clés dépliées sont mémorisées, et remises à
     // cet état initial à chaque nouveau département.
-    private static let defaultExpandedKeys: Set<String> = [meteoKey]
+    private static let defaultExpandedKeys: Set<String> = []
     @State private var expandedKeys: Set<String> = InspectorPanelView.defaultExpandedKeys
 
     public init(title: String, activeCultureCriteria: [(label: String, key: String)], departementCode: String?, countryName: String = "", countryFacts: [LabeledValue] = [], isCountryExpanded: Binding<Bool> = .constant(true)) {
@@ -163,28 +163,13 @@ public struct InspectorPanelView: View {
     @ViewBuilder
     private func meteoSection(_ code: String) -> some View {
         let series = MeteoMensuelle.series(forDepartementCode: code)
-        let isCollapsed = !expandedKeys.contains(Self.meteoKey)
+        let isCollapsed = false
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
-                Button {
-                    withAnimation(.easeInOut(duration: 0.15)) {
-                        if isCollapsed { expandedKeys.insert(Self.meteoKey) } else { expandedKeys.remove(Self.meteoKey) }
-                    }
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
-                            .font(.system(size: 10, weight: .semibold))
-                            .foregroundStyle(ClassicTheme.faint)
-                            .frame(width: 10)
-                        Image(systemName: "cloud.sun.fill").foregroundStyle(theme.accent)
-                        Text("MÉTÉO")
-                            .font(CFont.mono(11, weight: .semibold))
-                            .foregroundStyle(ClassicTheme.faint)
-                        Spacer()
-                    }
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
+                // Même en-tête que CULTURE (Eyebrow), sans chevron ni icône :
+                // la rubrique Météo est toujours dépliée.
+                Eyebrow("MÉTÉO", color: ClassicTheme.faint)
+                Spacer()
 
                 // Ouvre la fenêtre de détail (comme le double-clic).
                 Button {
