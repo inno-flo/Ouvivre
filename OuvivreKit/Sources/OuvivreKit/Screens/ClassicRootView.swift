@@ -90,15 +90,17 @@ public struct ClassicRootView: View {
                             .help("Zoomer")
                         }
                     }
-                    ToolbarItem {
-                        Menu {
-                            ForEach(MapPlanType.allCases) { type in
-                                Button { mapState.planType = type } label: { Label(type.label, systemImage: type.icon) }
+                    if state.screen != .favoris {
+                        ToolbarItem {
+                            Menu {
+                                ForEach(MapPlanType.allCases) { type in
+                                    Button { mapState.planType = type } label: { Label(type.label, systemImage: type.icon) }
+                                }
+                            } label: {
+                                Image(systemName: "map")
                             }
-                        } label: {
-                            Image(systemName: "map")
+                            .help("Type de carte")
                         }
-                        .help("Type de carte")
                     }
                     ToolbarItem {
                         Button {

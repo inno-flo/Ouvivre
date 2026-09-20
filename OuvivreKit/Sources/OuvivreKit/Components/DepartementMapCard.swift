@@ -6,8 +6,15 @@ import MapKit
 /// carte (Explorer / Satellite), deux boutons de zoom et un bouton de
 /// recentrage. Partagé par les fenêtres de détail Météo et Culture.
 public struct DepartementMapCard: View {
-    let name: String
+    /// Départements mis en surbrillance (un seul dans les fenêtres de détail,
+    /// tous les favoris dans l'écran Favoris).
+    let names: [String]
     let accent: Color
+    /// Département sélectionné (tracé plus marqué) et rappel au clic sur un
+    /// département de la carte — utilisés par l'écran Favoris seulement.
+    var selectedName: String?
+    var onSelect: ((String) -> Void)?
+    var height: CGFloat = 460
 
     @State private var mapType: MapPlanType = .explorer
     @State private var mapPosition: MapCameraPosition = .automatic
@@ -16,20 +23,55 @@ public struct DepartementMapCard: View {
     @State private var mapRegion: MKCoordinateRegion?
 
     public init(name: String, accent: Color) {
-        self.name = name
+        self.names = [name]
         self.accent = accent
     }
+
+    public init(names: [String], accent: Color, selectedName: String? = nil, onSelect: ((String) -> Void)? = nil, height: CGFloat = 460) {
+        self.names = names
+        self.accent = accent
+        self.selectedName = selectedName
+        self.onSelect = onSelect
+        self.height = height
+    }
+
+    private static func contains(_ ring: [CLLocationCoordinate2D], _ p: CLLocationCoordinate2D) -> Bool {
+        var inside = false
+        var j = ring.count - 1
+        for i in 0..<ring.count {
+            let a = ring[i], b = ring[j]
+            if (a.latitude > p.latitude) != (b.latitude > p.latitude),
+               p.longitude < (b.longitude - a.longitude) * (p.latitude - a.latitude) / (b.latitude - a.latitude) + a.longitude {
+                inside.toggle()
+            }
+            j = i
+        }
+        return inside
+    }
+
+    private func departementName(at coordinate: CLLocationCoordinate2D) -> String? {
+        names.first { name in (DepartementBoundaries.rings[name] ?? []).contains { Self.contains($0, coordinate) } }
+    }
+
+    private var allRings: [[CLLocationCoordinate2D]] { names.flatMap { DepartementBoundaries.rings[$0] ?? [] } }
 
     /// Rectangle englobant le périmètre du département, avec une petite
     /// marge — la carte s'y ajuste pour que le département occupe au mieux
     /// le cadre.
     private var departementRect: MKMapRect? {
-        let points = (DepartementBoundaries.rings[name] ?? []).flatMap { $0 }.map { MKMapPoint($0) }
-        guard let first = points.first else { return nil }
+        let points = allRings.flatMap { $0 }.map { MKMapPoint($0) }
+        guard let first = points.first else { return names.isEmpty ? Self.franceRect : nil }
         var rect = MKMapRect(origin: first, size: MKMapSize(width: 0, height: 0))
         for pt in points.dropFirst() { rect = rect.union(MKMapRect(origin: pt, size: MKMapSize(width: 0, height: 0))) }
         return rect.insetBy(dx: -rect.width * 0.04, dy: -rect.height * 0.04)
     }
+
+    /// Vue d'ensemble de la France métropolitaine, quand rien n'est sélectionné.
+    private static let franceRect: MKMapRect = {
+        let a = MKMapPoint(CLLocationCoordinate2D(latitude: 51.5, longitude: -5.5))
+        let b = MKMapPoint(CLLocationCoordinate2D(latitude: 41.0, longitude: 10.0))
+        return MKMapRect(x: min(a.x, b.x), y: min(a.y, b.y), width: abs(a.x - b.x), height: abs(a.y - b.y))
+    }()
 
     private func zoomMap(by factor: Double) {
         guard let r = mapRegion else { return }
@@ -41,7 +83,7 @@ public struct DepartementMapCard: View {
     }
 
     public var body: some View {
-        let rings = DepartementBoundaries.rings[name] ?? []
+        let rings = allRings
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
                 Spacer()
@@ -64,21 +106,36 @@ public struct DepartementMapCard: View {
                 Button {
                     if let rect = departementRect { withAnimation(.easeInOut(duration: 0.25)) { mapPosition = .rect(rect) } }
                 } label: { Image(systemName: "mappin.and.ellipse") }
-                    .buttonStyle(.plain).foregroundStyle(ClassicTheme.ink).help("Recentrer sur le département")
+                    .buttonStyle(.plain).foregroundStyle(ClassicTheme.ink).help("Recentrer sur la sélection")
             }
             if departementRect != nil {
-                Map(position: $mapPosition) {
-                    ForEach(Array(rings.enumerated()), id: \.offset) { _, ring in
-                        MapPolygon(coordinates: ring)
-                            .foregroundStyle(accent.opacity(0.16))
-                            .stroke(accent, lineWidth: 2)
+                MapReader { proxy in
+                    Map(position: $mapPosition) {
+                        ForEach(names, id: \.self) { name in
+                            let selected = name == selectedName
+                            ForEach(Array((DepartementBoundaries.rings[name] ?? []).enumerated()), id: \.offset) { _, ring in
+                                MapPolygon(coordinates: ring)
+                                    .foregroundStyle(accent.opacity(selected ? 0.4 : 0.16))
+                                    .stroke(accent, lineWidth: selected ? 3 : 2)
+                            }
+                        }
                     }
+                    .mapStyle(mapType.style(elevation: .automatic))
+                    .mapControls {}
+                    .onTapGesture { point in
+                        guard let onSelect, let coordinate = proxy.convert(point, from: .local),
+                              let name = departementName(at: coordinate) else { return }
+                        onSelect(name)
+                    }
+                    .onMapCameraChange { context in mapRegion = context.region }
                 }
-                .mapStyle(mapType.style(elevation: .automatic))
-                .mapControls {}
-                .onMapCameraChange { context in mapRegion = context.region }
                 .onAppear { if let rect = departementRect { mapPosition = .rect(rect) } }
-                .frame(height: 460)
+                // Sélection modifiée (favori ajouté/retiré) : le cadrage suit
+                // pour garder tous les départements sélectionnés visibles.
+                .onChange(of: names) { _, _ in
+                    if let rect = departementRect { withAnimation(.easeInOut(duration: 0.25)) { mapPosition = .rect(rect) } }
+                }
+                .frame(height: height)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             } else {
                 Text("Carte indisponible pour ce département.")

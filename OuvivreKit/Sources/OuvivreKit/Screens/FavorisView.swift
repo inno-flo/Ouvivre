@@ -10,7 +10,20 @@ public struct FavorisView: View {
     public init(derived: ClassicDerived) {}
 
     private let labelColW: CGFloat = 200
-    private let colW: CGFloat = 170
+    /// Département dont la colonne est sélectionnée (clic sur la carte).
+    @State private var selectedCode: String?
+    /// Ordre des colonnes (codes INSEE), réordonnable par glisser-déposer
+    /// sur les en-têtes et mémorisé entre les lancements. Les favoris absents
+    /// de cette liste (ajoutés depuis) passent après, par code.
+    @State private var columnOrder: [String] = UserDefaults.standard.stringArray(forKey: "favoriteColumnOrder") ?? []
+    /// Largeur d'un caractère de la police mono 10 pt du nom de région.
+    private let regionCharW: CGFloat = 6.02
+    /// Colonne ajustée sur le nom de région le plus long, avec 1 caractère
+    /// d'espacement de chaque côté.
+    private var colW: CGFloat {
+        let longest = departements.map { $0.nomRegion.count }.max() ?? 0
+        return CGFloat(longest + 2) * regionCharW
+    }
 
     private struct Cell { let text: String; let value: Double? }
     private struct Row: Identifiable {
@@ -30,7 +43,20 @@ public struct FavorisView: View {
     private var departements: [FranceGeoData.DepartementScore] {
         FranceGeoData.departements
             .filter { state.favoriteDepartementCodes.contains($0.codeInsee) }
-            .sorted { $0.codeInsee < $1.codeInsee }
+            .sorted {
+                let a = columnOrder.firstIndex(of: $0.codeInsee) ?? Int.max
+                let b = columnOrder.firstIndex(of: $1.codeInsee) ?? Int.max
+                return a != b ? a < b : $0.codeInsee < $1.codeInsee
+            }
+    }
+
+    /// Place la colonne `code` à l'emplacement de la colonne `target`.
+    private func moveColumn(_ code: String, before target: String) {
+        var order = departements.map(\.codeInsee)
+        guard code != target, let from = order.firstIndex(of: code), let to = order.firstIndex(of: target) else { return }
+        order.move(fromOffsets: [from], toOffset: to > from ? to + 1 : to)
+        columnOrder = order
+        UserDefaults.standard.set(order, forKey: "favoriteColumnOrder")
     }
 
     public var body: some View {
@@ -50,11 +76,17 @@ public struct FavorisView: View {
                 ScrollView(.horizontal, showsIndicators: true) {
                     table.frame(minWidth: 700)
                 }
-                Text("PAR DÉPARTEMENT").font(CFont.mono(10, weight: .medium)).foregroundStyle(ClassicTheme.faint)
-                    .padding(.top, 32).padding(.bottom, 12)
-                ScrollView(.horizontal, showsIndicators: true) {
-                    transposedTable
-                }
+                DepartementMapCard(
+                    names: departements.map(\.nom),
+                    accent: theme.accent,
+                    selectedName: departements.first { $0.codeInsee == selectedCode }?.nom,
+                    onSelect: { name in
+                        let code = departements.first { $0.nom == name }?.codeInsee
+                        selectedCode = selectedCode == code ? nil : code
+                    },
+                    height: 690
+                )
+                    .padding(.top, 32)
             }
         }
     }
@@ -91,14 +123,14 @@ public struct FavorisView: View {
             Row(id: "meteo-temp", label: "Température moyenne", cells: meteo.map { m in
                 m.temp.map { Cell(text: String(format: "%.1f °C", $0), value: $0) } ?? Cell(text: "—", value: nil)
             }, higherIsBetter: true),
-            Row(id: "meteo-rain", label: "Précipitations / an", cells: meteo.map { m in
+            Row(id: "meteo-rain", label: "Précipitations", cells: meteo.map { m in
                 m.rain.map { Cell(text: "\(Int($0.rounded())) mm", value: $0) } ?? Cell(text: "—", value: nil)
             }, higherIsBetter: false)
         ]
         return [
             Section(id: "geo", title: "GÉOGRAPHIE", rows: geoRows),
-            Section(id: "culture", title: "CULTURE", rows: cultureRows),
-            Section(id: "meteo", title: "MÉTÉO (12 DERNIERS MOIS)", rows: meteoRows)
+            Section(id: "culture", title: "CULTURE (nombre de lieux et d'événements)", rows: cultureRows),
+            Section(id: "meteo", title: "MÉTÉO (valeurs sur les 12 derniers mois)", rows: meteoRows)
         ]
     }
 
@@ -107,6 +139,18 @@ public struct FavorisView: View {
         let values = row.cells.compactMap(\.value)
         guard values.count > 1, let best = higher ? values.max() : values.min(), let worst = higher ? values.min() : values.max(), best != worst else { return false }
         return v == best
+    }
+
+    /// Codes des départements ayant le plus de valeurs mises en avant (tous
+    /// ceux à égalité, tant que ce maximum est supérieur à 0).
+    private var topDepartementCodes: Set<String> {
+        let deps = departements
+        var counts = Array(repeating: 0, count: deps.count)
+        for row in sections.flatMap(\.rows) {
+            for (i, cell) in row.cells.enumerated() where isBest(cell, in: row) { counts[i] += 1 }
+        }
+        guard let top = counts.max(), top > 0 else { return [] }
+        return Set(zip(deps, counts).filter { $0.1 == top }.map(\.0.codeInsee))
     }
 
     // MARK: - Tableau
@@ -120,16 +164,31 @@ public struct FavorisView: View {
                     VStack(alignment: .center, spacing: 4) {
                         Text(d.nom).font(CFont.sans(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
                         Text(d.nomRegion).font(CFont.mono(10)).foregroundStyle(ClassicTheme.faint)
-                        Button { state.toggleFavoriteDepartement(d.codeInsee) } label: {
-                            Image(systemName: "star.fill").foregroundStyle(theme.accent)
+                        HStack(spacing: 6) {
+                            Button { state.toggleFavoriteDepartement(d.codeInsee) } label: {
+                                Image(systemName: "star.fill").foregroundStyle(theme.accent)
+                            }
+                            .buttonStyle(.plain)
+                            .help("Retirer des favoris")
+                            if topDepartementCodes.contains(d.codeInsee) {
+                                Image(systemName: "checkmark.seal.fill").foregroundStyle(theme.accent)
+                                    .help("Le plus de meilleures valeurs")
+                            }
                         }
-                        .buttonStyle(.plain)
-                        .help("Retirer des favoris")
                     }
                     .multilineTextAlignment(.center)
                     .frame(width: colW, alignment: .center)
-                    .padding(.horizontal, 18).padding(.vertical, 12)
+                    .padding(.vertical, 12)
+                    .background(d.codeInsee == selectedCode ? theme.accent.opacity(0.12) : .clear)
                     .overlay(Rectangle().fill(ClassicTheme.border).frame(width: 1), alignment: .leading)
+                    .contentShape(Rectangle())
+                    .draggable(d.codeInsee)
+                    .dropDestination(for: String.self) { items, _ in
+                        guard let code = items.first else { return false }
+                        withAnimation(.easeInOut(duration: 0.2)) { moveColumn(code, before: d.codeInsee) }
+                        return true
+                    }
+                    .help("Glisser pour réordonner les colonnes")
                 }
             }
             .background(ClassicTheme.sidebarBg)
@@ -150,77 +209,21 @@ public struct FavorisView: View {
                         Text(row.label).font(CFont.sans(13, weight: .medium)).foregroundStyle(ClassicTheme.ink)
                             .frame(width: labelColW, alignment: .leading)
                             .padding(.horizontal, 18).padding(.vertical, 13)
-                        ForEach(Array(row.cells.enumerated()), id: \.offset) { _, c in
+                        ForEach(Array(row.cells.enumerated()), id: \.offset) { i, c in
                             let best = isBest(c, in: row)
-                            HStack(spacing: 8) {
-                                Text(c.text)
-                                    .font(CFont.sans(13, weight: best ? .semibold : .regular))
-                                    .foregroundStyle(best ? ClassicTheme.ink : ClassicTheme.sub)
-                                if best {
-                                    Image(systemName: "checkmark.circle.fill").font(.system(size: 11)).foregroundStyle(theme.accent)
-                                }
-                            }
+                            Text(c.text)
+                                .font(CFont.sans(13, weight: best ? .semibold : .regular))
+                                .foregroundStyle(best ? ClassicTheme.ink : ClassicTheme.sub)
+                                .padding(.horizontal, 8).padding(.vertical, 3)
+                                .overlay { if best { RoundedRectangle(cornerRadius: 4).stroke(ClassicTheme.ink, lineWidth: 1) } }
                             .frame(width: colW, alignment: .center)
-                            .padding(.horizontal, 18).padding(.vertical, 13)
+                            .padding(.vertical, 13)
+                            .background(departements[i].codeInsee == selectedCode ? theme.accent.opacity(0.12) : .clear)
                             .overlay(Rectangle().fill(ClassicTheme.dividerLight).frame(width: 1), alignment: .leading)
                         }
                     }
                     .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
                 }
-            }
-        }
-        .background(.white)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-        .overlay(RoundedRectangle(cornerRadius: 10).stroke(ClassicTheme.border, lineWidth: 1))
-    }
-
-    // MARK: - Tableau transposé (départements en lignes, critères en colonnes)
-
-    private var transposedTable: some View {
-        let deps = departements
-        let rows = sections.flatMap(\.rows)
-        let nameColW: CGFloat = 200
-        let critColW: CGFloat = 120
-        return VStack(spacing: 0) {
-            HStack(spacing: 0) {
-                Text("DÉPARTEMENT").font(CFont.mono(10, weight: .medium)).foregroundStyle(ClassicTheme.faint)
-                    .frame(width: nameColW, alignment: .leading).padding(.horizontal, 18).padding(.vertical, 14)
-                ForEach(rows) { row in
-                    Text(row.label).font(CFont.sans(12, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
-                        .multilineTextAlignment(.center)
-                        .frame(width: critColW, alignment: .center)
-                        .padding(.horizontal, 12).padding(.vertical, 12)
-                        .overlay(Rectangle().fill(ClassicTheme.border).frame(width: 1), alignment: .leading)
-                }
-            }
-            .background(ClassicTheme.sidebarBg)
-            .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.border).frame(height: 1) }
-
-            ForEach(Array(deps.enumerated()), id: \.element.codeInsee) { i, d in
-                HStack(spacing: 0) {
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(d.nom).font(CFont.sans(14, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
-                        Text("\(d.codeInsee) · \(d.nomRegion)").font(CFont.mono(10)).foregroundStyle(ClassicTheme.faint)
-                    }
-                    .frame(width: nameColW, alignment: .leading)
-                    .padding(.horizontal, 18).padding(.vertical, 12)
-                    ForEach(rows) { row in
-                        let c = row.cells[i]
-                        let best = isBest(c, in: row)
-                        HStack(spacing: 6) {
-                            Text(c.text)
-                                .font(CFont.sans(13, weight: best ? .semibold : .regular))
-                                .foregroundStyle(best ? ClassicTheme.ink : ClassicTheme.sub)
-                            if best {
-                                Image(systemName: "checkmark.circle.fill").font(.system(size: 11)).foregroundStyle(theme.accent)
-                            }
-                        }
-                        .frame(width: critColW, alignment: .center)
-                        .padding(.horizontal, 12).padding(.vertical, 13)
-                        .overlay(Rectangle().fill(ClassicTheme.dividerLight).frame(width: 1), alignment: .leading)
-                    }
-                }
-                .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
             }
         }
         .background(.white)
