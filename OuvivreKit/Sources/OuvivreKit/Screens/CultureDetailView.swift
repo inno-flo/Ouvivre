@@ -88,7 +88,7 @@ public struct CultureDetailView: View {
         }
         return section(title: "FESTIVALS", icon: "fireworks", count: names.count) {
             ForEach(ordered, id: \.self) { discipline in
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 8) {
                     Text("\(discipline.uppercased()) · \(byDiscipline[discipline]!.count)")
                         .font(CFont.mono(10, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
                     grid(byDiscipline[discipline]!, criterionKey: "festivals")
@@ -134,7 +134,7 @@ public struct CultureDetailView: View {
     /// Liste répartie sur autant de colonnes que la largeur de la fenêtre
     /// en permet.
     private func grid(_ names: [String], criterionKey: String) -> some View {
-        LazyVGrid(columns: columns, alignment: .leading, spacing: 6) {
+        LazyVGrid(columns: columns, alignment: .leading, spacing: 12) {
             ForEach(names, id: \.self) { name in
                 Button {
                     if let site = CultureScores.url(forDepartementCode: departementCode, criterionKey: criterionKey, name: name) {

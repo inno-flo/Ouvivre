@@ -301,7 +301,7 @@ public struct InspectorPanelView: View {
                     // reléguées en fin de liste, séparées par un filet.
                     let microFolies = names.filter { $0.localizedCaseInsensitiveContains("micro-folie") || $0.localizedCaseInsensitiveContains("microfolie") }
                     let regular = names.filter { !microFolies.contains($0) }
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: 9) {
                         ForEach(regular, id: \.self) { name in
                             nameRow(name, criterionKey: criterion.key)
                         }
@@ -324,7 +324,7 @@ public struct InspectorPanelView: View {
                     }
                     VStack(alignment: .leading, spacing: 10) {
                         ForEach(ordered, id: \.self) { discipline in
-                            VStack(alignment: .leading, spacing: 4) {
+                            VStack(alignment: .leading, spacing: 9) {
                                 Text("\(discipline.uppercased()) · \(byDiscipline[discipline]!.count)")
                                     .font(CFont.mono(10, weight: .semibold))
                                     .foregroundStyle(ClassicTheme.faint)
@@ -337,7 +337,7 @@ public struct InspectorPanelView: View {
                 } else {
                     // Lazy : "Lieux du patrimoine" peut compter près de 2 000
                     // monuments historiques pour un seul département (Paris).
-                    LazyVStack(alignment: .leading, spacing: 4) {
+                    LazyVStack(alignment: .leading, spacing: 9) {
                         ForEach(names, id: \.self) { name in
                             nameRow(name, criterionKey: criterion.key)
                         }
