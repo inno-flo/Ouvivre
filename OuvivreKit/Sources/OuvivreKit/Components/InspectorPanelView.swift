@@ -129,11 +129,12 @@ public struct InspectorPanelView: View {
                 withAnimation(.easeInOut(duration: 0.15)) { isCountryExpanded.toggle() }
             } label: {
                 HStack(spacing: 6) {
-                    Eyebrow("PAYS", color: ClassicTheme.faint)
-                    Spacer()
                     Image(systemName: isCountryExpanded ? "chevron.down" : "chevron.right")
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(ClassicTheme.faint)
+                        .frame(width: 10)
+                    Eyebrow("PAYS", color: ClassicTheme.faint)
+                    Spacer()
                 }
                 .contentShape(Rectangle())
             }
@@ -171,14 +172,15 @@ public struct InspectorPanelView: View {
                     }
                 } label: {
                     HStack(spacing: 6) {
+                        Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(ClassicTheme.faint)
+                            .frame(width: 10)
                         Image(systemName: "cloud.sun.fill").foregroundStyle(theme.accent)
                         Text("MÉTÉO")
                             .font(CFont.mono(11, weight: .semibold))
                             .foregroundStyle(ClassicTheme.faint)
                         Spacer()
-                        Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
-                            .font(.system(size: 10, weight: .semibold))
-                            .foregroundStyle(ClassicTheme.faint)
                     }
                     .contentShape(Rectangle())
                 }
@@ -269,6 +271,10 @@ public struct InspectorPanelView: View {
                 }
             } label: {
                 HStack(spacing: 6) {
+                    Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(ClassicTheme.faint)
+                        .frame(width: 10)
                     Image(systemName: Self.headerIcon(forCriterionKey: criterion.key))
                         .foregroundStyle(theme.accent)
                     Text(criterion.label.uppercased())
@@ -277,9 +283,6 @@ public struct InspectorPanelView: View {
                     Spacer()
                     Text("\(names.count + (criterion.key == "patrimoine" ? sprCount : 0))")
                         .font(CFont.mono(11, weight: .medium))
-                        .foregroundStyle(ClassicTheme.faint)
-                    Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
-                        .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(ClassicTheme.faint)
                 }
                 .contentShape(Rectangle())

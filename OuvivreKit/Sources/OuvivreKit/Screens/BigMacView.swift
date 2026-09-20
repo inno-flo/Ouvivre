@@ -113,7 +113,6 @@ public struct BigMacView: View {
             .onChange(of: state.bigMacExpandedRegions) { _, isExpanded in if isExpanded { state.bigMacExpandedPays = false } }
             .onChange(of: state.bigMacExpandedCulture) { _, isExpanded in if isExpanded { state.bigMacExpandedPays = false } }
             .onChange(of: state.bigMacExpandedMobilite) { _, isExpanded in if isExpanded { state.bigMacExpandedPays = false } }
-            .onChange(of: state.bigMacExpandedClimat) { _, isExpanded in if isExpanded { state.bigMacExpandedPays = false } }
             .onChange(of: state.excludeOverseas) { _, _ in refreshDepartementsOnMap() }
             .onChange(of: state.excludeCorse) { _, _ in refreshDepartementsOnMap() }
             .onChange(of: state.geo2) { _, _ in refreshDepartementsOnMap() }
@@ -304,7 +303,6 @@ public struct BigMacView: View {
             if isCultureBlockVisible {
                 cultureBlock
             }
-            climatBlock
             if isMobiliteEnabled {
                 mobiliteBlock
             }
@@ -421,11 +419,11 @@ public struct BigMacView: View {
                     withAnimation(.easeInOut(duration: 0.2)) { showMoreCommunes.toggle() }
                 } label: {
                     HStack {
-                        Eyebrow("AUTRES COMMUNES", color: columnFaint)
-                        Spacer()
-                        Image(systemName: showMoreCommunes ? "chevron.up" : "chevron.down")
+                        Image(systemName: showMoreCommunes ? "chevron.down" : "chevron.right")
                             .font(.system(size: 10, weight: .semibold))
                             .foregroundStyle(columnFaint)
+                        Eyebrow("AUTRES COMMUNES", color: columnFaint)
+                        Spacer()
                     }
                     .padding(.top, 12)
                     .contentShape(Rectangle())
@@ -527,16 +525,6 @@ public struct BigMacView: View {
     private var cultureBlock: some View {
         blockDisclosure(title: "Culture", isExpanded: $state.bigMacExpandedCulture, enabled: true) {
             cultureRowsContent
-        }
-    }
-
-    // MARK: Bloc — Climat (contenu à définir)
-
-    private var climatBlock: some View {
-        blockDisclosure(title: "Climat", isExpanded: $state.bigMacExpandedClimat, enabled: true) {
-            Text("Réglages à venir.")
-                .font(CFont.sans(13))
-                .foregroundStyle(columnFaint)
         }
     }
 

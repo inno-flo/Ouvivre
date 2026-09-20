@@ -221,11 +221,11 @@ public struct GeoView2: View {
                     withAnimation(.easeInOut(duration: 0.2)) { showMoreDepartements.toggle() }
                 } label: {
                     HStack {
-                        Eyebrow("AUTRES DÉPARTEMENTS", color: columnFaint)
-                        Spacer()
-                        Image(systemName: showMoreDepartements ? "chevron.up" : "chevron.down")
+                        Image(systemName: showMoreDepartements ? "chevron.down" : "chevron.right")
                             .font(.system(size: 10, weight: .semibold))
                             .foregroundStyle(columnFaint)
+                        Eyebrow("AUTRES DÉPARTEMENTS", color: columnFaint)
+                        Spacer()
                     }
                     .padding(.top, 12)
                     .contentShape(Rectangle())

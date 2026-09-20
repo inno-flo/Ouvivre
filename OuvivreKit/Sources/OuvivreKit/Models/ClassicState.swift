@@ -32,7 +32,6 @@ public final class ClassicState: ObservableObject {
     @Published public var bigMacExpandedRegions: Bool = false
     @Published public var bigMacExpandedCulture: Bool = false
     @Published public var bigMacExpandedMobilite: Bool = false
-    @Published public var bigMacExpandedClimat: Bool = false
     /// Codes INSEE des départements mis en favori depuis l'inspecteur,
     /// persistés dans `UserDefaults` entre les lancements.
     @Published public var favoriteDepartementCodes: Set<String> = Set(UserDefaults.standard.stringArray(forKey: "favoriteDepartementCodes") ?? []) {

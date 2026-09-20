@@ -108,13 +108,14 @@ public struct CultureDetailView: View {
                 }
             } label: {
                 HStack(spacing: 6) {
+                    Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(ClassicTheme.faint)
+                        .frame(width: 11)
                     Image(systemName: icon).foregroundStyle(theme.accent)
                     Text("\(title) · \(count)")
                         .font(CFont.mono(12, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
                     Spacer()
-                    Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(ClassicTheme.faint)
                 }
                 .contentShape(Rectangle())
             }
