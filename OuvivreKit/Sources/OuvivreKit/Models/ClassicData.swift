@@ -167,30 +167,4 @@ public enum ClassicStatic {
             "Précipitations annuelles supérieures à votre seuil de tolérance."
         ]
     )
-
-    /// [label, values for the 3 compared cities, index of the best cell]
-    public static let compareData: [(String, [String], Int)] = [
-        ("Habitants", ["132 000", "60 100", "31 200"], 0),
-        ("Superficie", ["13,6 km²", "21,0 km²", "18,9 km²"], 1),
-        ("Altitude", ["448 m", "270 m", "265 m"], 0),
-        ("Distance montagne", ["6 km", "4 km", "5 km"], 1),
-        ("Distance lac", ["0,4 km", "12 km", "0,8 km"], 0),
-        ("Ensoleillement", ["1 924 h/an", "1 987 h/an", "1 951 h/an"], 1),
-        ("Précipitations", ["1 220 mm", "1 140 mm", "1 180 mm"], 1),
-        ("Qualité de l'air", ["Bonne (32)", "Moyenne (41)", "Bonne (34)"], 0),
-        ("Musées", ["7", "9", "4"], 1),
-        ("Centre ancien", ["Oui — médiéval", "Oui — carré Curial", "Partiel"], 0),
-        ("Festivals / an", ["14", "11", "8"], 0),
-        ("Pistes cyclables", ["68 km", "42 km", "39 km"], 0),
-        ("Gares", ["TGV directe", "TGV directe", "TER"], 0),
-        ("Aéroport < 1 h", ["Genève", "Lyon-St-Exupéry", "Genève"], 0),
-        ("Livabilité (Fr.)", ["3e / 100", "12e / 100", "21e / 100"], 0)
-    ]
-
-    public struct SavedSearch { public let title: String; public let meta: String; public let tags: [String]; public let score: Int }
-    public static let saved = [
-        SavedSearch(title: "Alpes du Nord — lacs & montagne", meta: "Créée le 14 mars · 20 critères · 5 villes", tags: ["Montagne 5/5", "Lacs 5/5", "Vélo 5/5", "Mer 1/5"], score: 94),
-        SavedSearch(title: "Sud-Ouest — océan & patrimoine", meta: "Créée le 2 mars · 18 critères · 5 villes", tags: ["Mer 5/5", "Patrimoine 4/5", "Ensoleillement 5/5"], score: 88),
-        SavedSearch(title: "Massif central — calme & forêts", meta: "Créée le 21 février · 15 critères · 4 villes", tags: ["Forêts 5/5", "Habitants 2/5", "Air 5/5"], score: 81)
-    ]
 }

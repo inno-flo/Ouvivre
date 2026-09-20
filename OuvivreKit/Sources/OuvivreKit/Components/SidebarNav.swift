@@ -25,13 +25,6 @@ public struct SidebarNav: View {
                 Text("Sélecteur").font(.system(size: 11)).foregroundStyle(.secondary)
             }
             Section {
-                ForEach(derived.navTools) { item in
-                    NavItemRow(item: item).tag(item.screen)
-                }
-            } header: {
-                Text("Outils").font(.system(size: 11)).foregroundStyle(.secondary)
-            }
-            Section {
                 HStack(spacing: 9) {
                     Image(systemName: state.favoriteDepartementCodes.isEmpty ? "star" : "star.fill").frame(width: 16)
                     Text("Comparatif").font(.system(size: 13, weight: state.screen == .favoris ? .semibold : .regular))

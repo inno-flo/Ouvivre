@@ -69,8 +69,6 @@ public struct AffinerView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                AccentButton("Comparer les 3 premières →", fill: theme.accent) { state.go(.compare) }
-                    .padding(.top, 14)
             }
         }
     }

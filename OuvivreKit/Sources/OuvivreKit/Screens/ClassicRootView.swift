@@ -146,8 +146,6 @@ public struct ClassicRootView: View {
             case .meteo: MeteoView(derived: derived)
             case .affiner: AffinerView(derived: derived)
             case .ville: VilleView(derived: derived)
-            case .compare: CompareView(derived: derived)
-            case .profil: ProfilView(derived: derived)
             case .sources: SourcesView(derived: derived)
             case .favoris: FavorisView(derived: derived)
             }

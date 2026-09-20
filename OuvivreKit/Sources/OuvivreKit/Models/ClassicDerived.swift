@@ -101,13 +101,6 @@ public struct ClassicDerived {
         return defs.map { NavItem(num: $0.0, label: $0.1, meta: $0.3, screen: $0.2, active: state.screen == $0.2) }
     }
 
-    public var navTools: [NavItem] {
-        let defs: [(String, String, ClassicScreen)] = [
-            ("06", "Comparateur", .compare), ("07", "Mon espace", .profil)
-        ]
-        return defs.map { NavItem(num: $0.0, label: $0.1, meta: nil, screen: $0.2, active: state.screen == $0.2) }
-    }
-
     public struct CountryChip: Identifiable { public var id: String { name }; public let name: String; public let selected: Bool }
     public var countryList: [CountryChip] {
         ClassicStatic.countries.map { CountryChip(name: $0, selected: $0 == state.country) }
@@ -209,18 +202,4 @@ public struct ClassicDerived {
         let letters = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"]
         return ClassicStatic.ville.temps.enumerated().map { i, t in MonthBar(index: i, label: letters[i], temp: t) }
     }
-
-    // MARK: Comparateur (fixed: top 3 cities)
-
-    public struct CompareCell { public let value: String; public let best: Bool }
-    public struct CompareRow: Identifiable { public var id: String { label }; public let label: String; public let cells: [CompareCell] }
-    public var compareHeads: [(name: String, sub: String)] {
-        ClassicStatic.cities.prefix(3).map { (name: $0.name, sub: String($0.sub.split(separator: "·").first ?? "").trimmingCharacters(in: .whitespaces).uppercased()) }
-    }
-    public var compareRows: [CompareRow] {
-        ClassicStatic.compareData.map { label, vals, best in
-            CompareRow(label: label, cells: vals.enumerated().map { i, v in CompareCell(value: v, best: i == best) })
-        }
-    }
-    public var compareScores: [Int] { ClassicStatic.cities.prefix(3).map(\.score) }
 }
