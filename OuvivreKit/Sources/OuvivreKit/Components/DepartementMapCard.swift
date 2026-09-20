@@ -97,6 +97,7 @@ public struct DepartementMapCard: View {
                     .overlay(Capsule().stroke(mapType == type ? ClassicTheme.ink : ClassicTheme.border, lineWidth: 1))
             }
             .buttonStyle(.plain)
+            .help("Afficher la carte \(type.label)")
         }
     }
 
@@ -106,12 +107,12 @@ public struct DepartementMapCard: View {
     private var actionButtons: some View {
         let recenter = Button {
             if let rect = departementRect { withAnimation(.easeInOut(duration: 0.25)) { mapPosition = .rect(rect) } }
-        } label: { Image(systemName: "mappin.and.ellipse") }
-            .buttonStyle(.plain).foregroundStyle(ClassicTheme.ink).help("Recentrer sur la sélection")
+        } label: { Image(systemName: "mappin.and.ellipse").modifier(ActionIconSize(enlarged: actionsFirst)) }
+            .buttonStyle(.plain).foregroundStyle(ClassicTheme.ink).help("Recentrer la carte")
         if actionsFirst { recenter }
-        Button { zoomMap(by: 2) } label: { Image(systemName: "minus.magnifyingglass") }
+        Button { zoomMap(by: 2) } label: { Image(systemName: "minus.magnifyingglass").modifier(ActionIconSize(enlarged: actionsFirst)) }
             .buttonStyle(.plain).foregroundStyle(ClassicTheme.ink).help("Dézoomer")
-        Button { zoomMap(by: 0.5) } label: { Image(systemName: "plus.magnifyingglass") }
+        Button { zoomMap(by: 0.5) } label: { Image(systemName: "plus.magnifyingglass").modifier(ActionIconSize(enlarged: actionsFirst)) }
             .buttonStyle(.plain).foregroundStyle(ClassicTheme.ink).help("Zoomer")
         if !actionsFirst { recenter }
     }
@@ -162,5 +163,19 @@ public struct DepartementMapCard: View {
         .padding(16)
         .background(.white, in: RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10).stroke(ClassicTheme.border, lineWidth: 1))
+    }
+}
+
+/// Hauteur des boutons icônes de la carte : alignée sur celle des boutons
+/// Explorer / Satellite (texte 12 pt + 5 pt de marge verticale) quand
+/// `enlarged`, taille d'origine sinon.
+private struct ActionIconSize: ViewModifier {
+    let enlarged: Bool
+    func body(content: Content) -> some View {
+        if enlarged {
+            content.font(.system(size: 15)).frame(width: 25, height: 25)
+        } else {
+            content
+        }
     }
 }
