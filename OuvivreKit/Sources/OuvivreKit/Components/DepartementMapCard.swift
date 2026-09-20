@@ -17,8 +17,6 @@ public struct DepartementMapCard: View {
     var height: CGFloat = 460
     /// Ordre des boutons : recentrage, zoom −, zoom +, puis Explorer/Satellite.
     var actionsFirst = false
-    /// Ajoute le contrôle de zoom natif de MapKit (sans boussole).
-    var nativeControls = false
 
     @State private var mapType: MapPlanType = .explorer
     @State private var mapPosition: MapCameraPosition = .automatic
@@ -31,14 +29,13 @@ public struct DepartementMapCard: View {
         self.accent = accent
     }
 
-    public init(names: [String], accent: Color, selectedName: String? = nil, onSelect: ((String) -> Void)? = nil, height: CGFloat = 460, actionsFirst: Bool = false, nativeControls: Bool = false) {
+    public init(names: [String], accent: Color, selectedName: String? = nil, onSelect: ((String) -> Void)? = nil, height: CGFloat = 460, actionsFirst: Bool = false) {
         self.names = names
         self.accent = accent
         self.selectedName = selectedName
         self.onSelect = onSelect
         self.height = height
         self.actionsFirst = actionsFirst
-        self.nativeControls = nativeControls
     }
 
     private static func contains(_ ring: [CLLocationCoordinate2D], _ p: CLLocationCoordinate2D) -> Bool {
@@ -141,35 +138,13 @@ public struct DepartementMapCard: View {
                         }
                     }
                     .mapStyle(mapType.style(elevation: .automatic))
-                    .mapControls {
-                        if nativeControls {
-                            MapZoomStepper()
-                        }
-                    }
+                    .mapControls {}
                     .onTapGesture { point in
                         guard let onSelect, let coordinate = proxy.convert(point, from: .local),
                               let name = departementName(at: coordinate) else { return }
                         onSelect(name)
                     }
                     .onMapCameraChange { context in mapRegion = context.region }
-                    // Contrôle de zoom natif empilé par MapKit en bas à
-                    // droite (emplacement non configurable) ; le bouton de
-                    // recentrage s'aligne au-dessus, dans la même colonne.
-                    .overlay(alignment: .bottomTrailing) {
-                        if nativeControls {
-                            Button {
-                                if let rect = departementRect { withAnimation(.easeInOut(duration: 0.25)) { mapPosition = .rect(rect) } }
-                            } label: {
-                                Image(systemName: "mappin.and.ellipse")
-                                    .frame(width: 28, height: 28)
-                                    .background(.regularMaterial, in: Circle())
-                                    .overlay(Circle().stroke(ClassicTheme.border, lineWidth: 1))
-                            }
-                            .buttonStyle(.plain)
-                            .help("Recentrer la carte")
-                            .padding(.bottom, 104).padding(.trailing, 10)
-                        }
-                    }
                 }
                 .onAppear { if let rect = departementRect { mapPosition = .rect(rect) } }
                 // Sélection modifiée (favori ajouté/retiré) : le cadrage suit

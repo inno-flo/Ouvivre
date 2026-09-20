@@ -120,8 +120,7 @@ public struct FavorisView: View {
                         if let code { toggleSelection(code) }
                     },
                     height: 690,
-                    actionsFirst: true,
-                    nativeControls: true
+                    actionsFirst: true
                 )
                     .padding(.top, 32)
             }
