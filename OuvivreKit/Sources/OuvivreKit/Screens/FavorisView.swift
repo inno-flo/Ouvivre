@@ -7,6 +7,7 @@ public struct FavorisView: View {
     @EnvironmentObject var theme: ClassicTheme
     @EnvironmentObject var state: ClassicState
     @Environment(\.undoManager) private var undoManager
+    @Environment(\.openWindow) private var openWindow
 
     public init(derived: ClassicDerived) {}
 
@@ -20,10 +21,16 @@ public struct FavorisView: View {
     /// Colonne en cours de glissement : les autres s'écartent en direct pour
     /// montrer l'emplacement de dépôt.
     @State private var draggingCode: String?
+    /// Département dont le retrait des favoris attend confirmation.
+    @State private var pendingRemovalCode: String?
     /// Largeur d'un caractère de la police mono 10 pt du nom de région.
     private let regionCharW: CGFloat = 6.02
     /// Colonne ajustée sur le nom de région le plus long, avec 1 caractère
     /// d'espacement de chaque côté.
+    /// Largeur exacte du tableau : colonne Critère (avec ses marges) + colonnes
+    /// des départements — il se resserre quand il y a moins de favoris.
+    private var tableWidth: CGFloat { labelColW + 36 + CGFloat(departements.count) * colW }
+
     private var colW: CGFloat {
         let longest = departements.map { $0.nomRegion.count }.max() ?? 0
         return CGFloat(longest + 2) * regionCharW
@@ -92,11 +99,6 @@ public struct FavorisView: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Eyebrow("FAVORIS", color: theme.accent).padding(.bottom, 16)
-            if let code = state.lastRemovedFavoriteCode {
-                undoBanner(code)
-                    .padding(.bottom, 16)
-                    .transition(.opacity)
-            }
             if departements.isEmpty {
                 Text("Aucun favori pour l'instant. Cliquez sur l'étoile d'un département dans l'inspecteur pour l'ajouter ici.")
                     .font(CFont.sans(15))
@@ -109,7 +111,7 @@ public struct FavorisView: View {
                     .frame(maxWidth: 460, alignment: .leading)
                     .padding(.bottom, 24)
                 ScrollView(.horizontal, showsIndicators: true) {
-                    table.frame(minWidth: 700)
+                    table.frame(width: tableWidth)
                 }
                 DepartementMapCard(
                     names: departements.map(\.nom),
@@ -125,31 +127,24 @@ public struct FavorisView: View {
                     .padding(.top, 32)
             }
         }
+        .alert("Retirer \(pendingRemovalName) des favoris ?", isPresented: Binding(
+            get: { pendingRemovalCode != nil },
+            set: { if !$0 { pendingRemovalCode = nil } }
+        )) {
+            Button("Retirer", role: .destructive) {
+                if let code = pendingRemovalCode {
+                    withAnimation { state.setFavorite(code, isOn: false, undoManager: undoManager) }
+                }
+                pendingRemovalCode = nil
+            }
+            Button("Annuler", role: .cancel) { pendingRemovalCode = nil }
+        } message: {
+            Text("Ce département disparaîtra du comparatif. Vous pourrez le rajouter avec l'étoile de l'inspecteur.")
+        }
     }
 
-    private func undoBanner(_ code: String) -> some View {
-        let nom = FranceGeoData.departements.first { $0.codeInsee == code }?.nom ?? code
-        return HStack(spacing: 12) {
-            Text("\(nom) retiré des favoris").font(CFont.sans(13)).foregroundStyle(ClassicTheme.ink)
-            Button("Annuler") {
-                withAnimation {
-                    if let undoManager, undoManager.canUndo { undoManager.undo() } else { state.undoRemoveFavorite() }
-                }
-            }
-                .buttonStyle(.plain)
-                .font(CFont.sans(13, weight: .semibold))
-                .foregroundStyle(theme.accent)
-        }
-        .padding(.horizontal, 14).padding(.vertical, 9)
-        .background(.white, in: RoundedRectangle(cornerRadius: 8))
-        .overlay(RoundedRectangle(cornerRadius: 8).stroke(ClassicTheme.border, lineWidth: 1))
-        // Disparaît seul après quelques secondes.
-        .task(id: code) {
-            try? await Task.sleep(for: .seconds(10))
-            if !Task.isCancelled, state.lastRemovedFavoriteCode == code {
-                withAnimation { state.lastRemovedFavoriteCode = nil }
-            }
-        }
+    private var pendingRemovalName: String {
+        FranceGeoData.departements.first { $0.codeInsee == pendingRemovalCode }?.nom ?? ""
     }
 
     // MARK: - Données
@@ -258,7 +253,7 @@ public struct FavorisView: View {
             Text(d.nom).font(CFont.sans(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
             Text(d.nomRegion).font(CFont.mono(10)).foregroundStyle(ClassicTheme.faint)
             HStack(spacing: 6) {
-                Button { withAnimation { state.setFavorite(d.codeInsee, isOn: false, undoManager: undoManager) } } label: {
+                Button { pendingRemovalCode = d.codeInsee } label: {
                     Image(systemName: "star.fill").foregroundStyle(theme.accent)
                 }
                 .buttonStyle(.plain)
@@ -315,6 +310,32 @@ public struct FavorisView: View {
         .opacity(0.6)
     }
 
+    /// Icône en haut à droite de la cellule Musées / Température moyenne : ouvre
+    /// la fenêtre de détail Culture / Météo du département de la colonne.
+    @ViewBuilder
+    private func detailButton(row: Row, code: String) -> some View {
+        let windowID: String? = switch row.id {
+        case "culture-musees": CultureDetailView.windowID
+        case "meteo-temp": MeteoDetailView.windowID
+        default: nil
+        }
+        if let windowID {
+            Button { openWindow(id: windowID, value: code) } label: {
+                Image(systemName: "interface.window.on.rectangle.dashed")
+                    .font(.system(size: 12))
+                    .foregroundStyle(ClassicTheme.faint)
+                    .padding(6)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help(row.id == "meteo-temp" ? "Ouvrir le détail Météo dans une fenêtre" : "Ouvrir les données culturelles dans une fenêtre")
+        }
+    }
+
+    /// Lignes dont le séparateur est un filet court centré dans chaque
+    /// colonne : Musées, Lieux du patrimoine et Température moyenne.
+    private static let shortSeparatorRowIDs: Set<String> = ["culture-musees", "culture-patrimoine", "meteo-temp"]
+
     // MARK: - Tableau
 
     private var table: some View {
@@ -370,6 +391,12 @@ public struct FavorisView: View {
                         }
                             .frame(width: labelColW, alignment: .leading)
                             .padding(.horizontal, 18).padding(.vertical, 13)
+                            .overlay(alignment: .bottom) {
+                                // Entre deux critères d'une même rubrique : filet
+                                // court et centré plutôt que pleine largeur.
+                                Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1)
+                                    .padding(.horizontal, Self.shortSeparatorRowIDs.contains(row.id) ? 56 : 0)
+                            }
                         ForEach(Array(departements.enumerated()), id: \.element.codeInsee) { i, d in
                             let c = row.cells[i]
                             valueLabel(c, outline: outline(c, in: row), icon: icon(c, in: row))
@@ -380,9 +407,13 @@ public struct FavorisView: View {
                             .contentShape(Rectangle())
                             .onTapGesture { toggleSelection(d.codeInsee) }
                             .overlay(Rectangle().fill(ClassicTheme.dividerLight).frame(width: 1), alignment: .leading)
+                            .overlay(alignment: .topTrailing) { detailButton(row: row, code: d.codeInsee) }
+                            .overlay(alignment: .bottom) {
+                                Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1)
+                                    .padding(.horizontal, Self.shortSeparatorRowIDs.contains(row.id) ? 56 : 0)
+                            }
                         }
                     }
-                    .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
                 }
             }
         }
