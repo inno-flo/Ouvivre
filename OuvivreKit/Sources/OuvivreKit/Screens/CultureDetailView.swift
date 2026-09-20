@@ -12,6 +12,8 @@ public struct CultureDetailView: View {
     let departementCode: String
     @Environment(\.openURL) private var openURL
     @StateObject private var theme = ClassicTheme()
+    /// Rubriques repliées par l'utilisateur — toutes dépliées par défaut.
+    @State private var collapsedSections: Set<String> = []
 
     public init(departementCode: String) { self.departementCode = departementCode }
 
@@ -98,17 +100,33 @@ public struct CultureDetailView: View {
     // MARK: Briques
 
     private func section<Content: View>(title: String, icon: String, count: Int, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 6) {
-                Image(systemName: icon).foregroundStyle(theme.accent)
-                Text("\(title) · \(count)")
-                    .font(CFont.mono(12, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
+        let isCollapsed = collapsedSections.contains(title)
+        return VStack(alignment: .leading, spacing: 12) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    if isCollapsed { collapsedSections.remove(title) } else { collapsedSections.insert(title) }
+                }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: icon).foregroundStyle(theme.accent)
+                    Text("\(title) · \(count)")
+                        .font(CFont.mono(12, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
+                    Spacer()
+                    Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(ClassicTheme.faint)
+                }
+                .contentShape(Rectangle())
             }
-            if count == 0 {
-                Text("Aucune donnée pour ce département.")
-                    .font(CFont.sans(13)).foregroundStyle(ClassicTheme.faint)
-            } else {
-                content()
+            .buttonStyle(.plain)
+
+            if !isCollapsed {
+                if count == 0 {
+                    Text("Aucune donnée pour ce département.")
+                        .font(CFont.sans(13)).foregroundStyle(ClassicTheme.faint)
+                } else {
+                    content()
+                }
             }
         }
     }
@@ -128,6 +146,7 @@ public struct CultureDetailView: View {
                 } label: {
                     Text(InspectorPanelView.titleCased(name))
                         .font(CFont.sans(13))
+                        .lineSpacing(3)
                         .foregroundStyle(ClassicTheme.body)
                         .multilineTextAlignment(.leading)
                         .frame(maxWidth: .infinity, alignment: .leading)

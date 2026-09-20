@@ -30,9 +30,11 @@ public struct InspectorPanelView: View {
     /// section (et inversement).
     @Binding var isCountryExpanded: Bool
 
-    // Chaque section Culture démarre dépliée — l'utilisateur replie celles
-    // qui ne l'intéressent pas plutôt que l'inverse.
-    @State private var collapsedKeys: Set<String> = []
+    // Les catégories (Musées, Lieux du patrimoine, Festivals, Météo) sont
+    // toujours repliées par défaut : seules les clés dépliées par
+    // l'utilisateur sont mémorisées, et remises à zéro à chaque nouveau
+    // département.
+    @State private var expandedKeys: Set<String> = []
 
     public init(title: String, activeCultureCriteria: [(label: String, key: String)], departementCode: String?, countryName: String = "", countryFacts: [LabeledValue] = [], isCountryExpanded: Binding<Bool> = .constant(true)) {
         self.title = title
@@ -115,6 +117,7 @@ public struct InspectorPanelView: View {
             .frame(maxWidth: .infinity, alignment: .topLeading)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onChange(of: departementCode) { _, _ in expandedKeys = [] }
         // Aucun fond personnalisé — comme la sidebar (`.listStyle(.sidebar)`),
         // l'inspecteur s'appuie sur le matériau translucide natif du système
         // derrière son contenu plutôt qu'une couleur/opacité fixée ici.
@@ -159,12 +162,12 @@ public struct InspectorPanelView: View {
     @ViewBuilder
     private func meteoSection(_ code: String) -> some View {
         let series = MeteoMensuelle.series(forDepartementCode: code)
-        let isCollapsed = collapsedKeys.contains(Self.meteoKey)
+        let isCollapsed = !expandedKeys.contains(Self.meteoKey)
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
                 Button {
                     withAnimation(.easeInOut(duration: 0.15)) {
-                        if isCollapsed { collapsedKeys.remove(Self.meteoKey) } else { collapsedKeys.insert(Self.meteoKey) }
+                        if isCollapsed { expandedKeys.insert(Self.meteoKey) } else { expandedKeys.remove(Self.meteoKey) }
                     }
                 } label: {
                     HStack(spacing: 6) {
@@ -173,6 +176,9 @@ public struct InspectorPanelView: View {
                             .font(CFont.mono(11, weight: .semibold))
                             .foregroundStyle(ClassicTheme.faint)
                         Spacer()
+                        Text("\(series.count)")
+                            .font(CFont.mono(11, weight: .medium))
+                            .foregroundStyle(ClassicTheme.faint)
                         Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
                             .font(.system(size: 10, weight: .semibold))
                             .foregroundStyle(ClassicTheme.faint)
@@ -257,11 +263,12 @@ public struct InspectorPanelView: View {
     private func criterionSection(_ criterion: (label: String, key: String)) -> some View {
         let rawNames = departementCode.map { CultureScores.names(forDepartementCode: $0, criterionKey: criterion.key) } ?? []
         let names = Self.dedupedNames(rawNames, mergeVariants: criterion.key == "musees")
-        let isCollapsed = collapsedKeys.contains(criterion.key)
+        let isCollapsed = !expandedKeys.contains(criterion.key)
+        let sprCount = departementCode.map { CultureScores.names(forDepartementCode: $0, criterionKey: "spr").count } ?? 0
         return VStack(alignment: .leading, spacing: 8) {
             Button {
                 withAnimation(.easeInOut(duration: 0.15)) {
-                    if isCollapsed { collapsedKeys.remove(criterion.key) } else { collapsedKeys.insert(criterion.key) }
+                    if isCollapsed { expandedKeys.insert(criterion.key) } else { expandedKeys.remove(criterion.key) }
                 }
             } label: {
                 HStack(spacing: 6) {
@@ -271,6 +278,9 @@ public struct InspectorPanelView: View {
                         .font(CFont.mono(11, weight: .semibold))
                         .foregroundStyle(ClassicTheme.faint)
                     Spacer()
+                    Text("\(names.count + (criterion.key == "patrimoine" ? sprCount : 0))")
+                        .font(CFont.mono(11, weight: .medium))
+                        .foregroundStyle(ClassicTheme.faint)
                     Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(ClassicTheme.faint)
@@ -376,6 +386,7 @@ public struct InspectorPanelView: View {
         } label: {
             Text(Self.titleCased(name))
                 .font(CFont.sans(13))
+                .lineSpacing(3)
                 .foregroundStyle(ClassicTheme.body)
                 .multilineTextAlignment(.leading)
         }
