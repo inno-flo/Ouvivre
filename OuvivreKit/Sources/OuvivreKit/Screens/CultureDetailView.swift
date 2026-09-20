@@ -39,6 +39,8 @@ public struct CultureDetailView: View {
                     }
                 }
 
+                DepartementMapCard(name: departementName, accent: theme.accent)
+
                 museesSection
                 patrimoineSection
                 festivalsSection

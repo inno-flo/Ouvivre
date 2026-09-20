@@ -42,14 +42,9 @@ public struct MeteoDetailView: View {
     /// (synchronisés avec la fenêtre principale via `UserDefaults`).
     @StateObject private var state = ClassicState()
     @State private var metric: Metric = .temperature
-    /// Type de la carte du département (Explorer ou Satellite).
-    @State private var mapType: MapPlanType = .explorer
-    @State private var mapPosition: MapCameraPosition = .automatic
-    /// Dernière région affichée, pour que les boutons de zoom partent de la
-    /// vue courante (déplacement manuel compris).
-    @State private var mapRegion: MKCoordinateRegion?
     /// Mois (1...12) sélectionné dans le tableau de détail.
-    @State private var selectedMonth: Int?
+    /// À l'ouverture, le mois courant est sélectionné par défaut.
+    @State private var selectedMonth: Int? = MeteoDetailView.calendar.component(.month, from: Date())
     @FocusState private var isFocused: Bool
     /// Date survolée dans chaque graphique (`chartXSelection`), pour l'infobulle.
     @State private var hoveredTemperatureDate: Date?
@@ -89,7 +84,7 @@ public struct MeteoDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 header
-                departementMapCard
+                DepartementMapCard(name: name, accent: theme.accent)
                 if Self.showSynthesis { synthesisView }
                 if series.isEmpty {
                     Text("Aucune donnée pour ce département.")
@@ -430,7 +425,19 @@ public struct MeteoDetailView: View {
             Text(Self.monthFormatter.string(from: p.date).capitalized)
                 .font(CFont.sans(11)).foregroundStyle(ClassicTheme.faint)
             Text(value).font(CFont.sans(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
-            if let secondary, !secondary.isEmpty { Text(secondary).font(CFont.sans(13, weight: .semibold)).lineSpacing(4).foregroundStyle(ClassicTheme.ink) }
+            if let secondary, !secondary.isEmpty {
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(Array(secondary.split(separator: "\n").enumerated()), id: \.offset) { _, line in
+                        // Le nombre du record de température est en rouge.
+                        if line.hasPrefix("Record ") {
+                            Text("Record ").font(CFont.sans(13, weight: .semibold)).foregroundColor(ClassicTheme.ink)
+                                + Text(line.dropFirst("Record ".count)).font(CFont.sans(13, weight: .semibold)).foregroundColor(.red)
+                        } else {
+                            Text(line).font(CFont.sans(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
+                        }
+                    }
+                }
+            }
             if p.partial { Text("mois en cours").font(CFont.sans(10)).foregroundStyle(ClassicTheme.faint2) }
         }
         .padding(.horizontal, 8).padding(.vertical, 7)
@@ -498,75 +505,6 @@ public struct MeteoDetailView: View {
 
     /// Tableau mois (lignes) × années (colonnes), commutable entre
     /// températures et précipitations.
-    /// Rectangle englobant le périmètre du département, avec une petite
-    /// marge — la carte s'y ajuste pour que le département occupe au mieux
-    /// le cadre.
-    private var departementRect: MKMapRect? {
-        let points = (DepartementBoundaries.rings[name] ?? []).flatMap { $0 }.map { MKMapPoint($0) }
-        guard let first = points.first else { return nil }
-        var rect = MKMapRect(origin: first, size: MKMapSize(width: 0, height: 0))
-        for pt in points.dropFirst() { rect = rect.union(MKMapRect(origin: pt, size: MKMapSize(width: 0, height: 0))) }
-        return rect.insetBy(dx: -rect.width * 0.04, dy: -rect.height * 0.04)
-    }
-
-    private func zoomMap(by factor: Double) {
-        guard let r = mapRegion else { return }
-        let updated = MKCoordinateRegion(center: r.center, span: MKCoordinateSpan(
-            latitudeDelta: min(170, max(0.002, r.span.latitudeDelta * factor)),
-            longitudeDelta: min(360, max(0.002, r.span.longitudeDelta * factor))))
-        withAnimation(.easeInOut(duration: 0.25)) { mapPosition = .region(updated) }
-        mapRegion = updated
-    }
-
-    /// Cadre contenant une carte centrée sur le département (périmètre
-    /// tracé), avec deux boutons de type de carte (Explorer / Satellite) et
-    /// deux boutons de zoom.
-    private var departementMapCard: some View {
-        let rings = DepartementBoundaries.rings[name] ?? []
-        return VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 8) {
-                Spacer()
-                ForEach([MapPlanType.explorer, MapPlanType.satellite]) { type in
-                    Button { mapType = type } label: {
-                        Text(type.label)
-                            .font(CFont.sans(12, weight: .medium))
-                            .foregroundStyle(mapType == type ? .white : ClassicTheme.ink)
-                            .padding(.horizontal, 12).padding(.vertical, 5)
-                            .background(mapType == type ? ClassicTheme.ink : .clear)
-                            .clipShape(Capsule())
-                            .overlay(Capsule().stroke(mapType == type ? ClassicTheme.ink : ClassicTheme.border, lineWidth: 1))
-                    }
-                    .buttonStyle(.plain)
-                }
-                Button { zoomMap(by: 2) } label: { Image(systemName: "minus.magnifyingglass") }
-                    .buttonStyle(.plain).foregroundStyle(ClassicTheme.ink).help("Dézoomer")
-                Button { zoomMap(by: 0.5) } label: { Image(systemName: "plus.magnifyingglass") }
-                    .buttonStyle(.plain).foregroundStyle(ClassicTheme.ink).help("Zoomer")
-            }
-            if departementRect != nil {
-                Map(position: $mapPosition) {
-                    ForEach(Array(rings.enumerated()), id: \.offset) { _, ring in
-                        MapPolygon(coordinates: ring)
-                            .foregroundStyle(theme.accent.opacity(0.16))
-                            .stroke(theme.accent, lineWidth: 2)
-                    }
-                }
-                .mapStyle(mapType.style(elevation: .automatic))
-                .mapControls {}
-                .onMapCameraChange { context in mapRegion = context.region }
-                .onAppear { if let rect = departementRect { mapPosition = .rect(rect) } }
-                .frame(height: 460)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            } else {
-                Text("Carte indisponible pour ce département.")
-                    .font(CFont.sans(13)).foregroundStyle(ClassicTheme.faint)
-            }
-        }
-        .padding(16)
-        .background(.white, in: RoundedRectangle(cornerRadius: 10))
-        .overlay(RoundedRectangle(cornerRadius: 10).stroke(ClassicTheme.border, lineWidth: 1))
-    }
-
     private var monthTable: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Détail par mois des températures et précipitations").font(CFont.sans(13, weight: .medium)).foregroundStyle(ClassicTheme.sub)

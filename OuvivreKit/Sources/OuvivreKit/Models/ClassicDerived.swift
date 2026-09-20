@@ -96,8 +96,6 @@ public struct ClassicDerived {
         let defs: [(String, String, ClassicScreen, String?)] = [
             ("01d", "Big Mac", .bigMac, nil),
             ("01e", "Big Mac SF", .bigMacSF, nil),
-            ("01c", "Communes et services", .affiner, nil),
-            ("04", "Climat", .meteo, nil),
             ("05", "Villes", .ville, nil)
         ]
         return defs.map { NavItem(num: $0.0, label: $0.1, meta: $0.3, screen: $0.2, active: state.screen == $0.2) }
