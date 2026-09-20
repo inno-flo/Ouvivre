@@ -128,8 +128,10 @@ public struct PaysCountryBlock: View {
     /// dans le bloc, la fiche de faits est déplacée dans l'inspecteur (voir
     /// `InspectorPanelView`/`ClassicRootView`).
     var showFacts: Bool = true
+    var countryFont: Font = CFont.sans(13, weight: .medium)
 
-    public init(derived: ClassicDerived, ink: Color, faint: Color, showFacts: Bool = true) {
+    public init(derived: ClassicDerived, ink: Color, faint: Color, showFacts: Bool = true, countryFont: Font = CFont.sans(13, weight: .medium)) {
+        self.countryFont = countryFont
         self.derived = derived
         self.ink = ink
         self.faint = faint
@@ -142,7 +144,7 @@ public struct PaysCountryBlock: View {
                 ForEach(derived.countryList) { c in
                     Button { state.setCountry(c.name) } label: {
                         Text(c.name)
-                            .font(CFont.sans(13, weight: .medium))
+                            .font(countryFont)
                             .foregroundStyle(c.selected ? .white : ink)
                             .padding(.horizontal, 12).padding(.vertical, 8)
                             .background(c.selected ? ClassicTheme.ink : .clear)

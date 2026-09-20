@@ -362,8 +362,10 @@ public struct RegionExclusionToggles: View {
     @Binding var excludeCorse: Bool
     let accent: Color
     let ink: Color
+    var labelFont: Font = CFont.sans(13)
 
-    public init(excludeOverseas: Binding<Bool>, excludeCorse: Binding<Bool>, accent: Color, ink: Color) {
+    public init(excludeOverseas: Binding<Bool>, excludeCorse: Binding<Bool>, accent: Color, ink: Color, labelFont: Font = CFont.sans(13)) {
+        self.labelFont = labelFont
         self._excludeOverseas = excludeOverseas
         self._excludeCorse = excludeCorse
         self.accent = accent
@@ -391,7 +393,7 @@ public struct RegionExclusionToggles: View {
                                 .foregroundStyle(.white)
                         }
                     }
-                Text(label).font(CFont.sans(13)).foregroundStyle(ink)
+                Text(label).font(labelFont).foregroundStyle(ink)
             }
         }
         .buttonStyle(.plain)

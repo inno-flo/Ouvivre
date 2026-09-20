@@ -324,7 +324,7 @@ public struct BigMacTestsView: View {
 
     private var paysBlock: some View {
         blockDisclosure(title: "Pays", bold: true, isExpanded: $state.bigMacExpandedPays, enabled: true) {
-            PaysCountryBlock(derived: derived, ink: columnInk, faint: columnFaint, showFacts: false)
+            PaysCountryBlock(derived: derived, ink: columnInk, faint: columnFaint, showFacts: false, countryFont: .custom("SFCompactText-Regular", size: 13))
         }
     }
 
@@ -348,10 +348,10 @@ public struct BigMacTestsView: View {
     private var regionsBlock: some View {
         blockDisclosure(title: "Géographie et Culture", bold: true, isExpanded: $state.bigMacExpandedRegions, enabled: true) {
             VStack(alignment: .leading, spacing: 14) {
-                RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody)
+                RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody, labelFont: .custom("SFCompactText-Regular", size: 13))
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Eyebrow("TAILLE DE COMMUNE", color: columnFaint)
+                    Eyebrow("TAILLE DE COMMUNE", color: columnFaint, font: .custom("SFCompactText-Regular", size: 10))
                     sizeCheckbox("Village", description: CommuneSizeCategory.village.description, isOn: $state.includeVillage)
                     sizeCheckbox("Petite ville", description: CommuneSizeCategory.petiteVille.description, isOn: $state.includePetiteVille)
                     sizeCheckbox("Ville moyenne", description: CommuneSizeCategory.villeMoyenne.description, isOn: $state.includeVilleMoyenne)
@@ -367,20 +367,20 @@ public struct BigMacTestsView: View {
 
                 VStack(alignment: .leading, spacing: 12) {
                     HStack(alignment: .firstTextBaseline) {
-                        Eyebrow("PROXIMITÉS", color: columnFaint)
+                        Eyebrow("PROXIMITÉS", color: columnFaint, font: .custom("SFCompactText-Regular", size: 10))
                         Spacer()
                         Button {
                             state.resetGeo2()
                         } label: {
                             Text("Réinitialiser")
-                                .font(.system(size: 13))
+                                .font(.custom("SFCompactText-Regular", size: 10))
                                 .foregroundStyle(columnFaint)
                         }
                         .buttonStyle(.plain)
                     }
 
                     ForEach(derived.geo2Rows) { row in
-                        CriterionRow(row: row, labelColor: columnInk, dotGrowthPerStep: 1.5) { state.setGeo2(row.id, value: $0) }
+                        CriterionRow(row: row, labelFont: .custom("SFCompactText-Regular", size: 13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: .custom("SFCompactText-Regular", size: 12)) { state.setGeo2(row.id, value: $0) }
                             .padding(.trailing, 8)
                     }
                 }
@@ -389,7 +389,7 @@ public struct BigMacTestsView: View {
                 // Réglages Culture transférés ici (après Proximités) depuis
                 // l'ancien bloc "Culture", désormais masqué.
                 VStack(alignment: .leading, spacing: 12) {
-                    Eyebrow("CULTURE", color: columnFaint)
+                    Eyebrow("CULTURE", color: columnFaint, font: .custom("SFCompactText-Regular", size: 10))
                     cultureRowsContent
                 }
                 .padding(.top, 12)
@@ -468,7 +468,7 @@ public struct BigMacTestsView: View {
                                     .foregroundStyle(.white)
                             }
                         }
-                    Text(label).font(.custom("SFProDisplay-Regular", size: 13)).foregroundStyle(columnBody)
+                    Text(label).font(.custom("SFCompactText-Regular", size: 13)).foregroundStyle(columnBody)
                 }
             }
             .buttonStyle(.plain)
@@ -509,7 +509,7 @@ public struct BigMacTestsView: View {
     private var cultureRowsContent: some View {
         VStack(alignment: .leading, spacing: 4) {
             ForEach(cultureRows, id: \.rowIndex) { entry in
-                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: .custom("SFProDisplay-Regular", size: 13), labelColor: columnInk, dotGrowthPerStep: 1.5) {
+                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: .custom("SFCompactText-Regular", size: 13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: .custom("SFCompactText-Regular", size: 12)) {
                     state.setGroup(cultureGroupIndex, entry.rowIndex, value: min($0, 2))
                 }
                 .padding(.vertical, 4)
@@ -555,7 +555,7 @@ public struct BigMacTestsView: View {
         blockDisclosure(title: "Mobilité", isExpanded: $state.bigMacExpandedMobilite, enabled: true) {
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(mobiliteRows) { row in
-                    CriterionRow(row: row, thumbSize: 16, trackHeight: 4, labelFont: .custom("SFProDisplay-Regular", size: 13), labelColor: columnInk, extraDotScaleFromSecond: 1.1) {
+                    CriterionRow(row: row, thumbSize: 16, trackHeight: 4, labelFont: .custom("SFCompactText-Regular", size: 13), labelColor: columnInk, extraDotScaleFromSecond: 1.1, tagFont: .custom("SFCompactText-Regular", size: 12)) {
                         state.setGroup(mobiliteGroupIndex, row.id, value: min($0, 2))
                     }
                     .padding(.vertical, 4)
