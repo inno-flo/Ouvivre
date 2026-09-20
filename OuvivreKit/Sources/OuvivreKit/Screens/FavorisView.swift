@@ -16,6 +16,9 @@ public struct FavorisView: View {
     /// sur les en-têtes et mémorisé entre les lancements. Les favoris absents
     /// de cette liste (ajoutés depuis) passent après, par code.
     @State private var columnOrder: [String] = UserDefaults.standard.stringArray(forKey: "favoriteColumnOrder") ?? []
+    /// Colonne en cours de glissement : les autres s'écartent en direct pour
+    /// montrer l'emplacement de dépôt.
+    @State private var draggingCode: String?
     /// Largeur d'un caractère de la police mono 10 pt du nom de région.
     private let regionCharW: CGFloat = 6.02
     /// Colonne ajustée sur le nom de région le plus long, avec 1 caractère
@@ -33,6 +36,9 @@ public struct FavorisView: View {
         /// `true` : la plus grande valeur est la meilleure ; `false` : la plus
         /// petite ; `nil` : pas de mise en avant (ligne informative).
         let higherIsBetter: Bool?
+        /// Ligne dont seuls les extrêmes sont entourés : la plus haute valeur en
+        /// rouge, la plus basse en vert.
+        var extremes: Bool = false
     }
     private struct Section: Identifiable {
         let id: String
@@ -51,12 +57,33 @@ public struct FavorisView: View {
     }
 
     /// Place la colonne `code` à l'emplacement de la colonne `target`.
+    private func toggleSelection(_ code: String) {
+        selectedCode = selectedCode == code ? nil : code
+    }
+
     private func moveColumn(_ code: String, before target: String) {
         var order = departements.map(\.codeInsee)
         guard code != target, let from = order.firstIndex(of: code), let to = order.firstIndex(of: target) else { return }
         order.move(fromOffsets: [from], toOffset: to > from ? to + 1 : to)
         columnOrder = order
-        UserDefaults.standard.set(order, forKey: "favoriteColumnOrder")
+    }
+
+    private struct ColumnDropDelegate: DropDelegate {
+        let target: String
+        @Binding var dragging: String?
+        let move: (String, String) -> Void
+        let commit: () -> Void
+
+        func dropEntered(info: DropInfo) {
+            guard let dragging, dragging != target else { return }
+            withAnimation(.easeInOut(duration: 0.25)) { move(dragging, target) }
+        }
+        func dropUpdated(info: DropInfo) -> DropProposal? { DropProposal(operation: .move) }
+        func performDrop(info: DropInfo) -> Bool {
+            dragging = nil
+            commit()
+            return true
+        }
     }
 
     public var body: some View {
@@ -82,7 +109,7 @@ public struct FavorisView: View {
                     selectedName: departements.first { $0.codeInsee == selectedCode }?.nom,
                     onSelect: { name in
                         let code = departements.first { $0.nom == name }?.codeInsee
-                        selectedCode = selectedCode == code ? nil : code
+                        if let code { toggleSelection(code) }
                     },
                     height: 690
                 )
@@ -122,16 +149,26 @@ public struct FavorisView: View {
         let meteoRows = [
             Row(id: "meteo-temp", label: "Température moyenne", cells: meteo.map { m in
                 m.temp.map { Cell(text: String(format: "%.1f °C", $0), value: $0) } ?? Cell(text: "—", value: nil)
-            }, higherIsBetter: true),
+            }, higherIsBetter: nil, extremes: true),
             Row(id: "meteo-rain", label: "Précipitations", cells: meteo.map { m in
                 m.rain.map { Cell(text: "\(Int($0.rounded())) mm", value: $0) } ?? Cell(text: "—", value: nil)
-            }, higherIsBetter: false)
+            }, higherIsBetter: nil)
         ]
         return [
             Section(id: "geo", title: "GÉOGRAPHIE", rows: geoRows),
             Section(id: "culture", title: "CULTURE (nombre de lieux et d'événements)", rows: cultureRows),
             Section(id: "meteo", title: "MÉTÉO (valeurs sur les 12 derniers mois)", rows: meteoRows)
         ]
+    }
+
+    /// Couleur du filet entourant une valeur, `nil` si elle n'est pas entourée.
+    private func outline(_ cell: Cell, in row: Row) -> Color? {
+        if row.extremes {
+            let values = row.cells.compactMap(\.value)
+            guard let v = cell.value, let hi = values.max(), let lo = values.min(), hi != lo else { return nil }
+            return v == hi ? .red : v == lo ? .green : nil
+        }
+        return isBest(cell, in: row) ? ClassicTheme.ink : nil
     }
 
     private func isBest(_ cell: Cell, in row: Row) -> Bool {
@@ -153,6 +190,64 @@ public struct FavorisView: View {
         return Set(zip(deps, counts).filter { $0.1 == top }.map(\.0.codeInsee))
     }
 
+    // MARK: - Éléments de colonne
+
+    private func headerContent(_ d: FranceGeoData.DepartementScore) -> some View {
+        VStack(alignment: .center, spacing: 4) {
+            Text(d.nom).font(CFont.sans(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
+            Text(d.nomRegion).font(CFont.mono(10)).foregroundStyle(ClassicTheme.faint)
+            HStack(spacing: 6) {
+                Button { state.toggleFavoriteDepartement(d.codeInsee) } label: {
+                    Image(systemName: "star.fill").foregroundStyle(theme.accent)
+                }
+                .buttonStyle(.plain)
+                .help("Retirer des favoris")
+                if topDepartementCodes.contains(d.codeInsee) {
+                    Image(systemName: "checkmark.seal.fill").foregroundStyle(theme.accent)
+                        .help("Le plus de meilleures valeurs")
+                }
+            }
+        }
+        .multilineTextAlignment(.center)
+    }
+
+    private func valueLabel(_ c: Cell, outline: Color?) -> some View {
+        let highlighted = outline != nil
+        return Text(c.text)
+            .font(CFont.sans(13, weight: highlighted ? .semibold : .regular))
+            .foregroundStyle(highlighted ? ClassicTheme.ink : ClassicTheme.sub)
+            .padding(.horizontal, 8).padding(.vertical, 3)
+            .overlay { if let outline { RoundedRectangle(cornerRadius: 4).stroke(outline, lineWidth: 1) } }
+    }
+
+    /// Aperçu suivant le curseur pendant le glissement : toute la colonne
+    /// (en-tête, intitulés de rubrique vides et valeurs), en transparence.
+    private func columnPreview(_ d: FranceGeoData.DepartementScore) -> some View {
+        let index = departements.firstIndex { $0.codeInsee == d.codeInsee } ?? 0
+        return VStack(spacing: 0) {
+            headerContent(d)
+                .frame(width: colW).padding(.vertical, 12)
+                .background(ClassicTheme.sidebarBg)
+                .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.border).frame(height: 1) }
+            ForEach(sections) { section in
+                Text(" ").font(CFont.mono(10, weight: .medium))
+                    .padding(.vertical, 8)
+                    .frame(width: colW)
+                    .background(ClassicTheme.cardAlt)
+                    .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
+                ForEach(section.rows) { row in
+                    valueLabel(row.cells[index], outline: outline(row.cells[index], in: row))
+                        .frame(width: colW).padding(.vertical, 13)
+                        .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
+                }
+            }
+        }
+        .background(.white)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(ClassicTheme.border, lineWidth: 1))
+        .opacity(0.6)
+    }
+
     // MARK: - Tableau
 
     private var table: some View {
@@ -161,33 +256,26 @@ public struct FavorisView: View {
                 Text("CRITÈRE").font(CFont.mono(10, weight: .medium)).foregroundStyle(ClassicTheme.faint)
                     .frame(width: labelColW, alignment: .leading).padding(.horizontal, 18).padding(.vertical, 14)
                 ForEach(departements, id: \.codeInsee) { d in
-                    VStack(alignment: .center, spacing: 4) {
-                        Text(d.nom).font(CFont.sans(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
-                        Text(d.nomRegion).font(CFont.mono(10)).foregroundStyle(ClassicTheme.faint)
-                        HStack(spacing: 6) {
-                            Button { state.toggleFavoriteDepartement(d.codeInsee) } label: {
-                                Image(systemName: "star.fill").foregroundStyle(theme.accent)
-                            }
-                            .buttonStyle(.plain)
-                            .help("Retirer des favoris")
-                            if topDepartementCodes.contains(d.codeInsee) {
-                                Image(systemName: "checkmark.seal.fill").foregroundStyle(theme.accent)
-                                    .help("Le plus de meilleures valeurs")
-                            }
-                        }
-                    }
-                    .multilineTextAlignment(.center)
+                    headerContent(d)
                     .frame(width: colW, alignment: .center)
                     .padding(.vertical, 12)
                     .background(d.codeInsee == selectedCode ? theme.accent.opacity(0.12) : .clear)
                     .overlay(Rectangle().fill(ClassicTheme.border).frame(width: 1), alignment: .leading)
                     .contentShape(Rectangle())
-                    .draggable(d.codeInsee)
-                    .dropDestination(for: String.self) { items, _ in
-                        guard let code = items.first else { return false }
-                        withAnimation(.easeInOut(duration: 0.2)) { moveColumn(code, before: d.codeInsee) }
-                        return true
+                    .opacity(draggingCode == d.codeInsee ? 0.5 : 1)
+                    .onTapGesture { toggleSelection(d.codeInsee) }
+                    .onDrag {
+                        draggingCode = d.codeInsee
+                        return NSItemProvider(object: d.codeInsee as NSString)
+                    } preview: {
+                        columnPreview(d)
                     }
+                    .onDrop(of: [.text], delegate: ColumnDropDelegate(
+                        target: d.codeInsee,
+                        dragging: $draggingCode,
+                        move: moveColumn,
+                        commit: { UserDefaults.standard.set(columnOrder, forKey: "favoriteColumnOrder") }
+                    ))
                     .help("Glisser pour réordonner les colonnes")
                 }
             }
@@ -209,16 +297,15 @@ public struct FavorisView: View {
                         Text(row.label).font(CFont.sans(13, weight: .medium)).foregroundStyle(ClassicTheme.ink)
                             .frame(width: labelColW, alignment: .leading)
                             .padding(.horizontal, 18).padding(.vertical, 13)
-                        ForEach(Array(row.cells.enumerated()), id: \.offset) { i, c in
-                            let best = isBest(c, in: row)
-                            Text(c.text)
-                                .font(CFont.sans(13, weight: best ? .semibold : .regular))
-                                .foregroundStyle(best ? ClassicTheme.ink : ClassicTheme.sub)
-                                .padding(.horizontal, 8).padding(.vertical, 3)
-                                .overlay { if best { RoundedRectangle(cornerRadius: 4).stroke(ClassicTheme.ink, lineWidth: 1) } }
+                        ForEach(Array(departements.enumerated()), id: \.element.codeInsee) { i, d in
+                            let c = row.cells[i]
+                            valueLabel(c, outline: outline(c, in: row))
                             .frame(width: colW, alignment: .center)
                             .padding(.vertical, 13)
-                            .background(departements[i].codeInsee == selectedCode ? theme.accent.opacity(0.12) : .clear)
+                            .background(d.codeInsee == selectedCode ? theme.accent.opacity(0.12) : .clear)
+                            .opacity(draggingCode == d.codeInsee ? 0.5 : 1)
+                            .contentShape(Rectangle())
+                            .onTapGesture { toggleSelection(d.codeInsee) }
                             .overlay(Rectangle().fill(ClassicTheme.dividerLight).frame(width: 1), alignment: .leading)
                         }
                     }
