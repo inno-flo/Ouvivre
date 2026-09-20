@@ -6,8 +6,13 @@ Sources (culture.data.gouv.fr / ministère de la Culture, via data.gouv.fr) :
 - Musées : Base des lieux et équipements culturels (Basilic)
   https://culture.data.gouv.fr/datasets/61777ddaa9101d073e5506cd
   filtré sur Type équipement ou lieu == "Musée" (1843 lignes sur ~86k)
-- Lieux du patrimoine : Liste des sites patrimoniaux remarquables (SPR)
-  https://culture.data.gouv.fr/datasets/628da9ff836d8bf454c7fd48
+- Lieux du patrimoine : Immeubles protégés au titre des Monuments
+  Historiques (base Mérimée) — une ligne par monument
+  https://www.data.gouv.fr/datasets/immeubles-proteges-au-titre-des-monuments-historiques
+  (les sites patrimoniaux remarquables (SPR) — zones protégées par commune,
+  https://culture.data.gouv.fr/datasets/628da9ff836d8bf454c7fd48 — restent
+  listés à part dans "names.spr" pour l'inspecteur, mais ne servent plus au
+  score : Paris n'a que 2 SPR pour près de 1 900 monuments historiques.)
 - Festivals : Liste des festivals en France
   https://culture.data.gouv.fr/datasets/62cf95993d99f22480f49334
 
@@ -32,10 +37,12 @@ OUT.mkdir(parents=True, exist_ok=True)
 
 MUSEES_URL = "https://static.data.gouv.fr/resources/base-des-lieux-et-equipements-culturels-basilic/20260218-084338/base-des-lieux-et-des-equipements-culturels.csv"
 PATRIMOINE_URL = "https://ministere-culture.s3.sbg.io.cloud.ovh.net/SPR/liste_sites_patrimoniaux_remarquables.csv"
+MONUMENTS_URL = "https://ministere-culture.s3.sbg.io.cloud.ovh.net/POP/merimee.csv"
 FESTIVALS_URL = "https://static.data.gouv.fr/resources/liste-des-festivals-en-france/20250827-132958/festivals-global-festivals-pl.csv"
 
 MUSEES_PATH = RAW / "musees.csv"
 PATRIMOINE_PATH = RAW / "patrimoine.csv"
+MONUMENTS_PATH = RAW / "merimee.csv"
 FESTIVALS_PATH = RAW / "festivals.csv"
 
 FRANCE_GEO_SCORES = Path(__file__).parent.parent / "OuvivreKit" / "Sources" / "OuvivreKit" / "Resources" / "france_geo_scores.json"
@@ -83,7 +90,27 @@ def count_musees(dept_codes):
     return counts, names
 
 
-def count_patrimoine(dept_codes):
+def count_monuments(dept_codes):
+    """Monuments historiques (base Mérimée) : un monument = une ligne. Nom
+    affiché "Titre — Commune" pour distinguer les nombreuses "Église" d'un
+    même département."""
+    counts = {c: 0 for c in dept_codes}
+    names = {c: [] for c in dept_codes}
+    csv.field_size_limit(10**9)
+    with MONUMENTS_PATH.open(encoding="utf-8-sig", newline="") as f:
+        reader = csv.DictReader(f, delimiter="|")
+        for row in reader:
+            code = row.get("Departement_format_numerique", "").strip()
+            if code in counts:
+                counts[code] += 1
+                titre = row.get("Titre_editorial_de_la_notice", "").strip()
+                commune = row.get("Commune_forme_index", "").strip()
+                if titre:
+                    names[code].append(f"{titre} — {commune}" if commune else titre)
+    return counts, names
+
+
+def count_spr(dept_codes):
     counts = {c: 0 for c in dept_codes}
     # Le SPR (site patrimonial remarquable) est répertorié par commune, sans
     # nom propre — "commune" est donc le nom affiché pour chaque entrée.
@@ -160,13 +187,15 @@ def min_max_normalize(counts):
 def main():
     download(MUSEES_URL, MUSEES_PATH)
     download(PATRIMOINE_URL, PATRIMOINE_PATH)
+    download(MONUMENTS_URL, MONUMENTS_PATH)
     download(FESTIVALS_URL, FESTIVALS_PATH)
 
     dept_names = load_departements()
     dept_codes = list(dept_names.keys())
 
     musees_counts, musees_names = count_musees(dept_codes)
-    patrimoine_counts, patrimoine_names = count_patrimoine(dept_codes)
+    patrimoine_counts, patrimoine_names = count_monuments(dept_codes)
+    spr_counts, spr_names = count_spr(dept_codes)
     festivals_counts, festivals_names, festivals_urls, festivals_disciplines = count_festivals(dept_codes)
 
     musees_score = min_max_normalize(musees_counts)
@@ -187,11 +216,13 @@ def main():
                 "musees": musees_counts[code],
                 "patrimoine": patrimoine_counts[code],
                 "festivals": festivals_counts[code],
+                "spr": spr_counts[code],
             },
             "names": {
                 "musees": sorted(musees_names[code]),
                 "patrimoine": sorted(patrimoine_names[code]),
                 "festivals": sorted(festivals_names[code]),
+                "spr": sorted(set(spr_names[code])),
             },
             # Seuls les festivals ont une URL dans les données sources ; les
             # musées (Basilic) et les SPR n'ont pas de colonne site internet.
@@ -206,7 +237,8 @@ def main():
         "source": (
             "culture.data.gouv.fr — Base des lieux et équipements culturels "
             "(Basilic, filtré Musée): " + MUSEES_URL + " | "
-            "Liste des sites patrimoniaux remarquables (SPR): " + PATRIMOINE_URL + " | "
+            "Immeubles protégés au titre des Monuments Historiques (Mérimée): " + MONUMENTS_URL + " | "
+            "Liste des sites patrimoniaux remarquables (SPR, affichage): " + PATRIMOINE_URL + " | "
             "Liste des festivals en France: " + FESTIVALS_URL
         ),
         "departements": out_records,

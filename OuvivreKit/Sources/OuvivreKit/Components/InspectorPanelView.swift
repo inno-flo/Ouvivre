@@ -300,9 +300,27 @@ public struct InspectorPanelView: View {
                         }
                     }
                 } else {
-                    VStack(alignment: .leading, spacing: 4) {
+                    // Lazy : "Lieux du patrimoine" peut compter près de 2 000
+                    // monuments historiques pour un seul département (Paris).
+                    LazyVStack(alignment: .leading, spacing: 4) {
                         ForEach(names, id: \.self) { name in
                             nameRow(name, criterionKey: criterion.key)
+                        }
+                        // Sites patrimoniaux remarquables (SPR) du département,
+                        // après un filet — actif dès qu'"Important" ou
+                        // "Déterminant" est réglé (la section n'existe que
+                        // pour un critère au-dessus d'"Indifférent").
+                        if criterion.key == "patrimoine", let code = departementCode {
+                            let spr = CultureScores.names(forDepartementCode: code, criterionKey: "spr")
+                            if !spr.isEmpty {
+                                Divider().padding(.vertical, 6)
+                                Text("SITES PATRIMONIAUX REMARQUABLES · \(spr.count)")
+                                    .font(CFont.mono(10, weight: .semibold))
+                                    .foregroundStyle(ClassicTheme.faint)
+                                ForEach(spr, id: \.self) { name in
+                                    nameRow(name, criterionKey: "spr")
+                                }
+                            }
                         }
                     }
                 }
