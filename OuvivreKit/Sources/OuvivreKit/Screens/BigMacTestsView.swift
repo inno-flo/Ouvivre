@@ -1,13 +1,14 @@
 import SwiftUI
 import MapKit
 
-/// "Big Mac SF" — duplicata exact de `BigMacView`, seule la typographie
-/// change : SF Pro (système) partout au lieu d'Archivo/IBM Plex Mono — SF
-/// Pro régulier pour le texte courant, SF Pro medium pour les titres et
-/// intitulés. Toute la logique, les données et la mise en page sont
-/// identiques à `BigMacView` ; garder les deux fichiers synchronisés en cas
-/// de changement fonctionnel de l'un ou l'autre.
-public struct BigMacSFView: View {
+/// "Big Mac" (nom provisoire) — même présentation plein cadre que Géographie 2
+/// (fond MapKit + colonne flottante translucide), mais la colonne empile 4
+/// blocs rétractables (`DisclosureGroup`) qui reprennent, dans l'ordre,
+/// Pays → Régions (+ tailles de commune) → Culture → Mobilité. Chaque bloc
+/// hérite de l'état partagé `ClassicState`, donc les choix persistent d'un
+/// bloc à l'autre ; les blocs sont indépendants (pas d'entonnoir) : chaque réglage
+/// met à jour la carte en direct.
+public struct BigMacTestsView: View {
     @EnvironmentObject var theme: ClassicTheme
     @EnvironmentObject var state: ClassicState
     @EnvironmentObject var mapState: MapPanelState
@@ -17,11 +18,6 @@ public struct BigMacSFView: View {
     private var columnInk: Color { colorScheme == .dark ? Color(hex: 0xF4F2EE) : ClassicTheme.ink }
     private var columnBody: Color { colorScheme == .dark ? Color(hex: 0xD9D4C9) : ClassicTheme.body }
     private var columnFaint: Color { colorScheme == .dark ? Color(hex: 0xA39D91) : ClassicTheme.faint }
-
-    // MARK: Polices SF Pro (texte courant = regular, titres/intitulés = medium)
-
-    private func sfBody(_ size: CGFloat) -> Font { .system(size: size, weight: .regular) }
-    private func sfTitle(_ size: CGFloat) -> Font { .system(size: size, weight: .medium) }
 
     @State private var position: MapCameraPosition = .automatic
     @State private var lastRegion: MKCoordinateRegion?
@@ -37,7 +33,7 @@ public struct BigMacSFView: View {
 
     // L'ouverture/fermeture des blocs vit dans `ClassicState` (pas un
     // `@State` local) pour rester persistante en quittant puis en revenant
-    // sur cet écran — sinon `BigMacSFView` est recréée à chaque fois et tout
+    // sur cet écran — sinon `BigMacTestsView` est recréée à chaque fois et tout
     // se replie.
 
     // Liste des communes correspondantes (bloc Régions) : les 30 premières
@@ -222,10 +218,19 @@ public struct BigMacSFView: View {
         cultureRows.map(\.row.value)
     }
 
+    /// Bloc Mobilité désactivé et masqué pour l'instant : ni affiché, ni pris
+    /// en compte dans le classement/filtrage des départements (ses poids
+    /// par défaut de `ClassicStatic` étant non nuls, il fausserait sinon
+    /// silencieusement le résultat malgré son absence à l'écran). Repasser à
+    /// `true` pour le réactiver tel quel — tout le câblage reste en place.
+    private let isMobiliteEnabled = false
+
     /// Poids Mobilité (Pistes cyclables, Gares) actuellement réglés, dans
-    /// l'ordre de `MobiliteScores.criterionKeys`.
+    /// l'ordre de `MobiliteScores.criterionKeys` — vide tant que le bloc est
+    /// désactivé (les filtres/scores ci-dessous traitent alors l'absence de
+    /// poids comme "aucun critère Mobilité").
     private var mobiliteWeights: [Int] {
-        mobiliteRows.map(\.value)
+        isMobiliteEnabled ? mobiliteRows.map(\.value) : []
     }
 
     /// Tant qu'aucun critère (proximité ou Culture) n'est réglé, tous les
@@ -295,8 +300,12 @@ public struct BigMacSFView: View {
         VStack(alignment: .leading, spacing: 10) {
             paysBlock
             regionsBlock
-            cultureBlock
-            mobiliteBlock
+            if isCultureBlockVisible {
+                cultureBlock
+            }
+            if isMobiliteEnabled {
+                mobiliteBlock
+            }
         }
         .padding(columnInnerPadding)
     }
@@ -327,12 +336,12 @@ public struct BigMacSFView: View {
     private var moreCommunes: [CommuneSizeEntry] { Array(matchingCommunes.dropFirst(topCommunesCount)) }
 
     private var regionsBlock: some View {
-        blockDisclosure(title: "Régions", isExpanded: $state.bigMacExpandedRegions, enabled: true) {
+        blockDisclosure(title: "Géographie et Culture", isExpanded: $state.bigMacExpandedRegions, enabled: true) {
             VStack(alignment: .leading, spacing: 14) {
                 RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody)
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Eyebrow("TAILLE DE COMMUNE", color: columnFaint, font: sfTitle(10))
+                    Eyebrow("TAILLE DE COMMUNE", color: columnFaint)
                     sizeCheckbox("Village", description: CommuneSizeCategory.village.description, isOn: $state.includeVillage)
                     sizeCheckbox("Petite ville", description: CommuneSizeCategory.petiteVille.description, isOn: $state.includePetiteVille)
                     sizeCheckbox("Ville moyenne", description: CommuneSizeCategory.villeMoyenne.description, isOn: $state.includeVilleMoyenne)
@@ -341,13 +350,13 @@ public struct BigMacSFView: View {
                 .padding(.top, 4)
 
                 Text("\(communeCount) communes correspondantes")
-                    .font(sfBody(11))
+                    .font(CFont.mono(11, weight: .medium))
                     .foregroundStyle(columnFaint)
 
                 Text(hasActiveRankingCriterion
                      ? "\(matchingDepartementNames.count) départements affichés — les mieux classés selon vos réglages ci-dessous"
                      : "\(matchingDepartementNames.count) départements affichés — tous, en l'absence de critère de proximité ou de culture réglé")
-                    .font(sfBody(11))
+                    .font(CFont.mono(11, weight: .medium))
                     .foregroundStyle(columnFaint)
 
                 // La liste des communes (30 premières + "autres" dépliables)
@@ -358,22 +367,30 @@ public struct BigMacSFView: View {
 
                 VStack(alignment: .leading, spacing: 12) {
                     HStack(alignment: .firstTextBaseline) {
-                        Eyebrow("PROXIMITÉS", color: columnFaint, font: sfTitle(10))
+                        Eyebrow("PROXIMITÉS", color: columnFaint)
                         Spacer()
                         Button {
                             state.resetGeo2()
                         } label: {
                             Text("Réinitialiser")
-                                .font(sfBody(13))
+                                .font(.system(size: 13))
                                 .foregroundStyle(columnFaint)
                         }
                         .buttonStyle(.plain)
                     }
 
                     ForEach(derived.geo2Rows) { row in
-                        CriterionRow(row: row, labelColor: columnInk, extraDotScaleFromSecond: 1.1, tagFont: sfTitle(11)) { state.setGeo2(row.id, value: $0) }
+                        CriterionRow(row: row, labelColor: columnInk, dotGrowthPerStep: 1.5) { state.setGeo2(row.id, value: $0) }
                             .padding(.trailing, 8)
                     }
+                }
+                .padding(.top, 12)
+
+                // Réglages Culture transférés ici (après Proximités) depuis
+                // l'ancien bloc "Culture", désormais masqué.
+                VStack(alignment: .leading, spacing: 12) {
+                    Eyebrow("CULTURE", color: columnFaint)
+                    cultureRowsContent
                 }
                 .padding(.top, 12)
                 .padding(.bottom, 6)
@@ -387,7 +404,7 @@ public struct BigMacSFView: View {
     private var communesList: some View {
         VStack(alignment: .leading, spacing: 0) {
             if !shownCommunes.isEmpty {
-                Eyebrow("COMMUNES", color: columnFaint, font: sfTitle(10))
+                Eyebrow("COMMUNES", color: columnFaint)
                     .padding(.bottom, 6)
 
                 VStack(spacing: 0) {
@@ -402,11 +419,11 @@ public struct BigMacSFView: View {
                     withAnimation(.easeInOut(duration: 0.2)) { showMoreCommunes.toggle() }
                 } label: {
                     HStack {
-                        Eyebrow("AUTRES COMMUNES", color: columnFaint, font: sfTitle(10))
-                        Spacer()
-                        Image(systemName: showMoreCommunes ? "chevron.up" : "chevron.down")
+                        Image(systemName: showMoreCommunes ? "chevron.down" : "chevron.right")
                             .font(.system(size: 10, weight: .semibold))
                             .foregroundStyle(columnFaint)
+                        Eyebrow("AUTRES COMMUNES", color: columnFaint)
+                        Spacer()
                     }
                     .padding(.top, 12)
                     .contentShape(Rectangle())
@@ -430,7 +447,7 @@ public struct BigMacSFView: View {
 
     private func communeRow(_ entry: CommuneSizeEntry) -> some View {
         Text(entry.name)
-            .font(sfBody(14))
+            .font(CFont.sans(14, weight: .medium))
             .foregroundStyle(columnInk)
             .padding(.vertical, 6)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -451,7 +468,7 @@ public struct BigMacSFView: View {
                                     .foregroundStyle(.white)
                             }
                         }
-                    Text(label).font(sfBody(13)).foregroundStyle(columnBody)
+                    Text(label).font(CFont.sans(13)).foregroundStyle(columnBody)
                 }
             }
             .buttonStyle(.plain)
@@ -485,17 +502,29 @@ public struct BigMacSFView: View {
         ClassicStatic.groups.firstIndex { $0.title == "CULTURE" } ?? 0
     }
 
+    /// Les 3 réglettes Culture — affichées dans le bloc "Géographie et
+    /// Culture" (après Proximités). Les réglages restent actifs (ils
+    /// pilotent toujours le classement des départements) ; seul l'ancien
+    /// bloc "Culture" séparé est masqué (`isCultureBlockVisible`).
+    private var cultureRowsContent: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            ForEach(cultureRows, id: \.rowIndex) { entry in
+                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: CFont.sans(13), labelColor: columnInk, dotGrowthPerStep: 1.5) {
+                    state.setGroup(cultureGroupIndex, entry.rowIndex, value: min($0, 2))
+                }
+                .padding(.vertical, 4)
+                .padding(.trailing, 8)
+            }
+        }
+    }
+
+    /// Ancien bloc "Culture" séparé : masqué (son contenu vit désormais
+    /// dans "Géographie et Culture"). Repasser à `true` pour le réafficher.
+    private let isCultureBlockVisible = false
+
     private var cultureBlock: some View {
         blockDisclosure(title: "Culture", isExpanded: $state.bigMacExpandedCulture, enabled: true) {
-            VStack(alignment: .leading, spacing: 4) {
-                ForEach(cultureRows, id: \.rowIndex) { entry in
-                    CriterionRow(row: entry.row, thumbSize: 12, trackHeight: 3, labelFont: sfTitle(13), labelColor: columnInk, tagFont: sfTitle(11)) {
-                        state.setGroup(cultureGroupIndex, entry.rowIndex, value: min($0, 2))
-                    }
-                    .padding(.vertical, 4)
-                    .padding(.trailing, 8)
-                }
-            }
+            cultureRowsContent
         }
     }
 
@@ -526,7 +555,7 @@ public struct BigMacSFView: View {
         blockDisclosure(title: "Mobilité", isExpanded: $state.bigMacExpandedMobilite, enabled: true) {
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(mobiliteRows) { row in
-                    CriterionRow(row: row, thumbSize: 12, trackHeight: 3, labelFont: sfTitle(13), labelColor: columnInk, tagFont: sfTitle(11)) {
+                    CriterionRow(row: row, thumbSize: 16, trackHeight: 4, labelFont: CFont.sans(13), labelColor: columnInk, extraDotScaleFromSecond: 1.1) {
                         state.setGroup(mobiliteGroupIndex, row.id, value: min($0, 2))
                     }
                     .padding(.vertical, 4)
@@ -539,8 +568,8 @@ public struct BigMacSFView: View {
     // MARK: Disclosure commun
 
     /// `DisclosureGroup` stylé pour matcher les panneaux flottants existants
-    /// (matériau translucide de la colonne, typographie SF Pro) — première
-    /// utilisation de `DisclosureGroup` dans ce module.
+    /// (matériau translucide de la colonne, typographie `Eyebrow`/`CFont`) —
+    /// première utilisation de `DisclosureGroup` dans ce module.
     @ViewBuilder
     private func blockDisclosure<Content: View>(title: String, isExpanded: Binding<Bool>, enabled: Bool, @ViewBuilder content: @escaping () -> Content) -> some View {
         // Anime explicitement le dépli/repli : `DisclosureGroup` change son
@@ -557,9 +586,19 @@ public struct BigMacSFView: View {
                     .padding(.leading, 2)
                     .transition(.opacity.combined(with: .move(edge: .top)))
             } label: {
-                Text(title.uppercased())
-                    .font(sfTitle(11))
-                    .foregroundStyle(enabled && isExpanded.wrappedValue ? columnInk : columnFaint)
+                // Toute la largeur du titre déplie/replie le bloc, pas
+                // seulement le chevron (`DisclosureGroup` ne rend cliquable
+                // que ce dernier sur macOS).
+                HStack(spacing: 0) {
+                    Text(title.uppercased())
+                        .font(CFont.mono(11, weight: .semibold))
+                        .foregroundStyle(enabled && isExpanded.wrappedValue ? columnInk : columnFaint)
+                    Spacer(minLength: 0)
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    if enabled { animatedExpanded.wrappedValue.toggle() }
+                }
             }
             .tint(columnFaint)
         }
@@ -651,7 +690,7 @@ private struct InfoPopoverButton: View {
         .buttonStyle(.plain)
         .popover(isPresented: $showing, arrowEdge: .trailing) {
             Text(text)
-                .font(.system(size: 12, weight: .regular))
+                .font(CFont.sans(12))
                 .foregroundStyle(ClassicTheme.body)
                 .padding(12)
                 .frame(width: 240, alignment: .leading)

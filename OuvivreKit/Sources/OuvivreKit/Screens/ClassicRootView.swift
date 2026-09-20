@@ -23,7 +23,8 @@ public struct ClassicRootView: View {
     /// screen, and on Pays/Géographie 2, which embed their own full-bleed
     /// map instead of using the inspector — the toolbar icon stays visible
     /// on Pays regardless, it's just a no-op there for now.
-    private var isBigMac: Bool { state.screen == .bigMac || state.screen == .bigMacSF }
+    private var isFavoris: Bool { state.screen == .favoris || state.screen == .favorisTests }
+    private var isBigMac: Bool { state.screen == .bigMac || state.screen == .bigMacTests }
 
     private var inspectorBinding: Binding<Bool> {
         Binding(
@@ -35,7 +36,7 @@ public struct ClassicRootView: View {
                 // écrans). Il ne s'ouvre qu'en cliquant un département sur la
                 // carte de Big Mac (voir `BigMacView`).
                 let visible = isBigMac ? mapState.bigMacInspectorVisible : mapState.isVisible
-                return visible && state.screen != .sources && state.screen != .geo2 && state.screen != .pays && state.screen != .favoris
+                return visible && state.screen != .sources && state.screen != .geo2 && state.screen != .pays && !isFavoris
             },
             set: { newValue in
                 withAnimation(.easeInOut(duration: 0.28)) {
@@ -58,8 +59,8 @@ public struct ClassicRootView: View {
                     GeoView2(derived: derived)
                 } else if state.screen == .bigMac {
                     BigMacView(derived: derived)
-                } else if state.screen == .bigMacSF {
-                    BigMacSFView(derived: derived)
+                } else if state.screen == .bigMacTests {
+                    BigMacTestsView(derived: derived)
                 } else {
                     ScrollView { content(derived) }
                         .frame(maxWidth: .infinity)
@@ -90,7 +91,7 @@ public struct ClassicRootView: View {
                             .help("Zoomer")
                         }
                     }
-                    if state.screen != .favoris {
+                    if !isFavoris {
                         ToolbarItem {
                             Menu {
                                 ForEach(MapPlanType.allCases) { type in
@@ -102,7 +103,7 @@ public struct ClassicRootView: View {
                             .help("Type de carte")
                         }
                     }
-                    if state.screen != .favoris {
+                    if !isFavoris {
                         ToolbarItem {
                             Button {
                                 inspectorBinding.wrappedValue.toggle()
@@ -142,12 +143,13 @@ public struct ClassicRootView: View {
             case .geo: GeoView(derived: derived)
             case .geo2: EmptyView() // rendered full-bleed outside content(), see body
             case .bigMac: EmptyView() // rendered full-bleed outside content(), see body
-            case .bigMacSF: EmptyView() // rendered full-bleed outside content(), see body
+            case .bigMacTests: EmptyView() // rendered full-bleed outside content(), see body
             case .meteo: MeteoView(derived: derived)
             case .affiner: AffinerView(derived: derived)
             case .ville: VilleView(derived: derived)
             case .sources: SourcesView(derived: derived)
             case .favoris: FavorisView(derived: derived)
+            case .favorisTests: FavorisTestsView(derived: derived)
             }
         }
         .padding(.horizontal, theme.mainPadding)

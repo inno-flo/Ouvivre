@@ -32,6 +32,12 @@ public struct SidebarNav: View {
                     Text("\(state.favoriteDepartementCodes.count)").font(CFont.mono(10)).opacity(0.5)
                 }
                 .tag(ClassicScreen.favoris)
+                HStack(spacing: 9) {
+                    Image(systemName: "star").frame(width: 16)
+                    Text("Favoris tests").font(.system(size: 13, weight: state.screen == .favorisTests ? .semibold : .regular))
+                    Spacer(minLength: 4)
+                }
+                .tag(ClassicScreen.favorisTests)
             } header: {
                 Text("Comparateur").font(.system(size: 11)).foregroundStyle(.secondary)
             }
