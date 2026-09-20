@@ -17,6 +17,8 @@ public struct DepartementMapCard: View {
     var height: CGFloat = 460
     /// Ordre des boutons : recentrage, zoom −, zoom +, puis Explorer/Satellite.
     var actionsFirst = false
+    /// Ajoute les contrôles natifs de MapKit (zoom, boussole, échelle).
+    var nativeControls = false
 
     @State private var mapType: MapPlanType = .explorer
     @State private var mapPosition: MapCameraPosition = .automatic
@@ -29,13 +31,14 @@ public struct DepartementMapCard: View {
         self.accent = accent
     }
 
-    public init(names: [String], accent: Color, selectedName: String? = nil, onSelect: ((String) -> Void)? = nil, height: CGFloat = 460, actionsFirst: Bool = false) {
+    public init(names: [String], accent: Color, selectedName: String? = nil, onSelect: ((String) -> Void)? = nil, height: CGFloat = 460, actionsFirst: Bool = false, nativeControls: Bool = false) {
         self.names = names
         self.accent = accent
         self.selectedName = selectedName
         self.onSelect = onSelect
         self.height = height
         self.actionsFirst = actionsFirst
+        self.nativeControls = nativeControls
     }
 
     private static func contains(_ ring: [CLLocationCoordinate2D], _ p: CLLocationCoordinate2D) -> Bool {
@@ -138,7 +141,13 @@ public struct DepartementMapCard: View {
                         }
                     }
                     .mapStyle(mapType.style(elevation: .automatic))
-                    .mapControls {}
+                    .mapControls {
+                        if nativeControls {
+                            MapZoomStepper()
+                            MapCompass()
+                            MapScaleView()
+                        }
+                    }
                     .onTapGesture { point in
                         guard let onSelect, let coordinate = proxy.convert(point, from: .local),
                               let name = departementName(at: coordinate) else { return }

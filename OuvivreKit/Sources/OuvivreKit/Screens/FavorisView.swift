@@ -120,7 +120,8 @@ public struct FavorisView: View {
                         if let code { toggleSelection(code) }
                     },
                     height: 690,
-                    actionsFirst: true
+                    actionsFirst: true,
+                    nativeControls: true
                 )
                     .padding(.top, 32)
             }
@@ -183,10 +184,10 @@ public struct FavorisView: View {
         let meteoRows = [
             Row(id: "meteo-temp", label: "Température moyenne", cells: meteo.map { m in
                 m.temp.map { Cell(text: String(format: "%.1f °C", $0), value: $0) } ?? Cell(text: "—", value: nil)
-            }, higherIsBetter: nil, extremes: true),
+            }, higherIsBetter: nil, extremes: true, extremeIcons: (high: "thermometer.high", low: "thermometer.low")),
             Row(id: "meteo-rain", label: "Précipitations", cells: meteo.map { m in
                 m.rain.map { Cell(text: "\(Int($0.rounded())) mm", value: $0) } ?? Cell(text: "—", value: nil)
-            }, higherIsBetter: nil, extremeIcons: (high: "cloud.heavyrain", low: "cloud.drizzle"))
+            }, higherIsBetter: nil, extremeIcons: (high: "cloud.heavyrain.fill", low: "cloud.drizzle.fill"))
         ]
         return [
             Section(id: "chefLieu", title: "", rows: [
