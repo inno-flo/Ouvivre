@@ -143,24 +143,37 @@ public struct InspectorPanelView: View {
         let series = MeteoMensuelle.series(forDepartementCode: code)
         let isCollapsed = collapsedKeys.contains(Self.meteoKey)
         VStack(alignment: .leading, spacing: 10) {
-            Button {
-                withAnimation(.easeInOut(duration: 0.15)) {
-                    if isCollapsed { collapsedKeys.remove(Self.meteoKey) } else { collapsedKeys.insert(Self.meteoKey) }
+            HStack(spacing: 8) {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.15)) {
+                        if isCollapsed { collapsedKeys.remove(Self.meteoKey) } else { collapsedKeys.insert(Self.meteoKey) }
+                    }
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "cloud.sun.fill").foregroundStyle(theme.accent)
+                        Text("MÉTÉO")
+                            .font(CFont.mono(11, weight: .semibold))
+                            .foregroundStyle(ClassicTheme.faint)
+                        Spacer()
+                        Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(ClassicTheme.faint)
+                    }
+                    .contentShape(Rectangle())
                 }
-            } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: "cloud.sun.fill").foregroundStyle(theme.accent)
-                    Text("MÉTÉO · 5 DERNIÈRES ANNÉES")
-                        .font(CFont.mono(11, weight: .semibold))
-                        .foregroundStyle(ClassicTheme.faint)
-                    Spacer()
-                    Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
-                        .font(.system(size: 10, weight: .semibold))
+                .buttonStyle(.plain)
+
+                // Ouvre la fenêtre de détail (comme le double-clic).
+                Button {
+                    openWindow(id: MeteoDetailView.windowID, value: code)
+                } label: {
+                    Image(systemName: "interface.window.on.rectangle")
+                        .font(.system(size: 13))
                         .foregroundStyle(ClassicTheme.faint)
                 }
-                .contentShape(Rectangle())
+                .buttonStyle(.plain)
+                .help("Ouvrir le détail dans une fenêtre")
             }
-            .buttonStyle(.plain)
 
             if !isCollapsed {
                 if series.isEmpty {
