@@ -35,7 +35,7 @@ public struct ClassicRootView: View {
                 // écrans). Il ne s'ouvre qu'en cliquant un département sur la
                 // carte de Big Mac (voir `BigMacView`).
                 let visible = isBigMac ? mapState.bigMacInspectorVisible : mapState.isVisible
-                return visible && state.screen != .sources && state.screen != .geo2 && state.screen != .pays
+                return visible && state.screen != .sources && state.screen != .geo2 && state.screen != .pays && state.screen != .favoris
             },
             set: { newValue in
                 withAnimation(.easeInOut(duration: 0.28)) {
@@ -102,13 +102,15 @@ public struct ClassicRootView: View {
                             .help("Type de carte")
                         }
                     }
-                    ToolbarItem {
-                        Button {
-                            inspectorBinding.wrappedValue.toggle()
-                        } label: {
-                            Image(systemName: "info.circle")
+                    if state.screen != .favoris {
+                        ToolbarItem {
+                            Button {
+                                inspectorBinding.wrappedValue.toggle()
+                            } label: {
+                                Image(systemName: "info.circle")
+                            }
+                            .help(inspectorBinding.wrappedValue ? "Masquer l'inspecteur" : "Afficher l'inspecteur")
                         }
-                        .help(inspectorBinding.wrappedValue ? "Masquer l'inspecteur" : "Afficher l'inspecteur")
                     }
                 }
                 .inspector(isPresented: inspectorBinding) {

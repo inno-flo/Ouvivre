@@ -40,6 +40,8 @@ public struct FavorisView: View {
         /// Ligne dont seuls les extrêmes sont entourés : la plus haute valeur en
         /// rouge, la plus basse en vert.
         var extremes: Bool = false
+        /// Icônes affichées en face de la plus haute / de la plus basse valeur.
+        var extremeIcons: (high: String, low: String)?
     }
     private struct Section: Identifiable {
         let id: String
@@ -184,9 +186,12 @@ public struct FavorisView: View {
             }, higherIsBetter: nil, extremes: true),
             Row(id: "meteo-rain", label: "Précipitations", cells: meteo.map { m in
                 m.rain.map { Cell(text: "\(Int($0.rounded())) mm", value: $0) } ?? Cell(text: "—", value: nil)
-            }, higherIsBetter: nil)
+            }, higherIsBetter: nil, extremeIcons: (high: "cloud.heavyrain", low: "cloud.drizzle"))
         ]
         return [
+            Section(id: "chefLieu", title: "", rows: [
+                Row(id: "chefLieu", label: "Chef-lieu", cells: deps.map { Cell(text: FranceGeoData.chefsLieux[$0.codeInsee] ?? "—", value: nil) }, higherIsBetter: nil)
+            ]),
             Section(id: "geo", title: "GÉOGRAPHIE", rows: geoRows),
             Section(id: "culture", title: "CULTURE (nombre de lieux et d'événements)", rows: cultureRows),
             Section(id: "meteo", title: "MÉTÉO (valeurs sur les 12 derniers mois)", rows: meteoRows)
@@ -201,6 +206,14 @@ public struct FavorisView: View {
             return v == hi ? .red : v == lo ? .green : nil
         }
         return isBest(cell, in: row) ? ClassicTheme.ink : nil
+    }
+
+    /// Icône en face de la plus haute / plus basse valeur d'une ligne à icônes.
+    private func icon(_ cell: Cell, in row: Row) -> String? {
+        guard let icons = row.extremeIcons, let v = cell.value else { return nil }
+        let values = row.cells.compactMap(\.value)
+        guard let hi = values.max(), let lo = values.min(), hi != lo else { return nil }
+        return v == hi ? icons.high : v == lo ? icons.low : nil
     }
 
     private func isBest(_ cell: Cell, in row: Row) -> Bool {
@@ -243,13 +256,17 @@ public struct FavorisView: View {
         .multilineTextAlignment(.center)
     }
 
-    private func valueLabel(_ c: Cell, outline: Color?) -> some View {
+    private func valueLabel(_ c: Cell, outline: Color?, icon: String? = nil) -> some View {
         let highlighted = outline != nil
         return Text(c.text)
             .font(CFont.sans(13, weight: highlighted ? .semibold : .regular))
             .foregroundStyle(highlighted ? ClassicTheme.ink : ClassicTheme.sub)
             .padding(.horizontal, 8).padding(.vertical, 3)
             .overlay { if let outline { RoundedRectangle(cornerRadius: 4).stroke(outline, lineWidth: 1) } }
+            // À gauche de la valeur, sans la décentrer.
+            .overlay(alignment: .leading) {
+                if let icon { Image(systemName: icon).font(.system(size: 13)).foregroundStyle(ClassicTheme.sub).offset(x: -22) }
+            }
     }
 
     /// Aperçu suivant le curseur pendant le glissement : toute la colonne
@@ -262,13 +279,15 @@ public struct FavorisView: View {
                 .background(ClassicTheme.sidebarBg)
                 .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.border).frame(height: 1) }
             ForEach(sections) { section in
-                Text(" ").font(CFont.mono(10, weight: .medium))
-                    .padding(.vertical, 8)
-                    .frame(width: colW)
-                    .background(ClassicTheme.cardAlt)
-                    .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
+                if !section.title.isEmpty {
+                    Text(" ").font(CFont.mono(10, weight: .medium))
+                        .padding(.vertical, 8)
+                        .frame(width: colW)
+                        .background(ClassicTheme.cardAlt)
+                        .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
+                }
                 ForEach(section.rows) { row in
-                    valueLabel(row.cells[index], outline: outline(row.cells[index], in: row))
+                    valueLabel(row.cells[index], outline: outline(row.cells[index], in: row), icon: icon(row.cells[index], in: row))
                         .frame(width: colW).padding(.vertical, 13)
                         .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
                 }
@@ -315,6 +334,7 @@ public struct FavorisView: View {
             .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.border).frame(height: 1) }
 
             ForEach(sections) { section in
+                if !section.title.isEmpty {
                 HStack(spacing: 0) {
                     Text(section.title).font(CFont.mono(10, weight: .medium)).foregroundStyle(ClassicTheme.faint)
                         .padding(.horizontal, 18).padding(.vertical, 8)
@@ -323,6 +343,7 @@ public struct FavorisView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(ClassicTheme.cardAlt)
                 .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
+                }
 
                 ForEach(section.rows) { row in
                     HStack(spacing: 0) {
@@ -331,7 +352,7 @@ public struct FavorisView: View {
                             .padding(.horizontal, 18).padding(.vertical, 13)
                         ForEach(Array(departements.enumerated()), id: \.element.codeInsee) { i, d in
                             let c = row.cells[i]
-                            valueLabel(c, outline: outline(c, in: row))
+                            valueLabel(c, outline: outline(c, in: row), icon: icon(c, in: row))
                             .frame(width: colW, alignment: .center)
                             .padding(.vertical, 13)
                             .background(d.codeInsee == selectedCode ? theme.accent.opacity(0.12) : .clear)
