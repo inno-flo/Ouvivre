@@ -340,18 +340,10 @@ public struct BigMacTestsView: View {
                 // les pins sur la carte.
 
                 VStack(alignment: .leading, spacing: 12) {
-                    HStack(alignment: .firstTextBaseline) {
+                    HStack(alignment: .center) {
                         Eyebrow("PROXIMITÉS", color: columnFaint, font: CFont.rounded(10))
                         Spacer()
-                        Button {
-                            state.resetGeo2()
-                        } label: {
-                            Text("Réinitialiser")
-                                .textCase(.uppercase)
-                                .font(CFont.rounded(12))
-                                .foregroundStyle(columnFaint)
-                        }
-                        .buttonStyle(.plain)
+                        resetButton { state.resetGeo2() }
                     }
 
                     ForEach(derived.geo2Rows) { row in
@@ -364,13 +356,32 @@ public struct BigMacTestsView: View {
                 // Réglages Culture transférés ici (après Proximités) depuis
                 // l'ancien bloc "Culture", désormais masqué.
                 VStack(alignment: .leading, spacing: 12) {
-                    Eyebrow("CULTURE", color: columnFaint, font: CFont.rounded(10))
+                    HStack(alignment: .center) {
+                        Eyebrow("CULTURE", color: columnFaint, font: CFont.rounded(10))
+                        Spacer()
+                        resetButton {
+                            for entry in cultureRows { state.setGroup(cultureGroupIndex, entry.rowIndex, value: 0) }
+                        }
+                    }
                     cultureRowsContent
                 }
                 .padding(.top, 12)
                 .padding(.bottom, 6)
             }
         }
+    }
+
+    /// Bouton « RÉINITIALISER » en pastille, commun aux en-têtes Proximités et Culture.
+    private func resetButton(action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text("réinitialiser")
+                .font(CFont.rounded(10))
+                .foregroundStyle(columnFaint)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3)
+                .overlay(Capsule().stroke(columnFaint.opacity(0.6), lineWidth: 1))
+        }
+        .buttonStyle(.plain)
     }
 
     /// Liste des communes correspondant aux filtres — 30 premières en clair,
