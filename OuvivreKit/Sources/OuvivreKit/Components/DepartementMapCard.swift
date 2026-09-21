@@ -92,6 +92,18 @@ public struct DepartementMapCard: View {
         return MKMapRect(x: min(a.x, b.x), y: min(a.y, b.y), width: abs(a.x - b.x), height: abs(a.y - b.y))
     }()
 
+    /// Cadre la carte sur tous les départements affichés, au zoom le plus fort
+    /// qui les garde tous visibles. Repasse d'abord par la vue courante pour que
+    /// le cadrage soit réappliqué même si la position mémorisée est déjà ce
+    /// rectangle (après un déplacement ou un zoom manuel).
+    private func fitSelection() {
+        guard let rect = departementRect else { return }
+        if let current = mapRegion { mapPosition = .region(current) }
+        DispatchQueue.main.async {
+            withAnimation(.easeInOut(duration: 0.25)) { mapPosition = .rect(rect) }
+        }
+    }
+
     private func zoomMap(by factor: Double) {
         guard let r = mapRegion else { return }
         let updated = MKCoordinateRegion(center: r.center, span: MKCoordinateSpan(
@@ -99,6 +111,26 @@ public struct DepartementMapCard: View {
             longitudeDelta: min(360, max(0.002, r.span.longitudeDelta * factor))))
         withAnimation(.easeInOut(duration: 0.25)) { mapPosition = .region(updated) }
         mapRegion = updated
+    }
+
+    /// Nom et région du département survolé, à défaut du département sélectionné
+    /// (clic sur la carte ou sur une colonne) — carte des favoris, sur une ligne, alignés à
+    /// gauche, dans le style de l'en-tête de colonne du tableau.
+    @ViewBuilder
+    private var hoverLabel: some View {
+        if let shown = hoveredName ?? selectedName, let dep = FranceGeoData.departements.first(where: { $0.nom == shown }) {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text(dep.nom).font(CFont.rounded(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
+                // Pastille du code, comme dans l'inspecteur (20 pt) mais à l'échelle de 13 pt.
+                Text(dep.codeInsee)
+                    .font(CFont.rounded(13, weight: .semibold))
+                    .foregroundStyle(ClassicTheme.ink)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 3.5))
+                Text(dep.nomRegion).font(CFont.rounded(10)).foregroundStyle(ClassicTheme.faint)
+            }
+        }
     }
 
     private var typeButtons: some View {
@@ -122,7 +154,7 @@ public struct DepartementMapCard: View {
     @ViewBuilder
     private var actionButtons: some View {
         let recenter = Button {
-            if let rect = departementRect { withAnimation(.easeInOut(duration: 0.25)) { mapPosition = .rect(rect) } }
+            fitSelection()
         } label: { Image(systemName: "mappin.and.ellipse").modifier(ActionIconSize(enlarged: actionsFirst)) }
             .buttonStyle(.plain).foregroundStyle(ClassicTheme.ink).help("Recentrer la carte")
         if actionsFirst { recenter }
@@ -136,6 +168,7 @@ public struct DepartementMapCard: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
+                hoverLabel
                 Spacer()
                 if actionsFirst { actionButtons }
                 typeButtons
@@ -184,7 +217,7 @@ public struct DepartementMapCard: View {
                 // Sélection modifiée (favori ajouté/retiré) : le cadrage suit
                 // pour garder tous les départements sélectionnés visibles.
                 .onChange(of: names) { _, _ in
-                    if let rect = departementRect { withAnimation(.easeInOut(duration: 0.25)) { mapPosition = .rect(rect) } }
+                    fitSelection()
                 }
                 .frame(height: height)
                 .clipShape(RoundedRectangle(cornerRadius: 8))

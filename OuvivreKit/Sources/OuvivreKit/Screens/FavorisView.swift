@@ -133,7 +133,7 @@ public struct FavorisView: View {
                         let code = departements.first { $0.nom == name }?.codeInsee
                         if let code { toggleSelection(code) }
                     },
-                    height: 690,
+                    height: 862,
                     actionsFirst: true,
                     roundedFont: true
                 )
@@ -407,7 +407,7 @@ public struct FavorisView: View {
                         HStack(spacing: 8) {
                             Image(systemName: Self.criterionIcons[row.label] ?? "circle").frame(width: 18)
                                 .foregroundStyle(theme.accent)
-                            Text(row.label).font(CFont.rounded(12)).foregroundStyle(.black)
+                            Text(row.label).font(CFont.rounded(13, weight: .medium)).foregroundStyle(ClassicTheme.body)
                         }
                             .frame(width: labelColW, alignment: .leading)
                             .padding(.horizontal, 18).padding(.vertical, 13)
