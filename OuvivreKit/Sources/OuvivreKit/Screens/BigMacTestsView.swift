@@ -380,7 +380,7 @@ public struct BigMacTestsView: View {
                     }
 
                     ForEach(derived.geo2Rows) { row in
-                        CriterionRow(row: row, labelFont: CFont.rounded(13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10), capitalizeTag: true) { state.setGeo2(row.id, value: $0) }
+                        CriterionRow(row: row, labelFont: CFont.rounded(13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10)) { state.setGeo2(row.id, value: $0) }
                             .padding(.trailing, 8)
                     }
                 }

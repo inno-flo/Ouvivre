@@ -123,6 +123,16 @@ public struct InspectorPanelView: View {
         // derrière son contenu plutôt qu'une couleur/opacité fixée ici.
     }
 
+    /// « Climats dominants » : majuscule initiale à chaque nom de climat
+    /// (« 4 — océanique, semi-continental » → « 4 — Océanique, Semi-continental »).
+    private static func displayValue(_ f: LabeledValue) -> String {
+        guard f.key == "Climats dominants" else { return f.value }
+        let parts = f.value.components(separatedBy: " — ")
+        guard parts.count == 2 else { return f.value }
+        let names = parts[1].components(separatedBy: ", ").map { $0.prefix(1).uppercased() + $0.dropFirst() }
+        return parts[0] + " — " + names.joined(separator: ", ")
+    }
+
     private var countrySection: some View {
         VStack(alignment: .leading, spacing: 14) {
             Button {
@@ -148,7 +158,7 @@ public struct InspectorPanelView: View {
                     ForEach(countryFacts) { f in
                         VStack(alignment: .leading, spacing: 2) {
                             Text(f.key).font(CFont.rounded(13)).foregroundStyle(ClassicTheme.faint)
-                            Text(f.value).font(CFont.rounded(15, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+                            Text(Self.displayValue(f)).font(CFont.rounded(15, weight: .medium)).foregroundStyle(ClassicTheme.ink)
                         }
                     }
                 }
