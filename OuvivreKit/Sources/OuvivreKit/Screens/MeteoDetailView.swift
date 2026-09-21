@@ -18,6 +18,11 @@ public struct MeteoDetailView: View {
     /// Synthèse rédigée masquée pour le moment : repasser à `true` pour la réafficher.
     private static let showSynthesis = false
 
+    private enum RainGrouping: String, CaseIterable, Identifiable {
+        case month = "Mois", quarter = "Trimestres"
+        var id: String { rawValue }
+    }
+
     private enum Metric: String, CaseIterable, Identifiable {
         case temperature = "Moyennes"
         case maxTemperature = "Maximales"
@@ -50,6 +55,8 @@ public struct MeteoDetailView: View {
     /// Date survolée dans chaque graphique (`chartXSelection`), pour l'infobulle.
     @State private var hoveredTemperatureDate: Date?
     @State private var hoveredPrecipitationDate: Date?
+    /// Regroupement des barres de précipitations : par mois ou par trimestre.
+    @State private var rainGrouping: RainGrouping = .month
     let departementCode: String
 
     public init(departementCode: String) { self.departementCode = departementCode }
@@ -151,27 +158,53 @@ public struct MeteoDetailView: View {
                         .chartGesture { proxy in monthTap(proxy, points: points) }
                         .chartYScale(domain: .automatic(includesZero: false))
                     }
-                    chartCard(title: "Précipitations mensuelles (mm)") {
+                    chartCard(title: rainGrouping == .month ? "Précipitations mensuelles (mm)" : "Précipitations trimestrielles (moyenne mensuelle du trimestre, mm)", trailing: { groupingButtons }) {
                         let points = series.filter { $0.precipitation != nil }
+                        let quarters = rainQuarters
                         Chart {
                             yearBands
-                            ForEach(points) { p in
-                                BarMark(x: .value("Mois", p.date, unit: .month), y: .value("mm", p.precipitation ?? 0))
-                                    .foregroundStyle((selectedMonth == month(p) ? ClassicTheme.ink : theme.accent).opacity(p.partial ? 0.4 : 0.8))
-                            }
-                            ForEach(points.filter { selectedMonth == month($0) }) { p in
-                                PointMark(x: .value("Mois", p.date, unit: .month), y: .value("mm", p.precipitation ?? 0))
-                                    .opacity(0)
-                                    .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .fit(to: .chart))) {
-                                        tooltip(p, value: "\(frDecimal(p.precipitation ?? 0)) mm", secondary: nil)
-                                    }
-                            }
-                            if let p = hoveredPoint(hoveredPrecipitationDate, in: points), selectedMonth != month(p) {
-                                RuleMark(x: .value("Mois", p.date, unit: .month))
-                                    .foregroundStyle(ClassicTheme.faint.opacity(0.5))
-                                    .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
-                                        tooltip(p, value: "\(frDecimal(p.precipitation ?? 0)) mm", secondary: nil)
-                                    }
+                            if rainGrouping == .month {
+                                ForEach(points) { p in
+                                    BarMark(x: .value("Mois", p.date, unit: .month), y: .value("mm", p.precipitation ?? 0))
+                                        .foregroundStyle((selectedMonth == month(p) ? ClassicTheme.ink : theme.accent).opacity(p.partial ? 0.4 : 0.8))
+                                }
+                                ForEach(points.filter { selectedMonth == month($0) }) { p in
+                                    PointMark(x: .value("Mois", p.date, unit: .month), y: .value("mm", p.precipitation ?? 0))
+                                        .opacity(0)
+                                        .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .fit(to: .chart))) {
+                                            tooltip(p, value: "\(frDecimal(p.precipitation ?? 0)) mm", secondary: nil)
+                                        }
+                                }
+                                if let p = hoveredPoint(hoveredPrecipitationDate, in: points), selectedMonth != month(p) {
+                                    RuleMark(x: .value("Mois", p.date, unit: .month))
+                                        .foregroundStyle(ClassicTheme.faint.opacity(0.5))
+                                        .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
+                                            tooltip(p, value: "\(frDecimal(p.precipitation ?? 0)) mm", secondary: nil)
+                                        }
+                                }
+                            } else {
+                                // Une barre par trimestre civil, de la largeur du
+                                // trimestre (légèrement réduite pour séparer les barres).
+                                ForEach(quarters) { q in
+                                    BarMark(xStart: .value("Début", q.start), xEnd: .value("Fin", q.end.addingTimeInterval(-4 * 86_400)),
+                                            y: .value("mm", q.mean))
+                                        .foregroundStyle((selectedQuarterContains(q) ? ClassicTheme.ink : theme.accent).opacity(q.partial ? 0.4 : 0.8))
+                                }
+                                ForEach(quarters.filter(selectedQuarterContains)) { q in
+                                    PointMark(x: .value("Trimestre", q.middle), y: .value("mm", q.mean))
+                                        .opacity(0)
+                                        .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .fit(to: .chart))) {
+                                            quarterTooltip(q)
+                                        }
+                                }
+                                if let date = hoveredPrecipitationDate, let q = quarters.last(where: { $0.start <= date }),
+                                   !selectedQuarterContains(q) {
+                                    RuleMark(x: .value("Trimestre", q.middle))
+                                        .foregroundStyle(ClassicTheme.faint.opacity(0.5))
+                                        .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
+                                            quarterTooltip(q)
+                                        }
+                                }
                             }
                         }
                         .chartXSelection(value: $hoveredPrecipitationDate)
@@ -494,9 +527,91 @@ public struct MeteoDetailView: View {
         .shadow(color: .black.opacity(0.08), radius: 3, y: 1)
     }
 
+    // MARK: Précipitations par trimestre
+
+    private struct RainQuarter: Identifiable {
+        let start: Date
+        let end: Date
+        let year: Int
+        let quarter: Int
+        /// Moyenne des cumuls mensuels du trimestre (mm/mois), sur les mois
+        /// disponibles.
+        let mean: Double
+        let monthCount: Int
+        let months: ClosedRange<Int>
+        /// Le trimestre contient le mois en cours (données partielles).
+        let partial: Bool
+        var id: Date { start }
+        var middle: Date { start.addingTimeInterval(end.timeIntervalSince(start) / 2) }
+    }
+
+    private var rainQuarters: [RainQuarter] {
+        let groups = Dictionary(grouping: series.filter { $0.precipitation != nil }) { year($0) * 4 + (month($0) - 1) / 3 }
+        return groups.compactMap { key, pts -> RainQuarter? in
+            let (y, q) = (key / 4, key % 4)
+            let firstMonth = q * 3 + 1
+            guard let start = Self.calendar.date(from: DateComponents(year: y, month: firstMonth, day: 1)),
+                  let end = Self.calendar.date(byAdding: .month, value: 3, to: start) else { return nil }
+            let values = pts.compactMap(\.precipitation)
+            return RainQuarter(start: start, end: end, year: y, quarter: q + 1,
+                               mean: values.reduce(0, +) / Double(values.count), monthCount: values.count,
+                               months: firstMonth...(firstMonth + 2), partial: pts.contains { $0.partial })
+        }
+        .sorted { $0.start < $1.start }
+    }
+
+    private func selectedQuarterContains(_ q: RainQuarter) -> Bool {
+        selectedMonth.map { q.months.contains($0) } ?? false
+    }
+
+    private func quarterTooltip(_ q: RainQuarter) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text("T\(q.quarter) \(q.year) · \(Self.monthName(q.months.lowerBound).prefix(4).lowercased()).–\(Self.monthName(q.months.upperBound).prefix(4).lowercased()).")
+                .font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.faint)
+            Text("\(frDecimal(q.mean)) mm/mois en moyenne").font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+            if q.partial {
+                Text("trimestre en cours").font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.faint2)
+            } else if q.monthCount < 3 {
+                Text("\(q.monthCount) mois disponibles").font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.faint2)
+            }
+        }
+        .padding(.horizontal, 8).padding(.vertical, 7)
+        .background(.white, in: RoundedRectangle(cornerRadius: 6))
+        .overlay(RoundedRectangle(cornerRadius: 6).stroke(ClassicTheme.border, lineWidth: 1))
+        .shadow(color: .black.opacity(0.08), radius: 3, y: 1)
+    }
+
+    /// Boutons Mois / Trimestres, dans le style des boutons Explorer / Satellite
+    /// de la carte (capsule), remplie de la couleur d'accent quand actif.
+    private var groupingButtons: some View {
+        HStack(spacing: 8) {
+            ForEach(RainGrouping.allCases) { g in
+                Button { rainGrouping = g } label: {
+                    Text(g.rawValue)
+                        .font(CFont.rounded(12, weight: .medium))
+                        .foregroundStyle(rainGrouping == g ? .white : ClassicTheme.ink)
+                        .padding(.horizontal, 12).padding(.vertical, 5)
+                        .background(rainGrouping == g ? theme.accent : .clear)
+                        .clipShape(Capsule())
+                        .overlay(Capsule().stroke(rainGrouping == g ? theme.accent : ClassicTheme.border, lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+                .help(g == .month ? "Afficher les précipitations par mois" : "Afficher la moyenne mensuelle par trimestre")
+            }
+        }
+    }
+
     private func chartCard<C: View>(title: String, @ViewBuilder chart: () -> C) -> some View {
+        chartCard(title: title, trailing: { EmptyView() }, chart: chart)
+    }
+
+    private func chartCard<C: View, T: View>(title: String, @ViewBuilder trailing: () -> T, @ViewBuilder chart: () -> C) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(title).font(CFont.rounded(12)).foregroundStyle(ClassicTheme.faint)
+            HStack(alignment: .center) {
+                Text(title).font(CFont.rounded(12)).foregroundStyle(ClassicTheme.ink)
+                Spacer(minLength: 8)
+                trailing()
+            }
             chart()
                 .font(CFont.rounded(11))
                 .chartYAxis {
@@ -530,7 +645,7 @@ public struct MeteoDetailView: View {
     /// disponibles (première et dernière années partielles).
     private var yearlySummary: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Moyennes annuelles").font(CFont.sans(13, weight: .medium)).foregroundStyle(ClassicTheme.sub)
+            Text("Moyennes annuelles").font(CFont.sans(13, weight: .medium)).foregroundStyle(ClassicTheme.ink)
             HStack(spacing: 12) {
                 ForEach(years, id: \.self) { y in
                     let pts = series.filter { year($0) == y }
@@ -563,7 +678,7 @@ public struct MeteoDetailView: View {
     /// températures et précipitations.
     private var monthTable: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Détail par mois des températures et précipitations").font(CFont.sans(13, weight: .medium)).foregroundStyle(ClassicTheme.sub)
+            Text("Détail par mois des températures (°C) et précipitations (mm)").font(CFont.sans(13, weight: .medium)).foregroundStyle(ClassicTheme.ink)
             // Sur sa propre ligne, à largeur naturelle : trois boutons avec
             // icône ne tiennent pas dans un sélecteur segmenté à côté du titre.
             HStack(spacing: 8) {

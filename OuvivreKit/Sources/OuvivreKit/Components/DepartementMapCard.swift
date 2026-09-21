@@ -106,9 +106,9 @@ public struct DepartementMapCard: View {
                     .font(roundedFont ? CFont.rounded(12, weight: .medium) : CFont.sans(12, weight: .medium))
                     .foregroundStyle(mapType == type ? .white : ClassicTheme.ink)
                     .padding(.horizontal, 12).padding(.vertical, 5)
-                    .background(mapType == type ? ClassicTheme.ink : .clear)
+                    .background(mapType == type ? accent : .clear)
                     .clipShape(Capsule())
-                    .overlay(Capsule().stroke(mapType == type ? ClassicTheme.ink : ClassicTheme.border, lineWidth: 1))
+                    .overlay(Capsule().stroke(mapType == type ? accent : ClassicTheme.border, lineWidth: 1))
             }
             .buttonStyle(.plain)
             .help("Afficher la carte \(type.label)")
