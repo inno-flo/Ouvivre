@@ -12,6 +12,9 @@ public struct CultureDetailView: View {
     let departementCode: String
     @Environment(\.openURL) private var openURL
     @StateObject private var theme = ClassicTheme()
+    /// Instance propre à cette fenêtre, utilisée pour les favoris seulement
+    /// (synchronisés avec la fenêtre principale via `UserDefaults`).
+    @StateObject private var state = ClassicState()
     /// Rubriques repliées par l'utilisateur — toutes dépliées par défaut.
     @State private var mapFocusTick = 0
     @State private var collapsedSections: Set<String> = ["Musées", "Lieux du patrimoine", "Festivals"]
@@ -52,6 +55,17 @@ public struct CultureDetailView: View {
                         .buttonStyle(.plain)
                         .help("Centrer la carte sur \(chefLieu)")
                     }
+                    Spacer(minLength: 8)
+                    let isFavorite = state.favoriteDepartementCodes.contains(departementCode)
+                    Button {
+                        state.toggleFavoriteDepartement(departementCode)
+                    } label: {
+                        Image(systemName: isFavorite ? "star.fill" : "star")
+                            .font(.system(size: 13))
+                            .foregroundStyle(isFavorite ? theme.accent : ClassicTheme.faint)
+                    }
+                    .buttonStyle(.plain)
+                    .help(isFavorite ? "Retirer des favoris" : "Ajouter aux favoris")
                 }
 
                 DepartementMapCard(name: departementName, accent: theme.accent, focusCoordinate: FranceGeoData.chefsLieuxCoordinates[departementCode], focusTick: mapFocusTick, roundedFont: true)
