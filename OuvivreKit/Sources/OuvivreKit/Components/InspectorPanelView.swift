@@ -57,13 +57,13 @@ public struct InspectorPanelView: View {
                 // lorsqu'un vrai département est résolu, pas juste un
                 // titre non vide.
                 if let code = departementCode {
-                    Eyebrow("DÉPARTEMENT", color: ClassicTheme.faint)
+                    Eyebrow("DÉPARTEMENT", color: ClassicTheme.faint, font: CFont.rounded(10, weight: .medium))
                     HStack(spacing: 8) {
                         Text(title)
-                            .font(CFont.sans(20, weight: .semibold))
+                            .font(CFont.rounded(20, weight: .semibold))
                             .foregroundStyle(ClassicTheme.ink)
                         Text(code)
-                            .font(CFont.sans(20, weight: .semibold))
+                            .font(CFont.rounded(20, weight: .semibold))
                             .foregroundStyle(ClassicTheme.ink)
                             .padding(.horizontal, 7)
                             .padding(.vertical, 3)
@@ -82,7 +82,7 @@ public struct InspectorPanelView: View {
                     }
                     if let chefLieu = FranceGeoData.chefsLieux[code] {
                         Text("Chef-lieu : \(chefLieu)")
-                            .font(CFont.sans(13))
+                            .font(CFont.rounded(13))
                             .foregroundStyle(ClassicTheme.faint)
                     }
 
@@ -90,7 +90,7 @@ public struct InspectorPanelView: View {
                     // (Musées, Lieux du patrimoine, Festivals) ; l'icône ouvre
                     // la fenêtre qui les réunit toutes les trois.
                     HStack(spacing: 8) {
-                        Eyebrow("CULTURE", color: ClassicTheme.faint)
+                        Eyebrow("CULTURE", color: ClassicTheme.faint, font: CFont.rounded(10, weight: .medium))
                         Spacer()
                         Button {
                             openWindow(id: CultureDetailView.windowID, value: code)
@@ -133,7 +133,7 @@ public struct InspectorPanelView: View {
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(ClassicTheme.faint)
                         .frame(width: 10)
-                    Eyebrow("PAYS", color: ClassicTheme.faint)
+                    Eyebrow("PAYS", color: ClassicTheme.faint, font: CFont.rounded(10, weight: .medium))
                     Spacer()
                 }
                 .contentShape(Rectangle())
@@ -142,13 +142,13 @@ public struct InspectorPanelView: View {
 
             if isCountryExpanded {
                 Text(countryName)
-                    .font(CFont.sans(20, weight: .semibold))
+                    .font(CFont.rounded(20, weight: .semibold))
                     .foregroundStyle(ClassicTheme.ink)
                 VStack(alignment: .leading, spacing: 14) {
                     ForEach(countryFacts) { f in
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(f.key).font(CFont.sans(13)).foregroundStyle(ClassicTheme.faint)
-                            Text(f.value).font(CFont.sans(15, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+                            Text(f.key).font(CFont.rounded(13)).foregroundStyle(ClassicTheme.faint)
+                            Text(f.value).font(CFont.rounded(15, weight: .medium)).foregroundStyle(ClassicTheme.ink)
                         }
                     }
                 }
@@ -168,7 +168,7 @@ public struct InspectorPanelView: View {
             HStack(spacing: 8) {
                 // Même en-tête que CULTURE (Eyebrow), sans chevron ni icône :
                 // la rubrique Météo est toujours dépliée.
-                Eyebrow("MÉTÉO", color: ClassicTheme.faint)
+                Eyebrow("MÉTÉO", color: ClassicTheme.faint, font: CFont.rounded(10, weight: .medium))
                 Spacer()
 
                 // Ouvre la fenêtre de détail (comme le double-clic).
@@ -186,11 +186,11 @@ public struct InspectorPanelView: View {
             if !isCollapsed {
                 if series.isEmpty {
                     Text("Aucune donnée pour ce département.")
-                        .font(CFont.sans(13))
+                        .font(CFont.rounded(13))
                         .foregroundStyle(ClassicTheme.faint)
                 } else {
                     Text("Température moyenne (°C)")
-                        .font(CFont.sans(12)).foregroundStyle(ClassicTheme.faint)
+                        .font(CFont.rounded(12)).foregroundStyle(ClassicTheme.faint)
                     Chart(series.filter { $0.temperature != nil }) { point in
                         LineMark(x: .value("Mois", point.date, unit: .month), y: .value("°C", point.temperature ?? 0))
                             .foregroundStyle(theme.accent)
@@ -201,7 +201,7 @@ public struct InspectorPanelView: View {
                     .frame(height: 110)
 
                     Text("Précipitations (mm / mois)")
-                        .font(CFont.sans(12)).foregroundStyle(ClassicTheme.faint)
+                        .font(CFont.rounded(12)).foregroundStyle(ClassicTheme.faint)
                     Chart(series.filter { $0.precipitation != nil }) { point in
                         BarMark(x: .value("Mois", point.date, unit: .month), y: .value("mm", point.precipitation ?? 0))
                             .foregroundStyle(theme.accent.opacity(point.partial ? 0.4 : 0.8))
@@ -211,7 +211,7 @@ public struct InspectorPanelView: View {
 
                     if series.last?.partial == true {
                         Text("Dernier mois en cours (données partielles).")
-                            .font(CFont.sans(11)).foregroundStyle(ClassicTheme.faint)
+                            .font(CFont.rounded(11)).foregroundStyle(ClassicTheme.faint)
                     }
                 }
             }
@@ -263,11 +263,11 @@ public struct InspectorPanelView: View {
                     Image(systemName: Self.headerIcon(forCriterionKey: criterion.key))
                         .foregroundStyle(theme.accent)
                     Text(criterion.label.uppercased())
-                        .font(CFont.mono(11, weight: .semibold))
+                        .font(CFont.rounded(11, weight: .semibold))
                         .foregroundStyle(ClassicTheme.faint)
                     Spacer()
                     Text("\(names.count + (criterion.key == "patrimoine" ? sprCount : 0))")
-                        .font(CFont.mono(11, weight: .medium))
+                        .font(CFont.rounded(11, weight: .medium))
                         .foregroundStyle(ClassicTheme.faint)
                 }
                 .contentShape(Rectangle())
@@ -281,7 +281,7 @@ public struct InspectorPanelView: View {
                     // donc bien celle d'un vrai département sans
                     // musées/festivals/patrimoine.
                     Text("Aucune donnée pour ce département.")
-                        .font(CFont.sans(13))
+                        .font(CFont.rounded(13))
                         .foregroundStyle(ClassicTheme.faint)
                 } else if criterion.key == "musees" {
                     // Les Micro-Folies (réseau de petits équipements
@@ -314,7 +314,7 @@ public struct InspectorPanelView: View {
                         ForEach(ordered, id: \.self) { discipline in
                             VStack(alignment: .leading, spacing: 9) {
                                 Text("\(discipline.uppercased()) · \(byDiscipline[discipline]!.count)")
-                                    .font(CFont.mono(10, weight: .semibold))
+                                    .font(CFont.rounded(10, weight: .semibold))
                                     .foregroundStyle(ClassicTheme.faint)
                                 ForEach(byDiscipline[discipline]!, id: \.self) { name in
                                     nameRow(name, criterionKey: criterion.key)
@@ -338,7 +338,7 @@ public struct InspectorPanelView: View {
                             if !spr.isEmpty {
                                 Divider().padding(.vertical, 6)
                                 Text("SITES PATRIMONIAUX REMARQUABLES · \(spr.count)")
-                                    .font(CFont.mono(10, weight: .semibold))
+                                    .font(CFont.rounded(10, weight: .semibold))
                                     .foregroundStyle(ClassicTheme.faint)
                                 ForEach(spr, id: \.self) { name in
                                     nameRow(name, criterionKey: "spr")
@@ -370,7 +370,7 @@ public struct InspectorPanelView: View {
             if let url = URL(string: "https://www.google.com/search?q=\(query)") { openURL(url) }
         } label: {
             Text(Self.titleCased(name))
-                .font(CFont.sans(13))
+                .font(CFont.rounded(13))
                 .lineSpacing(3)
                 .foregroundStyle(ClassicTheme.body)
                 .multilineTextAlignment(.leading)

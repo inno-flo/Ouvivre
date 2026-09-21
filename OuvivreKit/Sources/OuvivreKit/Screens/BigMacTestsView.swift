@@ -324,7 +324,7 @@ public struct BigMacTestsView: View {
 
     private var paysBlock: some View {
         blockDisclosure(title: "Pays", bold: true, isExpanded: $state.bigMacExpandedPays, enabled: true) {
-            PaysCountryBlock(derived: derived, ink: columnInk, faint: columnFaint, showFacts: false, countryFont: .custom("SFProRounded-Regular", size: 13))
+            PaysCountryBlock(derived: derived, ink: columnInk, faint: columnFaint, showFacts: false, countryFont: CFont.rounded(13))
         }
     }
 
@@ -348,10 +348,10 @@ public struct BigMacTestsView: View {
     private var regionsBlock: some View {
         blockDisclosure(title: "Géographie et Culture", bold: true, isExpanded: $state.bigMacExpandedRegions, enabled: true) {
             VStack(alignment: .leading, spacing: 14) {
-                RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody, labelFont: .custom("SFProRounded-Regular", size: 13))
+                RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody, labelFont: CFont.rounded(13))
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Eyebrow("TAILLE DE COMMUNE", color: columnFaint, font: .custom("SFProRounded-Regular", size: 10))
+                    Eyebrow("TAILLE DE COMMUNE", color: columnFaint, font: CFont.rounded(10))
                     sizeCheckbox("Village", description: CommuneSizeCategory.village.description, isOn: $state.includeVillage)
                     sizeCheckbox("Petite ville", description: CommuneSizeCategory.petiteVille.description, isOn: $state.includePetiteVille)
                     sizeCheckbox("Ville moyenne", description: CommuneSizeCategory.villeMoyenne.description, isOn: $state.includeVilleMoyenne)
@@ -367,20 +367,20 @@ public struct BigMacTestsView: View {
 
                 VStack(alignment: .leading, spacing: 12) {
                     HStack(alignment: .firstTextBaseline) {
-                        Eyebrow("PROXIMITÉS", color: columnFaint, font: .custom("SFProRounded-Regular", size: 10))
+                        Eyebrow("PROXIMITÉS", color: columnFaint, font: CFont.rounded(10))
                         Spacer()
                         Button {
                             state.resetGeo2()
                         } label: {
                             Text("Réinitialiser")
-                                .font(.custom("SFProRounded-Regular", size: 12))
+                                .font(CFont.rounded(12))
                                 .foregroundStyle(columnFaint)
                         }
                         .buttonStyle(.plain)
                     }
 
                     ForEach(derived.geo2Rows) { row in
-                        CriterionRow(row: row, labelFont: .custom("SFProRounded-Regular", size: 13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: .custom("SFProRounded-Regular", size: 10)) { state.setGeo2(row.id, value: $0) }
+                        CriterionRow(row: row, labelFont: CFont.rounded(13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10), capitalizeTag: true) { state.setGeo2(row.id, value: $0) }
                             .padding(.trailing, 8)
                     }
                 }
@@ -389,7 +389,7 @@ public struct BigMacTestsView: View {
                 // Réglages Culture transférés ici (après Proximités) depuis
                 // l'ancien bloc "Culture", désormais masqué.
                 VStack(alignment: .leading, spacing: 12) {
-                    Eyebrow("CULTURE", color: columnFaint, font: .custom("SFProRounded-Regular", size: 10))
+                    Eyebrow("CULTURE", color: columnFaint, font: CFont.rounded(10))
                     cultureRowsContent
                 }
                 .padding(.top, 12)
@@ -404,7 +404,7 @@ public struct BigMacTestsView: View {
     private var communesList: some View {
         VStack(alignment: .leading, spacing: 0) {
             if !shownCommunes.isEmpty {
-                Eyebrow("COMMUNES", color: columnFaint)
+                Eyebrow("COMMUNES", color: columnFaint, font: CFont.rounded(10, weight: .medium))
                     .padding(.bottom, 6)
 
                 VStack(spacing: 0) {
@@ -422,7 +422,7 @@ public struct BigMacTestsView: View {
                         Image(systemName: showMoreCommunes ? "chevron.down" : "chevron.right")
                             .font(.system(size: 10, weight: .semibold))
                             .foregroundStyle(columnFaint)
-                        Eyebrow("AUTRES COMMUNES", color: columnFaint)
+                        Eyebrow("AUTRES COMMUNES", color: columnFaint, font: CFont.rounded(10, weight: .medium))
                         Spacer()
                     }
                     .padding(.top, 12)
@@ -447,7 +447,7 @@ public struct BigMacTestsView: View {
 
     private func communeRow(_ entry: CommuneSizeEntry) -> some View {
         Text(entry.name)
-            .font(CFont.sans(14, weight: .medium))
+            .font(CFont.rounded(14, weight: .medium))
             .foregroundStyle(columnInk)
             .padding(.vertical, 6)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -468,7 +468,7 @@ public struct BigMacTestsView: View {
                                     .foregroundStyle(.white)
                             }
                         }
-                    Text(label).font(.custom("SFProRounded-Regular", size: 13)).foregroundStyle(columnBody)
+                    Text(label).font(CFont.rounded(13)).foregroundStyle(columnBody)
                 }
             }
             .buttonStyle(.plain)
@@ -509,7 +509,7 @@ public struct BigMacTestsView: View {
     private var cultureRowsContent: some View {
         VStack(alignment: .leading, spacing: 4) {
             ForEach(cultureRows, id: \.rowIndex) { entry in
-                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: .custom("SFProRounded-Regular", size: 13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: .custom("SFProRounded-Regular", size: 10)) {
+                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: CFont.rounded(13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10), capitalizeTag: true) {
                     state.setGroup(cultureGroupIndex, entry.rowIndex, value: min($0, 2))
                 }
                 .padding(.vertical, 4)
@@ -555,7 +555,7 @@ public struct BigMacTestsView: View {
         blockDisclosure(title: "Mobilité", isExpanded: $state.bigMacExpandedMobilite, enabled: true) {
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(mobiliteRows) { row in
-                    CriterionRow(row: row, thumbSize: 16, trackHeight: 4, labelFont: .custom("SFProRounded-Regular", size: 13), labelColor: columnInk, extraDotScaleFromSecond: 1.1, tagFont: .custom("SFProRounded-Regular", size: 10)) {
+                    CriterionRow(row: row, thumbSize: 16, trackHeight: 4, labelFont: CFont.rounded(13), labelColor: columnInk, extraDotScaleFromSecond: 1.1, tagFont: CFont.rounded(10), capitalizeTag: true) {
                         state.setGroup(mobiliteGroupIndex, row.id, value: min($0, 2))
                     }
                     .padding(.vertical, 4)
@@ -591,7 +591,7 @@ public struct BigMacTestsView: View {
                 // que ce dernier sur macOS).
                 HStack(spacing: 0) {
                     Text(title.uppercased())
-                        .font(.custom(bold ? "SFCompactText-Bold" : "SFCompactText-Semibold", size: 11))
+                        .font(CFont.rounded(11, weight: bold ? .bold : .semibold))
                         .foregroundStyle(enabled && isExpanded.wrappedValue ? columnInk : columnFaint)
                     Spacer(minLength: 0)
                 }
@@ -690,7 +690,7 @@ private struct InfoPopoverButton: View {
         .buttonStyle(.plain)
         .popover(isPresented: $showing, arrowEdge: .trailing) {
             Text(text)
-                .font(CFont.sans(12))
+                .font(CFont.rounded(12))
                 .foregroundStyle(ClassicTheme.body)
                 .padding(12)
                 .frame(width: 240, alignment: .leading)

@@ -103,6 +103,10 @@ public enum CFont {
     public static func sans(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
         .custom("Archivo", size: size).weight(weight)
     }
+    /// SF Pro Rounded (police système, design arrondi) — Big Mac tests et son inspecteur.
+    public static func rounded(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
+        .system(size: size, weight: weight, design: .rounded)
+    }
     /// IBM Plex Mono for labels/numerics.
     public static func mono(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
         .system(size: size, weight: weight, design: .monospaced)

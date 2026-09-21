@@ -23,9 +23,11 @@ public struct CriterionRow: View {
     /// Override for the tag's default IBM Plex Mono font — e.g. Big Mac SF
     /// swaps in SF Pro Medium here without touching every other caller.
     var tagFont: Font?
+    /// Affiche le tag avec une majuscule initiale ("Indifférent").
+    var capitalizeTag = false
     let onChange: (Int) -> Void
 
-    public init(row: WeightedRow, thumbSize: CGFloat = 16, trackHeight: CGFloat = 4, labelFont: Font = CFont.sans(14, weight: .medium), labelColor: Color = ClassicTheme.ink, extraDotScaleFromSecond: CGFloat = 1.0, dotGrowthPerStep: CGFloat = 1.25, tagFont: Font? = nil, onChange: @escaping (Int) -> Void) {
+    public init(row: WeightedRow, thumbSize: CGFloat = 16, trackHeight: CGFloat = 4, labelFont: Font = CFont.sans(14, weight: .medium), labelColor: Color = ClassicTheme.ink, extraDotScaleFromSecond: CGFloat = 1.0, dotGrowthPerStep: CGFloat = 1.25, tagFont: Font? = nil, capitalizeTag: Bool = false, onChange: @escaping (Int) -> Void) {
         self.row = row
         self.thumbSize = thumbSize
         self.trackHeight = trackHeight
@@ -34,6 +36,7 @@ public struct CriterionRow: View {
         self.extraDotScaleFromSecond = extraDotScaleFromSecond
         self.dotGrowthPerStep = dotGrowthPerStep
         self.tagFont = tagFont
+        self.capitalizeTag = capitalizeTag
         self.onChange = onChange
     }
 
@@ -42,7 +45,7 @@ public struct CriterionRow: View {
             HStack(alignment: .firstTextBaseline) {
                 Text(row.label).font(labelFont).foregroundStyle(labelColor)
                 Spacer()
-                Text(row.tag)
+                Text(capitalizeTag ? row.tag.prefix(1).uppercased() + row.tag.dropFirst() : row.tag)
                     .font(tagFont ?? CFont.mono(11, weight: .medium))
                     .foregroundStyle(row.value >= row.maxValue - 1 ? theme.accent : (row.value == 0 ? ClassicTheme.faint2 : ClassicTheme.faint))
             }
