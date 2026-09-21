@@ -29,8 +29,8 @@ public enum MapPlanType: String, CaseIterable, Identifiable {
     func style(elevation: MapStyle.Elevation) -> MapStyle {
         switch self {
         case .explorer: .standard(elevation: elevation)
-        case .voiture: .standard(elevation: elevation, showsTraffic: true)
-        case .transports: .standard(elevation: elevation, pointsOfInterest: .including([.publicTransport]))
+        case .voiture: .standard(elevation: elevation, emphasis: .muted, pointsOfInterest: .excludingAll, showsTraffic: true)
+        case .transports: .standard(elevation: elevation, emphasis: .muted, pointsOfInterest: .including([.publicTransport, .airport]))
         case .satellite: .hybrid(elevation: elevation)
         }
     }
