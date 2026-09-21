@@ -111,6 +111,7 @@ public struct CultureDetailView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("\(discipline.prefix(1).uppercased() + discipline.dropFirst().lowercased()) · \(byDiscipline[discipline]!.count)")
                         .font(CFont.rounded(11, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
+                        .padding(.top, 12)
                     grid(byDiscipline[discipline]!, criterionKey: "festivals")
                 }
             }

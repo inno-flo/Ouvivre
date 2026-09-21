@@ -24,6 +24,8 @@ public struct DepartementMapCard: View {
     var focusTick = 0
     /// Police SF Pro Rounded pour les textes de la carte (fenêtre Culture).
     var roundedFont = false
+    /// `false` dans les fenêtres Météo et Culture : périmètre tracé seul, sans voile.
+    var fillsDepartement = true
 
     @State private var mapType: MapPlanType = .explorer
     @State private var mapPosition: MapCameraPosition = .automatic
@@ -36,6 +38,7 @@ public struct DepartementMapCard: View {
         self.names = [name]
         self.accent = accent
         self.actionsFirst = true
+        self.fillsDepartement = false
         self.focusCoordinate = focusCoordinate
         self.focusTick = focusTick
     }
@@ -143,7 +146,7 @@ public struct DepartementMapCard: View {
                             let selected = name == selectedName
                             ForEach(Array((DepartementBoundaries.rings[name] ?? []).enumerated()), id: \.offset) { _, ring in
                                 MapPolygon(coordinates: ring)
-                                    .foregroundStyle(accent.opacity(selected ? 0.4 : 0.16))
+                                    .foregroundStyle(fillsDepartement ? accent.opacity(selected ? 0.4 : 0.16) : .clear)
                                     .stroke(accent, lineWidth: selected ? 3 : 2)
                             }
                         }

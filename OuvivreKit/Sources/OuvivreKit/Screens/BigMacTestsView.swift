@@ -188,7 +188,7 @@ public struct BigMacTestsView: View {
     private func departementRings(_ rings: [[CLLocationCoordinate2D]], isHovered: Bool, isSelected: Bool) -> some MapContent {
         ForEach(Array(rings.enumerated()), id: \.offset) { _, ring in
             MapPolygon(coordinates: ring)
-                .foregroundStyle(theme.accent.opacity(isHovered ? 0.54 : (isSelected ? 0.54 * 0.85 * 0.85 : 0.16)))
+                .foregroundStyle(theme.accent.opacity(isHovered ? 0.5 : (isSelected ? 0.10 : 0.05)))
                 .stroke(theme.accent, lineWidth: 2)
         }
     }
