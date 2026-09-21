@@ -79,7 +79,7 @@ public struct InspectorPanelView: View {
                                         centerMap(onDepartement: code)
                                     } label: {
                                         Image(systemName: "mappin.and.ellipse")
-                                            .font(CFont.rounded(18))
+                                            .font(CFont.rounded(13))
                                             .foregroundStyle(ClassicTheme.faint)
                                     }
                                     .buttonStyle(.plain)
@@ -94,7 +94,7 @@ public struct InspectorPanelView: View {
                         } label: {
                             let isFavorite = state.favoriteDepartementCodes.contains(code)
                             Image(systemName: isFavorite ? "star.fill" : "star")
-                                .font(.system(size: 20))
+                                .font(.system(size: 13))
                                 .foregroundStyle(isFavorite ? theme.accent : ClassicTheme.faint)
                         }
                         .buttonStyle(.plain)
@@ -106,7 +106,7 @@ public struct InspectorPanelView: View {
                     // la fenêtre qui les réunit toutes les trois.
                     if !activeCultureCriteria.isEmpty {
                         HStack(spacing: 8) {
-                            Eyebrow("CULTURE", color: ClassicTheme.faint, font: CFont.rounded(10, weight: .medium))
+                            Eyebrow("CULTURE", color: ClassicTheme.faint, font: CFont.rounded(13, weight: .medium))
                             Spacer()
                             Button {
                                 openWindow(id: CultureDetailView.windowID, value: code)
@@ -157,7 +157,7 @@ public struct InspectorPanelView: View {
         guard let coordinate = FranceGeoData.chefsLieuxCoordinates[code] else { return }
         let map = MapPanelState.shared
         map.coordinate = coordinate
-        map.spanDegrees = 0.15
+        map.spanDegrees = 0.05
         map.recenterTick += 1
     }
 
@@ -171,7 +171,7 @@ public struct InspectorPanelView: View {
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(ClassicTheme.faint)
                         .frame(width: 10)
-                    Eyebrow("PAYS", color: ClassicTheme.faint, font: CFont.rounded(10, weight: .medium))
+                    Eyebrow("PAYS", color: ClassicTheme.faint, font: CFont.rounded(13, weight: .medium))
                     Spacer()
                 }
                 .contentShape(Rectangle())
@@ -206,7 +206,7 @@ public struct InspectorPanelView: View {
             HStack(spacing: 8) {
                 // Même en-tête que CULTURE (Eyebrow), sans chevron ni icône :
                 // la rubrique Météo est toujours dépliée.
-                Eyebrow("MÉTÉO", color: ClassicTheme.faint, font: CFont.rounded(10, weight: .medium))
+                Eyebrow("MÉTÉO", color: ClassicTheme.faint, font: CFont.rounded(13, weight: .medium))
                 Spacer()
 
                 // Ouvre la fenêtre de détail (comme le double-clic).
@@ -301,7 +301,7 @@ public struct InspectorPanelView: View {
                     Image(systemName: Self.headerIcon(forCriterionKey: criterion.key))
                         .foregroundStyle(theme.accent)
                     Text(criterion.label)
-                        .font(CFont.rounded(11, weight: .semibold))
+                        .font(CFont.rounded(12, weight: .semibold))
                         .foregroundStyle(ClassicTheme.faint)
                     Spacer()
                     Text("\(names.count + (criterion.key == "patrimoine" ? sprCount : 0))")

@@ -57,7 +57,7 @@ public struct CultureDetailView: View {
                     }
                 }
 
-                DepartementMapCard(name: departementName, accent: theme.accent, focusCoordinate: FranceGeoData.chefsLieuxCoordinates[departementCode], focusTick: mapFocusTick)
+                DepartementMapCard(name: departementName, accent: theme.accent, focusCoordinate: FranceGeoData.chefsLieuxCoordinates[departementCode], focusTick: mapFocusTick, roundedFont: true)
 
                 museesSection
                 patrimoineSection
@@ -76,7 +76,7 @@ public struct CultureDetailView: View {
         let all = InspectorPanelView.dedupedNames(CultureScores.names(forDepartementCode: departementCode, criterionKey: "musees"), mergeVariants: true)
         let microFolies = all.filter { $0.localizedCaseInsensitiveContains("micro-folie") || $0.localizedCaseInsensitiveContains("microfolie") }
         let regular = all.filter { !microFolies.contains($0) }
-        return section(title: "MUSÉES", icon: "photo.artframe", count: all.count) {
+        return section(title: "Musées", icon: "photo.artframe", count: all.count) {
             grid(regular, criterionKey: "musees")
             if !regular.isEmpty, !microFolies.isEmpty { Divider() }
             grid(microFolies, criterionKey: "musees")
@@ -86,12 +86,12 @@ public struct CultureDetailView: View {
     private var patrimoineSection: some View {
         let monuments = InspectorPanelView.dedupedNames(CultureScores.names(forDepartementCode: departementCode, criterionKey: "patrimoine"), mergeVariants: false)
         let spr = CultureScores.names(forDepartementCode: departementCode, criterionKey: "spr")
-        return section(title: "LIEUX DU PATRIMOINE", icon: "building.classical.columns", count: monuments.count) {
+        return section(title: "Lieux du patrimoine", icon: "building.classical.columns", count: monuments.count) {
             grid(monuments, criterionKey: "patrimoine")
             if !spr.isEmpty {
                 Divider()
-                Text("SITES PATRIMONIAUX REMARQUABLES · \(spr.count)")
-                    .font(CFont.mono(10, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
+                Text("Sites patrimoniaux remarquables · \(spr.count)")
+                    .font(CFont.rounded(10, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
                 grid(spr, criterionKey: "spr")
             }
         }
@@ -106,11 +106,11 @@ public struct CultureDetailView: View {
             if $0 == "Autre" || $1 == "Autre" { return $1 == "Autre" && $0 != "Autre" }
             return byDiscipline[$0]!.count != byDiscipline[$1]!.count ? byDiscipline[$0]!.count > byDiscipline[$1]!.count : $0 < $1
         }
-        return section(title: "FESTIVALS", icon: "fireworks", count: names.count) {
+        return section(title: "Festivals", icon: "fireworks", count: names.count) {
             ForEach(ordered, id: \.self) { discipline in
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("\(discipline.uppercased()) · \(byDiscipline[discipline]!.count)")
-                        .font(CFont.mono(10, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
+                    Text("\(discipline.prefix(1).uppercased() + discipline.dropFirst()) · \(byDiscipline[discipline]!.count)")
+                        .font(CFont.rounded(10, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
                     grid(byDiscipline[discipline]!, criterionKey: "festivals")
                 }
             }
@@ -134,7 +134,7 @@ public struct CultureDetailView: View {
                         .frame(width: 11)
                     Image(systemName: icon).foregroundStyle(theme.accent)
                     Text("\(title) · \(count)")
-                        .font(CFont.mono(12, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
+                        .font(CFont.rounded(12, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
                     Spacer()
                 }
                 .contentShape(Rectangle())
@@ -144,7 +144,7 @@ public struct CultureDetailView: View {
             if !isCollapsed {
                 if count == 0 {
                     Text("Aucune donnée pour ce département.")
-                        .font(CFont.sans(13)).foregroundStyle(ClassicTheme.faint)
+                        .font(CFont.rounded(13)).foregroundStyle(ClassicTheme.faint)
                 } else {
                     content()
                 }
@@ -166,7 +166,7 @@ public struct CultureDetailView: View {
                     }
                 } label: {
                     Text(InspectorPanelView.titleCased(name))
-                        .font(CFont.sans(13))
+                        .font(CFont.rounded(13))
                         .lineSpacing(3)
                         .foregroundStyle(ClassicTheme.body)
                         .multilineTextAlignment(.leading)

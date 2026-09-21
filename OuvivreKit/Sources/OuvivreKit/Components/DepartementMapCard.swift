@@ -22,6 +22,8 @@ public struct DepartementMapCard: View {
     /// à chaque incrément de `focusTick`.
     var focusCoordinate: CLLocationCoordinate2D?
     var focusTick = 0
+    /// Police SF Pro Rounded pour les textes de la carte (fenêtre Culture).
+    var roundedFont = false
 
     @State private var mapType: MapPlanType = .explorer
     @State private var mapPosition: MapCameraPosition = .automatic
@@ -29,7 +31,8 @@ public struct DepartementMapCard: View {
     /// vue courante (déplacement manuel compris).
     @State private var mapRegion: MKCoordinateRegion?
 
-    public init(name: String, accent: Color, focusCoordinate: CLLocationCoordinate2D? = nil, focusTick: Int = 0) {
+    public init(name: String, accent: Color, focusCoordinate: CLLocationCoordinate2D? = nil, focusTick: Int = 0, roundedFont: Bool = false) {
+        self.roundedFont = roundedFont
         self.names = [name]
         self.accent = accent
         self.actionsFirst = true
@@ -97,7 +100,7 @@ public struct DepartementMapCard: View {
         ForEach([MapPlanType.explorer, MapPlanType.satellite]) { type in
             Button { mapType = type } label: {
                 Text(type.label)
-                    .font(CFont.sans(12, weight: .medium))
+                    .font(roundedFont ? CFont.rounded(12, weight: .medium) : CFont.sans(12, weight: .medium))
                     .foregroundStyle(mapType == type ? .white : ClassicTheme.ink)
                     .padding(.horizontal, 12).padding(.vertical, 5)
                     .background(mapType == type ? ClassicTheme.ink : .clear)
@@ -126,7 +129,6 @@ public struct DepartementMapCard: View {
     }
 
     public var body: some View {
-        let rings = allRings
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
                 Spacer()
@@ -159,7 +161,7 @@ public struct DepartementMapCard: View {
                 .onChange(of: focusTick) { _, _ in
                     guard let coordinate = focusCoordinate else { return }
                     withAnimation(.easeInOut(duration: 0.25)) {
-                        mapPosition = .region(MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.15, longitudeDelta: 0.15)))
+                        mapPosition = .region(MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)))
                     }
                 }
                 // Sélection modifiée (favori ajouté/retiré) : le cadrage suit
@@ -171,7 +173,7 @@ public struct DepartementMapCard: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             } else {
                 Text("Carte indisponible pour ce département.")
-                    .font(CFont.sans(13)).foregroundStyle(ClassicTheme.faint)
+                    .font(roundedFont ? CFont.rounded(13) : CFont.sans(13)).foregroundStyle(ClassicTheme.faint)
             }
         }
         .padding(16)

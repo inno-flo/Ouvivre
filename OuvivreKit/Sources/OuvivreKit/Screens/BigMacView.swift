@@ -570,7 +570,6 @@ public struct BigMacView: View {
     /// `DisclosureGroup` stylé pour matcher les panneaux flottants existants
     /// (matériau translucide de la colonne, typographie `Eyebrow`/`CFont`) —
     /// première utilisation de `DisclosureGroup` dans ce module.
-    @ViewBuilder
     private func blockDisclosure<Content: View>(title: String, isExpanded: Binding<Bool>, enabled: Bool, @ViewBuilder content: @escaping () -> Content) -> some View {
         // Anime explicitement le dépli/repli : `DisclosureGroup` change son
         // binding directement au clic sur le chevron, sans passer par

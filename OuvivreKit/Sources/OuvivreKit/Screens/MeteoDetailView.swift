@@ -439,7 +439,7 @@ public struct MeteoDetailView: View {
         if Self.showFeltTemperature, let tr = p.feltTemperature { lines.append("Ress. \(frDecimal(tr)) °C") }
         if let tx = p.maxTemperature { lines.append("Max. \(frDecimal(tx)) °C") }
         if let xa = p.absoluteMax {
-            var line = "Record \(frDecimal(xa)) °C"
+            let line = "Record \(frDecimal(xa)) °C"
             lines.append(line)
         }
         return lines.joined(separator: "\n")
