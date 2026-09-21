@@ -64,15 +64,24 @@ public struct InspectorPanelView: View {
                                 .foregroundStyle(ClassicTheme.ink)
                             HStack(spacing: 8) {
                                 Text(code)
-                                    .font(CFont.rounded(13, weight: .semibold))
+                                    .font(CFont.rounded(18, weight: .semibold))
                                     .foregroundStyle(ClassicTheme.ink)
                                     .padding(.horizontal, 7)
                                     .padding(.vertical, 3)
                                     .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
                                 if let chefLieu = FranceGeoData.chefsLieux[code] {
                                     Text(chefLieu)
-                                        .font(CFont.rounded(13))
+                                        .font(CFont.rounded(18))
                                         .foregroundStyle(ClassicTheme.faint)
+                                    Button {
+                                        centerMap(onDepartement: code)
+                                    } label: {
+                                        Image(systemName: "mappin.and.ellipse")
+                                            .font(CFont.rounded(18))
+                                            .foregroundStyle(ClassicTheme.faint)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .help("Centrer la carte sur \(chefLieu)")
                                 }
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -94,20 +103,22 @@ public struct InspectorPanelView: View {
                     // Rubrique CULTURE : regroupe les sous-rubriques actives
                     // (Musées, Lieux du patrimoine, Festivals) ; l'icône ouvre
                     // la fenêtre qui les réunit toutes les trois.
-                    HStack(spacing: 8) {
-                        Eyebrow("CULTURE", color: ClassicTheme.faint, font: CFont.rounded(10, weight: .medium))
-                        Spacer()
-                        Button {
-                            openWindow(id: CultureDetailView.windowID, value: code)
-                        } label: {
-                            Image(systemName: "interface.window.on.rectangle.dashed")
-                                .font(.system(size: 13))
-                                .foregroundStyle(ClassicTheme.faint)
+                    if !activeCultureCriteria.isEmpty {
+                        HStack(spacing: 8) {
+                            Eyebrow("CULTURE", color: ClassicTheme.faint, font: CFont.rounded(10, weight: .medium))
+                            Spacer()
+                            Button {
+                                openWindow(id: CultureDetailView.windowID, value: code)
+                            } label: {
+                                Image(systemName: "interface.window.on.rectangle.dashed")
+                                    .font(.system(size: 13))
+                                    .foregroundStyle(ClassicTheme.faint)
+                            }
+                            .buttonStyle(.plain)
+                            .help("Ouvrir les données culturelles dans une fenêtre")
                         }
-                        .buttonStyle(.plain)
-                        .help("Ouvrir les données culturelles dans une fenêtre")
+                        .padding(.top, 4)
                     }
-                    .padding(.top, 4)
 
                     ForEach(activeCultureCriteria, id: \.key) { criterion in
                         criterionSection(criterion)
@@ -128,14 +139,25 @@ public struct InspectorPanelView: View {
         // derrière son contenu plutôt qu'une couleur/opacité fixée ici.
     }
 
-    /// « Climats dominants » : majuscule initiale à chaque nom de climat
-    /// (« 4 — océanique, semi-continental » → « 4 — Océanique, Semi-continental »).
+    /// « Climats dominants » : sans le nombre ni le tiret, un climat par ligne,
+    /// avec une majuscule initiale (« 4 — océanique, semi-continental » →
+    /// « Océanique\nSemi-continental »).
     private static func displayValue(_ f: LabeledValue) -> String {
         guard f.key == "Climats dominants" else { return f.value }
         let parts = f.value.components(separatedBy: " — ")
         guard parts.count == 2 else { return f.value }
-        let names = parts[1].components(separatedBy: ", ").map { $0.prefix(1).uppercased() + $0.dropFirst() }
-        return parts[0] + " — " + names.joined(separator: ", ")
+        return parts[1].components(separatedBy: ", ")
+            .map { $0.prefix(1).uppercased() + $0.dropFirst() }
+            .joined(separator: "\n")
+    }
+
+    /// Recentre la carte sur la position du chef-lieu.
+    private func centerMap(onDepartement code: String) {
+        guard let coordinate = FranceGeoData.chefsLieuxCoordinates[code] else { return }
+        let map = MapPanelState.shared
+        map.coordinate = coordinate
+        map.spanDegrees = 0.15
+        map.recenterTick += 1
     }
 
     private var countrySection: some View {
@@ -162,7 +184,7 @@ public struct InspectorPanelView: View {
                 VStack(alignment: .leading, spacing: 14) {
                     ForEach(countryFacts) { f in
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(f.key).font(CFont.rounded(13)).foregroundStyle(ClassicTheme.faint)
+                            Text(f.key == "Population totale" ? "Population" : f.key).font(CFont.rounded(13)).foregroundStyle(ClassicTheme.faint)
                             Text(Self.displayValue(f)).font(CFont.rounded(15, weight: .medium)).foregroundStyle(ClassicTheme.ink)
                         }
                     }
@@ -277,7 +299,7 @@ public struct InspectorPanelView: View {
                         .frame(width: 10)
                     Image(systemName: Self.headerIcon(forCriterionKey: criterion.key))
                         .foregroundStyle(theme.accent)
-                    Text(criterion.label.uppercased())
+                    Text(criterion.label)
                         .font(CFont.rounded(11, weight: .semibold))
                         .foregroundStyle(ClassicTheme.faint)
                     Spacer()

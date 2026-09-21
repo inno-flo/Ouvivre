@@ -148,7 +148,7 @@ public struct FavorisView: View {
         func score(_ text: (Double) -> String = { "\(Int($0.rounded()))" }, _ f: (FranceGeoData.DepartementScore) -> Double?) -> [Cell] {
             deps.map { d in f(d).map { Cell(text: text($0), value: $0) } ?? Cell(text: "—", value: nil) }
         }
-        let geoLabels = ["paysEtranger": "Pays étranger", "mer": "Mer et océan", "montagne": "Montagne",
+        let geoLabels = ["paysEtranger": "Pays étranger", "mer": "Mer ou océan", "montagne": "Montagne",
                          "lacs": "Lacs", "fleuves": "Fleuves et rivières", "forets": "Parcs et forêts"]
         let geoRows = FranceGeoData.criterionKeys.map { key in
             Row(id: "geo-\(key)", label: geoLabels[key] ?? key, cells: score { $0.scores[key] }, higherIsBetter: true)
@@ -228,7 +228,7 @@ public struct FavorisView: View {
     private static let criterionIcons: [String: String] = [
         "Chef-lieu": "mappin.and.ellipse",
         "Pays étranger": "globe.desk",
-        "Mer et océan": "figure.sailing",
+        "Mer ou océan": "figure.sailing",
         "Montagne": "mountain.2",
         "Lacs": "water.waves",
         "Fleuves et rivières": "figure.fishing",

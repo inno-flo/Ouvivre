@@ -11,7 +11,7 @@ public struct LabeledValue: Identifiable, Hashable {
 public enum ClassicStatic {
     public static let geo: [(String, Int)] = [
         ("Pays étranger", 2),
-        ("Mer et océan", 1),
+        ("Mer ou océan", 1),
         ("Montagne", 5),
         ("Lacs", 5),
         ("Fleuves et rivières", 3),
@@ -76,8 +76,8 @@ public enum ClassicStatic {
         "France": CountryProfile(
             facts: [
                 LabeledValue("Régions et départements", "18 régions · 101 départements"),
-                LabeledValue("Villes et villages (communes)", "34 875"),
-                LabeledValue("Population totale", "68,6 M"),
+                LabeledValue("Communes", "34 875"),
+                LabeledValue("Population totale", "68,6 millions"),
                 LabeledValue("Climats dominants", "4 — océanique, semi-continental, méditerranéen, montagnard")
             ],
             sources: [
@@ -91,7 +91,7 @@ public enum ClassicStatic {
             facts: [
                 LabeledValue("Régions et municipalités", "5 régions · 98 municipalités"),
                 LabeledValue("Villes et villages", "≈ 1 410 localités (byer)"),
-                LabeledValue("Population totale", "6,0 M"),
+                LabeledValue("Population totale", "6,0 millions"),
                 LabeledValue("Climats dominants", "2 — continental humide, océanique tempéré")
             ],
             sources: [
@@ -105,7 +105,7 @@ public enum ClassicStatic {
             facts: [
                 LabeledValue("Comtés et municipalités", "21 comtés (län) · 290 municipalités"),
                 LabeledValue("Villes et villages (tätorter)", "2 017"),
-                LabeledValue("Population totale", "10,6 M"),
+                LabeledValue("Population totale", "10,6 millions"),
                 LabeledValue("Climats dominants", "3 — océanique, continental humide, subarctique")
             ],
             sources: [
@@ -118,7 +118,7 @@ public enum ClassicStatic {
             facts: [
                 LabeledValue("Préfectures", "47"),
                 LabeledValue("Villes, bourgs et villages (municipalités)", "1 719"),
-                LabeledValue("Population totale", "123,0 M"),
+                LabeledValue("Population totale", "123,0 millions"),
                 LabeledValue("Climats dominants", "6 — Hokkaidō, mer du Japon, hautes terres centrales, mer intérieure de Seto, façade Pacifique, Ryūkyū")
             ],
             sources: [

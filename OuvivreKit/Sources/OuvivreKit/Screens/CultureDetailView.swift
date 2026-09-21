@@ -26,16 +26,22 @@ public struct CultureDetailView: View {
     public var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
-                HStack(spacing: 10) {
+                VStack(alignment: .leading, spacing: 6) {
                     Text(departementName)
-                        .font(CFont.sans(24, weight: .semibold))
-                    Text(departementCode)
-                        .font(CFont.sans(24, weight: .semibold))
-                        .padding(.horizontal, 8).padding(.vertical, 3)
-                        .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 6))
-                    if let chefLieu = FranceGeoData.chefsLieux[departementCode] {
-                        Text("Chef-lieu : \(chefLieu)")
-                            .font(CFont.sans(14)).foregroundStyle(ClassicTheme.faint)
+                        .font(CFont.rounded(20, weight: .semibold))
+                        .foregroundStyle(ClassicTheme.ink)
+                    HStack(spacing: 8) {
+                        Text(departementCode)
+                            .font(CFont.rounded(18, weight: .semibold))
+                            .foregroundStyle(ClassicTheme.ink)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 3)
+                            .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
+                        if let chefLieu = FranceGeoData.chefsLieux[departementCode] {
+                            Text(chefLieu)
+                                .font(CFont.rounded(18))
+                                .foregroundStyle(ClassicTheme.faint)
+                        }
                     }
                 }
 

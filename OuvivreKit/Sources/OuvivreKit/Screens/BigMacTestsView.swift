@@ -162,16 +162,16 @@ public struct BigMacTestsView: View {
             }
         } else {
             ForEach(mapState.departementRingGroups, id: \.name) { group in
-                departementRings(group.rings, isHovered: group.name == hoveredDepartementName || group.name == selectedDepartementName)
+                departementRings(group.rings, isHovered: group.name == hoveredDepartementName, isSelected: group.name == selectedDepartementName)
             }
         }
     }
 
     @MapContentBuilder
-    private func departementRings(_ rings: [[CLLocationCoordinate2D]], isHovered: Bool) -> some MapContent {
+    private func departementRings(_ rings: [[CLLocationCoordinate2D]], isHovered: Bool, isSelected: Bool) -> some MapContent {
         ForEach(Array(rings.enumerated()), id: \.offset) { _, ring in
             MapPolygon(coordinates: ring)
-                .foregroundStyle(theme.accent.opacity(isHovered ? 0.54 : 0.16))
+                .foregroundStyle(theme.accent.opacity(isHovered ? 0.54 : (isSelected ? 0.54 * 0.85 : 0.16)))
                 .stroke(theme.accent, lineWidth: 2)
         }
     }
@@ -325,7 +325,7 @@ public struct BigMacTestsView: View {
                 RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody, labelFont: CFont.rounded(13))
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Eyebrow("TAILLE DE COMMUNE", color: columnFaint, font: CFont.rounded(10))
+                    Eyebrow("COMMUNES", color: columnFaint, font: CFont.rounded(10))
                     sizeCheckbox("Village", description: CommuneSizeCategory.village.description, isOn: $state.includeVillage)
                     sizeCheckbox("Petite ville", description: CommuneSizeCategory.petiteVille.description, isOn: $state.includePetiteVille)
                     sizeCheckbox("Ville moyenne", description: CommuneSizeCategory.villeMoyenne.description, isOn: $state.includeVilleMoyenne)
@@ -347,7 +347,7 @@ public struct BigMacTestsView: View {
                     }
 
                     ForEach(derived.geo2Rows) { row in
-                        CriterionRow(row: row, thumbSize: 14.4, labelFont: CFont.rounded(13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10), tagCase: .lower) { state.setGeo2(row.id, value: $0) }
+                        CriterionRow(row: row, thumbSize: 14.4, labelFont: CFont.rounded(13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10), tagCase: .capitalized) { state.setGeo2(row.id, value: $0) }
                             .padding(.trailing, 8)
                     }
                 }
@@ -374,7 +374,7 @@ public struct BigMacTestsView: View {
     /// Bouton « RÉINITIALISER » en pastille, commun aux en-têtes Proximités et Culture.
     private func resetButton(action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text("réinitialiser")
+            Text("Réinitialiser")
                 .font(CFont.rounded(10))
                 .foregroundStyle(columnFaint)
                 .padding(.horizontal, 8)
@@ -553,7 +553,7 @@ public struct BigMacTestsView: View {
         }
         .padding(.vertical, 10)
         .padding(.horizontal, 12)
-        .background(ClassicTheme.sidebarBg.opacity(0.935), in: RoundedRectangle(cornerRadius: 10))
+        .background(ClassicTheme.sidebarBg, in: RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(ClassicTheme.border.opacity(0.6), lineWidth: 1))
     }
 
