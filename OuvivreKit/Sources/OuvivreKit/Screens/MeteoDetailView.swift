@@ -41,6 +41,7 @@ public struct MeteoDetailView: View {
     /// Instance propre à cette fenêtre, utilisée pour les favoris seulement
     /// (synchronisés avec la fenêtre principale via `UserDefaults`).
     @StateObject private var state = ClassicState()
+    @State private var mapFocusTick = 0
     @State private var metric: Metric = .temperature
     /// Mois (1...12) sélectionné dans le tableau de détail.
     /// À l'ouverture, le mois courant est sélectionné par défaut.
@@ -84,7 +85,7 @@ public struct MeteoDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 header
-                DepartementMapCard(name: name, accent: theme.accent)
+                DepartementMapCard(name: name, accent: theme.accent, focusCoordinate: FranceGeoData.chefsLieuxCoordinates[departementCode], focusTick: mapFocusTick)
                 if Self.showSynthesis { synthesisView }
                 if series.isEmpty {
                     Text("Aucune donnée pour ce département.")
@@ -328,12 +329,36 @@ public struct MeteoDetailView: View {
     }
 
     private var header: some View {
-        HStack(alignment: .center, spacing: 10) {
-            Text(name).font(CFont.sans(26, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
-            Text(departementCode)
-                .font(CFont.sans(16, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
-                .padding(.horizontal, 7).padding(.vertical, 3)
-                .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
+        HStack(alignment: .top, spacing: 10) {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(alignment: .center, spacing: 8) {
+                    Text(name)
+                        .font(CFont.rounded(20, weight: .semibold))
+                        .foregroundStyle(ClassicTheme.ink)
+                    Text(departementCode)
+                        .font(CFont.rounded(18, weight: .semibold))
+                        .foregroundStyle(ClassicTheme.ink)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
+                }
+                if let chefLieu = FranceGeoData.chefsLieux[departementCode] {
+                    HStack(spacing: 8) {
+                        Text(chefLieu)
+                            .font(CFont.rounded(18))
+                            .foregroundStyle(ClassicTheme.faint)
+                        Button {
+                            mapFocusTick += 1
+                        } label: {
+                            Image(systemName: "mappin.and.ellipse")
+                                .font(CFont.rounded(18))
+                                .foregroundStyle(ClassicTheme.faint)
+                        }
+                        .buttonStyle(.plain)
+                        .help("Centrer la carte sur \(chefLieu)")
+                    }
+                }
+            }
             Spacer(minLength: 8)
             let isFavorite = state.favoriteDepartementCodes.contains(departementCode)
             Button {

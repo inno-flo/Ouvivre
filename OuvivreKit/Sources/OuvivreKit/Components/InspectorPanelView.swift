@@ -59,17 +59,19 @@ public struct InspectorPanelView: View {
                 if let code = departementCode {
                     HStack(alignment: .top, spacing: 8) {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text(title)
-                                .font(CFont.rounded(20, weight: .semibold))
-                                .foregroundStyle(ClassicTheme.ink)
-                            HStack(spacing: 8) {
+                            HStack(alignment: .center, spacing: 8) {
+                                Text(title)
+                                    .font(CFont.rounded(20, weight: .semibold))
+                                    .foregroundStyle(ClassicTheme.ink)
                                 Text(code)
                                     .font(CFont.rounded(18, weight: .semibold))
                                     .foregroundStyle(ClassicTheme.ink)
                                     .padding(.horizontal, 7)
                                     .padding(.vertical, 3)
                                     .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
-                                if let chefLieu = FranceGeoData.chefsLieux[code] {
+                            }
+                            if let chefLieu = FranceGeoData.chefsLieux[code] {
+                                HStack(spacing: 8) {
                                     Text(chefLieu)
                                         .font(CFont.rounded(18))
                                         .foregroundStyle(ClassicTheme.faint)
@@ -84,7 +86,6 @@ public struct InspectorPanelView: View {
                                     .help("Centrer la carte sur \(chefLieu)")
                                 }
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         Spacer(minLength: 8)

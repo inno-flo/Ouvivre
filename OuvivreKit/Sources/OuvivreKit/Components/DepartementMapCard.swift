@@ -18,15 +18,23 @@ public struct DepartementMapCard: View {
     /// Ordre des boutons : recentrage, zoom −, zoom +, puis Explorer/Satellite.
     var actionsFirst = false
 
+    /// Demande de centrage sur un point (chef-lieu) : la carte s'y recentre
+    /// à chaque incrément de `focusTick`.
+    var focusCoordinate: CLLocationCoordinate2D?
+    var focusTick = 0
+
     @State private var mapType: MapPlanType = .explorer
     @State private var mapPosition: MapCameraPosition = .automatic
     /// Dernière région affichée, pour que les boutons de zoom partent de la
     /// vue courante (déplacement manuel compris).
     @State private var mapRegion: MKCoordinateRegion?
 
-    public init(name: String, accent: Color) {
+    public init(name: String, accent: Color, focusCoordinate: CLLocationCoordinate2D? = nil, focusTick: Int = 0) {
         self.names = [name]
         self.accent = accent
+        self.actionsFirst = true
+        self.focusCoordinate = focusCoordinate
+        self.focusTick = focusTick
     }
 
     public init(names: [String], accent: Color, selectedName: String? = nil, onSelect: ((String) -> Void)? = nil, height: CGFloat = 460, actionsFirst: Bool = false) {
@@ -148,6 +156,12 @@ public struct DepartementMapCard: View {
                     .onMapCameraChange { context in mapRegion = context.region }
                 }
                 .onAppear { if let rect = departementRect { mapPosition = .rect(rect) } }
+                .onChange(of: focusTick) { _, _ in
+                    guard let coordinate = focusCoordinate else { return }
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        mapPosition = .region(MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.15, longitudeDelta: 0.15)))
+                    }
+                }
                 // Sélection modifiée (favori ajouté/retiré) : le cadrage suit
                 // pour garder tous les départements sélectionnés visibles.
                 .onChange(of: names) { _, _ in

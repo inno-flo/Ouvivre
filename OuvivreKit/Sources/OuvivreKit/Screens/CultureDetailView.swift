@@ -13,6 +13,7 @@ public struct CultureDetailView: View {
     @Environment(\.openURL) private var openURL
     @StateObject private var theme = ClassicTheme()
     /// Rubriques repliées par l'utilisateur — toutes dépliées par défaut.
+    @State private var mapFocusTick = 0
     @State private var collapsedSections: Set<String> = []
 
     public init(departementCode: String) { self.departementCode = departementCode }
@@ -27,25 +28,36 @@ public struct CultureDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(departementName)
-                        .font(CFont.rounded(20, weight: .semibold))
-                        .foregroundStyle(ClassicTheme.ink)
-                    HStack(spacing: 8) {
+                    HStack(alignment: .center, spacing: 8) {
+                        Text(departementName)
+                            .font(CFont.rounded(20, weight: .semibold))
+                            .foregroundStyle(ClassicTheme.ink)
                         Text(departementCode)
                             .font(CFont.rounded(18, weight: .semibold))
                             .foregroundStyle(ClassicTheme.ink)
                             .padding(.horizontal, 7)
                             .padding(.vertical, 3)
                             .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
-                        if let chefLieu = FranceGeoData.chefsLieux[departementCode] {
+                    }
+                    if let chefLieu = FranceGeoData.chefsLieux[departementCode] {
+                        HStack(spacing: 8) {
                             Text(chefLieu)
                                 .font(CFont.rounded(18))
                                 .foregroundStyle(ClassicTheme.faint)
+                            Button {
+                                mapFocusTick += 1
+                            } label: {
+                                Image(systemName: "mappin.and.ellipse")
+                                    .font(CFont.rounded(18))
+                                    .foregroundStyle(ClassicTheme.faint)
+                            }
+                            .buttonStyle(.plain)
+                            .help("Centrer la carte sur \(chefLieu)")
                         }
                     }
                 }
 
-                DepartementMapCard(name: departementName, accent: theme.accent)
+                DepartementMapCard(name: departementName, accent: theme.accent, focusCoordinate: FranceGeoData.chefsLieuxCoordinates[departementCode], focusTick: mapFocusTick)
 
                 museesSection
                 patrimoineSection

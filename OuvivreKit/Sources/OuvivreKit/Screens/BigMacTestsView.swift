@@ -27,6 +27,8 @@ public struct BigMacTestsView: View {
     /// propose pas de survol par forme, donc on hit-teste manuellement le
     /// point de la souris contre les polygones via `MapReader`.
     @State private var hoveredDepartementName: String?
+    /// Position du curseur sur la carte, pour l'infobulle du département survolé.
+    @State private var hoverPoint: CGPoint = .zero
     /// Département cliqué, dont le polygone reste opaque tant qu'on ne
     /// clique pas ailleurs (contrairement au survol, transitoire).
     @State private var selectedDepartementName: String?
@@ -70,6 +72,7 @@ public struct BigMacTestsView: View {
                         .onContinuousHover { phase in
                             switch phase {
                             case .active(let point):
+                                hoverPoint = point
                                 hoveredDepartementName = departementName(at: point, proxy: proxy)
                             case .ended:
                                 hoveredDepartementName = nil
@@ -92,6 +95,20 @@ public struct BigMacTestsView: View {
                         )
                 }
                 .ignoresSafeArea(edges: [.horizontal, .bottom])
+                .overlay(alignment: .topLeading) {
+                    if let name = hoveredDepartementName {
+                        Text(name)
+                            .font(CFont.rounded(12, weight: .medium))
+                            .foregroundStyle(ClassicTheme.ink)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 6))
+                            .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(ClassicTheme.border.opacity(0.6), lineWidth: 1))
+                            .fixedSize()
+                            .offset(x: hoverPoint.x + 8, y: hoverPoint.y + 10)
+                            .allowsHitTesting(false)
+                    }
+                }
 
                 // Colonne à largeur fixe, hauteur naturelle plafonnée à
                 // l'espace disponible (sans mesure ni `ViewThatFits` — ce
