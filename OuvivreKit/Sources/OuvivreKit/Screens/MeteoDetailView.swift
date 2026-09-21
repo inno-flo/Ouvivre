@@ -130,11 +130,13 @@ public struct MeteoDetailView: View {
                                 // sélectionné, pour chaque année.
                                 PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", p.maxTemperature ?? p.temperature ?? 0))
                                     .foregroundStyle(ClassicTheme.ink).symbolSize(p.maxTemperature == nil ? 0 : 90)
+                                recordHighlight(p)
                                     .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .fit(to: .chart))) {
                                         tooltip(p, value: "Moy. \(frDecimal(p.temperature ?? 0)) °C", secondary: temperatureLines(p))
                                     }
                             }
                             if let p = hoveredPoint(hoveredTemperatureDate, in: points), selectedMonth != month(p) {
+                                highlightMarks(p)
                                 RuleMark(x: .value("Mois", p.date, unit: .month))
                                     .foregroundStyle(ClassicTheme.faint.opacity(0.5))
                                     .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
@@ -380,6 +382,27 @@ public struct MeteoDetailView: View {
         return start...end
     }
 
+    /// Point du record absolu mis en évidence avec la moyenne et la maximale.
+    @ChartContentBuilder
+    private func recordHighlight(_ p: MeteoMensuelle.Point) -> some ChartContent {
+        if let xa = p.absoluteMax {
+            PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", xa))
+                .foregroundStyle(ClassicTheme.ink).symbol(.diamond).symbolSize(90)
+        }
+    }
+
+    /// Au survol d'un mois : moyenne, maximale et record mis en évidence ensemble.
+    @ChartContentBuilder
+    private func highlightMarks(_ p: MeteoMensuelle.Point) -> some ChartContent {
+        PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", p.temperature ?? 0))
+            .foregroundStyle(ClassicTheme.ink).symbolSize(90)
+        if let tx = p.maxTemperature {
+            PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", tx))
+                .foregroundStyle(ClassicTheme.ink).symbolSize(90)
+        }
+        recordHighlight(p)
+    }
+
     /// Bandes grisées alternées par année civile (bornées au domaine X), avec
     /// l'année en haut à gauche de chaque bande.
     @ChartContentBuilder
@@ -496,7 +519,7 @@ public struct MeteoDetailView: View {
                         }
                     }
                 }
-                .frame(height: 287.5)
+                .frame(height: 316.25)
         }
         .padding(16)
         .background(.white, in: RoundedRectangle(cornerRadius: 10))
