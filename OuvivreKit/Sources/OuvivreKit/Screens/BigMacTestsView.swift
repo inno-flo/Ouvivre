@@ -188,7 +188,7 @@ public struct BigMacTestsView: View {
     private func departementRings(_ rings: [[CLLocationCoordinate2D]], isHovered: Bool, isSelected: Bool) -> some MapContent {
         ForEach(Array(rings.enumerated()), id: \.offset) { _, ring in
             MapPolygon(coordinates: ring)
-                .foregroundStyle(theme.accent.opacity(isSelected ? 0.15 : (isHovered ? 0.15 : 0.10)))
+                .foregroundStyle(theme.accent.opacity(isHovered ? 0.15 : (isSelected ? 0.10 : 0.10)))
                 .stroke(theme.accent, lineWidth: 2)
         }
     }
@@ -512,7 +512,7 @@ public struct BigMacTestsView: View {
     private var cultureRowsContent: some View {
         VStack(alignment: .leading, spacing: 4) {
             ForEach(cultureRows, id: \.rowIndex) { entry in
-                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: CFont.rounded(13, weight: .medium), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10, weight: .medium), tagCase: .capitalized) {
+                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: CFont.rounded(13, weight: .medium), labelColor: columnBody, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10, weight: .medium), tagCase: .capitalized) {
                     state.setGroup(cultureGroupIndex, entry.rowIndex, value: min($0, 2))
                 }
                 .padding(.vertical, 4)
