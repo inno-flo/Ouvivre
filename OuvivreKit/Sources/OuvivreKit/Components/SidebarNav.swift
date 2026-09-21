@@ -37,12 +37,6 @@ public struct SidebarNav: View {
                         .opacity(0.5)
                 }
                 .tag(ClassicScreen.favoris)
-                HStack(spacing: 9) {
-                    Image(systemName: "star").frame(width: 16)
-                    Text("Favoris tests").font(.system(size: 13, weight: state.screen == .favorisTests ? .bold : .regular))
-                    Spacer(minLength: 4)
-                }
-                .tag(ClassicScreen.favorisTests)
             } header: {
                 Text("Comparateur").foregroundStyle(.secondary)
             }
@@ -66,7 +60,7 @@ private struct NavItemRow: View {
     private var icon: String? {
         switch item.screen {
         case .bigMac: "chart.bar.horizontal.page"
-        case .bigMacTests: "testtube.2"
+        case .bigMacTests: "chart.bar.horizontal.page"
         case .pays: "globe.europe.africa"
         case .geo2: "map"
         case .affiner: "bus"

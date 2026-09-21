@@ -1,7 +1,7 @@
 import SwiftUI
 
 public enum ClassicScreen: String, CaseIterable, Identifiable, Hashable {
-    case pays, geo, geo2, bigMac, bigMacTests, meteo, affiner, ville, sources, favoris, favorisTests
+    case pays, geo, geo2, bigMac, bigMacTests, meteo, affiner, ville, sources, favoris
     public var id: Self { self }
 }
 

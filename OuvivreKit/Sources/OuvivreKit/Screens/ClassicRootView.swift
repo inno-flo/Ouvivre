@@ -23,7 +23,7 @@ public struct ClassicRootView: View {
     /// screen, and on Pays/Géographie 2, which embed their own full-bleed
     /// map instead of using the inspector — the toolbar icon stays visible
     /// on Pays regardless, it's just a no-op there for now.
-    private var isFavoris: Bool { state.screen == .favoris || state.screen == .favorisTests }
+    private var isFavoris: Bool { state.screen == .favoris }
     private var isBigMac: Bool { state.screen == .bigMac || state.screen == .bigMacTests }
 
     private var inspectorBinding: Binding<Bool> {
@@ -150,7 +150,6 @@ public struct ClassicRootView: View {
             case .ville: VilleView(derived: derived)
             case .sources: SourcesView(derived: derived)
             case .favoris: FavorisView(derived: derived)
-            case .favorisTests: FavorisTestsView(derived: derived)
             }
         }
         .padding(.horizontal, theme.mainPadding)
