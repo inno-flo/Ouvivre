@@ -90,8 +90,8 @@ public struct CultureDetailView: View {
             grid(monuments, criterionKey: "patrimoine")
             if !spr.isEmpty {
                 Divider()
-                Text("Sites patrimoniaux remarquables · \(spr.count)")
-                    .font(CFont.rounded(11, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
+                (Text("Sites patrimoniaux remarquables").foregroundStyle(.black) + Text(" · \(spr.count)").foregroundStyle(ClassicTheme.faint))
+                    .font(CFont.rounded(11, weight: .semibold))
                 grid(spr, criterionKey: "spr")
             }
         }
@@ -109,8 +109,8 @@ public struct CultureDetailView: View {
         return section(title: "Festivals", icon: "fireworks", count: names.count) {
             ForEach(ordered, id: \.self) { discipline in
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("\(discipline.prefix(1).uppercased() + discipline.dropFirst().lowercased()) · \(byDiscipline[discipline]!.count)")
-                        .font(CFont.rounded(11, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
+                    (Text(discipline.prefix(1).uppercased() + discipline.dropFirst().lowercased()).foregroundStyle(.black) + Text(" · \(byDiscipline[discipline]!.count)").foregroundStyle(ClassicTheme.faint))
+                        .font(CFont.rounded(11, weight: .semibold))
                         .padding(.top, 12)
                     grid(byDiscipline[discipline]!, criterionKey: "festivals")
                 }
@@ -134,8 +134,8 @@ public struct CultureDetailView: View {
                         .foregroundStyle(ClassicTheme.faint)
                         .frame(width: 11)
                     Image(systemName: icon).foregroundStyle(theme.accent)
-                    Text("\(title) · \(count)")
-                        .font(CFont.rounded(12)).foregroundStyle(ClassicTheme.faint)
+                    (Text(title).foregroundStyle(.black) + Text(" · \(count)").foregroundStyle(ClassicTheme.faint))
+                        .font(CFont.rounded(12))
                     Spacer()
                 }
                 .contentShape(Rectangle())

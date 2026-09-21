@@ -117,7 +117,7 @@ public struct InspectorPanelView: View {
                                     .foregroundStyle(ClassicTheme.faint)
                             }
                             .buttonStyle(.plain)
-                            .help("Ouvrir les données culturelles dans une fenêtre")
+                            .help("Ouvrir la vue détaillée")
                         }
                         .padding(.top, 4)
                     }
@@ -174,7 +174,7 @@ public struct InspectorPanelView: View {
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: isCountryExpanded ? "chevron.down" : "chevron.right")
-                            .font(.system(size: 10, weight: .semibold))
+                            .font(.system(size: 11, weight: .semibold))
                             .foregroundStyle(ClassicTheme.faint)
                             .frame(width: 10)
                         Eyebrow("Pays", color: ClassicTheme.faint, font: CFont.rounded(10))
@@ -203,11 +203,17 @@ public struct InspectorPanelView: View {
     }
 
     /// Températures moyennes et précipitations mensuelles du département sur
-    /// les 5 dernières années glissantes (données Météo-France, moyenne des
-    /// postes du département — voir `MeteoMensuelle`).
+    /// les 3 dernières années glissantes (5 ans dans la fenêtre détaillée),
+    /// données Météo-France, moyenne des postes du département — voir
+    /// `MeteoMensuelle`.
     @ViewBuilder
     private func meteoSection(_ code: String) -> some View {
-        let series = MeteoMensuelle.series(forDepartementCode: code)
+        // L'inspecteur n'affiche que les 3 dernières années (la fenêtre
+        // détaillée garde tout l'historique).
+        let allSeries = MeteoMensuelle.series(forDepartementCode: code)
+        let series: [MeteoMensuelle.Point] = allSeries.last.flatMap { last in
+            Calendar.current.date(byAdding: .year, value: -3, to: last.date).map { cutoff in allSeries.filter { $0.date > cutoff } }
+        } ?? allSeries
         let isCollapsed = false
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
@@ -225,7 +231,7 @@ public struct InspectorPanelView: View {
                         .foregroundStyle(ClassicTheme.faint)
                 }
                 .buttonStyle(.plain)
-                .help("Ouvrir le détail dans une fenêtre")
+                .help("Ouvrir la vue détaillée")
             }
 
             if !isCollapsed {
@@ -234,8 +240,8 @@ public struct InspectorPanelView: View {
                         .font(CFont.rounded(13))
                         .foregroundStyle(ClassicTheme.faint)
                 } else {
-                    Text("Température moyenne (°C)")
-                        .font(CFont.rounded(12)).foregroundStyle(ClassicTheme.faint)
+                    Text("Température moyenne (°C /mois)")
+                        .font(CFont.rounded(12)).foregroundStyle(.black)
                     Chart(series.filter { $0.temperature != nil }) { point in
                         LineMark(x: .value("Mois", point.date, unit: .month), y: .value("°C", point.temperature ?? 0))
                             .foregroundStyle(theme.accent)
@@ -246,13 +252,16 @@ public struct InspectorPanelView: View {
                     .frame(height: 110)
 
                     Text("Précipitations (mm / mois)")
-                        .font(CFont.rounded(12)).foregroundStyle(ClassicTheme.faint)
+                        .font(CFont.rounded(12)).foregroundStyle(.black)
                         .padding(.top, 14)
                     Chart(series.filter { $0.precipitation != nil }) { point in
-                        BarMark(x: .value("Mois", point.date, unit: .month), y: .value("mm", point.precipitation ?? 0))
-                            .foregroundStyle(theme.accent.opacity(point.partial ? 0.4 : 0.8))
+                        // Test : courbe (comme la température) au lieu de barres.
+                        LineMark(x: .value("Mois", point.date, unit: .month), y: .value("mm", point.precipitation ?? 0))
+                            .foregroundStyle(theme.accent)
+                            .interpolationMethod(.monotone)
                     }
                     .chartXAxis { Self.meteoXAxis }
+                    .chartYScale(domain: .automatic(includesZero: true))
                     .frame(height: 110)
 
                     if series.last?.partial == true {
@@ -310,7 +319,7 @@ public struct InspectorPanelView: View {
                         .foregroundStyle(theme.accent)
                     Text(criterion.label)
                         .font(CFont.rounded(12))
-                        .foregroundStyle(ClassicTheme.faint)
+                        .foregroundStyle(.black)
                     Spacer()
                     Text("\(names.count + (criterion.key == "patrimoine" ? sprCount : 0))")
                         .font(CFont.rounded(12))
@@ -359,9 +368,8 @@ public struct InspectorPanelView: View {
                     VStack(alignment: .leading, spacing: 10) {
                         ForEach(ordered, id: \.self) { discipline in
                             VStack(alignment: .leading, spacing: 9) {
-                                Text("\(discipline.prefix(1).uppercased() + discipline.dropFirst().lowercased()) · \(byDiscipline[discipline]!.count)")
+                                (Text(discipline.prefix(1).uppercased() + discipline.dropFirst().lowercased()).foregroundStyle(.black) + Text(" · \(byDiscipline[discipline]!.count)").foregroundStyle(ClassicTheme.faint))
                                     .font(CFont.rounded(11, weight: .semibold))
-                                    .foregroundStyle(ClassicTheme.faint)
                                     .padding(.top, 12)
                                 ForEach(byDiscipline[discipline]!, id: \.self) { name in
                                     nameRow(name, criterionKey: criterion.key)
@@ -384,14 +392,13 @@ public struct InspectorPanelView: View {
                             let spr = CultureScores.names(forDepartementCode: code, criterionKey: "spr")
                             if !spr.isEmpty {
                                 Divider().padding(.vertical, 6)
-                                HStack {
-                                    Text("Sites patrimoniaux remarquables · \(spr.count)")
-                                        .font(CFont.rounded(11, weight: .semibold))
-                                        .foregroundStyle(ClassicTheme.faint)
-                                    Spacer()
+                                HStack(spacing: 6) {
                                     Image(systemName: "eye")
                                         .font(CFont.rounded(11, weight: .semibold))
                                         .foregroundStyle(ClassicTheme.faint)
+                                    (Text("Sites patrimoniaux remarquables").foregroundStyle(.black) + Text(" · \(spr.count)").foregroundStyle(ClassicTheme.faint))
+                                        .font(CFont.rounded(11, weight: .semibold))
+                                    Spacer()
                                 }
                                 .padding(.top, 12)
                                 ForEach(spr, id: \.self) { name in
