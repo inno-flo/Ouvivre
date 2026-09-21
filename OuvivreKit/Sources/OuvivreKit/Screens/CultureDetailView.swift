@@ -14,7 +14,7 @@ public struct CultureDetailView: View {
     @StateObject private var theme = ClassicTheme()
     /// Rubriques repliées par l'utilisateur — toutes dépliées par défaut.
     @State private var mapFocusTick = 0
-    @State private var collapsedSections: Set<String> = []
+    @State private var collapsedSections: Set<String> = ["Musées", "Lieux du patrimoine", "Festivals"]
 
     public init(departementCode: String) { self.departementCode = departementCode }
 
