@@ -40,6 +40,8 @@ public struct SelecteurView: View {
     // s'affichent directement, le reste se déplie — même pattern que
     // `showMoreDepartements` dans GeoView2.
     @State private var showMoreCommunes = false
+    /// Dernière taille de la vue, pour ajuster la caméra aux départements.
+    @State private var viewSize: CGSize = .zero
     /// Vrai pendant l'application du dépli par défaut à l'apparition.
     @State private var isApplyingDefaultExpansion = false
 
@@ -102,6 +104,7 @@ public struct SelecteurView: View {
                     .padding(columnOuterPadding)
             }
             .onAppear {
+                viewSize = geo.size
                 moveCamera(totalWidth: geo.size.width, animated: false)
                 refreshDepartementsOnMap()
                 // À chaque sélection de la section, Pays et "Géographie et
@@ -130,7 +133,10 @@ public struct SelecteurView: View {
             .onChange(of: state.includeVilleMoyenne) { _, _ in refreshDepartementsOnMap() }
             .onChange(of: state.includeGrandeVille) { _, _ in refreshDepartementsOnMap() }
             .onChange(of: state.groups) { _, _ in refreshDepartementsOnMap() }
+            .onChange(of: geo.size) { _, newSize in viewSize = newSize }
             .onChange(of: geo.size.width) { _, newValue in moveCamera(totalWidth: newValue, animated: false) }
+            // Inspecteur refermé : la carte se recadre sur les départements.
+            .onChange(of: mapState.bigMacInspectorVisible) { _, isOpen in if !isOpen { fitSelectedDepartements(animated: true) } }
         }
     }
 
@@ -279,6 +285,33 @@ public struct SelecteurView: View {
             selectedDepartementName = nil
             mapState.title = ""
         }
+        fitSelectedDepartements(animated: true, names: names)
+    }
+
+    /// Inspecteur fermé : cadre la carte pour montrer le plus possible des
+    /// départements sélectionnés par les critères (tous entrent dans la zone
+    /// visible à droite de la colonne de réglages). Inspecteur ouvert, la
+    /// caméra n'est pas touchée.
+    private func fitSelectedDepartements(animated: Bool, names: [String]? = nil) {
+        guard !mapState.bigMacInspectorVisible, viewSize.width > 0 else { return }
+        let coords = (names ?? matchingDepartementNames).flatMap { DepartementBoundaries.rings[$0] ?? [] }.flatMap { $0 }
+        guard let first = coords.first else { return }
+        var minLat = first.latitude, maxLat = first.latitude, minLon = first.longitude, maxLon = first.longitude
+        for c in coords {
+            minLat = min(minLat, c.latitude); maxLat = max(maxLat, c.latitude)
+            minLon = min(minLon, c.longitude); maxLon = max(maxLon, c.longitude)
+        }
+        // Part de la largeur occupée par la colonne de réglages, à gauche.
+        let f = min(0.85, (columnWidth + columnOuterPadding * 2) / viewSize.width)
+        let margin = 1.12
+        let fullLon = min(360, max(0.05, (maxLon - minLon) * margin / (1 - f)))
+        let lat = min(170, max(0.05, (maxLat - minLat) * margin))
+        let target = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: (minLat + maxLat) / 2, longitude: (minLon + maxLon) / 2 - f / 2 * fullLon),
+            span: MKCoordinateSpan(latitudeDelta: lat, longitudeDelta: fullLon)
+        )
+        if animated { withAnimation(.easeInOut(duration: 0.4)) { position = .region(target) } } else { position = .region(target) }
+        lastRegion = target
     }
 
     // MARK: Colonne
@@ -320,7 +353,9 @@ public struct SelecteurView: View {
     private var moreCommunes: [CommuneSizeEntry] { Array(matchingCommunes.dropFirst(topCommunesCount)) }
 
     private var regionsBlock: some View {
-        blockDisclosure(title: "Géographie et Culture", bold: true, isExpanded: $state.bigMacExpandedRegions, enabled: true) {
+        // Réservé à la France (données départementales) : pour tout autre pays
+        // le bloc est replié et ne peut pas être déplié.
+        blockDisclosure(title: "Géographie et Culture", bold: true, isExpanded: $state.bigMacExpandedRegions, enabled: state.country == "France") {
             VStack(alignment: .leading, spacing: 14) {
                 RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody, labelFont: CFont.rounded(13, weight: .medium))
 
