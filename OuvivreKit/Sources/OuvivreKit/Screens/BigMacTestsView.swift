@@ -4,7 +4,7 @@ import MapKit
 /// "Big Mac" (nom provisoire) — même présentation plein cadre que Géographie 2
 /// (fond MapKit + colonne flottante translucide), mais la colonne empile 4
 /// blocs rétractables (`DisclosureGroup`) qui reprennent, dans l'ordre,
-/// Pays → Régions (+ tailles de commune) → Culture → Mobilité. Chaque bloc
+/// Pays → Régions (+ tailles de commune) → Culture. Chaque bloc
 /// hérite de l'état partagé `ClassicState`, donc les choix persistent d'un
 /// bloc à l'autre ; les blocs sont indépendants (pas d'entonnoir) : chaque réglage
 /// met à jour la carte en direct.
@@ -122,7 +122,6 @@ public struct BigMacTestsView: View {
             // comportement, pour rester l'état "par défaut" au premier bloc).
             .onChange(of: state.bigMacExpandedRegions) { _, isExpanded in if isExpanded && !isApplyingDefaultExpansion { state.bigMacExpandedPays = false } }
             .onChange(of: state.bigMacExpandedCulture) { _, isExpanded in if isExpanded && !isApplyingDefaultExpansion { state.bigMacExpandedPays = false } }
-            .onChange(of: state.bigMacExpandedMobilite) { _, isExpanded in if isExpanded && !isApplyingDefaultExpansion { state.bigMacExpandedPays = false } }
             .onChange(of: state.excludeOverseas) { _, _ in refreshDepartementsOnMap() }
             .onChange(of: state.excludeCorse) { _, _ in refreshDepartementsOnMap() }
             .onChange(of: state.geo2) { _, _ in refreshDepartementsOnMap() }
@@ -228,28 +227,13 @@ public struct BigMacTestsView: View {
         cultureRows.map(\.row.value)
     }
 
-    /// Bloc Mobilité désactivé et masqué pour l'instant : ni affiché, ni pris
-    /// en compte dans le classement/filtrage des départements (ses poids
-    /// par défaut de `ClassicStatic` étant non nuls, il fausserait sinon
-    /// silencieusement le résultat malgré son absence à l'écran). Repasser à
-    /// `true` pour le réactiver tel quel — tout le câblage reste en place.
-    private let isMobiliteEnabled = false
-
-    /// Poids Mobilité (Pistes cyclables, Gares) actuellement réglés, dans
-    /// l'ordre de `MobiliteScores.criterionKeys` — vide tant que le bloc est
-    /// désactivé (les filtres/scores ci-dessous traitent alors l'absence de
-    /// poids comme "aucun critère Mobilité").
-    private var mobiliteWeights: [Int] {
-        isMobiliteEnabled ? mobiliteRows.map(\.value) : []
-    }
-
     /// Tant qu'aucun critère (proximité ou Culture) n'est réglé, tous les
     /// scores retombent à 50/100 pour chaque département : un "top 10" y
     /// serait arbitraire (ordre de tri stable, sans rapport avec un critère
     /// visible) et donnerait l'impression trompeuse d'un classement. Dans ce
     /// cas, on affiche tous les départements correspondants, sans plafond.
     private var hasActiveRankingCriterion: Bool {
-        state.geo2.contains { $0 > 0 } || cultureWeights.contains { $0 > 0 } || mobiliteWeights.contains { $0 > 0 }
+        state.geo2.contains { $0 > 0 } || cultureWeights.contains { $0 > 0 }
     }
 
     /// Ces départements, classés par pertinence en combinant les réglages de
@@ -258,8 +242,7 @@ public struct BigMacTestsView: View {
     /// plafonnés aux 10 mieux classés seulement si un critère est réglé.
     private var matchingDepartementNames: [String] {
         let weights = cultureWeights
-        let mWeights = mobiliteWeights
-        // Un critère Culture/Mobilité à "déterminant" (poids 3) devient lui
+        // Un critère Culture à "déterminant" (poids 3) devient lui
         // aussi une condition ET, au même titre que Mer/Pays étranger côté
         // proximité (voir `rankedDepartements(maxWeight:)`) — sinon Festivals
         // à "déterminant" ne fait que réordonner les départements qui ont
@@ -271,15 +254,9 @@ public struct BigMacTestsView: View {
                     i >= weights.count || CultureScores.passesHardFilter(forDepartementCode: entry.dep.codeInsee, key: key, weight: weights[i], maxWeight: 2)
                 }
             }
-            .filter { entry in
-                MobiliteScores.criterionKeys.enumerated().allSatisfy { i, key in
-                    i >= mWeights.count || MobiliteScores.passesHardFilter(forDepartementCode: entry.dep.codeInsee, key: key, weight: mWeights[i], maxWeight: 2)
-                }
-            }
             .map { entry -> (name: String, score: Double) in
                 let cultureScore = CultureScores.weightedScore(forDepartementCode: entry.dep.codeInsee, weights: weights)
-                let mobiliteScore = MobiliteScores.weightedScore(forDepartementCode: entry.dep.codeInsee, weights: mWeights)
-                return (entry.dep.nom, (entry.score + cultureScore + mobiliteScore) / 3)
+                return (entry.dep.nom, (entry.score + cultureScore) / 2)
             }
             .sorted { $0.score > $1.score }
         // Plafond top-25 temporairement désactivé pour tester l'affichage
@@ -312,9 +289,6 @@ public struct BigMacTestsView: View {
             regionsBlock
             if isCultureBlockVisible {
                 cultureBlock
-            }
-            if isMobiliteEnabled {
-                mobiliteBlock
             }
         }
         .padding(columnInnerPadding)
@@ -380,7 +354,7 @@ public struct BigMacTestsView: View {
                     }
 
                     ForEach(derived.geo2Rows) { row in
-                        CriterionRow(row: row, labelFont: CFont.rounded(13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10)) { state.setGeo2(row.id, value: $0) }
+                        CriterionRow(row: row, labelFont: CFont.rounded(13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10), tagCase: .lower) { state.setGeo2(row.id, value: $0) }
                             .padding(.trailing, 8)
                     }
                 }
@@ -509,7 +483,7 @@ public struct BigMacTestsView: View {
     private var cultureRowsContent: some View {
         VStack(alignment: .leading, spacing: 4) {
             ForEach(cultureRows, id: \.rowIndex) { entry in
-                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: CFont.rounded(13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10), capitalizeTag: true) {
+                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: CFont.rounded(13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10), tagCase: .capitalized) {
                     state.setGroup(cultureGroupIndex, entry.rowIndex, value: min($0, 2))
                 }
                 .padding(.vertical, 4)
@@ -525,43 +499,6 @@ public struct BigMacTestsView: View {
     private var cultureBlock: some View {
         blockDisclosure(title: "Culture", isExpanded: $state.bigMacExpandedCulture, enabled: true) {
             cultureRowsContent
-        }
-    }
-
-    // MARK: Bloc 4 — Mobilité (Pistes cyclables, Gares — Bus et Aéroports retirés)
-
-    /// Poids réels, sources :
-    /// - Pistes cyclables : https://www.data.gouv.fr/datasets/lineaire-damenagements-cyclables
-    /// - Gares : https://www.data.gouv.fr/datasets/liste-des-gares
-    /// voir `MobiliteScores` et `geo_pipeline/build_mobilite_data.py`.
-    private var mobiliteGroupIndex: Int {
-        ClassicStatic.groups.firstIndex { $0.title == "MOBILITÉ" } ?? 0
-    }
-    /// Bus et Aéroports retirés pour ce bloc — Pistes cyclables et Gares
-    /// uniquement. `ClassicData.swift` reste inchangé (le groupe MOBILITÉ
-    /// complet sert aussi "Communes et services"). Mêmes 3 niveaux que
-    /// Proximités/Culture (0...2, indifférent/important/
-    /// déterminant) plutôt que l'échelle à 6 niveaux par défaut. L'ordre
-    /// (Pistes cyclables, Gares) doit rester synchronisé avec
-    /// `MobiliteScores.criterionKeys`.
-    private var mobiliteRows: [WeightedRow] {
-        let keep: Set<String> = ["Pistes cyclables", "Gares"]
-        return (derived.groups.first { $0.title == "MOBILITÉ" }?.rows ?? [])
-            .filter { keep.contains($0.label) }
-            .map { WeightedRow(id: $0.id, label: $0.label, value: min($0.value, 2), maxValue: 2, tags: ClassicStatic.tagsGeo2) }
-    }
-
-    private var mobiliteBlock: some View {
-        blockDisclosure(title: "Mobilité", isExpanded: $state.bigMacExpandedMobilite, enabled: true) {
-            VStack(alignment: .leading, spacing: 4) {
-                ForEach(mobiliteRows) { row in
-                    CriterionRow(row: row, thumbSize: 16, trackHeight: 4, labelFont: CFont.rounded(13), labelColor: columnInk, extraDotScaleFromSecond: 1.1, tagFont: CFont.rounded(10), capitalizeTag: true) {
-                        state.setGroup(mobiliteGroupIndex, row.id, value: min($0, 2))
-                    }
-                    .padding(.vertical, 4)
-                    .padding(.trailing, 8)
-                }
-            }
         }
     }
 
