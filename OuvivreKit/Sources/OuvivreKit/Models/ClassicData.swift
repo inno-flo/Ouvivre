@@ -29,7 +29,6 @@ public enum ClassicStatic {
     public static let groups: [Group] = [
         Group(title: "CULTURE", rows: [("Musées", 4), ("Équipements culturels", 3), ("Lieux du patrimoine", 4), ("Centre ancien", 5), ("Événements annuels", 3), ("Festivals", 3), ("Salons", 1)]),
         Group(title: "TAILLE", rows: [("Superficie de la ville", 2), ("Nombre d'habitants", 3)]),
-        Group(title: "MOBILITÉ", rows: [("Bus", 3), ("Pistes cyclables", 5), ("Gares", 4), ("Aéroports", 2)]),
         Group(title: "QUALITÉ DE VIE", rows: [("Classements de livabilité", 4)])
     ]
 
@@ -152,7 +151,6 @@ public enum ClassicStatic {
             VilleFamily(key: "Météo", value: 88, note: "air très bon"),
             VilleFamily(key: "Culture", value: 91, note: "7 musées · 14 festivals"),
             VilleFamily(key: "Taille", value: 79, note: "moyenne, dense"),
-            VilleFamily(key: "Mobilité", value: 86, note: "TGV · vélo A"),
             VilleFamily(key: "Livabilité", value: 93, note: "3e au national")
         ],
         temps: [2, 3, 7, 11, 15, 19, 21, 20, 16, 12, 6, 3],

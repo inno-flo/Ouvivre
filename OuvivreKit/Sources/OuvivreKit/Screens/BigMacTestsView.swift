@@ -342,7 +342,7 @@ public struct BigMacTestsView: View {
                 RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody, labelFont: CFont.rounded(13))
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Eyebrow("COMMUNES", color: columnFaint, font: CFont.rounded(10))
+                    Eyebrow("Communes", color: columnFaint, font: CFont.rounded(13, weight: .medium))
                     sizeCheckbox("Village", description: CommuneSizeCategory.village.description, isOn: $state.includeVillage)
                     sizeCheckbox("Petite ville", description: CommuneSizeCategory.petiteVille.description, isOn: $state.includePetiteVille)
                     sizeCheckbox("Ville moyenne", description: CommuneSizeCategory.villeMoyenne.description, isOn: $state.includeVilleMoyenne)
@@ -358,7 +358,7 @@ public struct BigMacTestsView: View {
 
                 VStack(alignment: .leading, spacing: 12) {
                     HStack(alignment: .center) {
-                        Eyebrow("PROXIMITÉS", color: columnFaint, font: CFont.rounded(10))
+                        Eyebrow("Proximités", color: columnFaint, font: CFont.rounded(13, weight: .medium))
                         Spacer()
                         resetButton { state.resetGeo2() }
                     }
@@ -374,7 +374,7 @@ public struct BigMacTestsView: View {
                 // l'ancien bloc "Culture", désormais masqué.
                 VStack(alignment: .leading, spacing: 12) {
                     HStack(alignment: .center) {
-                        Eyebrow("CULTURE", color: columnFaint, font: CFont.rounded(10))
+                        Eyebrow("Culture", color: columnFaint, font: CFont.rounded(13, weight: .medium))
                         Spacer()
                         resetButton {
                             for entry in cultureRows { state.setGroup(cultureGroupIndex, entry.rowIndex, value: 0) }

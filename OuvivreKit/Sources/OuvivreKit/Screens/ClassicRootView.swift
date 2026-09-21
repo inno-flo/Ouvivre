@@ -121,7 +121,8 @@ public struct ClassicRootView: View {
                         departementCode: FranceGeoData.departements.first { $0.nom == mapState.title }?.codeInsee,
                         countryName: isBigMac ? state.country : "",
                         countryFacts: isBigMac ? derived.countryFacts : [],
-                        isCountryExpanded: $state.bigMacExpandedPays
+                        isCountryExpanded: $state.bigMacExpandedPays,
+                        showsCountryHeader: state.screen != .bigMacTests
                     )
                     .inspectorColumnWidth(min: 220, ideal: 320, max: 800)
                 }

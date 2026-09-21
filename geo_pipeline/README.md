@@ -93,41 +93,6 @@ cp data/out/culture_scores.json ../OuvivreKit/Sources/OuvivreKit/Resources/
 Totaux vérifiés au dernier run : 1 838 musées, 1 131 SPR, 7 245 festivals
 répartis sur 101 départements (aucune ligne perdue vs. les CSV sources).
 
-## mobilite_scores.json (Big Mac — bloc Mobilité)
-
-Builds `OuvivreKit/Sources/OuvivreKit/Resources/mobilite_scores.json` — pour
-chaque département, un score 0-100 (min-max normalisé) pour Pistes
-cyclables et Gares, même format que `culture_scores.json`.
-
-### Sources (data.gouv.fr)
-
-- Pistes cyclables : dataset "Linéaire d'aménagements cyclables", résolution
-  département (SDES / Ministère de la Transition écologique) — somme du
-  linéaire (km) tous types d'aménagement confondus (pistes, bandes, voies
-  vertes, double-sens, aménagements mixtes, voies bus partagées, autre),
-  mesure la plus récente disponible :
-  https://www.data.gouv.fr/datasets/lineaire-damenagements-cyclables
-- Gares : dataset "Liste des gares" du réseau ferré national (SNCF Réseau),
-  filtré sur `VOYAGEURS == "O"` (gares voyageurs, fret exclu). Le CSV ne
-  porte qu'un libellé de département en texte libre (pas de code INSEE) ;
-  rattaché à `france_geo_scores.json` par normalisation du libellé (accents,
-  tirets et apostrophes retirés, majuscules) — 96 départements métropolitains
-  tous appariés sans résidu au dernier run :
-  https://www.data.gouv.fr/datasets/liste-des-gares
-
-### Run
-
-```bash
-python3 -m venv .venv && .venv/bin/pip install requests
-.venv/bin/python build_mobilite_data.py   # télécharge les 2 CSV, écrit data/out/mobilite_scores.json
-cp data/out/mobilite_scores.json ../OuvivreKit/Sources/OuvivreKit/Resources/
-```
-
-Totaux vérifiés au dernier run : 110 122 km d'aménagements cyclables,
-3 279 gares voyageurs, répartis sur 101 départements (les départements
-d'outre-mer sans réseau ferré/cyclable recensé retombent à 0, cohérent avec
-la réalité du terrain).
-
 ## Score "mer" — distance en sauts au littoral (recompute_mer_score.py)
 
 Remplace, dans `france_geo_scores.json`, le score "mer" d'origine (distance

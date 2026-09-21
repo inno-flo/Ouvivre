@@ -29,6 +29,8 @@ public struct InspectorPanelView: View {
     /// replier le bloc dans la colonne de réglages replie aussi cette
     /// section (et inversement).
     @Binding var isCountryExpanded: Bool
+    /// `false` dans Big Mac tests : ni en-tête « PAYS » ni chevron, contenu toujours visible.
+    let showsCountryHeader: Bool
 
     // Les catégories sont repliées par défaut, sauf Météo (toujours dépliée
     // par défaut) : seules les clés dépliées sont mémorisées, et remises à
@@ -36,7 +38,8 @@ public struct InspectorPanelView: View {
     private static let defaultExpandedKeys: Set<String> = []
     @State private var expandedKeys: Set<String> = InspectorPanelView.defaultExpandedKeys
 
-    public init(title: String, activeCultureCriteria: [(label: String, key: String)], departementCode: String?, countryName: String = "", countryFacts: [LabeledValue] = [], isCountryExpanded: Binding<Bool> = .constant(true)) {
+    public init(title: String, activeCultureCriteria: [(label: String, key: String)], departementCode: String?, countryName: String = "", countryFacts: [LabeledValue] = [], isCountryExpanded: Binding<Bool> = .constant(true), showsCountryHeader: Bool = true) {
+        self.showsCountryHeader = showsCountryHeader
         self.title = title
         self.activeCultureCriteria = activeCultureCriteria
         self.departementCode = departementCode
@@ -141,6 +144,7 @@ public struct InspectorPanelView: View {
     /// avec une majuscule initiale (« 4 — océanique, semi-continental » →
     /// « Océanique\nSemi-continental »).
     private static func displayValue(_ f: LabeledValue) -> String {
+        if f.key == "Population totale" { return f.value + " d'habitant(e)s" }
         guard f.key == "Climats dominants" else { return f.value }
         let parts = f.value.components(separatedBy: " — ")
         guard parts.count == 2 else { return f.value }
@@ -158,25 +162,29 @@ public struct InspectorPanelView: View {
         map.recenterTick += 1
     }
 
+    private static let countryFlags = ["France": "🇫🇷", "Danemark": "🇩🇰", "Suède": "🇸🇪", "Japon": "🇯🇵"]
+
     private var countrySection: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Button {
-                withAnimation(.easeInOut(duration: 0.15)) { isCountryExpanded.toggle() }
-            } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: isCountryExpanded ? "chevron.down" : "chevron.right")
-                        .font(.system(size: 10, weight: .semibold))
-                        .foregroundStyle(ClassicTheme.faint)
-                        .frame(width: 10)
-                    Eyebrow("PAYS", color: ClassicTheme.faint, font: CFont.rounded(10))
-                    Spacer()
+            if showsCountryHeader {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.15)) { isCountryExpanded.toggle() }
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: isCountryExpanded ? "chevron.down" : "chevron.right")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(ClassicTheme.faint)
+                            .frame(width: 10)
+                        Eyebrow("PAYS", color: ClassicTheme.faint, font: CFont.rounded(10))
+                        Spacer()
+                    }
+                    .contentShape(Rectangle())
                 }
-                .contentShape(Rectangle())
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
 
-            if isCountryExpanded {
-                Text(countryName)
+            if isCountryExpanded || !showsCountryHeader {
+                Text([Self.countryFlags[countryName], countryName].compactMap { $0 }.joined(separator: " "))
                     .font(CFont.rounded(20, weight: .semibold))
                     .foregroundStyle(ClassicTheme.ink)
                 VStack(alignment: .leading, spacing: 14) {

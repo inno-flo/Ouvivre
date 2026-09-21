@@ -17,7 +17,6 @@ let package = Package(
             .copy("Resources/france_departements_boundaries.json"),
             .copy("Resources/communes_data.json"),
             .copy("Resources/culture_scores.json"),
-            .copy("Resources/mobilite_scores.json"),
             .copy("Resources/meteo_monthly.json")
         ])
     ]

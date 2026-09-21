@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Étape 04 — Affiner: 4 criteria groups (Culture/Taille/Mobilité/Qualité
+/// Étape 04 — Affiner: 4 criteria groups (Culture/Taille/Qualité
 /// de vie) + a live-reordering final ranking and livability sources.
 public struct AffinerView: View {
     @EnvironmentObject var theme: ClassicTheme
