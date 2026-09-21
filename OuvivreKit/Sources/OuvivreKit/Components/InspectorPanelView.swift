@@ -48,7 +48,7 @@ public struct InspectorPanelView: View {
     public var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                if !countryName.isEmpty {
+                if !countryName.isEmpty && departementCode == nil {
                     countrySection
                 }
 
@@ -57,17 +57,27 @@ public struct InspectorPanelView: View {
                 // lorsqu'un vrai département est résolu, pas juste un
                 // titre non vide.
                 if let code = departementCode {
-                    Eyebrow("DÉPARTEMENT", color: ClassicTheme.faint, font: CFont.rounded(10, weight: .medium))
-                    HStack(spacing: 8) {
-                        Text(title)
-                            .font(CFont.rounded(20, weight: .semibold))
-                            .foregroundStyle(ClassicTheme.ink)
-                        Text(code)
-                            .font(CFont.rounded(20, weight: .semibold))
-                            .foregroundStyle(ClassicTheme.ink)
-                            .padding(.horizontal, 7)
-                            .padding(.vertical, 3)
-                            .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
+                    HStack(alignment: .top, spacing: 8) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(title)
+                                .font(CFont.rounded(20, weight: .semibold))
+                                .foregroundStyle(ClassicTheme.ink)
+                            HStack(spacing: 8) {
+                                Text(code)
+                                    .font(CFont.rounded(13, weight: .semibold))
+                                    .foregroundStyle(ClassicTheme.ink)
+                                    .padding(.horizontal, 7)
+                                    .padding(.vertical, 3)
+                                    .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
+                                if let chefLieu = FranceGeoData.chefsLieux[code] {
+                                    Text(chefLieu)
+                                        .font(CFont.rounded(13))
+                                        .foregroundStyle(ClassicTheme.faint)
+                                }
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         Spacer(minLength: 8)
                         Button {
                             state.toggleFavoriteDepartement(code)
@@ -79,11 +89,6 @@ public struct InspectorPanelView: View {
                         }
                         .buttonStyle(.plain)
                         .help(state.favoriteDepartementCodes.contains(code) ? "Retirer des favoris" : "Ajouter aux favoris")
-                    }
-                    if let chefLieu = FranceGeoData.chefsLieux[code] {
-                        Text("Chef-lieu : \(chefLieu)")
-                            .font(CFont.rounded(13))
-                            .foregroundStyle(ClassicTheme.faint)
                     }
 
                     // Rubrique CULTURE : regroupe les sous-rubriques actives

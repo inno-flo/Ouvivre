@@ -347,6 +347,7 @@ public struct BigMacTestsView: View {
                             state.resetGeo2()
                         } label: {
                             Text("Réinitialiser")
+                                .textCase(.uppercase)
                                 .font(CFont.rounded(12))
                                 .foregroundStyle(columnFaint)
                         }
@@ -354,7 +355,7 @@ public struct BigMacTestsView: View {
                     }
 
                     ForEach(derived.geo2Rows) { row in
-                        CriterionRow(row: row, labelFont: CFont.rounded(13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10), tagCase: .lower) { state.setGeo2(row.id, value: $0) }
+                        CriterionRow(row: row, thumbSize: 14.4, labelFont: CFont.rounded(13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10), tagCase: .lower) { state.setGeo2(row.id, value: $0) }
                             .padding(.trailing, 8)
                     }
                 }
