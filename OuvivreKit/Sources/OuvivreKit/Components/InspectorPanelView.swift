@@ -63,10 +63,10 @@ public struct InspectorPanelView: View {
                     VStack(alignment: .leading, spacing: 6) {
                         HStack(alignment: .center, spacing: 8) {
                             Text(title)
-                                .font(CFont.rounded(20, weight: .semibold))
+                                .font(CFont.rounded(20, weight: .bold))
                                 .foregroundStyle(ClassicTheme.ink)
                             Text(code)
-                                .font(CFont.rounded(20, weight: .semibold))
+                                .font(CFont.rounded(20, weight: .bold))
                                 .foregroundStyle(ClassicTheme.ink)
                                 .padding(.horizontal, 7)
                                 .padding(.vertical, 3)
@@ -105,8 +105,9 @@ public struct InspectorPanelView: View {
                     // (Musées, Lieux du patrimoine, Festivals) ; l'icône ouvre
                     // la fenêtre qui les réunit toutes les trois.
                     if !activeCultureCriteria.isEmpty {
+                        Divider()
                         HStack(spacing: 8) {
-                            Eyebrow("CULTURE", color: ClassicTheme.faint, font: CFont.rounded(10))
+                            Eyebrow("Culture", color: ClassicTheme.faint, font: CFont.rounded(13, weight: .medium))
                             Spacer()
                             Button {
                                 openWindow(id: CultureDetailView.windowID, value: code)
@@ -125,6 +126,7 @@ public struct InspectorPanelView: View {
                         criterionSection(criterion)
                     }
 
+                    Divider()
                     meteoSection(code)
                 }
 
@@ -144,7 +146,7 @@ public struct InspectorPanelView: View {
     /// avec une majuscule initiale (« 4 — océanique, semi-continental » →
     /// « Océanique\nSemi-continental »).
     private static func displayValue(_ f: LabeledValue) -> String {
-        if f.key == "Population totale" { return f.value + " d'habitant(e)s" }
+        if f.key == "Population totale" { return f.value + " d'habitants" }
         guard f.key == "Climats dominants" else { return f.value }
         let parts = f.value.components(separatedBy: " — ")
         guard parts.count == 2 else { return f.value }
@@ -175,7 +177,7 @@ public struct InspectorPanelView: View {
                             .font(.system(size: 10, weight: .semibold))
                             .foregroundStyle(ClassicTheme.faint)
                             .frame(width: 10)
-                        Eyebrow("PAYS", color: ClassicTheme.faint, font: CFont.rounded(10))
+                        Eyebrow("Pays", color: ClassicTheme.faint, font: CFont.rounded(10))
                         Spacer()
                     }
                     .contentShape(Rectangle())
@@ -211,7 +213,7 @@ public struct InspectorPanelView: View {
             HStack(spacing: 8) {
                 // Même en-tête que CULTURE (Eyebrow), sans chevron ni icône :
                 // la rubrique Météo est toujours dépliée.
-                Eyebrow("MÉTÉO", color: ClassicTheme.faint, font: CFont.rounded(10))
+                Eyebrow("Météo", color: ClassicTheme.faint, font: CFont.rounded(13, weight: .medium))
                 Spacer()
 
                 // Ouvre la fenêtre de détail (comme le double-clic).
@@ -301,13 +303,13 @@ public struct InspectorPanelView: View {
             } label: {
                 HStack(spacing: 6) {
                     Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
-                        .font(.system(size: 10, weight: .semibold))
+                        .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(ClassicTheme.faint)
                         .frame(width: 10)
                     Image(systemName: Self.headerIcon(forCriterionKey: criterion.key))
                         .foregroundStyle(theme.accent)
                     Text(criterion.label)
-                        .font(CFont.rounded(12, weight: .semibold))
+                        .font(CFont.rounded(12))
                         .foregroundStyle(ClassicTheme.faint)
                     Spacer()
                     Text("\(names.count + (criterion.key == "patrimoine" ? sprCount : 0))")
@@ -357,8 +359,8 @@ public struct InspectorPanelView: View {
                     VStack(alignment: .leading, spacing: 10) {
                         ForEach(ordered, id: \.self) { discipline in
                             VStack(alignment: .leading, spacing: 9) {
-                                Text("\(discipline.uppercased()) · \(byDiscipline[discipline]!.count)")
-                                    .font(CFont.rounded(10, weight: .semibold))
+                                Text("\(discipline.prefix(1).uppercased() + discipline.dropFirst().lowercased()) · \(byDiscipline[discipline]!.count)")
+                                    .font(CFont.rounded(11, weight: .semibold))
                                     .foregroundStyle(ClassicTheme.faint)
                                     .padding(.top, 12)
                                 ForEach(byDiscipline[discipline]!, id: \.self) { name in
@@ -382,10 +384,16 @@ public struct InspectorPanelView: View {
                             let spr = CultureScores.names(forDepartementCode: code, criterionKey: "spr")
                             if !spr.isEmpty {
                                 Divider().padding(.vertical, 6)
-                                Text("SITES PATRIMONIAUX REMARQUABLES · \(spr.count)")
-                                    .font(CFont.rounded(10, weight: .semibold))
-                                    .foregroundStyle(ClassicTheme.faint)
-                                    .padding(.top, 12)
+                                HStack {
+                                    Text("Sites patrimoniaux remarquables · \(spr.count)")
+                                        .font(CFont.rounded(11, weight: .semibold))
+                                        .foregroundStyle(ClassicTheme.faint)
+                                    Spacer()
+                                    Image(systemName: "eye")
+                                        .font(CFont.rounded(11, weight: .semibold))
+                                        .foregroundStyle(ClassicTheme.faint)
+                                }
+                                .padding(.top, 12)
                                 ForEach(spr, id: \.self) { name in
                                     nameRow(name, criterionKey: "spr")
                                 }

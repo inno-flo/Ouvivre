@@ -89,7 +89,7 @@ public struct MeteoDetailView: View {
                 if Self.showSynthesis { synthesisView }
                 if series.isEmpty {
                     Text("Aucune donnée pour ce département.")
-                        .font(CFont.sans(14)).foregroundStyle(ClassicTheme.faint)
+                        .font(CFont.rounded(13)).foregroundStyle(ClassicTheme.faint)
                 } else {
                     chartCard(title: Self.showFeltTemperature ? "Températures moyennes, ressenties, maximales et records mensuels (°C)" : "Températures moyennes, maximales et records mensuels (°C)") {
                         let points = series.filter { $0.temperature != nil }
@@ -178,7 +178,7 @@ public struct MeteoDetailView: View {
                     yearlySummary
                     monthTable
                     Text("Moyenne des postes Météo-France du département. Le dernier mois est en cours (données partielles).")
-                        .font(CFont.sans(11)).foregroundStyle(ClassicTheme.faint)
+                        .font(CFont.rounded(11)).foregroundStyle(ClassicTheme.faint)
                 }
             }
             .padding(24)
@@ -333,10 +333,10 @@ public struct MeteoDetailView: View {
             VStack(alignment: .leading, spacing: 6) {
                 HStack(alignment: .center, spacing: 8) {
                     Text(name)
-                        .font(CFont.rounded(20, weight: .semibold))
+                        .font(CFont.rounded(20, weight: .bold))
                         .foregroundStyle(ClassicTheme.ink)
                     Text(departementCode)
-                        .font(CFont.rounded(18, weight: .semibold))
+                        .font(CFont.rounded(20, weight: .bold))
                         .foregroundStyle(ClassicTheme.ink)
                         .padding(.horizontal, 7)
                         .padding(.vertical, 3)
@@ -351,7 +351,7 @@ public struct MeteoDetailView: View {
                             mapFocusTick += 1
                         } label: {
                             Image(systemName: "mappin.and.ellipse")
-                                .font(CFont.rounded(18))
+                                .font(CFont.rounded(13))
                                 .foregroundStyle(ClassicTheme.faint)
                         }
                         .buttonStyle(.plain)
@@ -365,7 +365,7 @@ public struct MeteoDetailView: View {
                 state.toggleFavoriteDepartement(departementCode)
             } label: {
                 Image(systemName: isFavorite ? "star.fill" : "star")
-                    .font(.system(size: 22))
+                    .font(.system(size: 13))
                     .foregroundStyle(isFavorite ? theme.accent : ClassicTheme.faint)
             }
             .buttonStyle(.plain)
@@ -473,7 +473,7 @@ public struct MeteoDetailView: View {
 
     private func chartCard<C: View>(title: String, @ViewBuilder chart: () -> C) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(title).font(CFont.sans(13, weight: .medium)).foregroundStyle(ClassicTheme.sub)
+            Text(title).font(CFont.rounded(12)).foregroundStyle(ClassicTheme.faint)
             chart()
                 .chartXScale(domain: xDomain)
                 .chartXAxis {

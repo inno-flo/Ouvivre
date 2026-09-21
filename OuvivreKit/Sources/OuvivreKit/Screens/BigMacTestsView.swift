@@ -315,7 +315,7 @@ public struct BigMacTestsView: View {
 
     private var paysBlock: some View {
         blockDisclosure(title: "Pays", bold: true, isExpanded: $state.bigMacExpandedPays, enabled: true) {
-            PaysCountryBlock(derived: derived, ink: columnInk, faint: columnFaint, showFacts: false, countryFont: CFont.rounded(13))
+            PaysCountryBlock(derived: derived, ink: columnInk, faint: columnFaint, showFacts: false, countryFont: CFont.rounded(13, weight: .medium))
         }
     }
 
@@ -339,7 +339,7 @@ public struct BigMacTestsView: View {
     private var regionsBlock: some View {
         blockDisclosure(title: "Géographie et Culture", bold: true, isExpanded: $state.bigMacExpandedRegions, enabled: true) {
             VStack(alignment: .leading, spacing: 14) {
-                RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody, labelFont: CFont.rounded(13))
+                RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody, labelFont: CFont.rounded(13, weight: .medium))
 
                 VStack(alignment: .leading, spacing: 8) {
                     Eyebrow("Communes", color: columnFaint, font: CFont.rounded(13, weight: .medium))
@@ -364,7 +364,7 @@ public struct BigMacTestsView: View {
                     }
 
                     ForEach(derived.geo2Rows) { row in
-                        CriterionRow(row: row, thumbSize: 14.4, labelFont: CFont.rounded(13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10), tagCase: .capitalized) { state.setGeo2(row.id, value: $0) }
+                        CriterionRow(row: row, thumbSize: 14.4, labelFont: CFont.rounded(13, weight: .medium), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10, weight: .medium), tagCase: .capitalized) { state.setGeo2(row.id, value: $0) }
                             .padding(.trailing, 8)
                     }
                 }
@@ -392,7 +392,7 @@ public struct BigMacTestsView: View {
     private func resetButton(action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text("Réinitialiser")
-                .font(CFont.rounded(10))
+                .font(CFont.rounded(10, weight: .medium))
                 .foregroundStyle(columnFaint)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 3)
@@ -471,7 +471,7 @@ public struct BigMacTestsView: View {
                                     .foregroundStyle(.white)
                             }
                         }
-                    Text(label).font(CFont.rounded(13)).foregroundStyle(columnBody)
+                    Text(label).font(CFont.rounded(13, weight: .medium)).foregroundStyle(columnBody)
                 }
             }
             .buttonStyle(.plain)
@@ -512,7 +512,7 @@ public struct BigMacTestsView: View {
     private var cultureRowsContent: some View {
         VStack(alignment: .leading, spacing: 4) {
             ForEach(cultureRows, id: \.rowIndex) { entry in
-                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: CFont.rounded(13), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10), tagCase: .capitalized) {
+                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: CFont.rounded(13, weight: .medium), labelColor: columnInk, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10, weight: .medium), tagCase: .capitalized) {
                     state.setGroup(cultureGroupIndex, entry.rowIndex, value: min($0, 2))
                 }
                 .padding(.vertical, 4)
@@ -556,7 +556,7 @@ public struct BigMacTestsView: View {
                 // que ce dernier sur macOS).
                 HStack(spacing: 0) {
                     Text(title.uppercased())
-                        .font(CFont.rounded(11, weight: bold ? .bold : .semibold))
+                        .font(CFont.rounded(14, weight: bold ? .bold : .semibold))
                         .foregroundStyle(enabled && isExpanded.wrappedValue ? columnInk : columnFaint)
                     Spacer(minLength: 0)
                 }
@@ -649,13 +649,13 @@ private struct InfoPopoverButton: View {
     var body: some View {
         Button { showing = true } label: {
             Image(systemName: "info.circle")
-                .font(.system(size: 12))
+                .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(tint)
         }
         .buttonStyle(.plain)
         .popover(isPresented: $showing, arrowEdge: .trailing) {
             Text(text)
-                .font(CFont.rounded(12))
+                .font(CFont.rounded(13, weight: .medium))
                 .foregroundStyle(ClassicTheme.body)
                 .padding(12)
                 .frame(width: 240, alignment: .leading)

@@ -30,10 +30,10 @@ public struct CultureDetailView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(alignment: .center, spacing: 8) {
                         Text(departementName)
-                            .font(CFont.rounded(20, weight: .semibold))
+                            .font(CFont.rounded(20, weight: .bold))
                             .foregroundStyle(ClassicTheme.ink)
                         Text(departementCode)
-                            .font(CFont.rounded(18, weight: .semibold))
+                            .font(CFont.rounded(20, weight: .bold))
                             .foregroundStyle(ClassicTheme.ink)
                             .padding(.horizontal, 7)
                             .padding(.vertical, 3)
@@ -48,7 +48,7 @@ public struct CultureDetailView: View {
                                 mapFocusTick += 1
                             } label: {
                                 Image(systemName: "mappin.and.ellipse")
-                                    .font(CFont.rounded(18))
+                                    .font(CFont.rounded(13))
                                     .foregroundStyle(ClassicTheme.faint)
                             }
                             .buttonStyle(.plain)
@@ -91,7 +91,7 @@ public struct CultureDetailView: View {
             if !spr.isEmpty {
                 Divider()
                 Text("Sites patrimoniaux remarquables · \(spr.count)")
-                    .font(CFont.rounded(10, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
+                    .font(CFont.rounded(11, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
                 grid(spr, criterionKey: "spr")
             }
         }
@@ -109,8 +109,8 @@ public struct CultureDetailView: View {
         return section(title: "Festivals", icon: "fireworks", count: names.count) {
             ForEach(ordered, id: \.self) { discipline in
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("\(discipline.prefix(1).uppercased() + discipline.dropFirst()) · \(byDiscipline[discipline]!.count)")
-                        .font(CFont.rounded(10, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
+                    Text("\(discipline.prefix(1).uppercased() + discipline.dropFirst().lowercased()) · \(byDiscipline[discipline]!.count)")
+                        .font(CFont.rounded(11, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
                     grid(byDiscipline[discipline]!, criterionKey: "festivals")
                 }
             }
@@ -134,7 +134,7 @@ public struct CultureDetailView: View {
                         .frame(width: 11)
                     Image(systemName: icon).foregroundStyle(theme.accent)
                     Text("\(title) · \(count)")
-                        .font(CFont.rounded(12, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
+                        .font(CFont.rounded(12)).foregroundStyle(ClassicTheme.faint)
                     Spacer()
                 }
                 .contentShape(Rectangle())
