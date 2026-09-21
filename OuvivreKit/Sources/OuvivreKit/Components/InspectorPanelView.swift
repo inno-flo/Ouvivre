@@ -57,48 +57,45 @@ public struct InspectorPanelView: View {
                 // lorsqu'un vrai département est résolu, pas juste un
                 // titre non vide.
                 if let code = departementCode {
-                    HStack(alignment: .top, spacing: 8) {
-                        VStack(alignment: .leading, spacing: 6) {
-                            HStack(alignment: .center, spacing: 8) {
-                                Text(title)
-                                    .font(CFont.rounded(20, weight: .semibold))
-                                    .foregroundStyle(ClassicTheme.ink)
-                                Text(code)
-                                    .font(CFont.rounded(18, weight: .semibold))
-                                    .foregroundStyle(ClassicTheme.ink)
-                                    .padding(.horizontal, 7)
-                                    .padding(.vertical, 3)
-                                    .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(alignment: .center, spacing: 8) {
+                            Text(title)
+                                .font(CFont.rounded(20, weight: .semibold))
+                                .foregroundStyle(ClassicTheme.ink)
+                            Text(code)
+                                .font(CFont.rounded(20, weight: .semibold))
+                                .foregroundStyle(ClassicTheme.ink)
+                                .padding(.horizontal, 7)
+                                .padding(.vertical, 3)
+                                .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
+                            Spacer(minLength: 8)
+                            Button {
+                                state.toggleFavoriteDepartement(code)
+                            } label: {
+                                let isFavorite = state.favoriteDepartementCodes.contains(code)
+                                Image(systemName: isFavorite ? "star.fill" : "star")
+                                    .font(.system(size: 13))
+                                    .foregroundStyle(isFavorite ? theme.accent : ClassicTheme.faint)
                             }
-                            if let chefLieu = FranceGeoData.chefsLieux[code] {
-                                HStack(spacing: 8) {
-                                    Text(chefLieu)
-                                        .font(CFont.rounded(18))
+                            .buttonStyle(.plain)
+                            .help(state.favoriteDepartementCodes.contains(code) ? "Retirer des favoris" : "Ajouter aux favoris")
+                        }
+                        if let chefLieu = FranceGeoData.chefsLieux[code] {
+                            HStack(spacing: 8) {
+                                Text(chefLieu)
+                                    .font(CFont.rounded(18))
+                                    .foregroundStyle(ClassicTheme.faint)
+                                Button {
+                                    centerMap(onDepartement: code)
+                                } label: {
+                                    Image(systemName: "mappin.and.ellipse")
+                                        .font(CFont.rounded(13))
                                         .foregroundStyle(ClassicTheme.faint)
-                                    Button {
-                                        centerMap(onDepartement: code)
-                                    } label: {
-                                        Image(systemName: "mappin.and.ellipse")
-                                            .font(CFont.rounded(13))
-                                            .foregroundStyle(ClassicTheme.faint)
-                                    }
-                                    .buttonStyle(.plain)
-                                    .help("Centrer la carte sur \(chefLieu)")
                                 }
+                                .buttonStyle(.plain)
+                                .help("Centrer la carte sur \(chefLieu)")
                             }
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        Spacer(minLength: 8)
-                        Button {
-                            state.toggleFavoriteDepartement(code)
-                        } label: {
-                            let isFavorite = state.favoriteDepartementCodes.contains(code)
-                            Image(systemName: isFavorite ? "star.fill" : "star")
-                                .font(.system(size: 13))
-                                .foregroundStyle(isFavorite ? theme.accent : ClassicTheme.faint)
-                        }
-                        .buttonStyle(.plain)
-                        .help(state.favoriteDepartementCodes.contains(code) ? "Retirer des favoris" : "Ajouter aux favoris")
                     }
 
                     // Rubrique CULTURE : regroupe les sous-rubriques actives
@@ -106,7 +103,7 @@ public struct InspectorPanelView: View {
                     // la fenêtre qui les réunit toutes les trois.
                     if !activeCultureCriteria.isEmpty {
                         HStack(spacing: 8) {
-                            Eyebrow("CULTURE", color: ClassicTheme.faint, font: CFont.rounded(13, weight: .medium))
+                            Eyebrow("CULTURE", color: ClassicTheme.faint, font: CFont.rounded(13))
                             Spacer()
                             Button {
                                 openWindow(id: CultureDetailView.windowID, value: code)
@@ -206,7 +203,7 @@ public struct InspectorPanelView: View {
             HStack(spacing: 8) {
                 // Même en-tête que CULTURE (Eyebrow), sans chevron ni icône :
                 // la rubrique Météo est toujours dépliée.
-                Eyebrow("MÉTÉO", color: ClassicTheme.faint, font: CFont.rounded(13, weight: .medium))
+                Eyebrow("MÉTÉO", color: ClassicTheme.faint, font: CFont.rounded(13))
                 Spacer()
 
                 // Ouvre la fenêtre de détail (comme le double-clic).
@@ -305,7 +302,7 @@ public struct InspectorPanelView: View {
                         .foregroundStyle(ClassicTheme.faint)
                     Spacer()
                     Text("\(names.count + (criterion.key == "patrimoine" ? sprCount : 0))")
-                        .font(CFont.rounded(11, weight: .medium))
+                        .font(CFont.rounded(12))
                         .foregroundStyle(ClassicTheme.faint)
                 }
                 .contentShape(Rectangle())
@@ -354,6 +351,7 @@ public struct InspectorPanelView: View {
                                 Text("\(discipline.uppercased()) · \(byDiscipline[discipline]!.count)")
                                     .font(CFont.rounded(10, weight: .semibold))
                                     .foregroundStyle(ClassicTheme.faint)
+                                    .padding(.top, 12)
                                 ForEach(byDiscipline[discipline]!, id: \.self) { name in
                                     nameRow(name, criterionKey: criterion.key)
                                 }
@@ -378,6 +376,7 @@ public struct InspectorPanelView: View {
                                 Text("SITES PATRIMONIAUX REMARQUABLES · \(spr.count)")
                                     .font(CFont.rounded(10, weight: .semibold))
                                     .foregroundStyle(ClassicTheme.faint)
+                                    .padding(.top, 12)
                                 ForEach(spr, id: \.self) { name in
                                     nameRow(name, criterionKey: "spr")
                                 }
