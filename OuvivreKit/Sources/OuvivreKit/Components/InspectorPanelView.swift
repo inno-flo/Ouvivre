@@ -120,6 +120,9 @@ public struct InspectorPanelView: View {
                             .help("Ouvrir la vue détaillée")
                         }
                         .padding(.top, 4)
+                        // 16 (VStack) + 4 (criterionSection) − 10 = 10 pt entre
+                        // l'en-tête Culture et le premier critère, comme Météo.
+                        .padding(.bottom, -10)
                     }
 
                     ForEach(activeCultureCriteria, id: \.key) { criterion in
