@@ -51,6 +51,9 @@ public struct MeteoDetailView: View {
     /// Mois (1...12) sélectionné dans le tableau de détail.
     /// À l'ouverture, le mois courant est sélectionné par défaut.
     @State private var selectedMonth: Int? = MeteoDetailView.calendar.component(.month, from: Date())
+    /// Année de la valeur cliquée dans un graphique : met en évidence son bloc
+    /// dans « Moyennes annuelles ».
+    @State private var selectedYear: Int?
     @FocusState private var isFocused: Bool
     /// Date survolée dans chaque graphique (`chartXSelection`), pour l'infobulle.
     @State private var hoveredTemperatureDate: Date?
@@ -98,7 +101,7 @@ public struct MeteoDetailView: View {
                     Text("Aucune donnée pour ce département.")
                         .font(CFont.rounded(13)).foregroundStyle(ClassicTheme.faint)
                 } else {
-                    chartCard(title: Self.showFeltTemperature ? "Températures moyennes, ressenties, maximales et records mensuels (°C)" : "Températures moyennes, maximales et records mensuels (°C)") {
+                    chartCard(title: Self.showFeltTemperature ? "Températures moyennes, ressenties, maximales et records mensuels (°C)" : "Températures moyennes, maximales et records mensuels (°C)", yTicks: Array(temperatureAxis.ticks)) {
                         let points = series.filter { $0.temperature != nil }
                         Chart {
                             yearBands
@@ -158,7 +161,7 @@ public struct MeteoDetailView: View {
                             : ["Moyenne": theme.accent, "Maximale": Color(hex: 0xD98A1F), "Record absolu": Color(hex: 0x8E3B6E)])
                         .chartXSelection(value: $hoveredTemperatureDate)
                         .chartGesture { proxy in monthTap(proxy, points: points) }
-                        .chartYScale(domain: .automatic(includesZero: false))
+                        .chartYScale(domain: temperatureAxis.domain)
                     }
                     chartCard(title: rainGrouping == .month ? "Précipitations mensuelles (mm)" : "Précipitations trimestrielles (moyenne mensuelle du trimestre, mm)", trailing: { groupingButtons }) {
                         let points = series.filter { $0.precipitation != nil }
@@ -230,7 +233,9 @@ public struct MeteoDetailView: View {
         .focusEffectDisabled()
         .focused($isFocused)
         .onAppear { isFocused = true }
-        .onChange(of: selectedMonth) { _, new in if new != nil { isFocused = true } }
+        .onChange(of: selectedMonth) { _, new in
+            if new != nil { isFocused = true } else { selectedYear = nil }
+        }
         .onKeyPress(.leftArrow) { moveSelection(by: -1) }
         .onKeyPress(.rightArrow) { moveSelection(by: 1) }
     }
@@ -429,8 +434,14 @@ public struct MeteoDetailView: View {
         SpatialTapGesture().onEnded { value in
             guard let date = proxy.value(atX: value.location.x, as: Date.self),
                   let p = hoveredPoint(date, in: points) else { return }
-            let m = month(p)
-            selectedMonth = selectedMonth == m ? nil : m
+            let m = month(p), y = year(p)
+            if selectedMonth == m && selectedYear == y {
+                selectedMonth = nil
+                selectedYear = nil
+            } else {
+                selectedMonth = m
+                selectedYear = y
+            }
         }
     }
 
@@ -521,6 +532,16 @@ public struct MeteoDetailView: View {
         .sorted { $0.start < $1.start }
     }
 
+    /// Axe des températures : bornes arrondies au multiple de 5 °C, graduations
+    /// sans la valeur maximale (la borne haute n'est pas étiquetée).
+    private var temperatureAxis: (domain: ClosedRange<Double>, ticks: [Double]) {
+        let values = series.flatMap { [$0.temperature, $0.maxTemperature, $0.absoluteMax] }.compactMap { $0 }
+        guard let lo = values.min(), let hi = values.max() else { return (0...10, [0, 5]) }
+        let low = (lo / 5).rounded(.down) * 5
+        let high = max((hi / 5).rounded(.up) * 5, low + 5)
+        return (low...high, Array(stride(from: low, to: high, by: 5)))
+    }
+
     /// Borne haute de l'axe des précipitations : le plus fort cumul mensuel,
     /// arrondi à la dizaine supérieure.
     private var rainScaleMax: Double {
@@ -580,11 +601,11 @@ public struct MeteoDetailView: View {
         }
     }
 
-    private func chartCard<C: View>(title: String, @ViewBuilder chart: () -> C) -> some View {
-        chartCard(title: title, trailing: { EmptyView() }, chart: chart)
+    private func chartCard<C: View>(title: String, yTicks: [Double]? = nil, @ViewBuilder chart: () -> C) -> some View {
+        chartCard(title: title, yTicks: yTicks, trailing: { EmptyView() }, chart: chart)
     }
 
-    private func chartCard<C: View, T: View>(title: String, @ViewBuilder trailing: () -> T, @ViewBuilder chart: () -> C) -> some View {
+    private func chartCard<C: View, T: View>(title: String, yTicks: [Double]? = nil, @ViewBuilder trailing: () -> T, @ViewBuilder chart: () -> C) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .center) {
                 Text(title).font(CFont.rounded(12)).foregroundStyle(ClassicTheme.ink)
@@ -594,10 +615,18 @@ public struct MeteoDetailView: View {
             chart()
                 .font(CFont.rounded(11))
                 .chartYAxis {
-                    AxisMarks { _ in
-                        AxisGridLine()
-                        AxisTick()
-                        AxisValueLabel().font(CFont.rounded(11)).foregroundStyle(ClassicTheme.faint)
+                    if let yTicks {
+                        AxisMarks(values: yTicks) { _ in
+                            AxisGridLine()
+                            AxisTick()
+                            AxisValueLabel().font(CFont.rounded(11)).foregroundStyle(ClassicTheme.faint)
+                        }
+                    } else {
+                        AxisMarks { _ in
+                            AxisGridLine()
+                            AxisTick()
+                            AxisValueLabel().font(CFont.rounded(11)).foregroundStyle(ClassicTheme.faint)
+                        }
                     }
                 }
                 .chartXScale(domain: xDomain)
@@ -646,8 +675,8 @@ public struct MeteoDetailView: View {
                     }
                     .padding(12)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(.white, in: RoundedRectangle(cornerRadius: 8))
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(ClassicTheme.border, lineWidth: 1))
+                    .background(selectedYear == y ? theme.accent.opacity(0.12) : Color.white, in: RoundedRectangle(cornerRadius: 8))
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(selectedYear == y ? theme.accent : ClassicTheme.border, lineWidth: selectedYear == y ? 1.5 : 1))
                 }
             }
         }
