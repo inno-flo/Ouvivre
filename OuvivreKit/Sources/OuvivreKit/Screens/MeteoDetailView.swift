@@ -116,10 +116,12 @@ public struct MeteoDetailView: View {
                                         .lineStyle(StrokeStyle(lineWidth: 2, dash: [5, 3]))
                                 }
                                 if let xa = p.absoluteMax {
+                                    LineMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", xa), series: .value("Série", "Record absolu"))
+                                        .foregroundStyle(by: .value("Série", "Record absolu"))
+                                        .interpolationMethod(.monotone)
                                     PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", xa))
                                         .foregroundStyle(by: .value("Série", "Record absolu"))
-                                        .symbol(.diamond)
-                                        .symbolSize(p.partial ? 25 : 45)
+                                        .symbolSize(p.partial ? 20 : 30)
                                 }
                                 if let tx = p.maxTemperature {
                                     LineMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", tx), series: .value("Série", "Maximale"))
@@ -186,9 +188,7 @@ public struct MeteoDetailView: View {
                                 // Une barre par trimestre civil, de la largeur du
                                 // trimestre (légèrement réduite pour séparer les barres).
                                 ForEach(quarters) { q in
-                                    BarMark(xStart: .value("Début", q.start), xEnd: .value("Fin", q.end.addingTimeInterval(-4 * 86_400)),
-                                            yStart: .value("Base", 0), yEnd: .value("mm", q.mean))
-                                        .foregroundStyle((selectedQuarterContains(q) ? ClassicTheme.ink : theme.accent).opacity(q.partial ? 0.4 : 0.8))
+                                    quarterBar(q)
                                 }
                                 ForEach(quarters.filter(selectedQuarterContains)) { q in
                                     PointMark(x: .value("Trimestre", q.middle), y: .value("mm", q.mean))
@@ -570,13 +570,24 @@ public struct MeteoDetailView: View {
         return max(10, (peak / 10).rounded(.up) * 10)
     }
 
+    /// Barre d'un trimestre : de zéro à la moyenne mensuelle, sur la largeur du
+    /// trimestre (réduite de 4 jours pour séparer les barres).
+    @ChartContentBuilder
+    private func quarterBar(_ q: RainQuarter) -> some ChartContent {
+        let color: Color = selectedQuarterContains(q) ? ClassicTheme.ink : theme.accent
+        let barEnd = q.end.addingTimeInterval(-4 * 86_400)
+        RectangleMark(xStart: .value("Début", q.start), xEnd: .value("Fin", barEnd),
+                      yStart: .value("Base", 0.0), yEnd: .value("mm", q.mean))
+            .foregroundStyle(color.opacity(q.partial ? 0.4 : 0.8))
+    }
+
     private func selectedQuarterContains(_ q: RainQuarter) -> Bool {
         selectedMonth.map { q.months.contains($0) } ?? false
     }
 
     private func quarterTooltip(_ q: RainQuarter) -> some View {
         VStack(alignment: .leading, spacing: 5) {
-            Text(verbatim: "T\(q.quarter) \(q.year) · \(Self.monthName(q.months.lowerBound).prefix(4).lowercased()).–\(Self.monthName(q.months.upperBound).prefix(4).lowercased()).")
+            Text(verbatim: "\(Self.monthName(q.months.lowerBound).prefix(4)).–\(Self.monthName(q.months.upperBound).prefix(4)).")
                 .font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.faint)
             Text(verbatim: "\(frDecimal(q.mean)) mm/mois").font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.ink)
             if q.partial {
