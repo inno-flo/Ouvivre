@@ -80,20 +80,21 @@ public enum CultureScores {
     /// Only the top ~15% of départements pass once a Big Mac criterion
     /// (Musées/Lieux du patrimoine/Festivals) is pushed to "déterminant" —
     /// see `passesHardFilter`.
-    public static func hardFilterThreshold(forKey key: String) -> Double? {
+    public static func hardFilterThreshold(forKey key: String, percentile: Double = FranceGeoData.determinantPercentile) -> Double? {
         let values = departements.compactMap { $0.scores[key] }.sorted()
         guard !values.isEmpty else { return nil }
-        let index = min(values.count - 1, Int((Double(values.count) * 0.85).rounded(.down)))
+        let index = min(values.count - 1, Int((Double(values.count) * percentile).rounded(.down)))
         return values[index]
     }
 
     /// Whether the département at `code` passes the hard filter for `key`
-    /// at `weight` — only engages once `weight` reaches `maxWeight` (the
-    /// slider's top value, "déterminant"); below that it's a pure weight in
-    /// `weightedScore`'s average, same AND/must-have rule as
+    /// at `weight` — "important" (top ~40 %) and "déterminant" (top ~15 %)
+    /// both filter, "indifférent" doesn't; same rule as
     /// `FranceGeoData.passesHardFilter`.
     public static func passesHardFilter(forDepartementCode code: String, key: String, weight: Int, maxWeight: Int) -> Bool {
-        guard maxWeight > 0, weight >= maxWeight, let threshold = hardFilterThreshold(forKey: key), let dep = byDepartementCode[code] else { return true }
+        guard let percentile = FranceGeoData.filterPercentile(forWeight: weight, maxWeight: maxWeight),
+              let threshold = hardFilterThreshold(forKey: key, percentile: percentile),
+              let dep = byDepartementCode[code] else { return true }
         return (dep.scores[key] ?? 50.0) >= threshold
     }
 

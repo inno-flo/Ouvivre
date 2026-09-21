@@ -70,9 +70,8 @@ public enum FranceGeoData {
     /// below, see `maxPaysEtrangerKm`: unlike the others its score is a
     /// genuine but *compressed* continuous distance, so a score-band floor
     /// doesn't line up with real-world closeness the way it does here).
-    /// Fires only at "déterminant" (see `passesHardFilter`'s `maxWeight`) —
-    /// the whole point is that "déterminant" means AND/must-have, while
-    /// "important" stays a pure weight in the average.
+    /// Fires at "important" (looser) and "déterminant" (strict) — see
+    /// `filterPercentile`.
     public static let hardFilterCriteria: Set<String> = ["mer", "montagne", "lacs", "fleuves", "forets"]
 
     /// Per-criterion floor a département must clear to pass its hard filter
@@ -83,12 +82,25 @@ public enum FranceGeoData {
     /// continuous criteria like "forets" or "lacs" where near-101 depts sit
     /// well under 100 — the percentile keeps "déterminant" meaningfully
     /// strict without emptying the result for every criterion but "mer".
-    public static func hardFilterThreshold(forKey key: String) -> Double? {
+    public static func hardFilterThreshold(forKey key: String, percentile: Double = determinantPercentile) -> Double? {
         guard hardFilterCriteria.contains(key) else { return nil }
         let values = departements.compactMap { $0.scores[key] }.sorted()
         guard !values.isEmpty else { return nil }
-        let index = min(values.count - 1, Int((Double(values.count) * 0.85).rounded(.down)))
+        let index = min(values.count - 1, Int((Double(values.count) * percentile).rounded(.down)))
         return values[index]
+    }
+
+    /// Percentile au-dessus duquel un département passe le filtre d'un
+    /// critère réglé sur "déterminant" (top ~15 %) ou "important" (top
+    /// ~40 %). "Important" filtre aussi : sans exclusion, il ne faisait que
+    /// réordonner une liste déjà quasi complète et ne se distinguait pas
+    /// d'"indifférent".
+    public static let determinantPercentile = 0.85
+    public static let importantPercentile = 0.60
+
+    public static func filterPercentile(forWeight weight: Int, maxWeight: Int) -> Double? {
+        guard maxWeight > 0, weight > 0 else { return nil }
+        return weight >= maxWeight ? determinantPercentile : importantPercentile
     }
 
     /// Whether `dep` passes the hard filter for `key` at `weight` — only
@@ -97,7 +109,8 @@ public enum FranceGeoData {
     /// `weightedScore`'s average. Criteria not in `hardFilterCriteria`
     /// always pass.
     public static func passesHardFilter(_ dep: DepartementScore, key: String, weight: Int, maxWeight: Int) -> Bool {
-        guard maxWeight > 0, weight >= maxWeight, let threshold = hardFilterThreshold(forKey: key) else { return true }
+        guard let percentile = filterPercentile(forWeight: weight, maxWeight: maxWeight),
+              let threshold = hardFilterThreshold(forKey: key, percentile: percentile) else { return true }
         return (dep.scores[key] ?? 50.0) >= threshold
     }
 
@@ -105,14 +118,13 @@ public enum FranceGeoData {
     /// border or short sea crossing alike, since that's exactly what
     /// `distancesKm["paysEtranger"]` already measures (build_france_geo_scores.py
     /// picks whichever neighboring country, e.g. the UK across the Manche,
-    /// is geometrically nearest, regardless of land vs. sea). Only engages
-    /// at "déterminant" (`weight >= maxWeight`), same AND/must-have rule as
-    /// `passesHardFilter` — 30 km already covers every land border (0 km)
+    /// is geometrically nearest, regardless of land vs. sea). 100 km at
+    /// "important", 30 km at "déterminant" — 30 km already covers every land border (0 km)
     /// plus the closest sea crossings (Pas-de-Calais 5 km from Belgium,
     /// Manche 22 km from Jersey).
     public static func maxPaysEtrangerKm(forWeight weight: Int, maxWeight: Int) -> Double? {
-        guard maxWeight > 0, weight >= maxWeight else { return nil }
-        return 30
+        guard maxWeight > 0, weight > 0 else { return nil }
+        return weight >= maxWeight ? 30 : 100
     }
 
     /// Whether `dep` passes the "pays étranger" km filter for `weight` (see

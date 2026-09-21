@@ -367,34 +367,32 @@ public struct MeteoDetailView: View {
     }
 
     private var header: some View {
-        HStack(alignment: .top, spacing: 10) {
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(alignment: .center, spacing: 8) {
-                    Text(name)
-                        .font(CFont.rounded(20, weight: .bold))
-                        .foregroundStyle(ClassicTheme.ink)
-                    Text(departementCode)
-                        .font(CFont.rounded(20, weight: .bold))
-                        .foregroundStyle(ClassicTheme.ink)
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 3)
-                        .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
-                }
+        HStack(alignment: .center, spacing: 10) {
+            // Une seule ligne : numéro, nom du département, chef-lieu et
+            // bouton de recentrage de la carte.
+            HStack(alignment: .center, spacing: 8) {
+                Text(departementCode)
+                    .font(CFont.rounded(20, weight: .bold))
+                    .foregroundStyle(ClassicTheme.ink)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 3)
+                    .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
+                Text(name)
+                    .font(CFont.rounded(20, weight: .bold))
+                    .foregroundStyle(ClassicTheme.ink)
                 if let chefLieu = FranceGeoData.chefsLieux[departementCode] {
-                    HStack(spacing: 8) {
-                        Text(chefLieu)
-                            .font(CFont.rounded(18))
+                    Text(chefLieu)
+                        .font(CFont.rounded(18))
+                        .foregroundStyle(ClassicTheme.faint)
+                    Button {
+                        mapFocusTick += 1
+                    } label: {
+                        Image(systemName: "mappin.and.ellipse")
+                            .font(CFont.rounded(13))
                             .foregroundStyle(ClassicTheme.faint)
-                        Button {
-                            mapFocusTick += 1
-                        } label: {
-                            Image(systemName: "mappin.and.ellipse")
-                                .font(CFont.rounded(13))
-                                .foregroundStyle(ClassicTheme.faint)
-                        }
-                        .buttonStyle(.plain)
-                        .help("Centrer la carte sur \(chefLieu)")
                     }
+                    .buttonStyle(.plain)
+                    .help("Centrer la carte sur \(chefLieu)")
                 }
             }
             Spacer(minLength: 8)
