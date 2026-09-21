@@ -393,7 +393,7 @@ public struct MeteoDetailView: View {
                 .foregroundStyle((y - years[0]) % 2 == 0 ? ClassicTheme.track.opacity(0.45) : .clear)
                 .annotation(position: .overlay, alignment: .topLeading, spacing: 0) {
                     Text(String(y))
-                        .font(CFont.mono(11, weight: .bold)).foregroundStyle(ClassicTheme.ink)
+                        .font(CFont.rounded(11, weight: .bold)).foregroundStyle(ClassicTheme.ink)
                         .padding(.leading, 6).padding(.top, 3)
                 }
         }
@@ -448,22 +448,22 @@ public struct MeteoDetailView: View {
     private func tooltip(_ p: MeteoMensuelle.Point, value: String, secondary: String?) -> some View {
         VStack(alignment: .leading, spacing: 5) {
             Text(Self.monthFormatter.string(from: p.date).capitalized)
-                .font(CFont.sans(11)).foregroundStyle(ClassicTheme.faint)
-            Text(value).font(CFont.sans(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
+                .font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.faint)
+            Text(value).font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.ink)
             if let secondary, !secondary.isEmpty {
                 VStack(alignment: .leading, spacing: 4) {
                     ForEach(Array(secondary.split(separator: "\n").enumerated()), id: \.offset) { _, line in
                         // Le nombre du record de température est en rouge.
                         if line.hasPrefix("Record ") {
-                            Text("Record ").font(CFont.sans(13, weight: .semibold)).foregroundColor(ClassicTheme.ink)
-                                + Text(line.dropFirst("Record ".count)).font(CFont.sans(13, weight: .semibold)).foregroundColor(.red)
+                            Text("Record ").font(CFont.rounded(12, weight: .medium)).foregroundColor(ClassicTheme.ink)
+                                + Text(line.dropFirst("Record ".count)).font(CFont.rounded(12, weight: .medium)).foregroundColor(.red)
                         } else {
-                            Text(line).font(CFont.sans(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
+                            Text(line).font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.ink)
                         }
                     }
                 }
             }
-            if p.partial { Text("mois en cours").font(CFont.sans(10)).foregroundStyle(ClassicTheme.faint2) }
+            if p.partial { Text("mois en cours").font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.faint2) }
         }
         .padding(.horizontal, 8).padding(.vertical, 7)
         .background(.white, in: RoundedRectangle(cornerRadius: 6))
@@ -475,6 +475,14 @@ public struct MeteoDetailView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text(title).font(CFont.rounded(12)).foregroundStyle(ClassicTheme.faint)
             chart()
+                .font(CFont.rounded(11))
+                .chartYAxis {
+                    AxisMarks { _ in
+                        AxisGridLine()
+                        AxisTick()
+                        AxisValueLabel().font(CFont.rounded(11)).foregroundStyle(ClassicTheme.faint)
+                    }
+                }
                 .chartXScale(domain: xDomain)
                 .chartXAxis {
                     // Repères mensuels discrets, trimestres nommés ; les années
@@ -484,11 +492,11 @@ public struct MeteoDetailView: View {
                         AxisTick(length: 3).foregroundStyle(ClassicTheme.faint2)
                         if m == 1 || m == 4 || m == 7 || m == 10 {
                             AxisValueLabel(format: .dateTime.month(.abbreviated), centered: false)
-                                .font(CFont.mono(9)).foregroundStyle(ClassicTheme.faint)
+                                .font(CFont.rounded(9)).foregroundStyle(ClassicTheme.faint)
                         }
                     }
                 }
-                .frame(height: 230)
+                .frame(height: 287.5)
         }
         .padding(16)
         .background(.white, in: RoundedRectangle(cornerRadius: 10))
