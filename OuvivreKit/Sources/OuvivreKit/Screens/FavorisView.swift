@@ -322,7 +322,7 @@ public struct FavorisView: View {
         }
         if let windowID {
             Button { openWindow(id: windowID, value: code) } label: {
-                Image(systemName: "interface.window.on.rectangle.dashed")
+                Image(systemName: "interface.window.on.rectangle")
                     .font(.system(size: 12))
                     .foregroundStyle(ClassicTheme.faint)
                     .padding(6)

@@ -112,7 +112,7 @@ public struct InspectorPanelView: View {
                             Button {
                                 openWindow(id: CultureDetailView.windowID, value: code)
                             } label: {
-                                Image(systemName: "interface.window.on.rectangle.dashed")
+                                Image(systemName: "interface.window.on.rectangle")
                                     .font(.system(size: 13))
                                     .foregroundStyle(ClassicTheme.faint)
                             }
