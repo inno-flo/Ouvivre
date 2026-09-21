@@ -187,7 +187,7 @@ public struct MeteoDetailView: View {
                                 // trimestre (légèrement réduite pour séparer les barres).
                                 ForEach(quarters) { q in
                                     BarMark(xStart: .value("Début", q.start), xEnd: .value("Fin", q.end.addingTimeInterval(-4 * 86_400)),
-                                            y: .value("mm", q.mean))
+                                            yStart: .value("Base", 0), yEnd: .value("mm", q.mean))
                                         .foregroundStyle((selectedQuarterContains(q) ? ClassicTheme.ink : theme.accent).opacity(q.partial ? 0.4 : 0.8))
                                 }
                                 ForEach(quarters.filter(selectedQuarterContains)) { q in
@@ -209,6 +209,9 @@ public struct MeteoDetailView: View {
                         }
                         .chartXSelection(value: $hoveredPrecipitationDate)
                         .chartGesture { proxy in monthTap(proxy, points: points) }
+                        // Même échelle verticale (0 → plus fort cumul mensuel) en
+                        // vue Mois et Trimestres, pour comparer les deux.
+                        .chartYScale(domain: 0...rainScaleMax)
                     }
                     yearlySummary
                     monthTable
@@ -560,15 +563,22 @@ public struct MeteoDetailView: View {
         .sorted { $0.start < $1.start }
     }
 
+    /// Borne haute de l'axe des précipitations : le plus fort cumul mensuel,
+    /// arrondi à la dizaine supérieure.
+    private var rainScaleMax: Double {
+        let peak = series.compactMap(\.precipitation).max() ?? 10
+        return max(10, (peak / 10).rounded(.up) * 10)
+    }
+
     private func selectedQuarterContains(_ q: RainQuarter) -> Bool {
         selectedMonth.map { q.months.contains($0) } ?? false
     }
 
     private func quarterTooltip(_ q: RainQuarter) -> some View {
         VStack(alignment: .leading, spacing: 5) {
-            Text("T\(q.quarter) \(q.year) · \(Self.monthName(q.months.lowerBound).prefix(4).lowercased()).–\(Self.monthName(q.months.upperBound).prefix(4).lowercased()).")
+            Text(verbatim: "T\(q.quarter) \(q.year) · \(Self.monthName(q.months.lowerBound).prefix(4).lowercased()).–\(Self.monthName(q.months.upperBound).prefix(4).lowercased()).")
                 .font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.faint)
-            Text("\(frDecimal(q.mean)) mm/mois en moyenne").font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+            Text(verbatim: "\(frDecimal(q.mean)) mm/mois").font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.ink)
             if q.partial {
                 Text("trimestre en cours").font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.faint2)
             } else if q.monthCount < 3 {
@@ -652,7 +662,7 @@ public struct MeteoDetailView: View {
                     let temps = pts.compactMap(\.temperature)
                     let rain = pts.compactMap(\.precipitation)
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(String(y)).font(CFont.mono(11, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
+                        Text(String(y)).font(CFont.rounded(11, weight: .bold)).foregroundStyle(ClassicTheme.ink)
                         HStack(spacing: 5) {
                             Image(systemName: "thermometer.medium").font(.system(size: 13)).foregroundStyle(theme.accent)
                             Text(temps.isEmpty ? "–" : "\(frDecimal(temps.reduce(0, +) / Double(temps.count))) °C")
@@ -699,7 +709,7 @@ public struct MeteoDetailView: View {
                 HStack(spacing: 0) {
                     Text("").frame(width: 110, alignment: .leading)
                     ForEach(years, id: \.self) {
-                        Text(String($0)).font(CFont.mono(11, weight: .semibold)).foregroundStyle(ClassicTheme.faint)
+                        Text(String($0)).font(CFont.rounded(11, weight: .bold)).foregroundStyle(ClassicTheme.ink)
                             .frame(maxWidth: .infinity, alignment: .trailing)
                     }
                 }

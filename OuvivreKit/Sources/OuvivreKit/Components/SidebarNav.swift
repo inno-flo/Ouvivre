@@ -29,7 +29,12 @@ public struct SidebarNav: View {
                     Image(systemName: state.favoriteDepartementCodes.isEmpty ? "star" : "star.fill").frame(width: 16)
                     Text("Favoris").font(.system(size: 13, weight: state.screen == .favoris ? .bold : .regular))
                     Spacer(minLength: 4)
-                    Text("\(state.favoriteDepartementCodes.count)").font(CFont.mono(10)).opacity(0.5)
+                    // Même corps que les compteurs de la sidebar de PierreVincent (13 pt,
+                    // gras quand la rubrique est sélectionnée).
+                    Text("\(state.favoriteDepartementCodes.count)")
+                        .font(.system(size: 13))
+                        .fontWeight(state.screen == .favoris ? .bold : .regular)
+                        .opacity(0.5)
                 }
                 .tag(ClassicScreen.favoris)
                 HStack(spacing: 9) {
