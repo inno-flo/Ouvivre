@@ -43,7 +43,8 @@ public struct DepartementMapCard: View {
         self.focusTick = focusTick
     }
 
-    public init(names: [String], accent: Color, selectedName: String? = nil, onSelect: ((String) -> Void)? = nil, height: CGFloat = 460, actionsFirst: Bool = false) {
+    public init(names: [String], accent: Color, selectedName: String? = nil, onSelect: ((String) -> Void)? = nil, height: CGFloat = 460, actionsFirst: Bool = false, roundedFont: Bool = false) {
+        self.roundedFont = roundedFont
         self.names = names
         self.accent = accent
         self.selectedName = selectedName

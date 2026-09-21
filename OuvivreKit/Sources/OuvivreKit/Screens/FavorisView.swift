@@ -1,4 +1,7 @@
 import SwiftUI
+#if canImport(AppKit)
+import AppKit
+#endif
 
 /// Favoris — tableau comparatif des départements mis en favori (étoile de
 /// l'inspecteur), un département par colonne, la meilleure valeur de chaque
@@ -23,18 +26,33 @@ public struct FavorisView: View {
     @State private var draggingCode: String?
     /// Département dont le retrait des favoris attend confirmation.
     @State private var pendingRemovalCode: String?
-    /// Largeur d'un caractère de la police mono 10 pt du nom de région.
-    private let regionCharW: CGFloat = 6.02
-    /// Colonne ajustée sur le nom de région le plus long, avec 1 caractère
-    /// d'espacement de chaque côté.
+    /// Largeur mesurée (SF Pro Rounded) du texte le plus large de l'en-tête —
+    /// nom de département (13 semibold) ou de région (10) —, plus 1 caractère
+    /// moyen d'espacement de chaque côté.
+    private var colW: CGFloat {
+        #if canImport(AppKit)
+        func rounded(_ size: CGFloat, _ weight: NSFont.Weight) -> NSFont {
+            let base = NSFont.systemFont(ofSize: size, weight: weight)
+            return base.fontDescriptor.withDesign(.rounded).flatMap { NSFont(descriptor: $0, size: size) } ?? base
+        }
+        let nameFont = rounded(13, .semibold), regionFont = rounded(10, .regular)
+        let candidates = departements.flatMap { d in
+            [(d.nom, nameFont), (d.nomRegion, regionFont)]
+        }.map { text, font in
+            (width: (text as NSString).size(withAttributes: [.font: font]).width, count: max(text.count, 1))
+        }
+        guard let widest = candidates.max(by: { $0.width < $1.width }) else { return 0 }
+        return ceil(widest.width + 2 * widest.width / CGFloat(widest.count))
+        #else
+        let longest = departements.flatMap { [$0.nom.count, $0.nomRegion.count] }.max() ?? 0
+        return CGFloat(longest + 2) * 7
+        #endif
+    }
+
     /// Largeur exacte du tableau : colonne Critère (avec ses marges) + colonnes
     /// des départements — il se resserre quand il y a moins de favoris.
     private var tableWidth: CGFloat { labelColW + 36 + CGFloat(departements.count) * colW }
 
-    private var colW: CGFloat {
-        let longest = departements.map { $0.nomRegion.count }.max() ?? 0
-        return CGFloat(longest + 2) * regionCharW
-    }
 
     private struct Cell { let text: String; let value: Double? }
     private struct Row: Identifiable {
@@ -100,7 +118,7 @@ public struct FavorisView: View {
         VStack(alignment: .leading, spacing: 0) {
             if departements.isEmpty {
                 Text("Aucun favori pour l'instant. Cliquez sur l'étoile d'un département dans l'inspecteur pour l'ajouter ici.")
-                    .font(CFont.sans(15))
+                    .font(CFont.rounded(15))
                     .foregroundStyle(ClassicTheme.sub)
                     .frame(maxWidth: 460, alignment: .leading)
             } else {
@@ -116,7 +134,8 @@ public struct FavorisView: View {
                         if let code { toggleSelection(code) }
                     },
                     height: 690,
-                    actionsFirst: true
+                    actionsFirst: true,
+                    roundedFont: true
                 )
                     .padding(.top, 32)
             }
@@ -179,7 +198,7 @@ public struct FavorisView: View {
             Row(id: "meteo-tmax", label: "Température maximale moyenne", cells: meteo.map { m in
                 m.tmax.map { Cell(text: frDecimal($0) + " °C", value: $0) } ?? Cell(text: "—", value: nil)
             }, higherIsBetter: nil, extremes: true),
-            Row(id: "meteo-rain", label: "Précipitations", cells: meteo.map { m in
+            Row(id: "meteo-rain", label: "Précipitations annuelles", cells: meteo.map { m in
                 m.rain.map { Cell(text: "\(frThousands(Int($0.rounded()))) mm", value: $0) } ?? Cell(text: "—", value: nil)
             }, higherIsBetter: nil, extremeIcons: (high: "cloud.heavyrain.fill", low: "cloud.drizzle"))
         ]
@@ -187,9 +206,9 @@ public struct FavorisView: View {
             Section(id: "chefLieu", title: "", rows: [
                 Row(id: "chefLieu", label: "Chef-lieu", cells: deps.map { Cell(text: FranceGeoData.chefsLieux[$0.codeInsee] ?? "—", value: nil) }, higherIsBetter: nil)
             ]),
-            Section(id: "geo", title: "GÉOGRAPHIE (les scores de correspondance entre le département et les critères de choix sont sur 100)", rows: geoRows),
-            Section(id: "culture", title: "CULTURE (nombre de lieux et d'événements)", rows: cultureRows),
-            Section(id: "meteo", title: "MÉTÉO (valeurs calculées sur les 12 derniers mois)", rows: meteoRows)
+            Section(id: "geo", title: "Géographie (les scores de correspondance entre le département et les critères de choix sont sur 100)", rows: geoRows),
+            Section(id: "culture", title: "Culture (nombre de lieux et d'événements)", rows: cultureRows),
+            Section(id: "meteo", title: "Météo (valeurs calculées sur les 12 derniers mois)", rows: meteoRows)
         ]
     }
 
@@ -244,15 +263,15 @@ public struct FavorisView: View {
         "Festivals": "fireworks",
         "Température moyenne": "thermometer.medium",
         "Température maximale moyenne": "thermometer.high",
-        "Précipitations": "cloud.rain"
+        "Précipitations annuelles": "cloud.rain"
     ]
 
     // MARK: - Éléments de colonne
 
     private func headerContent(_ d: FranceGeoData.DepartementScore) -> some View {
         VStack(alignment: .center, spacing: 4) {
-            Text(d.nom).font(CFont.sans(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
-            Text(d.nomRegion).font(CFont.mono(10)).foregroundStyle(ClassicTheme.faint)
+            Text(d.nom).font(CFont.rounded(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
+            Text(d.nomRegion).font(CFont.rounded(10)).foregroundStyle(ClassicTheme.faint)
             HStack(spacing: 6) {
                 Button { pendingRemovalCode = d.codeInsee } label: {
                     Image(systemName: "star.fill").foregroundStyle(theme.accent)
@@ -271,7 +290,7 @@ public struct FavorisView: View {
     private func valueLabel(_ c: Cell, outline: Color?, icon: String? = nil) -> some View {
         let highlighted = outline != nil
         return Text(c.text)
-            .font(CFont.sans(13, weight: highlighted ? .semibold : .regular))
+            .font(CFont.rounded(13, weight: highlighted ? .semibold : .regular))
             .foregroundStyle(highlighted ? ClassicTheme.ink : ClassicTheme.sub)
             .padding(.horizontal, 8).padding(.vertical, 3)
             .overlay { if let outline { RoundedRectangle(cornerRadius: 4).stroke(outline, lineWidth: 1) } }
@@ -292,7 +311,7 @@ public struct FavorisView: View {
                 .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.border).frame(height: 1) }
             ForEach(sections) { section in
                 if !section.title.isEmpty {
-                    Text(" ").font(CFont.mono(10, weight: .medium))
+                    Text(" ").font(CFont.rounded(13, weight: .medium))
                         .padding(.vertical, 8)
                         .frame(width: colW)
                         .background(ClassicTheme.cardAlt)
@@ -323,7 +342,7 @@ public struct FavorisView: View {
         if let windowID {
             Button { openWindow(id: windowID, value: code) } label: {
                 Image(systemName: "interface.window.on.rectangle")
-                    .font(.system(size: 12))
+                    .font(.system(size: 13))
                     .foregroundStyle(ClassicTheme.faint)
                     .padding(6)
                     .contentShape(Rectangle())
@@ -342,7 +361,7 @@ public struct FavorisView: View {
     private var table: some View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
-                Text("CRITÈRE").font(CFont.mono(10, weight: .medium)).foregroundStyle(ClassicTheme.faint)
+                Text("Critères").font(CFont.rounded(13, weight: .medium)).foregroundStyle(ClassicTheme.faint)
                     .frame(width: labelColW, alignment: .leading).padding(.horizontal, 18).padding(.vertical, 14)
                 ForEach(departements, id: \.codeInsee) { d in
                     headerContent(d)
@@ -374,7 +393,7 @@ public struct FavorisView: View {
             ForEach(sections) { section in
                 if !section.title.isEmpty {
                 HStack(spacing: 0) {
-                    Text(section.title).font(CFont.mono(10, weight: .medium)).foregroundStyle(ClassicTheme.faint)
+                    Eyebrow(section.title, color: ClassicTheme.faint, font: CFont.rounded(13, weight: .medium))
                         .padding(.horizontal, 18).padding(.vertical, 8)
                     Spacer(minLength: 0)
                 }
@@ -388,7 +407,7 @@ public struct FavorisView: View {
                         HStack(spacing: 8) {
                             Image(systemName: Self.criterionIcons[row.label] ?? "circle").frame(width: 18)
                                 .foregroundStyle(theme.accent)
-                            Text(row.label).font(CFont.sans(13, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+                            Text(row.label).font(CFont.rounded(12)).foregroundStyle(.black)
                         }
                             .frame(width: labelColW, alignment: .leading)
                             .padding(.horizontal, 18).padding(.vertical, 13)
