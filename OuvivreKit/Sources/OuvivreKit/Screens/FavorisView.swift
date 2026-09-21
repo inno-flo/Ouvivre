@@ -161,17 +161,23 @@ public struct FavorisView: View {
             }
             return Row(id: "culture-\(key)", label: label, cells: cells, higherIsBetter: true)
         }
-        let meteo = deps.map { d -> (temp: Double?, rain: Double?) in
+        let meteo = deps.map { d -> (temp: Double?, tmax: Double?, rain: Double?) in
             // 12 derniers mois complets.
             let recent = MeteoMensuelle.series(forDepartementCode: d.codeInsee).filter { !$0.partial }.suffix(12)
             let temps = recent.compactMap(\.temperature)
+            let maxes = recent.compactMap(\.maxTemperature)
             let rains = recent.compactMap(\.precipitation)
             return (temps.isEmpty ? nil : temps.reduce(0, +) / Double(temps.count),
+                    maxes.isEmpty ? nil : maxes.reduce(0, +) / Double(maxes.count),
                     rains.isEmpty ? nil : rains.reduce(0, +))
         }
         let meteoRows = [
             Row(id: "meteo-temp", label: "Température moyenne", cells: meteo.map { m in
                 m.temp.map { Cell(text: frDecimal($0) + " °C", value: $0) } ?? Cell(text: "—", value: nil)
+            }, higherIsBetter: nil, extremes: true),
+            // Moyenne des températures maximales quotidiennes de chaque mois.
+            Row(id: "meteo-tmax", label: "Température maximale moyenne", cells: meteo.map { m in
+                m.tmax.map { Cell(text: frDecimal($0) + " °C", value: $0) } ?? Cell(text: "—", value: nil)
             }, higherIsBetter: nil, extremes: true),
             Row(id: "meteo-rain", label: "Précipitations", cells: meteo.map { m in
                 m.rain.map { Cell(text: "\(frThousands(Int($0.rounded()))) mm", value: $0) } ?? Cell(text: "—", value: nil)
@@ -183,7 +189,7 @@ public struct FavorisView: View {
             ]),
             Section(id: "geo", title: "GÉOGRAPHIE (les scores de correspondance entre le département et les critères de choix sont sur 100)", rows: geoRows),
             Section(id: "culture", title: "CULTURE (nombre de lieux et d'événements)", rows: cultureRows),
-            Section(id: "meteo", title: "MÉTÉO (valeurs sur les 12 derniers mois)", rows: meteoRows)
+            Section(id: "meteo", title: "MÉTÉO (valeurs calculées sur les 12 derniers mois)", rows: meteoRows)
         ]
     }
 
@@ -237,6 +243,7 @@ public struct FavorisView: View {
         "Lieux du patrimoine": "building.classical.columns",
         "Festivals": "fireworks",
         "Température moyenne": "thermometer.medium",
+        "Température maximale moyenne": "thermometer.high",
         "Précipitations": "cloud.rain"
     ]
 
@@ -327,8 +334,8 @@ public struct FavorisView: View {
     }
 
     /// Lignes dont le séparateur est un filet court centré dans chaque
-    /// colonne : Musées, Lieux du patrimoine et Température moyenne.
-    private static let shortSeparatorRowIDs: Set<String> = ["culture-musees", "culture-patrimoine", "meteo-temp"]
+    /// colonne : Musées, Lieux du patrimoine, Températures moyenne et maximale.
+    private static let shortSeparatorRowIDs: Set<String> = ["culture-musees", "culture-patrimoine", "meteo-temp", "meteo-tmax"]
 
     // MARK: - Tableau
 

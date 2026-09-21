@@ -519,7 +519,7 @@ public struct MeteoDetailView: View {
                         }
                     }
                 }
-                .frame(height: 316.25)
+                .frame(height: 325)
         }
         .padding(16)
         .background(.white, in: RoundedRectangle(cornerRadius: 10))
