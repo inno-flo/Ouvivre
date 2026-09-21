@@ -103,7 +103,7 @@ public struct InspectorPanelView: View {
                     // la fenêtre qui les réunit toutes les trois.
                     if !activeCultureCriteria.isEmpty {
                         HStack(spacing: 8) {
-                            Eyebrow("CULTURE", color: ClassicTheme.faint, font: CFont.rounded(13))
+                            Eyebrow("CULTURE", color: ClassicTheme.faint, font: CFont.rounded(10))
                             Spacer()
                             Button {
                                 openWindow(id: CultureDetailView.windowID, value: code)
@@ -168,7 +168,7 @@ public struct InspectorPanelView: View {
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(ClassicTheme.faint)
                         .frame(width: 10)
-                    Eyebrow("PAYS", color: ClassicTheme.faint, font: CFont.rounded(13, weight: .medium))
+                    Eyebrow("PAYS", color: ClassicTheme.faint, font: CFont.rounded(10))
                     Spacer()
                 }
                 .contentShape(Rectangle())
@@ -203,7 +203,7 @@ public struct InspectorPanelView: View {
             HStack(spacing: 8) {
                 // Même en-tête que CULTURE (Eyebrow), sans chevron ni icône :
                 // la rubrique Météo est toujours dépliée.
-                Eyebrow("MÉTÉO", color: ClassicTheme.faint, font: CFont.rounded(13))
+                Eyebrow("MÉTÉO", color: ClassicTheme.faint, font: CFont.rounded(10))
                 Spacer()
 
                 // Ouvre la fenêtre de détail (comme le double-clic).
@@ -237,6 +237,7 @@ public struct InspectorPanelView: View {
 
                     Text("Précipitations (mm / mois)")
                         .font(CFont.rounded(12)).foregroundStyle(ClassicTheme.faint)
+                        .padding(.top, 14)
                     Chart(series.filter { $0.precipitation != nil }) { point in
                         BarMark(x: .value("Mois", point.date, unit: .month), y: .value("mm", point.precipitation ?? 0))
                             .foregroundStyle(theme.accent.opacity(point.partial ? 0.4 : 0.8))
