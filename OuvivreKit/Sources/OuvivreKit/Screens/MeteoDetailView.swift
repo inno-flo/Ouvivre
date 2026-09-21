@@ -222,8 +222,7 @@ public struct MeteoDetailView: View {
             .padding(24)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .background(ClassicTheme.background)
-        .frame(minWidth: 760, minHeight: 640)
+        .departementDetailWindow()
         // Flèches gauche/droite : mois précédent/suivant de la sélection
         // (graphiques et tableau), sans effet tant qu'aucun mois n'est
         // sélectionné.
@@ -367,46 +366,7 @@ public struct MeteoDetailView: View {
     }
 
     private var header: some View {
-        HStack(alignment: .center, spacing: 10) {
-            // Une seule ligne : numéro, nom du département, chef-lieu et
-            // bouton de recentrage de la carte.
-            HStack(alignment: .center, spacing: 8) {
-                Text(departementCode)
-                    .font(CFont.rounded(20, weight: .bold))
-                    .foregroundStyle(ClassicTheme.ink)
-                    .padding(.horizontal, 7)
-                    .padding(.vertical, 3)
-                    .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
-                Text(name)
-                    .font(CFont.rounded(20, weight: .bold))
-                    .foregroundStyle(ClassicTheme.ink)
-                if let chefLieu = FranceGeoData.chefsLieux[departementCode] {
-                    Text(chefLieu)
-                        .font(CFont.rounded(18))
-                        .foregroundStyle(ClassicTheme.faint)
-                    Button {
-                        mapFocusTick += 1
-                    } label: {
-                        Image(systemName: "mappin.and.ellipse")
-                            .font(CFont.rounded(13))
-                            .foregroundStyle(ClassicTheme.faint)
-                    }
-                    .buttonStyle(.plain)
-                    .help("Centrer la carte sur \(chefLieu)")
-                }
-            }
-            Spacer(minLength: 8)
-            let isFavorite = state.favoriteDepartementCodes.contains(departementCode)
-            Button {
-                state.toggleFavoriteDepartement(departementCode)
-            } label: {
-                Image(systemName: isFavorite ? "star.fill" : "star")
-                    .font(.system(size: 13))
-                    .foregroundStyle(isFavorite ? theme.accent : ClassicTheme.faint)
-            }
-            .buttonStyle(.plain)
-            .help(isFavorite ? "Retirer des favoris" : "Ajouter aux favoris")
-        }
+        DepartementDetailHeader(departementCode: departementCode, name: name, accent: theme.accent, state: state) { mapFocusTick += 1 }
     }
 
     /// Domaine X : du premier mois de la série à la fin du dernier.

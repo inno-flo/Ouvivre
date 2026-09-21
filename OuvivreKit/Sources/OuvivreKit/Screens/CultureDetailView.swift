@@ -30,43 +30,7 @@ public struct CultureDetailView: View {
     public var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
-                HStack(alignment: .center, spacing: 8) {
-                    Text(departementCode)
-                        .font(CFont.rounded(20, weight: .bold))
-                        .foregroundStyle(ClassicTheme.ink)
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 3)
-                        .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
-                    Text(departementName)
-                        .font(CFont.rounded(20, weight: .bold))
-                        .foregroundStyle(ClassicTheme.ink)
-                    if let chefLieu = FranceGeoData.chefsLieux[departementCode] {
-                        Text(chefLieu)
-                            .font(CFont.rounded(18))
-                            .foregroundStyle(ClassicTheme.faint)
-                            .padding(.leading, 6)
-                        Button {
-                            mapFocusTick += 1
-                        } label: {
-                            Image(systemName: "mappin.and.ellipse")
-                                .font(CFont.rounded(13))
-                                .foregroundStyle(ClassicTheme.faint)
-                        }
-                        .buttonStyle(.plain)
-                        .help("Centrer la carte sur \(chefLieu)")
-                    }
-                    Spacer(minLength: 8)
-                    let isFavorite = state.favoriteDepartementCodes.contains(departementCode)
-                    Button {
-                        state.toggleFavoriteDepartement(departementCode)
-                    } label: {
-                        Image(systemName: isFavorite ? "star.fill" : "star")
-                            .font(.system(size: 13))
-                            .foregroundStyle(isFavorite ? theme.accent : ClassicTheme.faint)
-                    }
-                    .buttonStyle(.plain)
-                    .help(isFavorite ? "Retirer des favoris" : "Ajouter aux favoris")
-                }
+                DepartementDetailHeader(departementCode: departementCode, name: departementName, accent: theme.accent, state: state) { mapFocusTick += 1 }
 
                 DepartementMapCard(name: departementName, accent: theme.accent, focusCoordinate: FranceGeoData.chefsLieuxCoordinates[departementCode], focusTick: mapFocusTick, roundedFont: true)
 
@@ -77,7 +41,7 @@ public struct CultureDetailView: View {
             .padding(24)
             .frame(maxWidth: .infinity, alignment: .topLeading)
         }
-        .frame(minWidth: 620, minHeight: 420)
+        .departementDetailWindow()
         .environmentObject(theme)
     }
 
