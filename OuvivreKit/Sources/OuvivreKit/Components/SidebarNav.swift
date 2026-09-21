@@ -21,10 +21,6 @@ public struct SidebarNav: View {
                 ForEach(derived.navSteps) { item in
                     NavItemRow(item: item).tag(item.screen)
                 }
-            } header: {
-                Text("Sélecteur").foregroundStyle(.secondary)
-            }
-            Section {
                 HStack(spacing: 9) {
                     Image(systemName: state.favoriteDepartementCodes.isEmpty ? "star" : "star.fill").frame(width: 16)
                     Text("Favoris").font(.system(size: 13, weight: state.screen == .favoris ? .bold : .regular))
@@ -38,17 +34,23 @@ public struct SidebarNav: View {
                 }
                 .tag(ClassicScreen.favoris)
             } header: {
-                Text("Comparateur").foregroundStyle(.secondary)
-            }
-            if !derived.countrySources.isEmpty {
-                Section {
-                    Text("Sources")
-                        .font(.system(size: 13, weight: state.screen == .sources ? .bold : .regular))
-                        .tag(ClassicScreen.sources)
-                }
+                Text("Sélection").foregroundStyle(.secondary)
             }
         }
         .listStyle(.sidebar)
+        // Sources : ancré tout en bas de la sidebar, hors de la liste.
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            Button { selection.wrappedValue = .sources } label: {
+                HStack(spacing: 9) {
+                    Image(systemName: "books.vertical").frame(width: 16)
+                    Text("Sources").font(.system(size: 13, weight: state.screen == .sources ? .bold : .regular))
+                    Spacer(minLength: 4)
+                }
+                .padding(.horizontal, 12).padding(.vertical, 8)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+        }
     }
 }
 
@@ -59,8 +61,7 @@ private struct NavItemRow: View {
     /// other rows (Outils, Sources) render without a leading icon.
     private var icon: String? {
         switch item.screen {
-        case .bigMac: "chart.bar.horizontal.page"
-        case .bigMacTests: "chart.bar.horizontal.page"
+        case .selecteur: "chart.bar.horizontal.page"
         case .pays: "globe.europe.africa"
         case .geo2: "map"
         case .affiner: "bus"

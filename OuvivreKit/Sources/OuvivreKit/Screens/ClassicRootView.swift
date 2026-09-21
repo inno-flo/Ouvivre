@@ -24,7 +24,7 @@ public struct ClassicRootView: View {
     /// map instead of using the inspector — the toolbar icon stays visible
     /// on Pays regardless, it's just a no-op there for now.
     private var isFavoris: Bool { state.screen == .favoris }
-    private var isBigMac: Bool { state.screen == .bigMac || state.screen == .bigMacTests }
+    private var isBigMac: Bool { state.screen == .selecteur }
 
     private var inspectorBinding: Binding<Bool> {
         Binding(
@@ -57,10 +57,8 @@ public struct ClassicRootView: View {
                     PaysView(derived: derived)
                 } else if state.screen == .geo2 {
                     GeoView2(derived: derived)
-                } else if state.screen == .bigMac {
-                    BigMacView(derived: derived)
-                } else if state.screen == .bigMacTests {
-                    BigMacTestsView(derived: derived)
+                } else if state.screen == .selecteur {
+                    SelecteurView(derived: derived)
                 } else {
                     ScrollView { content(derived) }
                         .frame(maxWidth: .infinity)
@@ -122,7 +120,7 @@ public struct ClassicRootView: View {
                         countryName: isBigMac ? state.country : "",
                         countryFacts: isBigMac ? derived.countryFacts : [],
                         isCountryExpanded: $state.bigMacExpandedPays,
-                        showsCountryHeader: state.screen != .bigMacTests
+                        showsCountryHeader: state.screen != .selecteur
                     )
                     .inspectorColumnWidth(min: 220, ideal: 320, max: 800)
                 }
@@ -143,8 +141,7 @@ public struct ClassicRootView: View {
             case .pays: EmptyView() // rendered full-bleed outside content(), see body
             case .geo: GeoView(derived: derived)
             case .geo2: EmptyView() // rendered full-bleed outside content(), see body
-            case .bigMac: EmptyView() // rendered full-bleed outside content(), see body
-            case .bigMacTests: EmptyView() // rendered full-bleed outside content(), see body
+            case .selecteur: EmptyView() // rendered full-bleed outside content(), see body
             case .meteo: MeteoView(derived: derived)
             case .affiner: AffinerView(derived: derived)
             case .ville: VilleView(derived: derived)

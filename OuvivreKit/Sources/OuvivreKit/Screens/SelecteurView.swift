@@ -2,13 +2,13 @@ import SwiftUI
 import MapKit
 
 /// "Big Mac" (nom provisoire) — même présentation plein cadre que Géographie 2
-/// (fond MapKit + colonne flottante translucide), mais la colonne empile 3
+/// (fond MapKit + colonne flottante translucide), mais la colonne empile 4
 /// blocs rétractables (`DisclosureGroup`) qui reprennent, dans l'ordre,
 /// Pays → Régions (+ tailles de commune) → Culture. Chaque bloc
 /// hérite de l'état partagé `ClassicState`, donc les choix persistent d'un
 /// bloc à l'autre ; les blocs sont indépendants (pas d'entonnoir) : chaque réglage
 /// met à jour la carte en direct.
-public struct BigMacView: View {
+public struct SelecteurView: View {
     @EnvironmentObject var theme: ClassicTheme
     @EnvironmentObject var state: ClassicState
     @EnvironmentObject var mapState: MapPanelState
@@ -33,7 +33,7 @@ public struct BigMacView: View {
 
     // L'ouverture/fermeture des blocs vit dans `ClassicState` (pas un
     // `@State` local) pour rester persistante en quittant puis en revenant
-    // sur cet écran — sinon `BigMacView` est recréée à chaque fois et tout
+    // sur cet écran — sinon `SelecteurView` est recréée à chaque fois et tout
     // se replie.
 
     // Liste des communes correspondantes (bloc Régions) : les 30 premières
@@ -162,16 +162,16 @@ public struct BigMacView: View {
             }
         } else {
             ForEach(mapState.departementRingGroups, id: \.name) { group in
-                departementRings(group.rings, isHovered: group.name == hoveredDepartementName || group.name == selectedDepartementName)
+                departementRings(group.rings, isHovered: group.name == hoveredDepartementName, isSelected: group.name == selectedDepartementName)
             }
         }
     }
 
     @MapContentBuilder
-    private func departementRings(_ rings: [[CLLocationCoordinate2D]], isHovered: Bool) -> some MapContent {
+    private func departementRings(_ rings: [[CLLocationCoordinate2D]], isHovered: Bool, isSelected: Bool) -> some MapContent {
         ForEach(Array(rings.enumerated()), id: \.offset) { _, ring in
             MapPolygon(coordinates: ring)
-                .foregroundStyle(theme.accent.opacity(isHovered ? 0.54 : 0.16))
+                .foregroundStyle(theme.accent.opacity(isHovered ? 0.085 : 0.05))
                 .stroke(theme.accent, lineWidth: 2)
         }
     }
@@ -297,8 +297,8 @@ public struct BigMacView: View {
     // MARK: Bloc 1 — Pays
 
     private var paysBlock: some View {
-        blockDisclosure(title: "Pays", isExpanded: $state.bigMacExpandedPays, enabled: true) {
-            PaysCountryBlock(derived: derived, ink: columnInk, faint: columnFaint, showFacts: false)
+        blockDisclosure(title: "Pays", bold: true, isExpanded: $state.bigMacExpandedPays, enabled: true) {
+            PaysCountryBlock(derived: derived, ink: columnInk, faint: columnFaint, showFacts: false, countryFont: CFont.rounded(13, weight: .medium))
         }
     }
 
@@ -320,12 +320,12 @@ public struct BigMacView: View {
     private var moreCommunes: [CommuneSizeEntry] { Array(matchingCommunes.dropFirst(topCommunesCount)) }
 
     private var regionsBlock: some View {
-        blockDisclosure(title: "Géographie et Culture", isExpanded: $state.bigMacExpandedRegions, enabled: true) {
+        blockDisclosure(title: "Géographie et Culture", bold: true, isExpanded: $state.bigMacExpandedRegions, enabled: true) {
             VStack(alignment: .leading, spacing: 14) {
-                RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody)
+                RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody, labelFont: CFont.rounded(13, weight: .medium))
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Eyebrow("TAILLE DE COMMUNE", color: columnFaint)
+                    Eyebrow("Communes", color: columnFaint, font: CFont.rounded(13, weight: .medium))
                     sizeCheckbox("Village", description: CommuneSizeCategory.village.description, isOn: $state.includeVillage)
                     sizeCheckbox("Petite ville", description: CommuneSizeCategory.petiteVille.description, isOn: $state.includePetiteVille)
                     sizeCheckbox("Ville moyenne", description: CommuneSizeCategory.villeMoyenne.description, isOn: $state.includeVilleMoyenne)
@@ -340,21 +340,14 @@ public struct BigMacView: View {
                 // les pins sur la carte.
 
                 VStack(alignment: .leading, spacing: 12) {
-                    HStack(alignment: .firstTextBaseline) {
-                        Eyebrow("PROXIMITÉS", color: columnFaint)
+                    HStack(alignment: .center) {
+                        Eyebrow("Proximités", color: columnFaint, font: CFont.rounded(13, weight: .medium))
                         Spacer()
-                        Button {
-                            state.resetGeo2()
-                        } label: {
-                            Text("Réinitialiser")
-                                .font(.system(size: 13))
-                                .foregroundStyle(columnFaint)
-                        }
-                        .buttonStyle(.plain)
+                        resetButton { state.resetGeo2() }
                     }
 
                     ForEach(derived.geo2Rows) { row in
-                        CriterionRow(row: row, labelColor: columnInk, dotGrowthPerStep: 1.5) { state.setGeo2(row.id, value: $0) }
+                        CriterionRow(row: row, thumbSize: 14.4, labelFont: CFont.rounded(13, weight: .medium), labelColor: columnBody, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10, weight: .medium), tagCase: .capitalized) { state.setGeo2(row.id, value: $0) }
                             .padding(.trailing, 8)
                     }
                 }
@@ -363,7 +356,13 @@ public struct BigMacView: View {
                 // Réglages Culture transférés ici (après Proximités) depuis
                 // l'ancien bloc "Culture", désormais masqué.
                 VStack(alignment: .leading, spacing: 12) {
-                    Eyebrow("CULTURE", color: columnFaint)
+                    HStack(alignment: .center) {
+                        Eyebrow("Culture", color: columnFaint, font: CFont.rounded(13, weight: .medium))
+                        Spacer()
+                        resetButton {
+                            for entry in cultureRows { state.setGroup(cultureGroupIndex, entry.rowIndex, value: 0) }
+                        }
+                    }
                     cultureRowsContent
                 }
                 .padding(.top, 12)
@@ -372,13 +371,26 @@ public struct BigMacView: View {
         }
     }
 
+    /// Bouton « RÉINITIALISER » en pastille, commun aux en-têtes Proximités et Culture.
+    private func resetButton(action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text("Réinitialiser")
+                .font(CFont.rounded(10, weight: .medium))
+                .foregroundStyle(columnFaint)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3)
+                .overlay(Capsule().stroke(columnFaint.opacity(0.6), lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+    }
+
     /// Liste des communes correspondant aux filtres — 30 premières en clair,
     /// le reste replié derrière "AUTRES COMMUNES" (même pattern que
     /// `departementsCard` dans GeoView2).
     private var communesList: some View {
         VStack(alignment: .leading, spacing: 0) {
             if !shownCommunes.isEmpty {
-                Eyebrow("COMMUNES", color: columnFaint)
+                Eyebrow("COMMUNES", color: columnFaint, font: CFont.rounded(10, weight: .medium))
                     .padding(.bottom, 6)
 
                 VStack(spacing: 0) {
@@ -396,7 +408,7 @@ public struct BigMacView: View {
                         Image(systemName: showMoreCommunes ? "chevron.down" : "chevron.right")
                             .font(.system(size: 10, weight: .semibold))
                             .foregroundStyle(columnFaint)
-                        Eyebrow("AUTRES COMMUNES", color: columnFaint)
+                        Eyebrow("AUTRES COMMUNES", color: columnFaint, font: CFont.rounded(10, weight: .medium))
                         Spacer()
                     }
                     .padding(.top, 12)
@@ -421,7 +433,7 @@ public struct BigMacView: View {
 
     private func communeRow(_ entry: CommuneSizeEntry) -> some View {
         Text(entry.name)
-            .font(CFont.sans(14, weight: .medium))
+            .font(CFont.rounded(14, weight: .medium))
             .foregroundStyle(columnInk)
             .padding(.vertical, 6)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -442,7 +454,7 @@ public struct BigMacView: View {
                                     .foregroundStyle(.white)
                             }
                         }
-                    Text(label).font(CFont.sans(13)).foregroundStyle(columnBody)
+                    Text(label).font(CFont.rounded(13, weight: .medium)).foregroundStyle(columnBody)
                 }
             }
             .buttonStyle(.plain)
@@ -483,7 +495,7 @@ public struct BigMacView: View {
     private var cultureRowsContent: some View {
         VStack(alignment: .leading, spacing: 4) {
             ForEach(cultureRows, id: \.rowIndex) { entry in
-                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: CFont.sans(13), labelColor: columnInk, dotGrowthPerStep: 1.5) {
+                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: CFont.rounded(13, weight: .medium), labelColor: columnBody, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10, weight: .medium), tagCase: .capitalized) {
                     state.setGroup(cultureGroupIndex, entry.rowIndex, value: min($0, 2))
                 }
                 .padding(.vertical, 4)
@@ -507,7 +519,7 @@ public struct BigMacView: View {
     /// `DisclosureGroup` stylé pour matcher les panneaux flottants existants
     /// (matériau translucide de la colonne, typographie `Eyebrow`/`CFont`) —
     /// première utilisation de `DisclosureGroup` dans ce module.
-    private func blockDisclosure<Content: View>(title: String, isExpanded: Binding<Bool>, enabled: Bool, @ViewBuilder content: @escaping () -> Content) -> some View {
+    private func blockDisclosure<Content: View>(title: String, bold: Bool = false, isExpanded: Binding<Bool>, enabled: Bool, @ViewBuilder content: @escaping () -> Content) -> some View {
         // Anime explicitement le dépli/repli : `DisclosureGroup` change son
         // binding directement au clic sur le chevron, sans passer par
         // `withAnimation`, ce qui donnait un repli/dépli instantané et sec.
@@ -527,7 +539,7 @@ public struct BigMacView: View {
                 // que ce dernier sur macOS).
                 HStack(spacing: 0) {
                     Text(title.uppercased())
-                        .font(CFont.mono(11, weight: .semibold))
+                        .font(CFont.rounded(14, weight: bold ? .bold : .semibold))
                         .foregroundStyle(enabled && isExpanded.wrappedValue ? columnInk : columnFaint)
                     Spacer(minLength: 0)
                 }
@@ -540,7 +552,7 @@ public struct BigMacView: View {
         }
         .padding(.vertical, 10)
         .padding(.horizontal, 12)
-        .background(ClassicTheme.sidebarBg.opacity(0.935), in: RoundedRectangle(cornerRadius: 10))
+        .background(ClassicTheme.sidebarBg, in: RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(ClassicTheme.border.opacity(0.6), lineWidth: 1))
     }
 
@@ -620,13 +632,13 @@ private struct InfoPopoverButton: View {
     var body: some View {
         Button { showing = true } label: {
             Image(systemName: "info.circle")
-                .font(.system(size: 12))
+                .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(tint)
         }
         .buttonStyle(.plain)
         .popover(isPresented: $showing, arrowEdge: .trailing) {
             Text(text)
-                .font(CFont.sans(12))
+                .font(CFont.rounded(13, weight: .medium))
                 .foregroundStyle(ClassicTheme.body)
                 .padding(12)
                 .frame(width: 240, alignment: .leading)

@@ -1,7 +1,7 @@
 import SwiftUI
 
 public enum ClassicScreen: String, CaseIterable, Identifiable, Hashable {
-    case pays, geo, geo2, bigMac, bigMacTests, meteo, affiner, ville, sources, favoris
+    case pays, geo, geo2, selecteur, meteo, affiner, ville, sources, favoris
     public var id: Self { self }
 }
 
@@ -10,7 +10,7 @@ public enum ClassicScreen: String, CaseIterable, Identifiable, Hashable {
 /// (0...5), all mutated in place and re-derived on read.
 @MainActor
 public final class ClassicState: ObservableObject {
-    @Published public var screen: ClassicScreen = .bigMac
+    @Published public var screen: ClassicScreen = .selecteur
     @Published public var country: String = "France"
     @Published public var query: String = "France"
     @Published public var geo: [Int] = ClassicStatic.geo.map(\.1)
