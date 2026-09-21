@@ -27,6 +27,7 @@ public struct DepartementMapCard: View {
     /// `false` dans les fenêtres Météo et Culture : périmètre tracé seul, sans voile.
     var fillsDepartement = true
 
+    @State private var hoveredName: String?
     @State private var mapType: MapPlanType = .explorer
     @State private var mapPosition: MapCameraPosition = .automatic
     /// Dernière région affichée, pour que les boutons de zoom partent de la
@@ -145,15 +146,27 @@ public struct DepartementMapCard: View {
                     Map(position: $mapPosition) {
                         ForEach(names, id: \.self) { name in
                             let selected = name == selectedName
+                            let hovered = name == hoveredName
                             ForEach(Array((DepartementBoundaries.rings[name] ?? []).enumerated()), id: \.offset) { _, ring in
                                 MapPolygon(coordinates: ring)
-                                    .foregroundStyle(fillsDepartement ? accent.opacity(selected ? 0.4 : 0.16) : .clear)
+                                    .foregroundStyle(fillsDepartement ? accent.opacity(hovered ? 0.085 : 0.05) : .clear)
                                     .stroke(accent, lineWidth: selected ? 3 : 2)
                             }
                         }
                     }
                     .mapStyle(mapType.style(elevation: .automatic))
                     .mapControls {}
+                    // Survol : mêmes règles d'opacité que la carte de Big Mac Tests
+                    // (remplissage 0,05, ou 0,085 sous le curseur).
+                    .onContinuousHover { phase in
+                        guard onSelect != nil else { return }
+                        switch phase {
+                        case .active(let point):
+                            hoveredName = proxy.convert(point, from: .local).flatMap { departementName(at: $0) }
+                        case .ended:
+                            hoveredName = nil
+                        }
+                    }
                     .onTapGesture { point in
                         guard let onSelect, let coordinate = proxy.convert(point, from: .local),
                               let name = departementName(at: coordinate) else { return }
