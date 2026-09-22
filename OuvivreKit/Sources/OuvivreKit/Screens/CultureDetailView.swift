@@ -54,7 +54,10 @@ public struct CultureDetailView: View {
         return section(title: "Musées", icon: "photo.artframe", count: all.count) {
             alphabeticalGrid(regular, criterionKey: "musees")
             if !regular.isEmpty, !microFolies.isEmpty { Divider() }
-            alphabeticalGrid(microFolies, criterionKey: "musees")
+            let sortedMicroFolies = microFolies.sorted {
+                InspectorPanelView.titleCased($0).localizedStandardCompare(InspectorPanelView.titleCased($1)) == .orderedAscending
+            }
+            grid(sortedMicroFolies, criterionKey: "musees")
         }
     }
 

@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-09-20T09:34:26.722582+00:00",
+ "generatedAt": "2026-09-22T06:39:00.410175+00:00",
  "source": "culture.data.gouv.fr — Base des lieux et équipements culturels (Basilic, filtré Musée): https://static.data.gouv.fr/resources/base-des-lieux-et-equipements-culturels-basilic/20260218-084338/base-des-lieux-et-des-equipements-culturels.csv | Immeubles protégés au titre des Monuments Historiques (Mérimée): https://ministere-culture.s3.sbg.io.cloud.ovh.net/POP/merimee.csv | Liste des sites patrimoniaux remarquables (SPR, affichage): https://ministere-culture.s3.sbg.io.cloud.ovh.net/SPR/liste_sites_patrimoniaux_remarquables.csv | Liste des festivals en France: https://static.data.gouv.fr/resources/liste-des-festivals-en-france/20250827-132958/festivals-global-festivals-pl.csv",
  "departements": [
   {
@@ -8993,12 +8993,12 @@
    "codeInsee": "14",
    "nom": "Calvados",
    "scores": {
-    "musees": 46.0,
+    "musees": 44.4,
     "patrimoine": 51.3,
     "festivals": 25.1
    },
    "counts": {
-    "musees": 31,
+    "musees": 30,
     "patrimoine": 978,
     "festivals": 83,
     "spr": 11
@@ -9015,7 +9015,6 @@
      "MICRO-FOLIE NORMANDIE CABOURG PAYS D'AUGE",
      "MICRO-FOLIE PONT-LEVEQUE",
      "Tapisserie de Bayeux - MAHB musée d'art et d'histoire Baron Gérard",
-     "château",
      "musée Eugène Boudin",
      "musée Langlois",
      "musée d'art et d'histoire",

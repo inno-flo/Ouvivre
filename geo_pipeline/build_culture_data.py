@@ -81,10 +81,14 @@ def count_musees(dept_codes):
         for row in reader:
             if row.get("Type équipement ou lieu", "").strip() != "Musée":
                 continue
+            name = row.get("Nom", "").strip()
+            # Quelques lignes n'ont qu'un nom générique sans valeur
+            # informative ("château" seul, sans autre détail) — exclues.
+            if name.strip().lower() in ("château", "chateau"):
+                continue
             code = dept_code_from_insee(row.get("code_insee", "").strip())
             if code in counts:
                 counts[code] += 1
-                name = row.get("Nom", "").strip()
                 if name:
                     names[code].append(name)
     return counts, names
