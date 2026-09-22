@@ -137,6 +137,7 @@ public struct CultureDetailView: View {
                 Text(group.letter)
                     .font(CFont.rounded(13, weight: .bold))
                     .foregroundStyle(.black)
+                    .padding(.leading, 23)
                 grid(group.names, criterionKey: criterionKey)
             }
         }
