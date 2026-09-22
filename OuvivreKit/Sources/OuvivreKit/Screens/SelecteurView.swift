@@ -293,30 +293,25 @@ public struct SelecteurView: View {
     /// visible à droite de la colonne de réglages). Inspecteur ouvert, la
     /// caméra n'est pas touchée.
     private func fitSelectedDepartements(animated: Bool, names: [String]? = nil) {
-        guard !mapState.bigMacInspectorVisible, viewSize.width > 0, viewSize.height > 0 else { return }
-        let points = (names ?? matchingDepartementNames).flatMap { DepartementBoundaries.rings[$0] ?? [] }.flatMap { $0 }.map { MKMapPoint($0) }
-        guard let first = points.first else { return }
-        var rect = MKMapRect(origin: first, size: MKMapSize(width: 0, height: 0))
-        for pt in points.dropFirst() { rect = rect.union(MKMapRect(origin: pt, size: MKMapSize(width: 0, height: 0))) }
-        guard rect.width > 0, rect.height > 0 else { return }
-
-        // Part de la largeur occupée par la colonne de réglages, à gauche :
-        // on élargit le rect à gauche pour que les départements restent
-        // cadrés dans la portion visible, à droite de la colonne. On passe
-        // ensuite par un `MKMapRect` (plutôt qu'un `MKCoordinateRegion`
-        // calculé à la main) pour que MapKit tienne compte du rapport
-        // largeur/hauteur réel de la vue — sans ça, un des deux axes forçait
-        // un dézoom supplémentaire pour respecter l'aspect ratio, d'où
-        // l'impression de zoom trop distant dès les premiers critères
-        // choisis (peu de départements, mais dispersés sur le territoire).
-        let margin = 1.12
+        guard !mapState.bigMacInspectorVisible, viewSize.width > 0 else { return }
+        let coords = (names ?? matchingDepartementNames).flatMap { DepartementBoundaries.rings[$0] ?? [] }.flatMap { $0 }
+        guard let first = coords.first else { return }
+        var minLat = first.latitude, maxLat = first.latitude, minLon = first.longitude, maxLon = first.longitude
+        for c in coords {
+            minLat = min(minLat, c.latitude); maxLat = max(maxLat, c.latitude)
+            minLon = min(minLon, c.longitude); maxLon = max(maxLon, c.longitude)
+        }
+        // Part de la largeur occupée par la colonne de réglages, à gauche.
         let f = min(0.85, (columnWidth + columnOuterPadding * 2) / viewSize.width)
-        let padded = rect.insetBy(dx: -rect.width * (margin - 1) / 2, dy: -rect.height * (margin - 1) / 2)
-        let extraLeft = padded.width * f / (1 - f)
-        let target = MKMapRect(x: padded.minX - extraLeft, y: padded.minY, width: padded.width + extraLeft, height: padded.height)
-
-        if animated { withAnimation(.easeInOut(duration: 0.4)) { position = .rect(target) } } else { position = .rect(target) }
-        lastRegion = MKCoordinateRegion(target)
+        let margin = 1.12
+        let fullLon = min(360, max(0.05, (maxLon - minLon) * margin / (1 - f)))
+        let lat = min(170, max(0.05, (maxLat - minLat) * margin))
+        let target = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: (minLat + maxLat) / 2, longitude: (minLon + maxLon) / 2 - f / 2 * fullLon),
+            span: MKCoordinateSpan(latitudeDelta: lat, longitudeDelta: fullLon)
+        )
+        if animated { withAnimation(.easeInOut(duration: 0.4)) { position = .region(target) } } else { position = .region(target) }
+        lastRegion = target
     }
 
     // MARK: Colonne
