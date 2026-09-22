@@ -689,21 +689,26 @@ public struct MeteoDetailView: View {
     /// températures et précipitations.
     private var monthTable: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Détail par mois des températures (°C) et précipitations (mm)").font(CFont.rounded(13, weight: .medium)).foregroundStyle(ClassicTheme.ink)
-            // Sur sa propre ligne, à largeur naturelle : trois boutons avec
-            // icône ne tiennent pas dans un sélecteur segmenté à côté du titre.
-            HStack(spacing: 8) {
+            // Titre et boutons sur une seule ligne, alignés sur leur ligne de
+            // base — le titre passe à la ligne s'il manque de place plutôt
+            // que de pousser les boutons hors du cadre.
+            HStack(alignment: .firstTextBaseline, spacing: 12) {
+                Text("Détail par mois des températures (°C) et précipitations (mm)")
+                    .font(CFont.rounded(13, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+                Spacer(minLength: 8)
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
                 ForEach(Metric.available) { m in
                     let isOn = metric == m
                     Button { metric = m } label: {
                         Label(m.rawValue, systemImage: m.icon)
-                            .font(CFont.sans(12, weight: .medium))
+                            .font(CFont.rounded(12, weight: .medium))
                             .foregroundStyle(isOn ? Color.white : ClassicTheme.body)
                             .padding(.horizontal, 10).padding(.vertical, 5)
                             .background(isOn ? theme.accent : ClassicTheme.track.opacity(0.6), in: Capsule())
                             .fixedSize()
                     }
                     .buttonStyle(.plain)
+                }
                 }
             }
             VStack(spacing: 0) {
