@@ -361,7 +361,7 @@ public struct FavorisView: View {
     private var table: some View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
-                Text("Critères").font(CFont.rounded(13, weight: .medium)).foregroundStyle(ClassicTheme.faint)
+                Color.clear
                     .frame(width: labelColW, alignment: .leading).padding(.horizontal, 18).padding(.vertical, 14)
                 ForEach(departements, id: \.codeInsee) { d in
                     headerContent(d)
@@ -393,7 +393,7 @@ public struct FavorisView: View {
             ForEach(sections) { section in
                 if !section.title.isEmpty {
                 HStack(spacing: 0) {
-                    Eyebrow(section.title, color: ClassicTheme.faint, font: CFont.rounded(13, weight: .medium))
+                    Eyebrow(section.title, color: ClassicTheme.faint, font: CFont.rounded(13, weight: .medium), tracking: 1)
                         .padding(.horizontal, 18).padding(.vertical, 8)
                     Spacer(minLength: 0)
                 }

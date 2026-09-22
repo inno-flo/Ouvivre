@@ -8,18 +8,20 @@ public struct Eyebrow: View {
     /// Override for the default IBM Plex Mono font — e.g. Big Mac SF swaps
     /// in SF Pro Medium here without touching every other `Eyebrow` caller.
     var font: Font?
+    var tracking: CGFloat = 1.4
 
-    public init(_ text: String, color: Color, size: CGFloat = 10, font: Font? = nil) {
+    public init(_ text: String, color: Color, size: CGFloat = 10, font: Font? = nil, tracking: CGFloat = 1.4) {
         self.text = text
         self.color = color
         self.size = size
         self.font = font
+        self.tracking = tracking
     }
 
     public var body: some View {
         Text(text)
             .font(font ?? CFont.mono(size, weight: .medium))
-            .tracking(1.4)
+            .tracking(tracking)
             .foregroundStyle(color)
     }
 }
