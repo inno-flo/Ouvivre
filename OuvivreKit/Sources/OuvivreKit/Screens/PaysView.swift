@@ -121,7 +121,6 @@ public struct PaysView: View {
 /// hors de `PaysView` pour être réutilisé tel quel par `BigMacView` (bloc 1).
 public struct PaysCountryBlock: View {
     @EnvironmentObject var state: ClassicState
-    @EnvironmentObject var theme: ClassicTheme
     let derived: ClassicDerived
     let ink: Color
     let faint: Color
@@ -148,9 +147,9 @@ public struct PaysCountryBlock: View {
                             .font(countryFont)
                             .foregroundStyle(c.selected ? .white : ink)
                             .padding(.horizontal, 12).padding(.vertical, 8)
-                            .background(c.selected ? theme.accent : .clear)
+                            .background(c.selected ? ClassicTheme.ink : .clear)
                             .clipShape(Capsule())
-                            .overlay(Capsule().stroke(c.selected ? theme.accent : ClassicTheme.border, lineWidth: 1))
+                            .overlay(Capsule().stroke(c.selected ? ClassicTheme.ink : ClassicTheme.border, lineWidth: 1))
                     }
                     .buttonStyle(.plain)
                 }
