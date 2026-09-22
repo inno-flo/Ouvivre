@@ -361,8 +361,8 @@ public struct MeteoDetailView: View {
         if !paragraphs.isEmpty {
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(paragraphs, id: \.title) { paragraph in
-                    Text(paragraph.title + " ").font(CFont.sans(13, weight: .semibold)).foregroundColor(ClassicTheme.ink)
-                        + Text(paragraph.text).font(CFont.sans(13)).foregroundColor(ClassicTheme.body)
+                    Text(paragraph.title + " ").font(CFont.rounded(13, weight: .semibold)).foregroundColor(ClassicTheme.ink)
+                        + Text(paragraph.text).font(CFont.rounded(13)).foregroundColor(ClassicTheme.body)
                 }
             }
             .lineSpacing(2)
@@ -665,12 +665,12 @@ public struct MeteoDetailView: View {
                         HStack(spacing: 5) {
                             Image(systemName: "thermometer.medium").font(.system(size: 13)).foregroundStyle(theme.accent)
                             Text(temps.isEmpty ? "–" : "\(frDecimal(temps.reduce(0, +) / Double(temps.count))) °C")
-                                .font(CFont.sans(16, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
+                                .font(CFont.rounded(16, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
                         }
                         HStack(spacing: 5) {
                             Image(systemName: "cloud.rain").font(.system(size: 12)).foregroundStyle(theme.accent)
                             Text(rain.isEmpty ? "–" : String(format: "%.0f mm", rain.reduce(0, +)))
-                                .font(CFont.sans(13)).foregroundStyle(ClassicTheme.sub)
+                                .font(CFont.rounded(13)).foregroundStyle(ClassicTheme.sub)
                         }
                     }
                     .padding(12)
@@ -724,7 +724,7 @@ public struct MeteoDetailView: View {
                 ForEach(1...12, id: \.self) { m in
                     let isSelected = selectedMonth == m
                     HStack(spacing: 0) {
-                        Text(Self.monthName(m)).font(CFont.sans(13, weight: isSelected ? .semibold : .regular)).foregroundStyle(ClassicTheme.body)
+                        Text(Self.monthName(m)).font(CFont.rounded(13, weight: isSelected ? .semibold : .regular)).foregroundStyle(ClassicTheme.body)
                             .frame(width: 110, alignment: .leading)
                         ForEach(years, id: \.self) { y in
                             let p = series.first { year($0) == y && month($0) == m }
@@ -741,7 +741,7 @@ public struct MeteoDetailView: View {
                     .onTapGesture { selectedMonth = isSelected ? nil : m }
                 }
             }
-            Text("Valeurs en \(unit).").font(CFont.sans(11)).foregroundStyle(ClassicTheme.faint2)
+            Text("Valeurs en \(unit).").font(CFont.rounded(11)).foregroundStyle(ClassicTheme.faint2)
         }
         .padding(16)
         .background(.white, in: RoundedRectangle(cornerRadius: 10))

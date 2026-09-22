@@ -8,7 +8,7 @@ public struct CriterionRow: View {
     let row: WeightedRow
     var thumbSize: CGFloat = 16
     var trackHeight: CGFloat = 4
-    var labelFont: Font = CFont.sans(14, weight: .medium)
+    var labelFont: Font = CFont.rounded(14, weight: .medium)
     var labelColor: Color = ClassicTheme.ink
     /// Multiplicateur supplémentaire appliqué à toutes les puces sauf la
     /// première (dont la taille de base reste inchangée) — utilisé par les
@@ -20,8 +20,8 @@ public struct CriterionRow: View {
     /// 1,5 = +50 % : "important" 50 % plus grosse qu'"indifférent",
     /// "déterminant" 50 % plus grosse qu'"important").
     var dotGrowthPerStep: CGFloat = 1.25
-    /// Override for the tag's default IBM Plex Mono font — e.g. Big Mac SF
-    /// swaps in SF Pro Medium here without touching every other caller.
+    /// Override for the tag's default font — every active call site passes
+    /// an explicit `CFont.rounded(...)` (SF Pro Rounded).
     var tagFont: Font?
     /// Casse du tag : `.upper` par défaut (`WeightedRow.tag`), ou minuscules /
     /// majuscule initiale à partir du libellé brut.
@@ -29,7 +29,7 @@ public struct CriterionRow: View {
     var tagCase: TagCase = .upper
     let onChange: (Int) -> Void
 
-    public init(row: WeightedRow, thumbSize: CGFloat = 16, trackHeight: CGFloat = 4, labelFont: Font = CFont.sans(14, weight: .medium), labelColor: Color = ClassicTheme.ink, extraDotScaleFromSecond: CGFloat = 1.0, dotGrowthPerStep: CGFloat = 1.25, tagFont: Font? = nil, tagCase: TagCase = .upper, onChange: @escaping (Int) -> Void) {
+    public init(row: WeightedRow, thumbSize: CGFloat = 16, trackHeight: CGFloat = 4, labelFont: Font = CFont.rounded(14, weight: .medium), labelColor: Color = ClassicTheme.ink, extraDotScaleFromSecond: CGFloat = 1.0, dotGrowthPerStep: CGFloat = 1.25, tagFont: Font? = nil, tagCase: TagCase = .upper, onChange: @escaping (Int) -> Void) {
         self.row = row
         self.thumbSize = thumbSize
         self.trackHeight = trackHeight
@@ -53,12 +53,12 @@ public struct CriterionRow: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 9) {
-            HStack(alignment: .firstTextBaseline) {
-                Text(row.label).font(labelFont).foregroundStyle(labelColor)
-                Spacer()
+            HStack(alignment: .firstTextBaseline, spacing: 5) {
+                Text("\(row.label) :").font(labelFont).foregroundStyle(labelColor)
                 Text(tagText)
                     .font(tagFont ?? CFont.mono(11, weight: .medium))
                     .foregroundStyle(row.value >= row.maxValue - 1 ? theme.accent : (row.value == 0 ? ClassicTheme.faint2 : ClassicTheme.faint))
+                Spacer(minLength: 0)
             }
             GeometryReader { geo in
                 // La piste utile est réduite de `thumbSize` de chaque côté

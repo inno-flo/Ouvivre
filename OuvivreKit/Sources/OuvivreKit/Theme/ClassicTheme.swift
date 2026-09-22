@@ -98,16 +98,20 @@ public extension Color {
 }
 
 public enum CFont {
-    /// Archivo (display/body); falls back to system rounded-ish sans if the
-    /// font isn't bundled — see the app README for adding the .ttf files.
+    /// Archivo (display/body) — conservé pour compatibilité, non utilisé par
+    /// les vues actives de l'app (toutes en SF Pro via `.rounded`/`.mono`) ;
+    /// tombe sur le sans système si la police n'est pas embarquée.
     public static func sans(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
         .custom("Archivo", size: size).weight(weight)
     }
-    /// SF Pro Rounded (police système, design arrondi) — Big Mac tests et son inspecteur.
+    /// SF Pro Rounded (police système, design arrondi) — police de corps par
+    /// défaut de toutes les vues actives de l'app.
     public static func rounded(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
         .system(size: size, weight: weight, design: .rounded)
     }
-    /// IBM Plex Mono for labels/numerics.
+    /// SF Mono (police système, design monospace) — pour libellés/valeurs
+    /// numériques. Note : un ancien commentaire mentionnait "IBM Plex Mono",
+    /// mais c'est bien la police monospace système qui est utilisée ici.
     public static func mono(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
         .system(size: size, weight: weight, design: .monospaced)
     }

@@ -14,7 +14,7 @@ public struct SourcesView: View {
         VStack(alignment: .leading, spacing: 0) {
             Eyebrow("SOURCES", color: theme.accent).padding(.bottom, 16)
             Text("Références ouvertes utilisées pour les profils pays et les classements de livabilité.")
-                .font(CFont.sans(15))
+                .font(CFont.rounded(15))
                 .foregroundStyle(ClassicTheme.sub)
                 .frame(maxWidth: 460, alignment: .leading)
                 .padding(.bottom, 24)
@@ -49,7 +49,7 @@ public struct SourcesView: View {
                 Eyebrow("FRAÎCHEUR DES DONNÉES — BIG MAC", color: ClassicTheme.faint).padding(.bottom, 10)
                 ForEach(freshnessRows, id: \.label) { row in
                     HStack(alignment: .top) {
-                        Text(row.label).font(CFont.sans(12)).foregroundStyle(ClassicTheme.body)
+                        Text(row.label).font(CFont.rounded(12)).foregroundStyle(ClassicTheme.body)
                         Spacer()
                         Text(row.status)
                             .font(CFont.mono(11, weight: .medium))
@@ -78,7 +78,7 @@ public struct SourcesView: View {
                 ForEach(sources) { s in
                     Link(destination: URL(string: s.url) ?? URL(string: "https://")!) {
                         Text(s.label)
-                            .font(CFont.sans(13))
+                            .font(CFont.rounded(13))
                             .foregroundStyle(ClassicTheme.body)
                             .underline()
                     }
@@ -96,7 +96,7 @@ public struct SourcesView: View {
                 Eyebrow("LIVABILITÉ — CLASSEMENTS", color: ClassicTheme.faint).padding(.bottom, 10)
                 ForEach(ClassicStatic.rankings) { r in
                     HStack {
-                        Text(r.key).font(CFont.sans(12)).foregroundStyle(ClassicTheme.body)
+                        Text(r.key).font(CFont.rounded(12)).foregroundStyle(ClassicTheme.body)
                         Spacer()
                         Text(r.value).font(CFont.mono(11, weight: .medium)).foregroundStyle(ClassicTheme.ink)
                     }

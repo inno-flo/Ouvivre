@@ -5,8 +5,9 @@ public struct Eyebrow: View {
     let text: String
     var color: Color
     var size: CGFloat = 10
-    /// Override for the default IBM Plex Mono font — e.g. Big Mac SF swaps
-    /// in SF Pro Medium here without touching every other `Eyebrow` caller.
+    /// Override for the default font — every active call site now passes
+    /// an explicit `CFont.rounded(...)`, but the default below matches that
+    /// same convention (SF Pro Rounded) rather than the old monospaced one.
     var font: Font?
     var tracking: CGFloat = 1.4
 
@@ -20,7 +21,7 @@ public struct Eyebrow: View {
 
     public var body: some View {
         Text(text)
-            .font(font ?? CFont.mono(size, weight: .medium))
+            .font(font ?? CFont.rounded(size, weight: .medium))
             .tracking(tracking)
             .foregroundStyle(color)
     }
