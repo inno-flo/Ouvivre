@@ -95,7 +95,7 @@ public struct MeteoDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 header
-                DepartementMapCard(name: name, accent: theme.accent, focusCoordinate: FranceGeoData.chefsLieuxCoordinates[departementCode], focusTick: mapFocusTick)
+                DepartementMapCard(name: name, accent: theme.accent, focusCoordinate: FranceGeoData.chefsLieuxCoordinates[departementCode], focusTick: mapFocusTick, roundedFont: true)
                 if Self.showSynthesis { synthesisView }
                 if series.isEmpty {
                     Text("Aucune donnée pour ce département.")
@@ -608,7 +608,7 @@ public struct MeteoDetailView: View {
     private func chartCard<C: View, T: View>(title: String, yTicks: [Double]? = nil, @ViewBuilder trailing: () -> T, @ViewBuilder chart: () -> C) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .center) {
-                Text(title).font(CFont.rounded(12)).foregroundStyle(ClassicTheme.ink)
+                Text(title).font(CFont.rounded(13, weight: .medium)).foregroundStyle(ClassicTheme.ink)
                 Spacer(minLength: 8)
                 trailing()
             }
@@ -653,7 +653,7 @@ public struct MeteoDetailView: View {
     /// disponibles (première et dernière années partielles).
     private var yearlySummary: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Moyennes annuelles").font(CFont.sans(13, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+            Text("Moyennes annuelles").font(CFont.rounded(13, weight: .medium)).foregroundStyle(ClassicTheme.ink)
             HStack(spacing: 12) {
                 ForEach(years, id: \.self) { y in
                     let pts = series.filter { year($0) == y }
@@ -661,6 +661,7 @@ public struct MeteoDetailView: View {
                     let rain = pts.compactMap(\.precipitation)
                     VStack(alignment: .leading, spacing: 4) {
                         Text(String(y)).font(CFont.rounded(11, weight: .bold)).foregroundStyle(ClassicTheme.ink)
+                            .padding(.bottom, 3)
                         HStack(spacing: 5) {
                             Image(systemName: "thermometer.medium").font(.system(size: 13)).foregroundStyle(theme.accent)
                             Text(temps.isEmpty ? "–" : "\(frDecimal(temps.reduce(0, +) / Double(temps.count))) °C")
@@ -671,7 +672,6 @@ public struct MeteoDetailView: View {
                             Text(rain.isEmpty ? "–" : String(format: "%.0f mm", rain.reduce(0, +)))
                                 .font(CFont.sans(13)).foregroundStyle(ClassicTheme.sub)
                         }
-                        Text("\(pts.count) mois").font(CFont.sans(11)).foregroundStyle(ClassicTheme.faint2)
                     }
                     .padding(12)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -680,13 +680,16 @@ public struct MeteoDetailView: View {
                 }
             }
         }
+        .padding(16)
+        .background(.white, in: RoundedRectangle(cornerRadius: 10))
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(ClassicTheme.border, lineWidth: 1))
     }
 
     /// Tableau mois (lignes) × années (colonnes), commutable entre
     /// températures et précipitations.
     private var monthTable: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Détail par mois des températures (°C) et précipitations (mm)").font(CFont.sans(13, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+            Text("Détail par mois des températures (°C) et précipitations (mm)").font(CFont.rounded(13, weight: .medium)).foregroundStyle(ClassicTheme.ink)
             // Sur sa propre ligne, à largeur naturelle : trois boutons avec
             // icône ne tiennent pas dans un sélecteur segmenté à côté du titre.
             HStack(spacing: 8) {
