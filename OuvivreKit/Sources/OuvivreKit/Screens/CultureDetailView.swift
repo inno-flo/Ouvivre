@@ -52,9 +52,9 @@ public struct CultureDetailView: View {
         let microFolies = all.filter { $0.localizedCaseInsensitiveContains("micro-folie") || $0.localizedCaseInsensitiveContains("microfolie") }
         let regular = all.filter { !microFolies.contains($0) }
         return section(title: "Musées", icon: "photo.artframe", count: all.count) {
-            grid(regular, criterionKey: "musees")
+            alphabeticalGrid(regular, criterionKey: "musees")
             if !regular.isEmpty, !microFolies.isEmpty { Divider() }
-            grid(microFolies, criterionKey: "musees")
+            alphabeticalGrid(microFolies, criterionKey: "musees")
         }
     }
 
@@ -62,11 +62,11 @@ public struct CultureDetailView: View {
         let monuments = InspectorPanelView.dedupedNames(CultureScores.names(forDepartementCode: departementCode, criterionKey: "patrimoine"), mergeVariants: false)
         let spr = CultureScores.names(forDepartementCode: departementCode, criterionKey: "spr")
         return section(title: "Lieux du patrimoine", icon: "building.classical.columns", count: monuments.count) {
-            grid(monuments, criterionKey: "patrimoine")
+            alphabeticalGrid(monuments, criterionKey: "patrimoine")
             if !spr.isEmpty {
                 Divider()
                 (Text("Sites patrimoniaux remarquables").foregroundStyle(.black) + Text(" · \(spr.count)").foregroundStyle(ClassicTheme.faint))
-                    .font(CFont.rounded(11, weight: .semibold))
+                    .font(CFont.rounded(12, weight: .semibold))
                 grid(spr, criterionKey: "spr")
             }
         }
@@ -87,8 +87,57 @@ public struct CultureDetailView: View {
                     (Text(discipline.prefix(1).uppercased() + discipline.dropFirst().lowercased()).foregroundStyle(.black) + Text(" · \(byDiscipline[discipline]!.count)").foregroundStyle(ClassicTheme.faint))
                         .font(CFont.rounded(11, weight: .semibold))
                         .padding(.top, 12)
-                    grid(byDiscipline[discipline]!, criterionKey: "festivals")
+                    alphabeticalGrid(byDiscipline[discipline]!, criterionKey: "festivals")
                 }
+            }
+        }
+    }
+
+    /// Regroupe des noms par ordre alphabétique, une entrée par lettre de
+    /// changement de rang (utilisé pour la liste des lieux du patrimoine).
+    private struct AlphabeticalGroup: Identifiable {
+        let letter: String
+        let names: [String]
+        var id: String { letter }
+    }
+
+    /// Premier chiffre ou lettre d'un nom, en ignorant toute ponctuation de
+    /// tête (guillemets, etc.) — ex. `"villa "le manoir""` classée sous L,
+    /// pas sous `"`. Un chiffre de tête est conservé tel quel et classé
+    /// avant les lettres ; une lettre accentuée est classée avec sa lettre
+    /// de base (É → E).
+    private func leadingLetter(_ name: String) -> String {
+        let displayName = InspectorPanelView.titleCased(name)
+        guard let char = displayName.first(where: { $0.isLetter || $0.isNumber }) else { return "" }
+        if char.isNumber { return String(char) }
+        return String(char).folding(options: .diacriticInsensitive, locale: nil).uppercased()
+    }
+
+    private func alphabeticalGroups(_ names: [String]) -> [AlphabeticalGroup] {
+        let sorted = names.sorted {
+            InspectorPanelView.titleCased($0).localizedStandardCompare(InspectorPanelView.titleCased($1)) == .orderedAscending
+        }
+        var groups: [AlphabeticalGroup] = []
+        for name in sorted {
+            let letter = leadingLetter(name)
+            if let last = groups.last, last.letter == letter {
+                groups[groups.count - 1] = AlphabeticalGroup(letter: letter, names: last.names + [name])
+            } else {
+                groups.append(AlphabeticalGroup(letter: letter, names: [name]))
+            }
+        }
+        return groups
+    }
+
+    /// Liste répartie en grille, triée par ordre alphabétique et précédée
+    /// d'une lettre de rang à chaque changement.
+    private func alphabeticalGrid(_ names: [String], criterionKey: String) -> some View {
+        ForEach(alphabeticalGroups(names)) { group in
+            VStack(alignment: .leading, spacing: 8) {
+                Text(group.letter)
+                    .font(CFont.rounded(13, weight: .bold))
+                    .foregroundStyle(.black)
+                grid(group.names, criterionKey: criterionKey)
             }
         }
     }
@@ -109,8 +158,8 @@ public struct CultureDetailView: View {
                         .foregroundStyle(ClassicTheme.faint)
                         .frame(width: 11)
                     Image(systemName: icon).foregroundStyle(theme.accent)
-                    (Text(title).foregroundStyle(.black) + Text(" · \(count)").foregroundStyle(ClassicTheme.faint))
-                        .font(CFont.rounded(12))
+                    (Text(title).foregroundStyle(ClassicTheme.body) + Text(" · \(count)").foregroundStyle(ClassicTheme.faint))
+                        .font(CFont.rounded(13, weight: .medium))
                     Spacer()
                 }
                 .contentShape(Rectangle())
