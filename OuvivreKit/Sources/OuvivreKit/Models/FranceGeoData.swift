@@ -103,6 +103,20 @@ public enum FranceGeoData {
         return weight >= maxWeight ? determinantPercentile : importantPercentile
     }
 
+    /// Nombre de critères manqués toléré quand plusieurs filtres sont actifs
+    /// en même temps : 0 jusqu'à 2 critères, 1 à partir de 3, 2 à partir de 5.
+    ///
+    /// Chaque filtre ne retient qu'une fraction des départements, donc les
+    /// cumuler en ET strict vide le résultat (6 critères de proximité → 0
+    /// département, aucun n'étant à la fois côtier, montagneux, lacustre,
+    /// boisé et frontalier). Mais tolérer un raté dès le premier critère
+    /// annule le filtre : "Mer et océan" seul sur déterminant laissait passer
+    /// la Haute-Vienne. D'où le palier — la tolérance n'apparaît que lorsque
+    /// les exigences commencent réellement à se concurrencer.
+    public static func allowedMisses(activeFilterCount: Int) -> Int {
+        max(0, (activeFilterCount - 1) / 2)
+    }
+
     /// Whether `dep` passes the hard filter for `key` at `weight` — only
     /// engages once `weight` reaches `maxWeight` (the slider's top value,
     /// "déterminant"); anything below stays a pure weight in

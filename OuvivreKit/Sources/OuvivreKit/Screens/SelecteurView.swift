@@ -242,17 +242,27 @@ public struct SelecteurView: View {
     /// plafonnés aux 10 mieux classés seulement si un critère est réglé.
     private var matchingDepartementNames: [String] {
         let weights = cultureWeights
-        // Un critère Culture à "déterminant" (poids 3) devient lui
+        // Un critère Culture à "déterminant" (poids 2) devient lui
         // aussi une condition ET, au même titre que Mer/Pays étranger côté
         // proximité (voir `rankedDepartements(maxWeight:)`) — sinon Festivals
         // à "déterminant" ne fait que réordonner les départements qui ont
         // déjà passé les filtres de proximité, sans jamais en écarter aucun.
+        // Même tolérance progressive qu'en proximité (voir
+        // `FranceGeoData.allowedMisses`), comptée sur les seuls critères
+        // Culture : les 3 exigés à la fois ne laissaient que 3 départements
+        // sur 101, alors que le Rhône ou les Bouches-du-Rhône n'en ratent
+        // qu'un seul.
+        let activeCultureFilters = weights.prefix(CultureScores.criterionKeys.count).filter { $0 > 0 }.count
+        let allowedCultureMisses = FranceGeoData.allowedMisses(activeFilterCount: activeCultureFilters)
         let ranked = derived.rankedDepartements(weights: state.geo2, maxWeight: 2)
             .filter { matchingDepartementCodes.contains($0.dep.codeInsee) }
             .filter { entry in
-                CultureScores.criterionKeys.enumerated().allSatisfy { i, key in
-                    i >= weights.count || CultureScores.passesHardFilter(forDepartementCode: entry.dep.codeInsee, key: key, weight: weights[i], maxWeight: 2)
+                let misses = CultureScores.criterionKeys.enumerated().reduce(0) { count, pair in
+                    let (i, key) = pair
+                    guard i < weights.count else { return count }
+                    return CultureScores.passesHardFilter(forDepartementCode: entry.dep.codeInsee, key: key, weight: weights[i], maxWeight: 2) ? count : count + 1
                 }
+                return misses <= allowedCultureMisses
             }
             .map { entry -> (name: String, score: Double) in
                 let cultureScore = CultureScores.weightedScore(forDepartementCode: entry.dep.codeInsee, weights: weights)
@@ -320,7 +330,9 @@ public struct SelecteurView: View {
     private var moreCommunes: [CommuneSizeEntry] { Array(matchingCommunes.dropFirst(topCommunesCount)) }
 
     private var regionsBlock: some View {
-        blockDisclosure(title: "Géographie et Culture", bold: true, isExpanded: $state.bigMacExpandedRegions, enabled: true) {
+        // Réservé à la France (données départementales) : pour tout autre pays
+        // le bloc est replié et ne peut pas être déplié.
+        blockDisclosure(title: "Géographie et Culture", bold: true, isExpanded: $state.bigMacExpandedRegions, enabled: state.country == "France") {
             VStack(alignment: .leading, spacing: 14) {
                 RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody, labelFont: CFont.rounded(13, weight: .medium))
 

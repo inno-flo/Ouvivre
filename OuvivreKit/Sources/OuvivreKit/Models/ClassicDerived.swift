@@ -61,11 +61,21 @@ public struct ClassicDerived {
         // handful of discrete buckets like "mer".
         let paysEtrangerIndex = FranceGeoData.criterionKeys.firstIndex(of: "paysEtranger")!
         let paysEtrangerWeight = (paysEtrangerIndex < weights.count && !excluding.contains(paysEtrangerIndex)) ? weights[paysEtrangerIndex] : 0
+        let activeFilterCount = hardFilterWeights.filter { $0.weight > 0 }.count + (paysEtrangerWeight > 0 ? 1 : 0)
+        let allowedMisses = FranceGeoData.allowedMisses(activeFilterCount: activeFilterCount)
         return FranceGeoData.departements
             .filter { !(state.excludeOverseas && $0.isOverseas) }
             .filter { !(state.excludeCorse && $0.isCorse) }
-            .filter { dep in hardFilterWeights.allSatisfy { FranceGeoData.passesHardFilter(dep, key: $0.key, weight: $0.weight, maxWeight: maxWeight) } }
-            .filter { FranceGeoData.passesPaysEtrangerFilter($0, weight: paysEtrangerWeight, maxWeight: maxWeight) }
+            // Un ou deux critères réglés s'appliquent en ET strict ; au-delà,
+            // un raté est toléré (deux à partir de 5 critères), sinon leurs
+            // exigences se concurrencent au point de tout éliminer — voir
+            // `FranceGeoData.allowedMisses`.
+            .filter { dep in
+                let misses = hardFilterWeights.reduce(0) { count, entry in
+                    FranceGeoData.passesHardFilter(dep, key: entry.key, weight: entry.weight, maxWeight: maxWeight) ? count : count + 1
+                } + (FranceGeoData.passesPaysEtrangerFilter(dep, weight: paysEtrangerWeight, maxWeight: maxWeight) ? 0 : 1)
+                return misses <= allowedMisses
+            }
             .map { ($0, FranceGeoData.weightedScore($0, weights: weights, excluding: excluding)) }
             .sorted { $0.1 > $1.1 }
     }
