@@ -157,8 +157,8 @@ public struct MeteoDetailView: View {
                             }
                         }
                         .chartForegroundStyleScale(Self.showFeltTemperature
-                            ? ["Moyenne": theme.accent, "Ressentie": Color(hex: 0x2F7F8F), "Maximale": Color(hex: 0xD98A1F), "Record absolu": Color(hex: 0x8E3B6E)]
-                            : ["Moyenne": theme.accent, "Maximale": Color(hex: 0xD98A1F), "Record absolu": Color(hex: 0x8E3B6E)])
+                            ? ["Moyenne": Color(hex: 0x5B9BD5), "Ressentie": Color(hex: 0x2F7F8F), "Maximale": Color(hex: 0xE58A2A), "Record absolu": Color(hex: 0xD1382E)]
+                            : ["Moyenne": Color(hex: 0x5B9BD5), "Maximale": Color(hex: 0xE58A2A), "Record absolu": Color(hex: 0xD1382E)])
                         .chartXSelection(value: $hoveredTemperatureDate)
                         .chartGesture { proxy in monthTap(proxy, points: points) }
                         .chartYScale(domain: temperatureAxis.domain)
@@ -171,7 +171,7 @@ public struct MeteoDetailView: View {
                             if rainGrouping == .month {
                                 ForEach(points) { p in
                                     BarMark(x: .value("Mois", p.date, unit: .month), y: .value("mm", p.precipitation ?? 0))
-                                        .foregroundStyle((selectedMonth == month(p) ? ClassicTheme.ink : theme.accent).opacity(p.partial ? 0.4 : 0.8))
+                                        .foregroundStyle((selectedMonth == month(p) ? Color(hex: 0x1B3A5C) : Color(hex: 0x7EC8E3)).opacity(p.partial ? 0.4 : 0.8))
                                 }
                                 ForEach(points.filter { selectedMonth == month($0) }) { p in
                                     PointMark(x: .value("Mois", p.date, unit: .month), y: .value("mm", p.precipitation ?? 0))
@@ -225,7 +225,10 @@ public struct MeteoDetailView: View {
             .padding(24)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .departementDetailWindow()
+        // Fond blanc pur (au lieu du fond crème partagé des fenêtres de
+        // détail) : demande spécifique à cette fenêtre.
+        .background(.white)
+        .frame(minWidth: 760, minHeight: 640)
         // Flèches gauche/droite : mois précédent/suivant de la sélection
         // (graphiques et tableau), sans effet tant qu'aucun mois n'est
         // sélectionné.
@@ -484,7 +487,7 @@ public struct MeteoDetailView: View {
                         // Le nombre du record de température est en rouge.
                         if line.hasPrefix("Record ") {
                             Text("Record ").font(CFont.rounded(12, weight: .medium)).foregroundColor(ClassicTheme.ink)
-                                + Text(line.dropFirst("Record ".count)).font(CFont.rounded(12, weight: .medium)).foregroundColor(.red)
+                                + Text(line.dropFirst("Record ".count)).font(CFont.rounded(12, weight: .medium)).foregroundColor(Color(hex: 0xD1382E))
                         } else {
                             Text(line).font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.ink)
                         }
@@ -553,7 +556,7 @@ public struct MeteoDetailView: View {
     /// trimestre (réduite de 4 jours pour séparer les barres).
     @ChartContentBuilder
     private func quarterBar(_ q: RainQuarter) -> some ChartContent {
-        let color: Color = selectedQuarterContains(q) ? ClassicTheme.ink : theme.accent
+        let color: Color = selectedQuarterContains(q) ? Color(hex: 0x1B3A5C) : Color(hex: 0x7EC8E3)
         let barEnd = q.end.addingTimeInterval(-4 * 86_400)
         RectangleMark(xStart: .value("Début", q.start), xEnd: .value("Fin", barEnd),
                       yStart: .value("Base", 0.0), yEnd: .value("mm", q.mean))

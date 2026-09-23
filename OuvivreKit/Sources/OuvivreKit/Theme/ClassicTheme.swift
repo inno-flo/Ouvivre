@@ -31,7 +31,7 @@ public final class ClassicTheme: ObservableObject {
     public var accentLight: Color { accent.mixed(with: .white, fraction: 0.62) }
 
     // Fixed palette (not user-configurable in the dc export).
-    public static let background = Color(hex: 0xF4F2EE)
+    public static let background = Color(hex: 0xFFFFFF)
     public static let sidebarBg = Color(hex: 0xEFECE6)
     public static let border = Color(hex: 0xDDD8CE)
     public static let dividerLight = Color(hex: 0xF0ECE4)
