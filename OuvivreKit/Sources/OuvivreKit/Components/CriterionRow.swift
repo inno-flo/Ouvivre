@@ -27,9 +27,13 @@ public struct CriterionRow: View {
     /// majuscule initiale à partir du libellé brut.
     public enum TagCase { case upper, lower, capitalized }
     var tagCase: TagCase = .upper
+    /// SF Symbol affiché devant le libellé — `ClassicStatic.criterionIcons`
+    /// pour reprendre celui du tableau Favoris. Absent par défaut : les
+    /// réglettes sans icône (Météo, Affiner) gardent leur mise en page.
+    var icon: String?
     let onChange: (Int) -> Void
 
-    public init(row: WeightedRow, thumbSize: CGFloat = 16, trackHeight: CGFloat = 4, labelFont: Font = CFont.rounded(14, weight: .medium), labelColor: Color = ClassicTheme.ink, extraDotScaleFromSecond: CGFloat = 1.0, dotGrowthPerStep: CGFloat = 1.25, tagFont: Font? = nil, tagCase: TagCase = .upper, onChange: @escaping (Int) -> Void) {
+    public init(row: WeightedRow, thumbSize: CGFloat = 16, trackHeight: CGFloat = 4, labelFont: Font = CFont.rounded(14, weight: .medium), labelColor: Color = ClassicTheme.ink, extraDotScaleFromSecond: CGFloat = 1.0, dotGrowthPerStep: CGFloat = 1.25, tagFont: Font? = nil, tagCase: TagCase = .upper, icon: String? = nil, onChange: @escaping (Int) -> Void) {
         self.row = row
         self.thumbSize = thumbSize
         self.trackHeight = trackHeight
@@ -39,6 +43,7 @@ public struct CriterionRow: View {
         self.dotGrowthPerStep = dotGrowthPerStep
         self.tagFont = tagFont
         self.tagCase = tagCase
+        self.icon = icon
         self.onChange = onChange
     }
 
@@ -54,6 +59,12 @@ public struct CriterionRow: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 9) {
             HStack(alignment: .firstTextBaseline, spacing: 5) {
+                if let icon {
+                    Image(systemName: icon)
+                        .font(.system(size: 12))
+                        .foregroundStyle(theme.accent)
+                        .frame(width: 18, alignment: .leading)
+                }
                 Text("\(row.label) :").font(labelFont).foregroundStyle(labelColor)
                 Text(tagText)
                     .font(tagFont ?? CFont.mono(11, weight: .medium))

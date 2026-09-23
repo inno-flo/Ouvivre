@@ -249,22 +249,6 @@ public struct FavorisView: View {
         return Set(zip(deps, counts).filter { $0.1 == top }.map(\.0.codeInsee))
     }
 
-    /// Icône de chaque critère, indexée par son libellé.
-    private static let criterionIcons: [String: String] = [
-        "Chef-lieu": "mappin.and.ellipse",
-        "Pays étranger": "globe.desk",
-        "Mer ou océan": "figure.sailing",
-        "Montagne": "mountain.2",
-        "Lacs": "water.waves",
-        "Fleuves et rivières": "figure.fishing",
-        "Parcs et forêts": "tree",
-        "Musées": "photo.artframe",
-        "Lieux du patrimoine": "building.classical.columns",
-        "Festivals": "fireworks",
-        "Température moyenne": "thermometer.medium",
-        "Température maximale moyenne": "thermometer.high",
-        "Précipitations annuelles": "cloud.rain"
-    ]
 
     // MARK: - Éléments de colonne
 
@@ -405,7 +389,7 @@ public struct FavorisView: View {
                 ForEach(section.rows) { row in
                     HStack(spacing: 0) {
                         HStack(spacing: 8) {
-                            Image(systemName: Self.criterionIcons[row.label] ?? "circle").frame(width: 18)
+                            Image(systemName: ClassicStatic.criterionIcons[row.label] ?? "circle").frame(width: 18)
                                 .foregroundStyle(theme.accent)
                             Text(row.label).font(CFont.rounded(13, weight: .medium)).foregroundStyle(ClassicTheme.body)
                         }

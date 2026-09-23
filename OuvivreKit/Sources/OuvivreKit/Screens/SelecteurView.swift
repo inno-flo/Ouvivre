@@ -360,7 +360,7 @@ public struct SelecteurView: View {
                     }
 
                     ForEach(derived.geo2Rows) { row in
-                        CriterionRow(row: row, thumbSize: 14.4, labelFont: CFont.rounded(13, weight: .medium), labelColor: columnBody, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10, weight: .medium), tagCase: .capitalized) { state.setGeo2(row.id, value: $0) }
+                        CriterionRow(row: row, thumbSize: 14.4, labelFont: CFont.rounded(13, weight: .medium), labelColor: columnBody, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10, weight: .medium), tagCase: .capitalized, icon: ClassicStatic.criterionIcons[row.label]) { state.setGeo2(row.id, value: $0) }
                             .padding(.trailing, 8)
                     }
                 }
@@ -508,7 +508,7 @@ public struct SelecteurView: View {
     private var cultureRowsContent: some View {
         VStack(alignment: .leading, spacing: 4) {
             ForEach(cultureRows, id: \.rowIndex) { entry in
-                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: CFont.rounded(13, weight: .medium), labelColor: columnBody, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10, weight: .medium), tagCase: .capitalized) {
+                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: CFont.rounded(13, weight: .medium), labelColor: columnBody, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10, weight: .medium), tagCase: .capitalized, icon: ClassicStatic.criterionIcons[entry.row.label]) {
                     state.setGroup(cultureGroupIndex, entry.rowIndex, value: min($0, 2))
                 }
                 .padding(.vertical, 4)

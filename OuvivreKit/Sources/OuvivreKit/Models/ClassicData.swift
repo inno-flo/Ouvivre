@@ -17,6 +17,24 @@ public enum ClassicStatic {
         ("Fleuves et rivières", 3),
         ("Parcs et forêts", 4)
     ]
+    /// Icône SF Symbols de chaque critère, indexée par son libellé —
+    /// partagée par le tableau Favoris et les réglettes du Sélecteur.
+    public static let criterionIcons: [String: String] = [
+        "Chef-lieu": "mappin.and.ellipse",
+        "Pays étranger": "globe.desk",
+        "Mer ou océan": "figure.sailing",
+        "Montagne": "mountain.2",
+        "Lacs": "water.waves",
+        "Fleuves et rivières": "figure.fishing",
+        "Parcs et forêts": "tree",
+        "Musées": "photo.artframe",
+        "Lieux du patrimoine": "building.classical.columns",
+        "Festivals": "fireworks",
+        "Température moyenne": "thermometer.medium",
+        "Température maximale moyenne": "thermometer.high",
+        "Précipitations annuelles": "cloud.rain"
+    ]
+
     public static let meteo: [(String, Int)] = [
         ("Températures", 4), ("Température ressentie", 3), ("Ensoleillement", 4),
         ("Durée d'ensoleillement", 3), ("Précipitations", 2), ("Vent", 2),
