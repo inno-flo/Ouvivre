@@ -291,7 +291,7 @@ public struct FavorisView: View {
         return VStack(spacing: 0) {
             headerContent(d)
                 .frame(width: colW).padding(.vertical, 12)
-                .background(ClassicTheme.sidebarBg)
+                .background(Color(hex: 0xF4F2EE))
                 .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.border).frame(height: 1) }
             ForEach(sections) { section in
                 if !section.title.isEmpty {
@@ -371,7 +371,7 @@ public struct FavorisView: View {
                     .help("Glisser pour réordonner les colonnes")
                 }
             }
-            .background(ClassicTheme.sidebarBg)
+            .background(Color(hex: 0xF4F2EE))
             .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.border).frame(height: 1) }
 
             ForEach(sections) { section in
