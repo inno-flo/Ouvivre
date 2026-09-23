@@ -307,7 +307,7 @@ public struct SelecteurView: View {
     // MARK: Bloc 1 — Pays
 
     private var paysBlock: some View {
-        blockDisclosure(title: "Pays", bold: true, isExpanded: $state.bigMacExpandedPays, enabled: true, background: .white.opacity(0.457)) {
+        blockDisclosure(title: "Pays", bold: true, isExpanded: $state.bigMacExpandedPays, enabled: true, background: .white.opacity(0.48)) {
             PaysCountryBlock(derived: derived, ink: columnInk, faint: columnFaint, showFacts: false, countryFont: CFont.rounded(13, weight: .medium))
         }
     }
@@ -332,7 +332,7 @@ public struct SelecteurView: View {
     private var regionsBlock: some View {
         // Réservé à la France (données départementales) : pour tout autre pays
         // le bloc est replié et ne peut pas être déplié.
-        blockDisclosure(title: "Géographie et Culture", bold: true, isExpanded: $state.bigMacExpandedRegions, enabled: state.country == "France", background: .white.opacity(0.457)) {
+        blockDisclosure(title: "Géographie et Culture", bold: true, isExpanded: $state.bigMacExpandedRegions, enabled: state.country == "France", background: .white.opacity(0.48)) {
             VStack(alignment: .leading, spacing: 14) {
                 RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody, labelFont: CFont.rounded(13, weight: .medium))
 
