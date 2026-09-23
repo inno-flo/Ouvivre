@@ -14,7 +14,20 @@ public struct FavorisView: View {
 
     public init(derived: ClassicDerived) {}
 
-    private let labelColW: CGFloat = 200
+    /// Largeur de la colonne des critères : icône (18) + espace (8) + libellé le
+    /// plus large, mesuré en SF Pro Rounded 13 medium — la cellule s'ajuste
+    /// donc au texte (« Température maximale moyenne » tient sur une ligne).
+    private var labelColW: CGFloat {
+        let labels = sections.flatMap(\.rows).map(\.label)
+        #if canImport(AppKit)
+        let base = NSFont.systemFont(ofSize: 13, weight: .medium)
+        let font = base.fontDescriptor.withDesign(.rounded).flatMap { NSFont(descriptor: $0, size: 13) } ?? base
+        let widest = labels.map { ($0 as NSString).size(withAttributes: [.font: font]).width }.max() ?? 0
+        return ceil(18 + 8 + widest)
+        #else
+        return CGFloat(18 + 8) + CGFloat(labels.map(\.count).max() ?? 0) * 7
+        #endif
+    }
     /// Département dont la colonne est sélectionnée (clic sur la carte).
     @State private var selectedCode: String?
     /// Ordre des colonnes (codes INSEE), réordonnable par glisser-déposer
@@ -429,6 +442,14 @@ public struct FavorisView: View {
                             valueLabel(c, outline: outline(c, in: row), icon: icon(c, in: row))
                             .frame(width: colW, alignment: .center)
                             .padding(.vertical, 13)
+                            // Étire la cellule sur toute la hauteur de la ligne
+                            // (celle de la cellule titre, qui la détermine) —
+                            // sinon, quand le libellé passe sur deux lignes
+                            // (« Température maximale moyenne »), la cellule
+                            // de valeur restait à sa hauteur intrinsèque plus
+                            // courte et son filet de séparation flottait au
+                            // milieu de la ligne au lieu de longer sa base.
+                            .frame(maxHeight: .infinity)
                             .background(d.codeInsee == selectedCode ? theme.accent.opacity(0.12) : .clear)
                             .opacity(draggingCode == d.codeInsee ? 0.5 : 1)
                             .contentShape(Rectangle())
