@@ -298,7 +298,7 @@ public struct FavorisView: View {
                     Text(" ").font(CFont.rounded(13, weight: .medium))
                         .padding(.vertical, 8)
                         .frame(width: colW)
-                        .background(ClassicTheme.cardAlt)
+                        .background(Color(hex: 0xF4F2EE))
                         .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
                 }
                 ForEach(section.rows) { row in
@@ -382,7 +382,7 @@ public struct FavorisView: View {
                     Spacer(minLength: 0)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(ClassicTheme.cardAlt)
+                .background(Color(hex: 0xF4F2EE))
                 .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
                 }
 
