@@ -273,8 +273,12 @@ public struct FavorisView: View {
 
     private func valueLabel(_ c: Cell, outline: Color?, icon: String? = nil) -> some View {
         let highlighted = outline != nil
+        // Poids fixe (medium), identique à celui du libellé de critère —
+        // faire varier le poids selon `highlighted` donnait des hauteurs de
+        // texte légèrement différentes d'une ligne à l'autre, malgré une
+        // taille de police unique de 13 pt partout dans le tableau.
         return Text(c.text)
-            .font(CFont.rounded(13, weight: highlighted ? .semibold : .regular))
+            .font(CFont.rounded(13, weight: .medium))
             .foregroundStyle(highlighted ? ClassicTheme.ink : ClassicTheme.sub)
             .padding(.horizontal, 8).padding(.vertical, 3)
             .overlay { if let outline { RoundedRectangle(cornerRadius: 4).stroke(outline, lineWidth: 1) } }
@@ -298,7 +302,7 @@ public struct FavorisView: View {
                     Text(" ").font(CFont.rounded(13, weight: .medium))
                         .padding(.vertical, 8)
                         .frame(width: colW)
-                        .background(Color(hex: 0xF4F2EE))
+                        .background(.white)
                         .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
                 }
                 ForEach(section.rows) { row in
@@ -373,6 +377,12 @@ public struct FavorisView: View {
             }
             .background(Color(hex: 0xF4F2EE))
             .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.border).frame(height: 1) }
+            // `.compositingGroup()` : sans lui, le fond de cette ligne
+            // (contenant plusieurs cellules avec leurs propres gestes de
+            // glisser-déposer) pouvait n'être composé que partiellement par
+            // le moteur de rendu dans la ScrollView horizontale, laissant
+            // une bande blanche en bas de la ligne dès l'ouverture de l'écran.
+            .compositingGroup()
 
             ForEach(sections) { section in
                 if !section.title.isEmpty {
@@ -382,17 +392,30 @@ public struct FavorisView: View {
                     Spacer(minLength: 0)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color(hex: 0xF4F2EE))
+                .background(.white)
                 .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
+                .compositingGroup()
                 }
 
                 ForEach(section.rows) { row in
-                    HStack(spacing: 0) {
+                    // Ligne de base plutôt que centrage : les poids de police
+                    // différents entre le libellé (medium) et les valeurs
+                    // (regular/semibold) ont des hauteurs de texte légèrement
+                    // différentes même avec un padding identique, ce qui
+                    // laissait un décalage résiduel d'un pixel ou deux.
+                    HStack(alignment: .firstTextBaseline, spacing: 0) {
                         HStack(spacing: 8) {
                             Image(systemName: ClassicStatic.criterionIcons[row.label] ?? "circle").frame(width: 18)
                                 .foregroundStyle(theme.accent)
                             Text(row.label).font(CFont.rounded(13, weight: .medium)).foregroundStyle(ClassicTheme.body)
                         }
+                            // Même hauteur de cellule que les colonnes de valeurs
+                            // (`valueLabel` a ce même padding vertical de 3 pt) —
+                            // sans lui, SwiftUI centrait la cellule label, plus
+                            // courte, dans la hauteur de la ligne, ce qui
+                            // décalait son contenu de quelques pixels vers le
+                            // haut par rapport aux colonnes de départements.
+                            .padding(.vertical, 3)
                             .frame(width: labelColW, alignment: .leading)
                             .padding(.horizontal, 18).padding(.vertical, 13)
                             .overlay(alignment: .bottom) {
