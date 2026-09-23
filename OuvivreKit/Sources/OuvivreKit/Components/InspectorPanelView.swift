@@ -243,12 +243,20 @@ public struct InspectorPanelView: View {
                         .font(CFont.rounded(13))
                         .foregroundStyle(ClassicTheme.faint)
                 } else {
+                    let yearBands = Self.yearBands(series)
+
                     Text("Température moyenne (°C /mois)")
                         .font(CFont.rounded(12)).foregroundStyle(.black)
-                    Chart(series.filter { $0.temperature != nil }) { point in
-                        LineMark(x: .value("Mois", point.date, unit: .month), y: .value("°C", point.temperature ?? 0))
-                            .foregroundStyle(theme.accent)
-                            .interpolationMethod(.monotone)
+                    Chart {
+                        ForEach(yearBands.filter(\.alternate), id: \.start) { band in
+                            RectangleMark(xStart: .value("Début", band.start), xEnd: .value("Fin", band.end))
+                                .foregroundStyle(ClassicTheme.ink.opacity(0.05))
+                        }
+                        ForEach(series.filter { $0.temperature != nil }) { point in
+                            LineMark(x: .value("Mois", point.date, unit: .month), y: .value("°C", point.temperature ?? 0))
+                                .foregroundStyle(theme.accent)
+                                .interpolationMethod(.monotone)
+                        }
                     }
                     .chartXAxis { Self.meteoXAxis }
                     .chartYScale(domain: .automatic(includesZero: false))
@@ -257,11 +265,17 @@ public struct InspectorPanelView: View {
                     Text("Précipitations (mm / mois)")
                         .font(CFont.rounded(12)).foregroundStyle(.black)
                         .padding(.top, 14)
-                    Chart(series.filter { $0.precipitation != nil }) { point in
+                    Chart {
+                        ForEach(yearBands.filter(\.alternate), id: \.start) { band in
+                            RectangleMark(xStart: .value("Début", band.start), xEnd: .value("Fin", band.end))
+                                .foregroundStyle(ClassicTheme.ink.opacity(0.05))
+                        }
                         // Test : courbe (comme la température) au lieu de barres.
-                        LineMark(x: .value("Mois", point.date, unit: .month), y: .value("mm", point.precipitation ?? 0))
-                            .foregroundStyle(theme.accent)
-                            .interpolationMethod(.monotone)
+                        ForEach(series.filter { $0.precipitation != nil }) { point in
+                            LineMark(x: .value("Mois", point.date, unit: .month), y: .value("mm", point.precipitation ?? 0))
+                                .foregroundStyle(theme.accent)
+                                .interpolationMethod(.monotone)
+                        }
                     }
                     .chartXAxis { Self.meteoXAxis }
                     .chartYScale(domain: .automatic(includesZero: true))
@@ -289,6 +303,23 @@ public struct InspectorPanelView: View {
         case "patrimoine": "building.classical.columns"
         case "festivals": "fireworks"
         default: "checkmark.circle.fill"
+        }
+    }
+
+    /// Une bande par année couverte par `series` — `alternate` vaut `true`
+    /// une année sur deux (2ᵉ, 4ᵉ…), pour un fond légèrement opacifié en
+    /// arrière-plan des graphiques Météo.
+    private static func yearBands(_ series: [MeteoMensuelle.Point]) -> [(start: Date, end: Date, alternate: Bool)] {
+        guard let first = series.first?.date, let last = series.last?.date else { return [] }
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+        let startYear = calendar.component(.year, from: first)
+        let endYear = calendar.component(.year, from: last)
+        guard startYear <= endYear else { return [] }
+        return (startYear...endYear).enumerated().compactMap { index, year in
+            guard let start = calendar.date(from: DateComponents(year: year, month: 1, day: 1)),
+                  let end = calendar.date(from: DateComponents(year: year + 1, month: 1, day: 1)) else { return nil }
+            return (start: start, end: end, alternate: index % 2 == 1)
         }
     }
 
