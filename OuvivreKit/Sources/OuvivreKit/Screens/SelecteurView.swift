@@ -307,7 +307,7 @@ public struct SelecteurView: View {
     // MARK: Bloc 1 — Pays
 
     private var paysBlock: some View {
-        blockDisclosure(title: "Pays", bold: true, isExpanded: $state.bigMacExpandedPays, enabled: true) {
+        blockDisclosure(title: "Pays", bold: true, isExpanded: $state.bigMacExpandedPays, enabled: true, background: .white.opacity(0.457)) {
             PaysCountryBlock(derived: derived, ink: columnInk, faint: columnFaint, showFacts: false, countryFont: CFont.rounded(13, weight: .medium))
         }
     }
@@ -332,7 +332,7 @@ public struct SelecteurView: View {
     private var regionsBlock: some View {
         // Réservé à la France (données départementales) : pour tout autre pays
         // le bloc est replié et ne peut pas être déplié.
-        blockDisclosure(title: "Géographie et Culture", bold: true, isExpanded: $state.bigMacExpandedRegions, enabled: state.country == "France") {
+        blockDisclosure(title: "Géographie et Culture", bold: true, isExpanded: $state.bigMacExpandedRegions, enabled: state.country == "France", background: .white.opacity(0.457)) {
             VStack(alignment: .leading, spacing: 14) {
                 RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody, labelFont: CFont.rounded(13, weight: .medium))
 
@@ -531,7 +531,7 @@ public struct SelecteurView: View {
     /// `DisclosureGroup` stylé pour matcher les panneaux flottants existants
     /// (matériau translucide de la colonne, typographie `Eyebrow`/`CFont`) —
     /// première utilisation de `DisclosureGroup` dans ce module.
-    private func blockDisclosure<Content: View>(title: String, bold: Bool = false, isExpanded: Binding<Bool>, enabled: Bool, @ViewBuilder content: @escaping () -> Content) -> some View {
+    private func blockDisclosure<Content: View>(title: String, bold: Bool = false, isExpanded: Binding<Bool>, enabled: Bool, background: Color = ClassicTheme.sidebarBg, @ViewBuilder content: @escaping () -> Content) -> some View {
         // Anime explicitement le dépli/repli : `DisclosureGroup` change son
         // binding directement au clic sur le chevron, sans passer par
         // `withAnimation`, ce qui donnait un repli/dépli instantané et sec.
@@ -564,7 +564,10 @@ public struct SelecteurView: View {
         }
         .padding(.vertical, 10)
         .padding(.horizontal, 12)
-        .background(ClassicTheme.sidebarBg, in: RoundedRectangle(cornerRadius: 10))
+        .background {
+            RoundedRectangle(cornerRadius: 10).fill(.ultraThinMaterial)
+            RoundedRectangle(cornerRadius: 10).fill(background)
+        }
         .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(ClassicTheme.border.opacity(0.6), lineWidth: 1))
     }
 
