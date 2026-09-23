@@ -169,9 +169,10 @@ public struct SelecteurView: View {
 
     @MapContentBuilder
     private func departementRings(_ rings: [[CLLocationCoordinate2D]], isHovered: Bool, isSelected: Bool) -> some MapContent {
+        let opacity = 0.05 + (isSelected ? 0.05 : 0) + (isHovered ? 0.07 : 0)
         ForEach(Array(rings.enumerated()), id: \.offset) { _, ring in
             MapPolygon(coordinates: ring)
-                .foregroundStyle(theme.accent.opacity(isHovered ? 0.085 : 0.05))
+                .foregroundStyle(theme.accent.opacity(opacity))
                 .stroke(theme.accent, lineWidth: 2)
         }
     }
@@ -307,7 +308,7 @@ public struct SelecteurView: View {
     // MARK: Bloc 1 — Pays
 
     private var paysBlock: some View {
-        blockDisclosure(title: "Pays", bold: true, isExpanded: $state.bigMacExpandedPays, enabled: true, background: .white.opacity(0.48)) {
+        blockDisclosure(title: "Pays", bold: true, isExpanded: $state.bigMacExpandedPays, enabled: true, background: .white.opacity(0.528)) {
             PaysCountryBlock(derived: derived, ink: columnInk, faint: columnFaint, showFacts: false, countryFont: CFont.rounded(13, weight: .medium))
         }
     }
@@ -332,7 +333,7 @@ public struct SelecteurView: View {
     private var regionsBlock: some View {
         // Réservé à la France (données départementales) : pour tout autre pays
         // le bloc est replié et ne peut pas être déplié.
-        blockDisclosure(title: "Géographie et Culture", bold: true, isExpanded: $state.bigMacExpandedRegions, enabled: state.country == "France", background: .white.opacity(0.48)) {
+        blockDisclosure(title: "Géographie et Culture", bold: true, isExpanded: $state.bigMacExpandedRegions, enabled: state.country == "France", background: .white.opacity(0.528)) {
             VStack(alignment: .leading, spacing: 14) {
                 RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody, labelFont: CFont.rounded(13, weight: .medium))
 

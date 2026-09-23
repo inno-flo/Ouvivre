@@ -16,7 +16,7 @@ public final class ClassicTheme: ObservableObject {
     public enum ResultLayout: String, CaseIterable { case cards, list, rank }
 
     public init(
-        accent: Color = Color(hex: 0xB4442A),
+        accent: Color = .accentColor,
         compact: Bool = false,
         resultLayout: ResultLayout = .cards,
         showPhotos: Bool = true
@@ -46,6 +46,8 @@ public final class ClassicTheme: ObservableObject {
     public static let darkPanelSub = Color(hex: 0xBDB7AB)
     public static let darkPanelFaint = Color(hex: 0xA39D91)
     public static let darkPanelDivider = Color(hex: 0x34312C)
+    /// Étoile et sceau des favoris, partout dans l'app.
+    public static let favorite = Color(hex: 0xE6B400)
     public static let track = Color(hex: 0xEAE6DE)
     public static let trackAlt = Color(hex: 0xC9C3B6)
 

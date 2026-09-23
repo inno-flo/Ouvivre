@@ -274,12 +274,12 @@ public struct FavorisView: View {
             Text(d.nomRegion).font(CFont.rounded(10)).foregroundStyle(ClassicTheme.faint)
             HStack(spacing: 6) {
                 Button { pendingRemovalCode = d.codeInsee } label: {
-                    Image(systemName: "star.fill").foregroundStyle(theme.accent)
+                    Image(systemName: "star.fill").foregroundStyle(ClassicTheme.favorite)
                 }
                 .buttonStyle(.plain)
                 .help("Retirer des favoris")
                 if topDepartementCodes.contains(d.codeInsee) {
-                    Image(systemName: "checkmark.seal.fill").foregroundStyle(theme.accent)
+                    Image(systemName: "checkmark.seal.fill").foregroundStyle(ClassicTheme.favorite)
                         .help("Le plus de meilleures valeurs")
                 }
             }

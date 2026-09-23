@@ -42,7 +42,7 @@ struct DepartementDetailHeader: View {
             } label: {
                 Image(systemName: isFavorite ? "star.fill" : "star")
                     .font(.system(size: 13))
-                    .foregroundStyle(isFavorite ? accent : ClassicTheme.faint)
+                    .foregroundStyle(isFavorite ? ClassicTheme.favorite : ClassicTheme.faint)
             }
             .buttonStyle(.plain)
             .help(isFavorite ? "Retirer des favoris" : "Ajouter aux favoris")

@@ -22,7 +22,7 @@ public struct SidebarNav: View {
                     NavItemRow(item: item).tag(item.screen)
                 }
                 HStack(spacing: 9) {
-                    Image(systemName: state.favoriteDepartementCodes.isEmpty ? "star" : "star.fill").frame(width: 16)
+                    Image(systemName: state.favoriteDepartementCodes.isEmpty ? "star" : "star.fill").frame(width: 16).foregroundStyle(state.favoriteDepartementCodes.isEmpty ? Color.primary : ClassicTheme.favorite)
                     Text("Favoris").font(.system(size: 13, weight: state.screen == .favoris ? .bold : .regular))
                     Spacer(minLength: 4)
                     // Même corps que les compteurs de la sidebar de PierreVincent (13 pt,

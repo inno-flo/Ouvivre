@@ -57,7 +57,7 @@ public struct CriterionRow: View {
                 Text("\(row.label) :").font(labelFont).foregroundStyle(labelColor)
                 Text(tagText)
                     .font(tagFont ?? CFont.mono(11, weight: .medium))
-                    .foregroundStyle(row.value >= row.maxValue - 1 ? theme.accent : (row.value == 0 ? ClassicTheme.faint2 : ClassicTheme.faint))
+                    .foregroundStyle(row.value >= row.maxValue - 1 ? theme.accent : (row.value == 0 ? ClassicTheme.faint : ClassicTheme.body))
                 Spacer(minLength: 0)
             }
             GeometryReader { geo in

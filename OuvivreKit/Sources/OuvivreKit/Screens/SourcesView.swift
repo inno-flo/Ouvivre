@@ -12,7 +12,6 @@ public struct SourcesView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Eyebrow("SOURCES", color: theme.accent).padding(.bottom, 16)
             Text("Références ouvertes utilisées pour les profils pays et les classements de livabilité.")
                 .font(CFont.rounded(15))
                 .foregroundStyle(ClassicTheme.sub)
@@ -28,7 +27,6 @@ public struct SourcesView: View {
             }
             .padding(.bottom, 14)
 
-            livabilityCard
                 .padding(.bottom, 14)
 
             freshnessCard
@@ -44,9 +42,9 @@ public struct SourcesView: View {
     /// (`geo_pipeline/`) reste à relancer manuellement ; ceci se contente de
     /// signaler qu'une mise à jour amont est disponible.
     private var freshnessCard: some View {
-        Card(padding: theme.cardPadX, background: ClassicTheme.sidebarBg) {
+        Card(padding: theme.cardPadX) {
             VStack(alignment: .leading, spacing: 0) {
-                Eyebrow("FRAÎCHEUR DES DONNÉES — BIG MAC", color: ClassicTheme.faint).padding(.bottom, 10)
+                Eyebrow("FRAÎCHEUR DES DONNÉES — BIG MAC", color: ClassicTheme.faint, font: CFont.rounded(13, weight: .medium), tracking: 1).padding(.bottom, 10)
                 ForEach(freshnessRows, id: \.label) { row in
                     HStack(alignment: .top) {
                         Text(row.label).font(CFont.rounded(12)).foregroundStyle(ClassicTheme.body)
@@ -74,7 +72,7 @@ public struct SourcesView: View {
     private func countryCard(_ country: String, sources: [ClassicStatic.CountrySource]) -> some View {
         Card(padding: theme.cardPadX) {
             VStack(alignment: .leading, spacing: 0) {
-                Eyebrow(country.uppercased(), color: ClassicTheme.faint).padding(.bottom, 10)
+                Eyebrow(country.uppercased(), color: ClassicTheme.faint, font: CFont.rounded(13, weight: .medium), tracking: 1).padding(.bottom, 10)
                 ForEach(sources) { s in
                     Link(destination: URL(string: s.url) ?? URL(string: "https://")!) {
                         Text(s.label)
@@ -87,22 +85,6 @@ public struct SourcesView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-
-    private var livabilityCard: some View {
-        Card(padding: theme.cardPadX, background: ClassicTheme.sidebarBg) {
-            VStack(alignment: .leading, spacing: 0) {
-                Eyebrow("LIVABILITÉ — CLASSEMENTS", color: ClassicTheme.faint).padding(.bottom, 10)
-                ForEach(ClassicStatic.rankings) { r in
-                    HStack {
-                        Text(r.key).font(CFont.rounded(12)).foregroundStyle(ClassicTheme.body)
-                        Spacer()
-                        Text(r.value).font(CFont.mono(11, weight: .medium)).foregroundStyle(ClassicTheme.ink)
-                    }
-                    .padding(.vertical, 7)
-                }
-            }
         }
     }
 }

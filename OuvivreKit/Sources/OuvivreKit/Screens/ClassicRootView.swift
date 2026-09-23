@@ -89,7 +89,7 @@ public struct ClassicRootView: View {
                             .help("Zoomer")
                         }
                     }
-                    if !isFavoris {
+                    if !isFavoris && state.screen != .sources {
                         ToolbarItem {
                             Menu {
                                 ForEach(MapPlanType.allCases) { type in
@@ -101,7 +101,7 @@ public struct ClassicRootView: View {
                             .help("Type de carte")
                         }
                     }
-                    if !isFavoris {
+                    if !isFavoris && state.screen != .sources {
                         ToolbarItem {
                             Button {
                                 inspectorBinding.wrappedValue.toggle()
