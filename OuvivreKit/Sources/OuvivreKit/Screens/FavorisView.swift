@@ -87,7 +87,8 @@ public struct FavorisView: View {
         let rows: [Row]
     }
 
-    private var departements: [FranceGeoData.DepartementScore] {
+    /// Favoris dans l'ordre choisi par l'utilisateur (glisser-déposer).
+    private var baseDepartements: [FranceGeoData.DepartementScore] {
         FranceGeoData.departements
             .filter { state.favoriteDepartementCodes.contains($0.codeInsee) }
             .sorted {
@@ -95,6 +96,14 @@ public struct FavorisView: View {
                 let b = columnOrder.firstIndex(of: $1.codeInsee) ?? Int.max
                 return a != b ? a < b : $0.codeInsee < $1.codeInsee
             }
+    }
+
+    /// Colonnes affichées : les départements qui ont le badge
+    /// `checkmark.seal.fill` d'abord, chaque groupe gardant l'ordre de l'utilisateur.
+    private var departements: [FranceGeoData.DepartementScore] {
+        let base = baseDepartements
+        let top = topDepartementCodes(in: base)
+        return base.filter { top.contains($0.codeInsee) } + base.filter { !top.contains($0.codeInsee) }
     }
 
     /// Place la colonne `code` à l'emplacement de la colonne `target`.
@@ -175,8 +184,9 @@ public struct FavorisView: View {
 
     // MARK: - Données
 
-    private var sections: [Section] {
-        let deps = departements
+    private var sections: [Section] { buildSections(departements) }
+
+    private func buildSections(_ deps: [FranceGeoData.DepartementScore]) -> [Section] {
         func score(_ text: (Double) -> String = { "\(Int($0.rounded()))" }, _ f: (FranceGeoData.DepartementScore) -> Double?) -> [Cell] {
             deps.map { d in f(d).map { Cell(text: text($0), value: $0) } ?? Cell(text: "—", value: nil) }
         }
@@ -252,15 +262,16 @@ public struct FavorisView: View {
 
     /// Codes des départements ayant le plus de valeurs mises en avant (tous
     /// ceux à égalité, tant que ce maximum est supérieur à 0).
-    private var topDepartementCodes: Set<String> {
-        let deps = departements
+    private func topDepartementCodes(in deps: [FranceGeoData.DepartementScore]) -> Set<String> {
         var counts = Array(repeating: 0, count: deps.count)
-        for row in sections.flatMap(\.rows) {
+        for row in buildSections(deps).flatMap(\.rows) {
             for (i, cell) in row.cells.enumerated() where isBest(cell, in: row) { counts[i] += 1 }
         }
         guard let top = counts.max(), top > 0 else { return [] }
         return Set(zip(deps, counts).filter { $0.1 == top }.map(\.0.codeInsee))
     }
+
+    private var topDepartementCodes: Set<String> { topDepartementCodes(in: baseDepartements) }
 
 
     // MARK: - Éléments de colonne
