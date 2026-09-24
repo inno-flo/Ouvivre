@@ -14,6 +14,13 @@ public struct FavorisView: View {
 
     public init(derived: ClassicDerived) {}
 
+    /// Départements portant le badge `checkmark.seal.fill` parmi `codes` —
+    /// utilisé par la sidebar (n'accède à aucun objet d'environnement).
+    static func topDepartementCodes(among codes: Set<String>) -> Set<String> {
+        let deps = FranceGeoData.departements.filter { codes.contains($0.codeInsee) }
+        return FavorisView(derived: ClassicDerived(state: ClassicState(), theme: ClassicTheme())).topDepartementCodes(in: deps)
+    }
+
     /// Largeur de la colonne des critères : icône (18) + espace (8) + libellé le
     /// plus large, mesuré en SF Pro Rounded 13 medium — la cellule s'ajuste
     /// donc au texte (« Température maximale moyenne » tient sur une ligne).
@@ -262,7 +269,7 @@ public struct FavorisView: View {
 
     /// Codes des départements ayant le plus de valeurs mises en avant (tous
     /// ceux à égalité, tant que ce maximum est supérieur à 0).
-    private func topDepartementCodes(in deps: [FranceGeoData.DepartementScore]) -> Set<String> {
+    func topDepartementCodes(in deps: [FranceGeoData.DepartementScore]) -> Set<String> {
         var counts = Array(repeating: 0, count: deps.count)
         for row in buildSections(deps).flatMap(\.rows) {
             for (i, cell) in row.cells.enumerated() where isBest(cell, in: row) { counts[i] += 1 }

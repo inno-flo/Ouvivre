@@ -26,35 +26,41 @@ public struct SidebarNav: View {
             .sorted { $0.nom.localizedStandardCompare($1.nom) == .orderedAscending }
     }
 
+    private var topCodes: Set<String> { FavorisView.topDepartementCodes(among: state.favoriteDepartementCodes) }
+
     public var body: some View {
         List(selection: selection) {
             Section {
                 ForEach(derived.navSteps) { item in
                     NavItemRow(item: item).tag(SidebarDestination.screen(item.screen))
                 }
-                HStack(spacing: 9) {
-                    Image(systemName: state.favoriteDepartementCodes.isEmpty ? "star" : "star.fill").frame(width: 16).foregroundStyle(state.favoriteDepartementCodes.isEmpty ? Color.primary : ClassicTheme.favorite)
-                    Text("Tous").font(.system(size: 13, weight: isTous ? .bold : .regular))
-                    Spacer(minLength: 4)
-                    // Même corps que les compteurs de la sidebar de PierreVincent (13 pt,
-                    // gras quand la rubrique est sélectionnée).
-                    Text("\(state.favoriteDepartementCodes.count)")
-                        .font(.system(size: 13))
-                        .fontWeight(isTous ? .bold : .regular)
-                        .opacity(0.5)
-                }
-                .tag(SidebarDestination.screen(.favoris))
             } header: {
                 Text("Sélection").foregroundStyle(.secondary)
             }
 
             Section {
                 if favoritesExpanded {
+                    HStack(spacing: 9) {
+                        Image(systemName: state.favoriteDepartementCodes.isEmpty ? "star" : "star.fill").frame(width: 16).foregroundStyle(state.favoriteDepartementCodes.isEmpty ? Color.primary : ClassicTheme.favorite)
+                        Text("Tous").font(.system(size: 13, weight: isTous ? .bold : .regular))
+                        Spacer(minLength: 4)
+                        // Même corps que les compteurs de la sidebar de PierreVincent (13 pt,
+                        // gras quand la rubrique est sélectionnée).
+                        Text("\(state.favoriteDepartementCodes.count)")
+                            .font(.system(size: 13))
+                            .fontWeight(isTous ? .bold : .regular)
+                            .opacity(0.5)
+                    }
+                    .tag(SidebarDestination.screen(.favoris))
                     ForEach(favoriteDepartements, id: \.codeInsee) { dep in
                         HStack(spacing: 9) {
                             Image(systemName: "mappin").frame(width: 16)
                             Text(dep.nom).font(.system(size: 13, weight: state.selectedDepartementCode == dep.codeInsee ? .bold : .regular))
                             Spacer(minLength: 4)
+                            if topCodes.contains(dep.codeInsee) {
+                                Image(systemName: "checkmark.seal.text.page").foregroundStyle(ClassicTheme.favorite)
+                                    .help("Le plus de meilleures valeurs")
+                            }
                         }
                         .tag(SidebarDestination.departement(dep.codeInsee))
                     }
