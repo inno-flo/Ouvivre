@@ -10,6 +10,8 @@ public struct SidebarNav: View {
     let selection: Binding<SidebarDestination?>
     @EnvironmentObject private var state: ClassicState
     @State private var favoritesExpanded = true
+    /// Abscisse de l'icône de Sélecteur, mesurée : Sources (hors de la liste) s'y aligne.
+    @State private var iconLeading: CGFloat?
 
     public init(derived: ClassicDerived, selection: Binding<SidebarDestination?>) {
         self.derived = derived
@@ -97,11 +99,13 @@ public struct SidebarNav: View {
                     Text("Sources").font(.system(size: 13, weight: state.screen == .sources ? .bold : .regular))
                     Spacer(minLength: 4)
                 }
-                .padding(.horizontal, 12).padding(.vertical, 8)
+                .padding(.leading, iconLeading ?? 12).padding(.trailing, 12).padding(.vertical, 8)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
         }
+        .coordinateSpace(name: "sidebar")
+        .onPreferenceChange(IconLeadingKey.self) { iconLeading = $0 }
     }
 }
 
@@ -121,6 +125,9 @@ private struct NavItemRow: View {
         HStack(spacing: 9) {
             if let icon {
                 Image(systemName: icon).frame(width: 16)
+                    .background(GeometryReader { proxy in
+                        Color.clear.preference(key: IconLeadingKey.self, value: proxy.frame(in: .named("sidebar")).minX)
+                    })
             }
             Text(item.label).font(.system(size: 13, weight: item.active ? .bold : .regular))
             Spacer(minLength: 4)
@@ -138,4 +145,9 @@ private struct ActiveBadgeStyle: ViewModifier {
     @ViewBuilder func body(content: Content) -> some View {
         if activeState == .inactive { content } else { content.foregroundStyle(.primary) }
     }
+}
+
+private struct IconLeadingKey: PreferenceKey {
+    static var defaultValue: CGFloat? { nil }
+    static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) { value = value ?? nextValue() }
 }

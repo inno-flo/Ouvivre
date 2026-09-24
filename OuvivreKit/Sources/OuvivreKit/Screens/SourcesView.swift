@@ -14,7 +14,7 @@ public struct SourcesView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("Références ouvertes utilisées pour les profils pays et les classements de livabilité.".uppercased())
+            Text("Références des sources ouvertes utilisées pour les profils de pays et les classements de livabilité".uppercased())
                 .font(CFont.rounded(14, weight: .bold))
                 .foregroundStyle(pal.ink)
                 .lineLimit(1)
@@ -76,7 +76,7 @@ public struct SourcesView: View {
     private func countryCard(_ country: String, sources: [ClassicStatic.CountrySource]) -> some View {
         sourceCard {
             VStack(alignment: .leading, spacing: 0) {
-                Eyebrow(country.uppercased(), color: pal.faint, font: CFont.rounded(13, weight: .medium), tracking: 1).padding(.bottom, 10)
+                Eyebrow("\(Self.flags[country].map { $0 + " " } ?? "")\(country.uppercased())", color: pal.faint, font: CFont.rounded(13, weight: .medium), tracking: 1).padding(.bottom, 10)
                 ForEach(sources) { s in
                     Link(destination: URL(string: s.url) ?? URL(string: "https://")!) {
                         Text(s.label)
@@ -91,6 +91,8 @@ public struct SourcesView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
+
+    private static let flags = ["France": "🇫🇷", "Danemark": "🇩🇰", "Suède": "🇸🇪", "Japon": "🇯🇵"]
 
     private func sourceCard<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         content()
