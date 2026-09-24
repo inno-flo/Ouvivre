@@ -60,18 +60,17 @@ public struct SidebarNav: View {
                 }
                 .buttonStyle(.plain)
                 if favoritesExpanded {
+                    // Titre et compteur partagent la même police (13 pt, gras quand la
+                    // rubrique est sélectionnée).
                     HStack(spacing: 9) {
                         Image(systemName: "star").frame(width: 16).foregroundStyle(.black)
-                        Text("Tous").font(.system(size: 13, weight: isTous ? .bold : .regular))
+                        Text("Tous")
                         Spacer(minLength: 4)
-                        // Même corps que les compteurs de la sidebar de PierreVincent (13 pt,
-                        // gras quand la rubrique est sélectionnée).
                         Text("\(state.favoriteDepartementCodes.count)")
-                            .font(.system(size: 13))
-                            .fontWeight(isTous ? .bold : .regular)
                             .opacity(0.5)
                             .frame(width: Self.trailingColumnWidth)
                     }
+                    .font(.system(size: 13, weight: isTous ? .bold : .regular))
                     .tag(SidebarDestination.screen(.favoris))
                     ForEach(favoriteDepartements, id: \.codeInsee) { dep in
                         HStack(spacing: 9) {
