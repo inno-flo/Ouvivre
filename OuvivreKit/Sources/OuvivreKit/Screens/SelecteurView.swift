@@ -153,14 +153,7 @@ public struct SelecteurView: View {
     @MapContentBuilder
     private var mapContent: some MapContent {
         if mapState.departementRingGroups.isEmpty {
-            ForEach(Array(mapState.regionRings.enumerated()), id: \.offset) { _, ring in
-                MapPolygon(coordinates: ring)
-                    .foregroundStyle(theme.accent.mapTrace(dark: colorScheme == .dark).opacity(0.16))
-                    .stroke(theme.accent.mapTrace(dark: colorScheme == .dark), lineWidth: 2)
-            }
-            if mapState.regionRings.isEmpty {
-                Marker(mapState.title, coordinate: mapState.coordinate)
-            }
+            Marker(mapState.title, coordinate: mapState.coordinate)
         } else {
             ForEach(mapState.departementRingGroups, id: \.name) { group in
                 departementRings(group.rings, isHovered: group.name == hoveredDepartementName, isSelected: group.name == selectedDepartementName)

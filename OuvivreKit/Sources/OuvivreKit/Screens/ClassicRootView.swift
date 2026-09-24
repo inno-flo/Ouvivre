@@ -70,7 +70,7 @@ public struct ClassicRootView: View {
                         .frame(maxWidth: .infinity)
                 }
             }
-                .background(state.screen == .favoris ? DetailColors(colorScheme).window : Color.clear)
+                .background((state.screen == .favoris || (state.screen == .sources && colorScheme == .dark)) ? DetailColors(colorScheme).window : Color.clear)
                 .toolbar {
                     // Two separate, plain toolbar buttons (not the native
                     // combined MapZoomStepper, and no custom capsule/frame

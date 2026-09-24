@@ -26,13 +26,8 @@ public final class MapPanelState: ObservableObject {
     /// `@State` on `MapPanelView`) so the real macOS toolbar (in
     /// `ClassicRootView`, with genuine Liquid Glass chrome) can drive it too.
     @Published public var planType: MapPlanType = .explorer
-    /// The focused région's real perimeter (one ring per landmass), if any —
-    /// empty outside Géographie/Géographie 2, or for a place with no
-    /// boundary data (a country, or a région not found).
-    @Published public var regionRings: [[CLLocationCoordinate2D]] = []
     /// "Afficher sur la carte" on the top-N list — each département's rings
-    /// kept separate (rather than flattened into `regionRings`) so the map
-    /// can raise just the hovered one's shading.
+    /// kept separate so the map can raise just the hovered one's shading.
     @Published public var departementRingGroups: [(name: String, rings: [[CLLocationCoordinate2D]])] = []
 
     public init() {
@@ -46,7 +41,6 @@ public final class MapPanelState: ObservableObject {
         title = name
         coordinate = place.coordinate
         spanDegrees = place.span
-        regionRings = []
         departementRingGroups = []
     }
 

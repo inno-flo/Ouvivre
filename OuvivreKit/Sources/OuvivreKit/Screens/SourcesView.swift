@@ -6,16 +6,20 @@ public struct SourcesView: View {
     @EnvironmentObject var theme: ClassicTheme
     @EnvironmentObject var state: ClassicState
     @StateObject private var freshness = DatasetFreshness()
+    @Environment(\.colorScheme) private var colorScheme
+    private var pal: DetailColors { DetailColors(colorScheme) }
     let derived: ClassicDerived
 
     public init(derived: ClassicDerived) { self.derived = derived }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("Références ouvertes utilisées pour les profils pays et les classements de livabilité.")
-                .font(CFont.rounded(15))
-                .foregroundStyle(ClassicTheme.sub)
-                .frame(maxWidth: 460, alignment: .leading)
+            Text("Références ouvertes utilisées pour les profils pays et les classements de livabilité.".uppercased())
+                .font(CFont.rounded(14, weight: .bold))
+                .foregroundStyle(pal.ink)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.bottom, 24)
 
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 14, alignment: .leading), GridItem(.flexible(), spacing: 14, alignment: .leading)], spacing: 14) {
@@ -42,16 +46,16 @@ public struct SourcesView: View {
     /// (`geo_pipeline/`) reste à relancer manuellement ; ceci se contente de
     /// signaler qu'une mise à jour amont est disponible.
     private var freshnessCard: some View {
-        Card(padding: theme.cardPadX) {
+        sourceCard {
             VStack(alignment: .leading, spacing: 0) {
-                Eyebrow("FRAÎCHEUR DES DONNÉES — BIG MAC", color: ClassicTheme.faint, font: CFont.rounded(13, weight: .medium), tracking: 1).padding(.bottom, 10)
+                Eyebrow("FRAÎCHEUR DES DONNÉES", color: pal.faint, font: CFont.rounded(13, weight: .medium), tracking: 1).padding(.bottom, 10)
                 ForEach(freshnessRows, id: \.label) { row in
                     HStack(alignment: .top) {
-                        Text(row.label).font(CFont.rounded(12)).foregroundStyle(ClassicTheme.body)
+                        Text(row.label).font(CFont.rounded(12)).foregroundStyle(pal.body)
                         Spacer()
                         Text(row.status)
                             .font(CFont.mono(11, weight: .medium))
-                            .foregroundStyle(row.isStale ? theme.accent : ClassicTheme.ink)
+                            .foregroundStyle(row.isStale ? theme.accent : pal.ink)
                             .multilineTextAlignment(.trailing)
                             .frame(maxWidth: 260, alignment: .trailing)
                     }
@@ -70,21 +74,29 @@ public struct SourcesView: View {
     }
 
     private func countryCard(_ country: String, sources: [ClassicStatic.CountrySource]) -> some View {
-        Card(padding: theme.cardPadX) {
+        sourceCard {
             VStack(alignment: .leading, spacing: 0) {
-                Eyebrow(country.uppercased(), color: ClassicTheme.faint, font: CFont.rounded(13, weight: .medium), tracking: 1).padding(.bottom, 10)
+                Eyebrow(country.uppercased(), color: pal.faint, font: CFont.rounded(13, weight: .medium), tracking: 1).padding(.bottom, 10)
                 ForEach(sources) { s in
                     Link(destination: URL(string: s.url) ?? URL(string: "https://")!) {
                         Text(s.label)
                             .font(CFont.rounded(13))
-                            .foregroundStyle(ClassicTheme.body)
+                            .foregroundStyle(pal.body)
                             .underline()
                     }
                     .padding(.vertical, 6)
-                    .overlay(alignment: .top) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
+                    .overlay(alignment: .top) { Rectangle().fill(pal.divider).frame(height: 1) }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+    }
+
+    private func sourceCard<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        content()
+            .padding(theme.cardPadX)
+            .background(pal.card)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .overlay(RoundedRectangle(cornerRadius: 10).stroke(pal.border, lineWidth: 1))
     }
 }
