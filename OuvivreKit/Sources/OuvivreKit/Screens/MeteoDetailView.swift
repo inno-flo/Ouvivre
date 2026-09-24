@@ -7,6 +7,8 @@ import MapKit
 /// agrandis sur les 5 dernières années, cumuls/moyennes par année et
 /// tableau année × mois.
 public struct MeteoDetailView: View {
+    @Environment(\.colorScheme) private var colorScheme
+    private var c: DetailColors { DetailColors(colorScheme) }
     /// Identifiant de la scène `WindowGroup(for: String.self)` déclarée par
     /// l'app — la valeur passée à `openWindow` est le code du département.
     public static let windowID = "meteo-detail"
@@ -107,7 +109,7 @@ public struct MeteoDetailView: View {
                 if Self.showSynthesis { synthesisView }
                 if series.isEmpty {
                     Text("Aucune donnée pour ce département.")
-                        .font(CFont.rounded(13)).foregroundStyle(ClassicTheme.faint)
+                        .font(CFont.rounded(13)).foregroundStyle(c.faint)
                 } else {
                     chartCard(title: Self.showFeltTemperature ? "Températures moyennes, ressenties, maximales et records mensuels (°C)" : "Températures moyennes, maximales et records mensuels (°C)", yTicks: Array(temperatureAxis.ticks)) {
                         let points = series.filter { $0.temperature != nil }
@@ -145,11 +147,11 @@ public struct MeteoDetailView: View {
                             }
                             ForEach(points.filter { selectedMonth == month($0) }) { p in
                                 PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", p.temperature ?? 0))
-                                    .foregroundStyle(ClassicTheme.ink).symbolSize(90)
+                                    .foregroundStyle(c.ink).symbolSize(90)
                                 // Infobulle permanente sur le point le plus haut du mois
                                 // sélectionné, pour chaque année.
                                 PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", p.maxTemperature ?? p.temperature ?? 0))
-                                    .foregroundStyle(ClassicTheme.ink).symbolSize(p.maxTemperature == nil ? 0 : 90)
+                                    .foregroundStyle(c.ink).symbolSize(p.maxTemperature == nil ? 0 : 90)
                                 recordHighlight(p)
                                     .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .fit(to: .chart))) {
                                         tooltip(p, value: "Moy. \(frDecimal(p.temperature ?? 0)) °C", secondary: temperatureLines(p))
@@ -158,7 +160,7 @@ public struct MeteoDetailView: View {
                             if let p = hoveredPoint(hoveredTemperatureDate, in: points), selectedMonth != month(p) {
                                 highlightMarks(p)
                                 RuleMark(x: .value("Mois", p.date, unit: .month))
-                                    .foregroundStyle(ClassicTheme.faint.opacity(0.5))
+                                    .foregroundStyle(c.faint.opacity(0.5))
                                     .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
                                         tooltip(p, value: "Moy. \(frDecimal(p.temperature ?? 0)) °C", secondary: temperatureLines(p))
                                     }
@@ -190,7 +192,7 @@ public struct MeteoDetailView: View {
                                 }
                                 if let p = hoveredPoint(hoveredPrecipitationDate, in: points), selectedMonth != month(p) {
                                     RuleMark(x: .value("Mois", p.date, unit: .month))
-                                        .foregroundStyle(ClassicTheme.faint.opacity(0.5))
+                                        .foregroundStyle(c.faint.opacity(0.5))
                                         .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
                                             tooltip(p, value: "\(frDecimal(p.precipitation ?? 0)) mm", secondary: nil)
                                         }
@@ -211,7 +213,7 @@ public struct MeteoDetailView: View {
                                 if let date = hoveredPrecipitationDate, let q = quarters.last(where: { $0.start <= date }),
                                    !selectedQuarterContains(q) {
                                     RuleMark(x: .value("Trimestre", q.middle))
-                                        .foregroundStyle(ClassicTheme.faint.opacity(0.5))
+                                        .foregroundStyle(c.faint.opacity(0.5))
                                         .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
                                             quarterTooltip(q)
                                         }
@@ -227,13 +229,13 @@ public struct MeteoDetailView: View {
                     yearlySummary
                     monthTable
                     Text("Moyenne des postes Météo-France du département. Le dernier mois est en cours (données partielles).")
-                        .font(CFont.rounded(11)).foregroundStyle(ClassicTheme.faint)
+                        .font(CFont.rounded(11)).foregroundStyle(c.faint)
                 }
             }
             .padding(embedded ? 0 : 24)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .background(embedded ? Color.clear : ClassicTheme.cardAlt)
+        .background(embedded ? Color.clear : c.window)
         .frame(minWidth: embedded ? 0 : 760, minHeight: embedded ? 0 : 640)
         // Flèches gauche/droite : mois précédent/suivant de la sélection
         // (graphiques et tableau), sans effet tant qu'aucun mois n'est
@@ -370,8 +372,8 @@ public struct MeteoDetailView: View {
         if !paragraphs.isEmpty {
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(paragraphs, id: \.title) { paragraph in
-                    Text(paragraph.title + " ").font(CFont.rounded(13, weight: .semibold)).foregroundColor(ClassicTheme.ink)
-                        + Text(paragraph.text).font(CFont.rounded(13)).foregroundColor(ClassicTheme.body)
+                    Text(paragraph.title + " ").font(CFont.rounded(13, weight: .semibold)).foregroundColor(c.ink)
+                        + Text(paragraph.text).font(CFont.rounded(13)).foregroundColor(c.body)
                 }
             }
             .lineSpacing(2)
@@ -395,7 +397,7 @@ public struct MeteoDetailView: View {
     private func recordHighlight(_ p: MeteoMensuelle.Point) -> some ChartContent {
         if let xa = p.absoluteMax {
             PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", xa))
-                .foregroundStyle(ClassicTheme.ink).symbol(.diamond).symbolSize(90)
+                .foregroundStyle(c.ink).symbol(.diamond).symbolSize(90)
         }
     }
 
@@ -403,10 +405,10 @@ public struct MeteoDetailView: View {
     @ChartContentBuilder
     private func highlightMarks(_ p: MeteoMensuelle.Point) -> some ChartContent {
         PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", p.temperature ?? 0))
-            .foregroundStyle(ClassicTheme.ink).symbolSize(90)
+            .foregroundStyle(c.ink).symbolSize(90)
         if let tx = p.maxTemperature {
             PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", tx))
-                .foregroundStyle(ClassicTheme.ink).symbolSize(90)
+                .foregroundStyle(c.ink).symbolSize(90)
         }
         recordHighlight(p)
     }
@@ -421,10 +423,10 @@ public struct MeteoDetailView: View {
             let nextYear = Self.calendar.date(from: DateComponents(year: y + 1, month: 1, day: 1))!
             RectangleMark(xStart: .value("Début", max(yearStart, domain.lowerBound), unit: .month),
                           xEnd: .value("Fin", min(nextYear, domain.upperBound), unit: .month))
-                .foregroundStyle((y - years[0]) % 2 == 0 ? ClassicTheme.track.opacity(0.45) : .clear)
+                .foregroundStyle((y - years[0]) % 2 == 0 ? c.track.opacity(0.45) : .clear)
                 .annotation(position: .overlay, alignment: .topLeading, spacing: 0) {
                     Text(String(y))
-                        .font(CFont.rounded(11, weight: .bold)).foregroundStyle(ClassicTheme.ink)
+                        .font(CFont.rounded(11, weight: .bold)).foregroundStyle(c.ink)
                         .padding(.leading, 6).padding(.top, 3)
                 }
         }
@@ -485,26 +487,26 @@ public struct MeteoDetailView: View {
     private func tooltip(_ p: MeteoMensuelle.Point, value: String, secondary: String?) -> some View {
         VStack(alignment: .leading, spacing: 5) {
             Text(Self.monthFormatter.string(from: p.date).capitalized)
-                .font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.faint)
-            Text(value).font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+                .font(CFont.rounded(12, weight: .medium)).foregroundStyle(c.faint)
+            Text(value).font(CFont.rounded(12, weight: .medium)).foregroundStyle(c.ink)
             if let secondary, !secondary.isEmpty {
                 VStack(alignment: .leading, spacing: 4) {
                     ForEach(Array(secondary.split(separator: "\n").enumerated()), id: \.offset) { _, line in
                         // Le nombre du record de température est en rouge.
                         if line.hasPrefix("Record ") {
-                            Text("Record ").font(CFont.rounded(12, weight: .medium)).foregroundColor(ClassicTheme.ink)
+                            Text("Record ").font(CFont.rounded(12, weight: .medium)).foregroundColor(c.ink)
                                 + Text(line.dropFirst("Record ".count)).font(CFont.rounded(12, weight: .medium)).foregroundColor(Color(hex: 0xD1382E))
                         } else {
-                            Text(line).font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+                            Text(line).font(CFont.rounded(12, weight: .medium)).foregroundStyle(c.ink)
                         }
                     }
                 }
             }
-            if p.partial { Text("mois en cours").font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.faint2) }
+            if p.partial { Text("mois en cours").font(CFont.rounded(12, weight: .medium)).foregroundStyle(c.faint2) }
         }
         .padding(.horizontal, 8).padding(.vertical, 7)
-        .background(.white, in: RoundedRectangle(cornerRadius: 6))
-        .overlay(RoundedRectangle(cornerRadius: 6).stroke(ClassicTheme.border, lineWidth: 1))
+        .background(c.card, in: RoundedRectangle(cornerRadius: 6))
+        .overlay(RoundedRectangle(cornerRadius: 6).stroke(c.border, lineWidth: 1))
         .shadow(color: .black.opacity(0.08), radius: 3, y: 1)
     }
 
@@ -576,17 +578,17 @@ public struct MeteoDetailView: View {
     private func quarterTooltip(_ q: RainQuarter) -> some View {
         VStack(alignment: .leading, spacing: 5) {
             Text(verbatim: "\(Self.monthName(q.months.lowerBound).prefix(4)).–\(Self.monthName(q.months.upperBound).prefix(4)).")
-                .font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.faint)
-            Text(verbatim: "\(frDecimal(q.mean)) mm/mois").font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+                .font(CFont.rounded(12, weight: .medium)).foregroundStyle(c.faint)
+            Text(verbatim: "\(frDecimal(q.mean)) mm/mois").font(CFont.rounded(12, weight: .medium)).foregroundStyle(c.ink)
             if q.partial {
-                Text("trimestre en cours").font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.faint2)
+                Text("trimestre en cours").font(CFont.rounded(12, weight: .medium)).foregroundStyle(c.faint2)
             } else if q.monthCount < 3 {
-                Text("\(q.monthCount) mois disponibles").font(CFont.rounded(12, weight: .medium)).foregroundStyle(ClassicTheme.faint2)
+                Text("\(q.monthCount) mois disponibles").font(CFont.rounded(12, weight: .medium)).foregroundStyle(c.faint2)
             }
         }
         .padding(.horizontal, 8).padding(.vertical, 7)
-        .background(.white, in: RoundedRectangle(cornerRadius: 6))
-        .overlay(RoundedRectangle(cornerRadius: 6).stroke(ClassicTheme.border, lineWidth: 1))
+        .background(c.card, in: RoundedRectangle(cornerRadius: 6))
+        .overlay(RoundedRectangle(cornerRadius: 6).stroke(c.border, lineWidth: 1))
         .shadow(color: .black.opacity(0.08), radius: 3, y: 1)
     }
 
@@ -598,11 +600,11 @@ public struct MeteoDetailView: View {
                 Button { rainGrouping = g } label: {
                     Text(g.rawValue)
                         .font(CFont.rounded(12, weight: .medium))
-                        .foregroundStyle(rainGrouping == g ? .white : ClassicTheme.ink)
+                        .foregroundStyle(rainGrouping == g ? .white : c.ink)
                         .padding(.horizontal, 12).padding(.vertical, 5)
                         .background(rainGrouping == g ? theme.accent : .clear)
                         .clipShape(Capsule())
-                        .overlay(Capsule().stroke(rainGrouping == g ? theme.accent : ClassicTheme.border, lineWidth: 1))
+                        .overlay(Capsule().stroke(rainGrouping == g ? theme.accent : c.border, lineWidth: 1))
                 }
                 .buttonStyle(.plain)
                 .help(g == .month ? "Afficher les précipitations par mois" : "Afficher la moyenne mensuelle par trimestre")
@@ -617,7 +619,7 @@ public struct MeteoDetailView: View {
     private func chartCard<C: View, T: View>(title: String, yTicks: [Double]? = nil, @ViewBuilder trailing: () -> T, @ViewBuilder chart: () -> C) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .center) {
-                Text(title).font(CFont.rounded(13, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+                Text(title).font(CFont.rounded(13, weight: .medium)).foregroundStyle(c.ink)
                 Spacer(minLength: 8)
                 trailing()
             }
@@ -628,13 +630,13 @@ public struct MeteoDetailView: View {
                         AxisMarks(values: yTicks) { _ in
                             AxisGridLine()
                             AxisTick()
-                            AxisValueLabel().font(CFont.rounded(11)).foregroundStyle(ClassicTheme.faint)
+                            AxisValueLabel().font(CFont.rounded(11)).foregroundStyle(c.faint)
                         }
                     } else {
                         AxisMarks { _ in
                             AxisGridLine()
                             AxisTick()
-                            AxisValueLabel().font(CFont.rounded(11)).foregroundStyle(ClassicTheme.faint)
+                            AxisValueLabel().font(CFont.rounded(11)).foregroundStyle(c.faint)
                         }
                     }
                 }
@@ -644,54 +646,54 @@ public struct MeteoDetailView: View {
                     // sont indiquées dans les bandes (voir `yearBands`).
                     AxisMarks(values: .stride(by: .month)) { value in
                         let m = value.as(Date.self).map { Self.calendar.component(.month, from: $0) } ?? 0
-                        AxisTick(length: 3).foregroundStyle(ClassicTheme.faint2)
+                        AxisTick(length: 3).foregroundStyle(c.faint2)
                         if m == 1 || m == 4 || m == 7 || m == 10 {
                             AxisValueLabel(format: .dateTime.month(.abbreviated), centered: false)
-                                .font(CFont.rounded(9)).foregroundStyle(ClassicTheme.faint)
+                                .font(CFont.rounded(9)).foregroundStyle(c.faint)
                         }
                     }
                 }
                 .frame(height: 325)
         }
         .padding(16)
-        .background(.white, in: RoundedRectangle(cornerRadius: 10))
-        .overlay(RoundedRectangle(cornerRadius: 10).stroke(ClassicTheme.border, lineWidth: 1))
+        .background(c.card, in: RoundedRectangle(cornerRadius: 10))
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(c.border, lineWidth: 1))
     }
 
     /// Par année civile : température moyenne et cumul de pluie sur les mois
     /// disponibles (première et dernière années partielles).
     private var yearlySummary: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Moyennes annuelles").font(CFont.rounded(13, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+            Text("Moyennes annuelles").font(CFont.rounded(13, weight: .medium)).foregroundStyle(c.ink)
             HStack(spacing: 12) {
                 ForEach(years, id: \.self) { y in
                     let pts = series.filter { year($0) == y }
                     let temps = pts.compactMap(\.temperature)
                     let rain = pts.compactMap(\.precipitation)
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(String(y)).font(CFont.rounded(11, weight: .bold)).foregroundStyle(ClassicTheme.ink)
+                        Text(String(y)).font(CFont.rounded(11, weight: .bold)).foregroundStyle(c.ink)
                             .padding(.bottom, 3)
                         HStack(spacing: 5) {
                             Image(systemName: "thermometer.medium").font(.system(size: 13)).foregroundStyle(theme.accent)
                             Text(temps.isEmpty ? "–" : "\(frDecimal(temps.reduce(0, +) / Double(temps.count))) °C")
-                                .font(CFont.rounded(16, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
+                                .font(CFont.rounded(16, weight: .semibold)).foregroundStyle(c.ink)
                         }
                         HStack(spacing: 5) {
                             Image(systemName: "cloud.rain").font(.system(size: 12)).foregroundStyle(theme.accent)
                             Text(rain.isEmpty ? "–" : String(format: "%.0f mm", rain.reduce(0, +)))
-                                .font(CFont.rounded(13)).foregroundStyle(ClassicTheme.sub)
+                                .font(CFont.rounded(13)).foregroundStyle(c.sub)
                         }
                     }
                     .padding(12)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(selectedYear == y ? theme.accent.opacity(0.12) : Color.white, in: RoundedRectangle(cornerRadius: 8))
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(selectedYear == y ? theme.accent : ClassicTheme.border, lineWidth: selectedYear == y ? 1.5 : 1))
+                    .background(selectedYear == y ? theme.accent.opacity(0.12) : c.card, in: RoundedRectangle(cornerRadius: 8))
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(selectedYear == y ? theme.accent : c.border, lineWidth: selectedYear == y ? 1.5 : 1))
                 }
             }
         }
         .padding(16)
-        .background(.white, in: RoundedRectangle(cornerRadius: 10))
-        .overlay(RoundedRectangle(cornerRadius: 10).stroke(ClassicTheme.border, lineWidth: 1))
+        .background(c.card, in: RoundedRectangle(cornerRadius: 10))
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(c.border, lineWidth: 1))
     }
 
     /// Tableau mois (lignes) × années (colonnes), commutable entre
@@ -703,7 +705,7 @@ public struct MeteoDetailView: View {
             // que de pousser les boutons hors du cadre.
             HStack(alignment: .firstTextBaseline, spacing: 12) {
                 Text("Détail par mois des températures (°C) et précipitations (mm)")
-                    .font(CFont.rounded(13, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+                    .font(CFont.rounded(13, weight: .medium)).foregroundStyle(c.ink)
                 Spacer(minLength: 8)
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                 ForEach(Metric.available) { m in
@@ -711,9 +713,9 @@ public struct MeteoDetailView: View {
                     Button { metric = m } label: {
                         Label(m.rawValue, systemImage: m.icon)
                             .font(CFont.rounded(12, weight: .medium))
-                            .foregroundStyle(isOn ? Color.white : ClassicTheme.body)
+                            .foregroundStyle(isOn ? Color.white : c.body)
                             .padding(.horizontal, 10).padding(.vertical, 5)
-                            .background(isOn ? theme.accent : ClassicTheme.track.opacity(0.6), in: Capsule())
+                            .background(isOn ? theme.accent : c.track.opacity(0.6), in: Capsule())
                             .fixedSize()
                     }
                     .buttonStyle(.plain)
@@ -724,7 +726,7 @@ public struct MeteoDetailView: View {
                 HStack(spacing: 0) {
                     Text("").frame(width: 110, alignment: .leading)
                     ForEach(years, id: \.self) {
-                        Text(String($0)).font(CFont.rounded(11, weight: .bold)).foregroundStyle(ClassicTheme.ink)
+                        Text(String($0)).font(CFont.rounded(11, weight: .bold)).foregroundStyle(c.ink)
                             .frame(maxWidth: .infinity, alignment: .trailing)
                     }
                 }
@@ -733,13 +735,13 @@ public struct MeteoDetailView: View {
                 ForEach(1...12, id: \.self) { m in
                     let isSelected = selectedMonth == m
                     HStack(spacing: 0) {
-                        Text(Self.monthName(m)).font(CFont.rounded(13, weight: isSelected ? .semibold : .regular)).foregroundStyle(ClassicTheme.body)
+                        Text(Self.monthName(m)).font(CFont.rounded(13, weight: isSelected ? .semibold : .regular)).foregroundStyle(c.body)
                             .frame(width: 110, alignment: .leading)
                         ForEach(years, id: \.self) { y in
                             let p = series.first { year($0) == y && month($0) == m }
                             Text(p.flatMap(value).map { metric == .precipitation ? String(format: "%.0f", $0) : frDecimal($0) } ?? "–")
                                 .font(CFont.mono(12))
-                                .foregroundStyle(p?.partial == true ? ClassicTheme.faint : ClassicTheme.ink)
+                                .foregroundStyle(p?.partial == true ? c.faint : c.ink)
                                 .frame(maxWidth: .infinity, alignment: .trailing)
                         }
                     }
@@ -750,11 +752,11 @@ public struct MeteoDetailView: View {
                     .onTapGesture { selectedMonth = isSelected ? nil : m }
                 }
             }
-            Text("Valeurs en \(unit).").font(CFont.rounded(11)).foregroundStyle(ClassicTheme.faint2)
+            Text("Valeurs en \(unit).").font(CFont.rounded(11)).foregroundStyle(c.faint2)
         }
         .padding(16)
-        .background(.white, in: RoundedRectangle(cornerRadius: 10))
-        .overlay(RoundedRectangle(cornerRadius: 10).stroke(ClassicTheme.border, lineWidth: 1))
+        .background(c.card, in: RoundedRectangle(cornerRadius: 10))
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(c.border, lineWidth: 1))
     }
 
     private static func monthName(_ m: Int) -> String {

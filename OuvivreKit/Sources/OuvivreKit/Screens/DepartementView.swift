@@ -6,6 +6,7 @@ public struct DepartementView: View {
     let departementCode: String
     @EnvironmentObject private var theme: ClassicTheme
     @EnvironmentObject private var state: ClassicState
+    @Environment(\.colorScheme) private var colorScheme
     @State private var mapFocusTick = 0
 
     public init(departementCode: String) { self.departementCode = departementCode }
@@ -26,5 +27,6 @@ public struct DepartementView: View {
             .frame(maxWidth: 1340, alignment: .leading)
             .frame(maxWidth: .infinity)
         }
+        .background(DetailColors(colorScheme).window)
     }
 }

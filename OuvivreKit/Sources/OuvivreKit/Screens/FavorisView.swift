@@ -7,6 +7,8 @@ import AppKit
 /// l'inspecteur), un département par colonne, la meilleure valeur de chaque
 /// ligne étant mise en avant.
 public struct FavorisView: View {
+    @Environment(\.colorScheme) private var colorScheme
+    private var pal: DetailColors { DetailColors(colorScheme) }
     @EnvironmentObject var theme: ClassicTheme
     @EnvironmentObject var state: ClassicState
     @Environment(\.undoManager) private var undoManager
@@ -148,7 +150,7 @@ public struct FavorisView: View {
             if departements.isEmpty {
                 Text("Aucun favori pour l'instant. Cliquez sur l'étoile d'un département dans l'inspecteur pour l'ajouter ici.")
                     .font(CFont.rounded(15))
-                    .foregroundStyle(ClassicTheme.sub)
+                    .foregroundStyle(pal.sub)
                     .frame(maxWidth: 460, alignment: .leading)
             } else {
                 ScrollView(.horizontal, showsIndicators: true) {
@@ -249,7 +251,7 @@ public struct FavorisView: View {
             guard let v = cell.value, let hi = values.max(), let lo = values.min(), hi != lo else { return nil }
             return v == hi ? .red : v == lo ? Color(red: 0.35, green: 0.70, blue: 0.95) : nil
         }
-        return isBest(cell, in: row) ? ClassicTheme.ink : nil
+        return isBest(cell, in: row) ? pal.ink : nil
     }
 
     /// Icône en face de la plus haute / plus basse valeur d'une ligne à icônes.
@@ -285,8 +287,8 @@ public struct FavorisView: View {
 
     private func headerContent(_ d: FranceGeoData.DepartementScore) -> some View {
         VStack(alignment: .center, spacing: 4) {
-            Text(d.nom).font(CFont.rounded(13, weight: .semibold)).foregroundStyle(ClassicTheme.body)
-            Text(d.nomRegion).font(CFont.rounded(10)).foregroundStyle(ClassicTheme.sub)
+            Text(d.nom).font(CFont.rounded(13, weight: .semibold)).foregroundStyle(pal.body)
+            Text(d.nomRegion).font(CFont.rounded(10)).foregroundStyle(pal.sub)
             HStack(spacing: 6) {
                 Button { pendingRemovalCode = d.codeInsee } label: {
                     Image(systemName: "star.fill").foregroundStyle(ClassicTheme.favorite)
@@ -315,13 +317,13 @@ public struct FavorisView: View {
         // Test : les valeurs mises en évidence ont le style des valeurs normales.
         return Text(c.text)
             .font(CFont.rounded(13, weight: .medium))
-            .foregroundStyle(ClassicTheme.sub)
+            .foregroundStyle(pal.sub)
             .padding(.horizontal, 8)
             .frame(height: Self.rowContentHeight)
             .overlay { if Self.showsValueOutlines, let outline { RoundedRectangle(cornerRadius: 4).stroke(outline, lineWidth: 1) } }
             // À gauche de la valeur, sans la décentrer.
             .overlay(alignment: .leading) {
-                if let icon { Image(systemName: icon).font(.system(size: 13)).foregroundStyle(ClassicTheme.sub).offset(x: -22) }
+                if let icon { Image(systemName: icon).font(.system(size: 13)).foregroundStyle(pal.sub).offset(x: -22) }
             }
     }
 
@@ -332,26 +334,26 @@ public struct FavorisView: View {
         return VStack(spacing: 0) {
             headerContent(d)
                 .frame(width: colW).padding(.vertical, 12)
-                .background(ClassicTheme.cardAlt)
-                .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.border).frame(height: 1) }
+                .background(pal.window)
+                .overlay(alignment: .bottom) { Rectangle().fill(pal.border).frame(height: 1) }
             ForEach(sections) { section in
                 if !section.title.isEmpty {
                     Text(" ").font(CFont.rounded(13, weight: .medium))
                         .padding(.vertical, 8)
                         .frame(width: colW)
-                        .background(ClassicTheme.track.opacity(0.45))
-                        .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
+                        .background(pal.track.opacity(0.45))
+                        .overlay(alignment: .bottom) { Rectangle().fill(pal.divider).frame(height: 1) }
                 }
                 ForEach(section.rows) { row in
                     valueLabel(row.cells[index], outline: outline(row.cells[index], in: row), icon: icon(row.cells[index], in: row))
                         .frame(width: colW).padding(.vertical, 13)
-                        .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
+                        .overlay(alignment: .bottom) { Rectangle().fill(pal.divider).frame(height: 1) }
                 }
             }
         }
-        .background(.white)
+        .background(pal.card)
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(RoundedRectangle(cornerRadius: 8).stroke(ClassicTheme.border, lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(pal.border, lineWidth: 1))
         .opacity(0.6)
     }
 
@@ -368,7 +370,7 @@ public struct FavorisView: View {
             Button { openWindow(id: windowID, value: code) } label: {
                 Image(systemName: "interface.window.on.rectangle")
                     .font(.system(size: 13))
-                    .foregroundStyle(ClassicTheme.faint)
+                    .foregroundStyle(pal.faint)
                     .padding(6)
                     .contentShape(Rectangle())
             }
@@ -393,7 +395,7 @@ public struct FavorisView: View {
                     .frame(width: colW, alignment: .center)
                     .padding(.vertical, 12)
                     .background(d.codeInsee == selectedCode ? theme.accent.opacity(0.12) : Color.clear)
-                    .overlay(Rectangle().fill(ClassicTheme.border).frame(width: 1), alignment: .leading)
+                    .overlay(Rectangle().fill(pal.border).frame(width: 1), alignment: .leading)
                     .contentShape(Rectangle())
                     .opacity(draggingCode == d.codeInsee ? 0.5 : 1)
                     .onTapGesture { toggleSelection(d.codeInsee) }
@@ -412,7 +414,7 @@ public struct FavorisView: View {
                     .help("Glisser pour réordonner les colonnes")
                 }
             }
-            .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.border).frame(height: 1) }
+            .overlay(alignment: .bottom) { Rectangle().fill(pal.border).frame(height: 1) }
             // `.compositingGroup()` : sans lui, le fond de cette ligne
             // (contenant plusieurs cellules avec leurs propres gestes de
             // glisser-déposer) pouvait n'être composé que partiellement par
@@ -423,13 +425,13 @@ public struct FavorisView: View {
             ForEach(sections) { section in
                 if !section.title.isEmpty {
                 HStack(spacing: 0) {
-                    Eyebrow(section.title, color: ClassicTheme.faint, font: CFont.rounded(13, weight: .medium), tracking: 1)
+                    Eyebrow(section.title, color: pal.faint, font: CFont.rounded(13, weight: .medium), tracking: 1)
                         .padding(.horizontal, 18).padding(.vertical, 8)
                     Spacer(minLength: 0)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(ClassicTheme.track.opacity(0.45))
-                .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1) }
+                .background(pal.track.opacity(0.45))
+                .overlay(alignment: .bottom) { Rectangle().fill(pal.divider).frame(height: 1) }
                 .compositingGroup()
                 }
 
@@ -438,7 +440,7 @@ public struct FavorisView: View {
                         HStack(spacing: 8) {
                             Image(systemName: ClassicStatic.criterionIcons[row.label] ?? "circle").frame(width: 18, height: Self.rowContentHeight)
                                 .foregroundStyle(theme.accent)
-                            Text(row.label).font(CFont.rounded(13, weight: .medium)).foregroundStyle(ClassicTheme.body)
+                            Text(row.label).font(CFont.rounded(13, weight: .medium)).foregroundStyle(pal.body)
                         }
                             .frame(height: Self.rowContentHeight)
                             .frame(width: labelColW, alignment: .leading)
@@ -446,7 +448,7 @@ public struct FavorisView: View {
                             .overlay(alignment: .bottom) {
                                 // Entre deux critères d'une même rubrique : filet
                                 // court et centré plutôt que pleine largeur.
-                                Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1)
+                                Rectangle().fill(pal.divider).frame(height: 1)
                                     .padding(.horizontal, Self.shortSeparatorRowIDs.contains(row.id) ? 56 : 0)
                             }
                         ForEach(Array(departements.enumerated()), id: \.element.codeInsee) { i, d in
@@ -466,10 +468,10 @@ public struct FavorisView: View {
                             .opacity(draggingCode == d.codeInsee ? 0.5 : 1)
                             .contentShape(Rectangle())
                             .onTapGesture { toggleSelection(d.codeInsee) }
-                            .overlay(Rectangle().fill(ClassicTheme.dividerLight).frame(width: 1), alignment: .leading)
+                            .overlay(Rectangle().fill(pal.divider).frame(width: 1), alignment: .leading)
                             .overlay(alignment: .topTrailing) { detailButton(row: row, code: d.codeInsee) }
                             .overlay(alignment: .bottom) {
-                                Rectangle().fill(ClassicTheme.dividerLight).frame(height: 1)
+                                Rectangle().fill(pal.divider).frame(height: 1)
                                     .padding(.horizontal, Self.shortSeparatorRowIDs.contains(row.id) ? 28 : 0)
                             }
                         }
@@ -477,8 +479,8 @@ public struct FavorisView: View {
                 }
             }
         }
-        .background(.white)
+        .background(pal.card)
         .clipShape(RoundedRectangle(cornerRadius: 10))
-        .overlay(RoundedRectangle(cornerRadius: 10).stroke(ClassicTheme.border, lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(pal.border, lineWidth: 1))
     }
 }

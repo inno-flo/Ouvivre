@@ -84,6 +84,9 @@ public extension Color {
         )
     }
 
+    /// Teinte des tracés de départements sur les cartes : bleu éclairci en mode sombre.
+    func mapTrace(dark: Bool) -> Color { dark ? mixed(with: .white, fraction: 0.6) : self }
+
     private func resolveComponents() -> (Double, Double, Double) {
         #if canImport(UIKit)
         let ui = UIColor(self)
@@ -117,4 +120,21 @@ public enum CFont {
     public static func mono(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
         .system(size: size, weight: weight, design: .monospaced)
     }
+}
+
+/// Palette adaptative clair/sombre des fenêtres de détail (Météo, Culture) ;
+/// en sombre, mêmes teintes que le bloc « Géographie et Culture » du Sélecteur.
+struct DetailColors {
+    let dark: Bool
+    init(_ scheme: ColorScheme) { dark = scheme == .dark }
+    var window: Color { dark ? Color(hex: 0x1C1B19) : ClassicTheme.cardAlt }
+    var card: Color { dark ? Color(hex: 0x262521) : .white }
+    var ink: Color { dark ? Color(hex: 0xF4F2EE) : ClassicTheme.ink }
+    var body: Color { dark ? Color(hex: 0xD9D4C9) : ClassicTheme.body }
+    var sub: Color { dark ? Color(hex: 0xBDB7AB) : ClassicTheme.sub }
+    var faint: Color { dark ? Color(hex: 0xA39D91) : ClassicTheme.faint }
+    var faint2: Color { dark ? Color(hex: 0x8C867B) : ClassicTheme.faint2 }
+    var border: Color { dark ? Color.white.opacity(0.15) : ClassicTheme.border }
+    var divider: Color { dark ? Color.white.opacity(0.08) : ClassicTheme.dividerLight }
+    var track: Color { dark ? Color.white.opacity(0.12) : ClassicTheme.track }
 }

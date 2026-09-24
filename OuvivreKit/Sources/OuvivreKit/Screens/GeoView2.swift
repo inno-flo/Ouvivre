@@ -50,8 +50,8 @@ public struct GeoView2: View {
                     if mapState.departementRingGroups.isEmpty {
                         ForEach(Array(mapState.regionRings.enumerated()), id: \.offset) { _, ring in
                             MapPolygon(coordinates: ring)
-                                .foregroundStyle(theme.accent.opacity(0.16))
-                                .stroke(theme.accent, lineWidth: 2)
+                                .foregroundStyle(theme.accent.mapTrace(dark: colorScheme == .dark).opacity(0.16))
+                                .stroke(theme.accent.mapTrace(dark: colorScheme == .dark), lineWidth: 2)
                         }
                         if mapState.regionRings.isEmpty {
                             Marker(mapState.title, coordinate: mapState.coordinate)
@@ -60,8 +60,8 @@ public struct GeoView2: View {
                         ForEach(mapState.departementRingGroups, id: \.name) { group in
                             ForEach(Array(group.rings.enumerated()), id: \.offset) { _, ring in
                                 MapPolygon(coordinates: ring)
-                                    .foregroundStyle(theme.accent.opacity(group.name == hoveredDepartementName ? 0.54 : 0.16))
-                                    .stroke(theme.accent, lineWidth: 2)
+                                    .foregroundStyle(theme.accent.mapTrace(dark: colorScheme == .dark).opacity(group.name == hoveredDepartementName ? 0.54 : 0.16))
+                                    .stroke(theme.accent.mapTrace(dark: colorScheme == .dark), lineWidth: 2)
                             }
                         }
                     }
@@ -358,6 +358,7 @@ public struct GeoView2: View {
 /// Géographie 2 — factorisées pour être réutilisées telles quelles par
 /// `BigMacView` (bloc 2).
 public struct RegionExclusionToggles: View {
+    @Environment(\.colorScheme) private var colorScheme
     @Binding var excludeOverseas: Bool
     @Binding var excludeCorse: Bool
     let accent: Color
@@ -383,9 +384,9 @@ public struct RegionExclusionToggles: View {
         Button { isOn.wrappedValue.toggle() } label: {
             HStack(spacing: 8) {
                 RoundedRectangle(cornerRadius: 3)
-                    .fill(isOn.wrappedValue ? accent : .white)
+                    .fill(isOn.wrappedValue ? accent : (colorScheme == .dark ? Color.white.opacity(0.08) : .white))
                     .frame(width: 16, height: 16)
-                    .overlay(RoundedRectangle(cornerRadius: 3).stroke(isOn.wrappedValue ? accent : ClassicTheme.border, lineWidth: 1))
+                    .overlay(RoundedRectangle(cornerRadius: 3).stroke(isOn.wrappedValue ? accent : (colorScheme == .dark ? Color.white.opacity(0.35) : ClassicTheme.border), lineWidth: 1))
                     .overlay {
                         if isOn.wrappedValue {
                             Image(systemName: "checkmark")

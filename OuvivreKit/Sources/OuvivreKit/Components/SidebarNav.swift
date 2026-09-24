@@ -63,7 +63,7 @@ public struct SidebarNav: View {
                     // Titre et compteur partagent la même police (13 pt, gras quand la
                     // rubrique est sélectionnée).
                     HStack(spacing: 9) {
-                        Image(systemName: "star").frame(width: 16).foregroundStyle(.primary)
+                        Image(systemName: "star").frame(width: 16).modifier(ActiveBadgeStyle())
                         Text("Tous")
                         Spacer(minLength: 4)
                         Text("\(state.favoriteDepartementCodes.count)")
@@ -75,7 +75,7 @@ public struct SidebarNav: View {
                     ForEach(favoriteDepartements, id: \.codeInsee) { dep in
                         HStack(spacing: 9) {
                             if topCodes.contains(dep.codeInsee) {
-                                Image(systemName: "checkmark.seal").frame(width: 16).foregroundStyle(.primary)
+                                Image(systemName: "checkmark.seal").frame(width: 16).modifier(ActiveBadgeStyle())
                             } else {
                                 Image(systemName: "mappin").frame(width: 16)
                             }
@@ -133,5 +133,14 @@ private struct NavItemRow: View {
                 Text(meta).font(CFont.mono(10)).opacity(0.5)
             }
         }
+    }
+}
+
+/// Couleur forcée (noir en clair, blanc en sombre) tant que la fenêtre est
+/// active ; en arrière-plan, l'icône reprend le style par défaut de la sidebar.
+private struct ActiveBadgeStyle: ViewModifier {
+    @Environment(\.controlActiveState) private var activeState
+    @ViewBuilder func body(content: Content) -> some View {
+        if activeState == .inactive { content } else { content.foregroundStyle(.primary) }
     }
 }

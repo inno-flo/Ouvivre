@@ -6,6 +6,8 @@ import MapKit
 /// carte (Explorer / Satellite), deux boutons de zoom et un bouton de
 /// recentrage. Partagé par les fenêtres de détail Météo et Culture.
 public struct DepartementMapCard: View {
+    @Environment(\.colorScheme) private var colorScheme
+    private var c: DetailColors { DetailColors(colorScheme) }
     /// Départements mis en surbrillance (un seul dans les fenêtres de détail,
     /// tous les favoris dans l'écran Favoris).
     let names: [String]
@@ -120,15 +122,15 @@ public struct DepartementMapCard: View {
     private var hoverLabel: some View {
         if let shown = hoveredName ?? selectedName, let dep = FranceGeoData.departements.first(where: { $0.nom == shown }) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Text(dep.nom).font(CFont.rounded(13, weight: .semibold)).foregroundStyle(ClassicTheme.ink)
+                Text(dep.nom).font(CFont.rounded(13, weight: .semibold)).foregroundStyle(c.ink)
                 // Pastille du code, comme dans l'inspecteur (20 pt) mais à l'échelle de 13 pt.
                 Text(dep.codeInsee)
                     .font(CFont.rounded(13, weight: .semibold))
-                    .foregroundStyle(ClassicTheme.ink)
+                    .foregroundStyle(c.ink)
                     .padding(.horizontal, 5)
                     .padding(.vertical, 2)
-                    .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 3.5))
-                Text(dep.nomRegion).font(CFont.rounded(10)).foregroundStyle(ClassicTheme.faint)
+                    .background((c.dark ? Color.white.opacity(0.12) : c.border.opacity(0.5)), in: RoundedRectangle(cornerRadius: 3.5))
+                Text(dep.nomRegion).font(CFont.rounded(10)).foregroundStyle(c.faint)
             }
         }
     }
@@ -138,11 +140,11 @@ public struct DepartementMapCard: View {
             Button { mapType = type } label: {
                 Text(type.label)
                     .font(roundedFont ? CFont.rounded(12, weight: .medium) : CFont.sans(12, weight: .medium))
-                    .foregroundStyle(mapType == type ? .white : ClassicTheme.ink)
+                    .foregroundStyle(mapType == type ? .white : c.ink)
                     .padding(.horizontal, 12).padding(.vertical, 5)
                     .background(mapType == type ? accent : .clear)
                     .clipShape(Capsule())
-                    .overlay(Capsule().stroke(mapType == type ? accent : ClassicTheme.border, lineWidth: 1))
+                    .overlay(Capsule().stroke(mapType == type ? accent : c.border, lineWidth: 1))
             }
             .buttonStyle(.plain)
             .help("Afficher la carte \(type.label)")
@@ -156,12 +158,12 @@ public struct DepartementMapCard: View {
         let recenter = Button {
             fitSelection()
         } label: { Image(systemName: "mappin.and.ellipse").modifier(ActionIconSize(enlarged: actionsFirst)) }
-            .buttonStyle(.plain).foregroundStyle(ClassicTheme.ink).help("Recentrer la carte")
+            .buttonStyle(.plain).foregroundStyle(c.ink).help("Recentrer la carte")
         if actionsFirst { recenter }
         Button { zoomMap(by: 2) } label: { Image(systemName: "minus.magnifyingglass").modifier(ActionIconSize(enlarged: actionsFirst)) }
-            .buttonStyle(.plain).foregroundStyle(ClassicTheme.ink).help("Dézoomer")
+            .buttonStyle(.plain).foregroundStyle(c.ink).help("Dézoomer")
         Button { zoomMap(by: 0.5) } label: { Image(systemName: "plus.magnifyingglass").modifier(ActionIconSize(enlarged: actionsFirst)) }
-            .buttonStyle(.plain).foregroundStyle(ClassicTheme.ink).help("Zoomer")
+            .buttonStyle(.plain).foregroundStyle(c.ink).help("Zoomer")
         if !actionsFirst { recenter }
     }
 
@@ -182,8 +184,8 @@ public struct DepartementMapCard: View {
                             let hovered = name == hoveredName
                             ForEach(Array((DepartementBoundaries.rings[name] ?? []).enumerated()), id: \.offset) { _, ring in
                                 MapPolygon(coordinates: ring)
-                                    .foregroundStyle(fillsDepartement ? accent.opacity(hovered ? 0.085 : 0.05) : .clear)
-                                    .stroke(accent, lineWidth: selected ? 3 : 2)
+                                    .foregroundStyle(fillsDepartement ? accent.mapTrace(dark: c.dark).opacity(hovered ? 0.085 : 0.05) : .clear)
+                                    .stroke(accent.mapTrace(dark: c.dark), lineWidth: selected ? 3 : 2)
                             }
                         }
                     }
@@ -223,12 +225,12 @@ public struct DepartementMapCard: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             } else {
                 Text("Carte indisponible pour ce département.")
-                    .font(roundedFont ? CFont.rounded(13) : CFont.sans(13)).foregroundStyle(ClassicTheme.faint)
+                    .font(roundedFont ? CFont.rounded(13) : CFont.sans(13)).foregroundStyle(c.faint)
             }
         }
         .padding(16)
-        .background(.white, in: RoundedRectangle(cornerRadius: 10))
-        .overlay(RoundedRectangle(cornerRadius: 10).stroke(ClassicTheme.border, lineWidth: 1))
+        .background(c.card, in: RoundedRectangle(cornerRadius: 10))
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(c.border, lineWidth: 1))
     }
 }
 

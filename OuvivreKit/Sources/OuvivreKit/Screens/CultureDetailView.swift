@@ -5,6 +5,8 @@ import SwiftUI
 /// Lieux du patrimoine et Festivals, chaque longue liste répartie sur
 /// plusieurs colonnes.
 public struct CultureDetailView: View {
+    @Environment(\.colorScheme) private var colorScheme
+    private var c: DetailColors { DetailColors(colorScheme) }
     /// Identifiant de la scène `WindowGroup(for: String.self)` déclarée par
     /// l'app — la valeur passée à `openWindow` est le code du département.
     public static let windowID = "culture-detail"
@@ -76,7 +78,7 @@ public struct CultureDetailView: View {
             alphabeticalGrid(monuments, criterionKey: "patrimoine")
             if !spr.isEmpty {
                 Divider()
-                (Text("Sites patrimoniaux remarquables").foregroundStyle(.black) + Text(" · \(spr.count)").foregroundStyle(ClassicTheme.faint))
+                (Text("Sites patrimoniaux remarquables").foregroundStyle(c.ink) + Text(" · \(spr.count)").foregroundStyle(c.faint))
                     .font(CFont.rounded(12, weight: .semibold))
                 grid(spr, criterionKey: "spr")
             }
@@ -95,7 +97,7 @@ public struct CultureDetailView: View {
         return section(title: "Festivals", icon: "fireworks", count: names.count) {
             ForEach(ordered, id: \.self) { discipline in
                 VStack(alignment: .leading, spacing: 8) {
-                    (Text(discipline.prefix(1).uppercased() + discipline.dropFirst().lowercased()).foregroundStyle(.black) + Text(" · \(byDiscipline[discipline]!.count)").foregroundStyle(ClassicTheme.faint))
+                    (Text(discipline.prefix(1).uppercased() + discipline.dropFirst().lowercased()).foregroundStyle(c.ink) + Text(" · \(byDiscipline[discipline]!.count)").foregroundStyle(c.faint))
                         .font(CFont.rounded(11, weight: .semibold))
                         .padding(.top, 12)
                     alphabeticalGrid(byDiscipline[discipline]!, criterionKey: "festivals")
@@ -147,7 +149,7 @@ public struct CultureDetailView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text(group.letter)
                     .font(CFont.rounded(13, weight: .bold))
-                    .foregroundStyle(.black)
+                    .foregroundStyle(c.ink)
                     .padding(.leading, 23)
                 grid(group.names, criterionKey: criterionKey)
             }
@@ -167,10 +169,10 @@ public struct CultureDetailView: View {
                 HStack(spacing: 6) {
                     Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
                         .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(ClassicTheme.faint)
+                        .foregroundStyle(c.faint)
                         .frame(width: 11)
                     Image(systemName: icon).foregroundStyle(theme.accent)
-                    (Text(title).foregroundStyle(ClassicTheme.body) + Text(" · \(count)").foregroundStyle(ClassicTheme.faint))
+                    (Text(title).foregroundStyle(c.body) + Text(" · \(count)").foregroundStyle(c.faint))
                         .font(CFont.rounded(13, weight: .medium))
                     Spacer()
                 }
@@ -181,7 +183,7 @@ public struct CultureDetailView: View {
             if !isCollapsed {
                 if count == 0 {
                     Text("Aucune donnée pour ce département.")
-                        .font(CFont.rounded(13)).foregroundStyle(ClassicTheme.faint)
+                        .font(CFont.rounded(13)).foregroundStyle(c.faint)
                 } else {
                     content()
                 }
@@ -205,7 +207,7 @@ public struct CultureDetailView: View {
                     Text(InspectorPanelView.titleCased(name))
                         .font(CFont.rounded(13))
                         .lineSpacing(3)
-                        .foregroundStyle(ClassicTheme.body)
+                        .foregroundStyle(c.body)
                         .multilineTextAlignment(.leading)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }

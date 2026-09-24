@@ -5,6 +5,7 @@ import MapKit
 /// and lays out a native sidebar + detail split, with the map shown as a
 /// native inspector panel.
 public struct ClassicRootView: View {
+    @Environment(\.colorScheme) private var colorScheme
     @StateObject private var theme = ClassicTheme()
     @StateObject private var state = ClassicState()
     @StateObject private var mapState = MapPanelState.shared
@@ -77,7 +78,7 @@ public struct ClassicRootView: View {
                         .frame(maxWidth: .infinity)
                 }
             }
-                .background(state.screen == .favoris ? ClassicTheme.cardAlt : Color.clear)
+                .background(state.screen == .favoris ? DetailColors(colorScheme).window : Color.clear)
                 .toolbar {
                     // Two separate, plain toolbar buttons (not the native
                     // combined MapZoomStepper, and no custom capsule/frame

@@ -158,8 +158,8 @@ public struct SelecteurView: View {
         if mapState.departementRingGroups.isEmpty {
             ForEach(Array(mapState.regionRings.enumerated()), id: \.offset) { _, ring in
                 MapPolygon(coordinates: ring)
-                    .foregroundStyle(theme.accent.opacity(0.16))
-                    .stroke(theme.accent, lineWidth: 2)
+                    .foregroundStyle(theme.accent.mapTrace(dark: colorScheme == .dark).opacity(0.16))
+                    .stroke(theme.accent.mapTrace(dark: colorScheme == .dark), lineWidth: 2)
             }
             if mapState.regionRings.isEmpty {
                 Marker(mapState.title, coordinate: mapState.coordinate)
@@ -176,8 +176,8 @@ public struct SelecteurView: View {
         let opacity = 0.05 + (isSelected ? 0.05 : 0) + (isHovered ? 0.07 : 0)
         ForEach(Array(rings.enumerated()), id: \.offset) { _, ring in
             MapPolygon(coordinates: ring)
-                .foregroundStyle(theme.accent.opacity(opacity))
-                .stroke(theme.accent, lineWidth: 2)
+                .foregroundStyle(theme.accent.mapTrace(dark: colorScheme == .dark).opacity(opacity))
+                .stroke(theme.accent.mapTrace(dark: colorScheme == .dark), lineWidth: 2)
         }
     }
 
