@@ -1,8 +1,8 @@
 import SwiftUI
 
 /// En-tête commun aux fenêtres de détail d'un département (Météo, Culture) :
-/// numéro, nom, chef-lieu, bouton de recentrage de la carte et étoile de
-/// favoris, sur une seule ligne.
+/// numéro, nom, chef-lieu, bouton de recentrage de la carte et, à sa droite,
+/// étoile de favoris, sur une seule ligne.
 struct DepartementDetailHeader: View {
     let departementCode: String
     let name: String
@@ -28,24 +28,27 @@ struct DepartementDetailHeader: View {
                         .foregroundStyle(ClassicTheme.faint)
                     Button(action: onRecenter) {
                         Image(systemName: "mappin.and.ellipse")
-                            .font(CFont.rounded(13))
+                            .font(.system(size: 13))
+                            .frame(width: 16, height: 16)
                             .foregroundStyle(ClassicTheme.faint)
                     }
                     .buttonStyle(.plain)
                     .help("Centrer la carte sur \(chefLieu)")
                 }
+                // Étoile de favoris, à droite de l'icône de recentrage.
+                let isFavorite = state.favoriteDepartementCodes.contains(departementCode)
+                Button {
+                    state.toggleFavoriteDepartement(departementCode)
+                } label: {
+                    Image(systemName: isFavorite ? "star.fill" : "star")
+                        .font(.system(size: 13))
+                        .frame(width: 16, height: 16)
+                        .foregroundStyle(isFavorite ? ClassicTheme.favorite : ClassicTheme.faint)
+                }
+                .buttonStyle(.plain)
+                .help(isFavorite ? "Retirer des favoris" : "Ajouter aux favoris")
             }
             Spacer(minLength: 8)
-            let isFavorite = state.favoriteDepartementCodes.contains(departementCode)
-            Button {
-                state.toggleFavoriteDepartement(departementCode)
-            } label: {
-                Image(systemName: isFavorite ? "star.fill" : "star")
-                    .font(.system(size: 13))
-                    .foregroundStyle(isFavorite ? ClassicTheme.favorite : ClassicTheme.faint)
-            }
-            .buttonStyle(.plain)
-            .help(isFavorite ? "Retirer des favoris" : "Ajouter aux favoris")
         }
     }
 }
