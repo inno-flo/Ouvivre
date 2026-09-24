@@ -1,7 +1,7 @@
 import SwiftUI
 
 public enum ClassicScreen: String, CaseIterable, Identifiable, Hashable {
-    case pays, geo, geo2, selecteur, meteo, affiner, ville, sources, favoris
+    case selecteur, sources, favoris
     public var id: Self { self }
 }
 
@@ -44,7 +44,6 @@ public final class ClassicState: ObservableObject {
     @Published public var favoriteDepartementCodes: Set<String> = Set(UserDefaults.standard.stringArray(forKey: "favoriteDepartementCodes") ?? []) {
         didSet { UserDefaults.standard.set(Array(favoriteDepartementCodes).sorted(), forKey: "favoriteDepartementCodes") }
     }
-    @Published public var meteo: [Int] = ClassicStatic.meteo.map(\.1)
     /// One weight array per group, indexed like `ClassicStatic.groups`. Les 3
     /// critères CULTURE repris par "Big Mac" (Musées, Lieux du patrimoine,
     /// Festivals) démarrent à 0 (indifférent) plutôt qu'avec les valeurs
@@ -84,12 +83,9 @@ public final class ClassicState: ObservableObject {
 
     public func goToDepartement(_ code: String) { selectedDepartementCode = code }
 
-    public func resetGeo() { geo = ClassicStatic.geo.map(\.1) }
     public func resetGeo2() { geo2 = ClassicStatic.geo.map { _ in 0 } }
 
-    public func setGeo(_ index: Int, value: Int) { geo[index] = max(0, min(5, value)) }
     public func setGeo2(_ index: Int, value: Int) { geo2[index] = max(0, min(2, value)) }
-    public func setMeteo(_ index: Int, value: Int) { meteo[index] = max(0, min(5, value)) }
     public func setGroup(_ groupIndex: Int, _ rowIndex: Int, value: Int) {
         // Différé au prochain tick : appelé en direct depuis le
         // `DragGesture.onChanged` de `CriterionRow`, muter `groups`

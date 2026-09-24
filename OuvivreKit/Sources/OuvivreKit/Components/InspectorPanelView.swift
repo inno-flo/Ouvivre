@@ -299,8 +299,6 @@ public struct InspectorPanelView: View {
         .help("Double-clic pour ouvrir le détail dans une fenêtre")
     }
 
-    private static let meteoKey = "meteo"
-
     /// Icône de l'en-tête de chaque critère Culture.
     private static func headerIcon(forCriterionKey key: String) -> String {
         switch key {

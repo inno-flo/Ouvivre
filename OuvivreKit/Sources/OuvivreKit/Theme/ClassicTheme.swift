@@ -6,29 +6,18 @@ import AppKit
 #endif
 
 /// Look-and-feel knobs mirroring the dc export's `$preview` props
-/// (`accent`, `density`, `resultLayout`, `imagery`).
+/// (`accent`, `density`).
 public final class ClassicTheme: ObservableObject {
     @Published public var accent: Color
     @Published public var compact: Bool
-    @Published public var resultLayout: ResultLayout
-    @Published public var showPhotos: Bool
-
-    public enum ResultLayout: String, CaseIterable { case cards, list, rank }
 
     public init(
         accent: Color = .accentColor,
-        compact: Bool = false,
-        resultLayout: ResultLayout = .cards,
-        showPhotos: Bool = true
+        compact: Bool = false
     ) {
         self.accent = accent
         self.compact = compact
-        self.resultLayout = resultLayout
-        self.showPhotos = showPhotos
     }
-
-    /// `color-mix(in oklab, accent 62%, white)` approximated by blending in sRGB.
-    public var accentLight: Color { accent.mixed(with: .white, fraction: 0.62) }
 
     // Fixed palette (not user-configurable in the dc export).
     public static let background = Color(hex: 0xFFFFFF)
@@ -37,30 +26,19 @@ public final class ClassicTheme: ObservableObject {
     public static let dividerLight = Color(hex: 0xF0ECE4)
     public static let cardAlt = Color(hex: 0xFAF9F6)
     public static let ink = Color(hex: 0x1C1B19)
-    public static let inkPanel = Color(hex: 0xF4F2EE) // text on dark panels
     public static let body = Color(hex: 0x4A463F)
     public static let sub = Color(hex: 0x6F6A60)
     public static let faint = Color(hex: 0x8C867B)
     public static let faint2 = Color(hex: 0xA39D91)
-    public static let darkPanel = Color(hex: 0x1C1B19)
-    public static let darkPanelSub = Color(hex: 0xBDB7AB)
-    public static let darkPanelFaint = Color(hex: 0xA39D91)
-    public static let darkPanelDivider = Color(hex: 0x34312C)
     /// Étoile et sceau des favoris, partout dans l'app.
     public static let favorite = Color(hex: 0xFFD500)
     public static let track = Color(hex: 0xEAE6DE)
-    public static let trackAlt = Color(hex: 0xC9C3B6)
 
     // Density-driven metrics.
     public var mainPadding: CGFloat { compact ? 24 : 40 }
     public var mainPaddingBottom: CGFloat { compact ? 40 : 56 }
     public var gap: CGFloat { compact ? 18 : 28 }
-    public var cardPad: CGFloat { compact ? 15 : 22 }
     public var cardPadX: CGFloat { compact ? 16 : 20 }
-    public var rowPad: CGFloat { compact ? 10 : 15 }
-    public var rowPadTight: CGFloat { compact ? 8 : 12 }
-    public var h1: CGFloat { compact ? 30 : 38 }
-    public var h2: CGFloat { compact ? 25 : 32 }
 }
 
 public extension Color {

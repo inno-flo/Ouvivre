@@ -37,8 +37,6 @@ public struct ClassicDerived {
     public let state: ClassicState
     public let theme: ClassicTheme
 
-    public var geoSum: Int { state.geo.reduce(0, +) }
-
     /// Real département scores (weighted by `weights`, defaults to
     /// `state.geo`), ranked — backed by `FranceGeoData` (IGN-derived, see
     /// geo_pipeline/). Replaces the old fake `topScore = 60 + geoSum*1.6`
@@ -80,28 +78,6 @@ public struct ClassicDerived {
             .sorted { $0.1 > $1.1 }
     }
 
-    /// Régions ranked by the mean weighted score of their départements — the
-    /// primary "région la plus probante" ranking is at région level, backed
-    /// by a finer per-département computation (see plan: région ranking,
-    /// département detail).
-    public func rankedRegions(weights: [Int]? = nil, excluding: Set<Int> = [], maxWeight: Int = 5) -> [(nomRegion: String, score: Double, bestDept: FranceGeoData.DepartementScore)] {
-        let ranked = rankedDepartements(weights: weights, excluding: excluding, maxWeight: maxWeight)
-        var byRegion: [String: [(dep: FranceGeoData.DepartementScore, score: Double)]] = [:]
-        for entry in ranked { byRegion[entry.dep.nomRegion, default: []].append(entry) }
-        return byRegion.map { nomRegion, entries in
-            let mean = entries.map(\.score).reduce(0, +) / Double(entries.count)
-            let best = entries.max { $0.score < $1.score }!.dep
-            return (nomRegion, mean, best)
-        }.sorted { $0.score > $1.score }
-    }
-
-    public struct WinningRegion { public let nomRegion: String; public let bestDept: String; public let score: Int }
-    public func winningRegion(weights: [Int]? = nil, excluding: Set<Int> = [], maxWeight: Int = 5) -> WinningRegion? {
-        guard let top = rankedRegions(weights: weights, excluding: excluding, maxWeight: maxWeight).first else { return nil }
-        return WinningRegion(nomRegion: top.nomRegion, bestDept: top.bestDept.nom, score: Int(top.score.rounded()))
-    }
-    public func topScore(weights: [Int]? = nil, excluding: Set<Int> = [], maxWeight: Int = 5) -> Int { winningRegion(weights: weights, excluding: excluding, maxWeight: maxWeight)?.score ?? 0 }
-
     public var navSteps: [NavItem] {
         let defs: [(String, String, ClassicScreen, String?)] = [
             ("01d", "Sélecteur", .selecteur, nil)
@@ -117,19 +93,10 @@ public struct ClassicDerived {
     public var countryFacts: [LabeledValue] {
         ClassicStatic.countryProfiles[state.country]?.facts ?? []
     }
-    public var countrySources: [ClassicStatic.CountrySource] {
-        ClassicStatic.countryProfiles[state.country]?.sources ?? []
-    }
 
-    public var geoRows: [WeightedRow] {
-        ClassicStatic.geo.enumerated().map { WeightedRow(id: $0, label: $1.0, value: state.geo[$0]) }
-    }
     /// Géographie 2's rows, on its own 3-level (0...2) scale — "souhaitable" et "accessoire" fusionnés dans "important".
     public var geo2Rows: [WeightedRow] {
         ClassicStatic.geo.enumerated().map { WeightedRow(id: $0, label: $1.0, value: state.geo2[$0], maxValue: 2, tags: ClassicStatic.tagsGeo2) }
-    }
-    public var meteoRows: [WeightedRow] {
-        ClassicStatic.meteo.enumerated().map { WeightedRow(id: $0, label: $1.0, value: state.meteo[$0]) }
     }
 
     public struct DerivedGroup: Identifiable {
@@ -157,57 +124,5 @@ public struct ClassicDerived {
             guard row.value > 0, let key = keyByLabel[row.label] else { return nil }
             return (row.label, key)
         }
-    }
-
-    public struct RegionRow: Identifiable {
-        public var id: String { name }
-        public let rank: String
-        public let name: String
-        public let nomRegion: String
-        public let score: Int
-        public var pct: CGFloat { CGFloat(score) / 100 }
-    }
-    /// Top départements nationally by weighted score, skipping the one
-    /// already shown as the winning région's headline pick.
-    public func regionRows(weights: [Int]? = nil, excluding: Set<Int> = [], maxWeight: Int = 5) -> [RegionRow] {
-        let bestDeptName = winningRegion(weights: weights, excluding: excluding, maxWeight: maxWeight)?.bestDept
-        return rankedDepartements(weights: weights, excluding: excluding, maxWeight: maxWeight)
-            .filter { $0.dep.nom != bestDeptName && $0.score >= 35 }
-            .enumerated()
-            .map { i, entry in RegionRow(rank: String(format: "%02d", i + 2), name: entry.dep.nom, nomRegion: entry.dep.nomRegion, score: Int(entry.score.rounded())) }
-    }
-
-    public struct CityCard: Identifiable {
-        public var id: String { name }
-        public let rank: String
-        public let name: String
-        public let sub: String
-        public let score: Int
-        public let inline: String
-        public let bars: [(key: String, pct: CGFloat, v: Int)]
-        public var scorePct: CGFloat { CGFloat(score) / 100 }
-    }
-    public var cities: [CityCard] {
-        ClassicStatic.cities.enumerated().map { i, c in
-            CityCard(
-                rank: String(format: "%02d", i + 1), name: c.name, sub: c.sub, score: c.score, inline: c.inline,
-                bars: c.bars.map { (key: $0.key, pct: CGFloat($0.value) / 100, v: $0.value) }
-            )
-        }
-    }
-
-    public var shortlist: [CityCard] { Array(cities.prefix(4)) }
-
-    // MARK: Fiche ville (fixed: Annecy)
-
-    public struct VilleFamilyDerived: Identifiable { public var id: String { key }; public let key: String; public let value: Int; public let note: String; public var pct: CGFloat { CGFloat(value) / 100 } }
-    public struct MonthBar: Identifiable { public var id: Int { index }; public let index: Int; public let label: String; public let temp: Int; public var height: CGFloat { CGFloat(18 + Double(temp) * 3.6) } }
-
-    public var villeFamilies: [VilleFamilyDerived] {
-        ClassicStatic.ville.families.map { VilleFamilyDerived(key: $0.key, value: $0.value, note: $0.note) }
-    }
-    public var villeMonths: [MonthBar] {
-        let letters = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"]
-        return ClassicStatic.ville.temps.enumerated().map { i, t in MonthBar(index: i, label: letters[i], temp: t) }
     }
 }

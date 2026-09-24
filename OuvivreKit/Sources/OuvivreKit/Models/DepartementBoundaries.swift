@@ -3,8 +3,7 @@ import CoreLocation
 
 /// Simplified département outlines + a camera place (centroid + a span
 /// sized to its bounding box) for drawing the selected département's real
-/// perimeter on the map — same approach as RegionBoundaries, one level
-/// finer. Unlike régions, départements have no hand-authored GeoCoordinates
+/// perimeter on the map. Départements have no hand-authored GeoCoordinates
 /// entry, so the place is computed geometrically (see geo_pipeline) instead.
 public enum DepartementBoundaries {
     public struct Place {

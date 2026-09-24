@@ -1,7 +1,7 @@
 import SwiftUI
 import MapKit
 
-/// "Big Mac" (nom provisoire) — même présentation plein cadre que Géographie 2
+/// "Big Mac" (nom provisoire) — présentation plein cadre
 /// (fond MapKit + colonne flottante translucide), mais la colonne empile 4
 /// blocs rétractables (`DisclosureGroup`) qui reprennent, dans l'ordre,
 /// Pays → Régions (+ tailles de commune) → Culture. Chaque bloc
@@ -26,8 +26,7 @@ public struct SelecteurView: View {
     @State private var position: MapCameraPosition = .automatic
     @State private var lastRegion: MKCoordinateRegion?
     @State private var transitionGeneration = 0
-    /// Département actuellement survolé — rend son polygone opaque, comme
-    /// dans Régions (`hoveredDepartementName` de `GeoView2`). MapKit ne
+    /// Département actuellement survolé — rend son polygone opaque. MapKit ne
     /// propose pas de survol par forme, donc on hit-teste manuellement le
     /// point de la souris contre les polygones via `MapReader`.
     @State private var hoveredDepartementName: String?
@@ -41,8 +40,7 @@ public struct SelecteurView: View {
     // se replie.
 
     // Liste des communes correspondantes (bloc Régions) : les 30 premières
-    // s'affichent directement, le reste se déplie — même pattern que
-    // `showMoreDepartements` dans GeoView2.
+    // s'affichent directement, le reste se déplie.
     @State private var showMoreCommunes = false
     /// Vrai pendant l'application du dépli par défaut à l'apparition.
     @State private var isApplyingDefaultExpansion = false
@@ -57,8 +55,7 @@ public struct SelecteurView: View {
     /// affichés quel que soit leur classement, et les réglages de
     /// proximité/Culture (qui ne font que réordonner la liste) n'ont donc
     /// aucun effet visible (même bug que "0 communes" : effet invisible
-    /// plutôt qu'absent). Même convention que `topDepartementsCount` dans
-    /// GeoView2.
+    /// plutôt qu'absent).
     private let topDepartementsCount = 25
 
     public init(derived: ClassicDerived) { self.derived = derived }
@@ -232,15 +229,6 @@ public struct SelecteurView: View {
         cultureRows.map(\.row.value)
     }
 
-    /// Tant qu'aucun critère (proximité ou Culture) n'est réglé, tous les
-    /// scores retombent à 50/100 pour chaque département : un "top 10" y
-    /// serait arbitraire (ordre de tri stable, sans rapport avec un critère
-    /// visible) et donnerait l'impression trompeuse d'un classement. Dans ce
-    /// cas, on affiche tous les départements correspondants, sans plafond.
-    private var hasActiveRankingCriterion: Bool {
-        state.geo2.contains { $0 > 0 } || cultureWeights.contains { $0 > 0 }
-    }
-
     /// Ces départements, classés par pertinence en combinant les réglages de
     /// proximité (`state.geo2`) et les poids Culture (moyenne des deux
     /// scores 0-100) — filtrés à l'ensemble issu des tailles de commune, et
@@ -282,8 +270,7 @@ public struct SelecteurView: View {
 
     /// Redessine les périmètres des départements correspondants — appelé à
     /// l'apparition et à chaque changement de taille de commune, de réglage
-    /// de proximité ou de poids Culture (comme `refreshTopDepartementsOnMap`
-    /// dans GeoView2), sans déplacer la caméra.
+    /// de proximité ou de poids Culture, sans déplacer la caméra.
     private func refreshDepartementsOnMap() {
         let names = matchingDepartementNames
         mapState.updateDepartementRingGroups(names)
@@ -327,7 +314,6 @@ public struct SelecteurView: View {
             includeGrandeVille: state.includeGrandeVille
         )
     }
-    private var communeCount: Int { matchingCommunes.count }
     /// Les 30 premières communes correspondantes, toujours affichées — et
     /// aussi celles utilisées comme pins sur la carte (pour éviter d'en
     /// surcharger l'affichage avec les "autres communes").
@@ -402,8 +388,7 @@ public struct SelecteurView: View {
     }
 
     /// Liste des communes correspondant aux filtres — 30 premières en clair,
-    /// le reste replié derrière "AUTRES COMMUNES" (même pattern que
-    /// `departementsCard` dans GeoView2).
+    /// le reste replié derrière "AUTRES COMMUNES".
     private var communesList: some View {
         VStack(alignment: .leading, spacing: 0) {
             if !shownCommunes.isEmpty {
@@ -576,13 +561,12 @@ public struct SelecteurView: View {
         .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(blockStroke, lineWidth: 1))
     }
 
-    // MARK: Caméra (identique à PaysView/GeoView2)
+    // MARK: Caméra
 
     /// Applique un changement de `spanDegrees` (boutons de zoom de la
     /// toolbar) à la caméra courante — la molette/le trackpad modifient déjà
     /// `position` directement via MapKit, mais les boutons ne passent que
-    /// par `mapState.spanDegrees`, qu'il faut donc écouter (comme
-    /// `applyZoom` dans GeoView2).
+    /// par `mapState.spanDegrees`, qu'il faut donc écouter.
     private func applyZoom(_ newSpan: Double) {
         guard let current = lastRegion else { return }
         let updated = MKCoordinateRegion(

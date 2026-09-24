@@ -27,8 +27,8 @@ struct GeoJSONGeometry: Decodable {
 
 /// A Polygon's coordinates are `[ring][point][lon, lat]` (ring 0 is the
 /// outer boundary); a MultiPolygon nests one more level, one per part.
-/// Interior rings (holes) are dropped — irrelevant for a silhouette. Shared
-/// by RegionBoundaries and DepartementBoundaries.
+/// Interior rings (holes) are dropped — irrelevant for a silhouette. Used
+/// by DepartementBoundaries.
 func geoJSONOuterRings(of geometry: GeoJSONGeometry) -> [[CLLocationCoordinate2D]] {
     switch geometry.type {
     case "Polygon":

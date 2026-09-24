@@ -113,11 +113,6 @@ private struct NavItemRow: View {
     private var icon: String? {
         switch item.screen {
         case .selecteur: "chart.bar.horizontal.page"
-        case .pays: "globe.europe.africa"
-        case .geo2: "map"
-        case .affiner: "bus"
-        case .meteo: "thermometer.sun"
-        case .ville: "mappin.and.ellipse"
         default: nil
         }
     }

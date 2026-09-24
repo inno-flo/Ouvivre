@@ -64,46 +64,6 @@ public final class MapPanelState: ObservableObject {
         recenterTick += 1
     }
 
-    public func focusOnRegion(_ nomRegion: String) {
-        guard let place = GeoCoordinates.regions[nomRegion] else { return }
-        title = nomRegion
-        coordinate = place.coordinate
-        spanDegrees = place.span
-        regionRings = RegionBoundaries.rings[nomRegion] ?? []
-        departementRingGroups = []
-    }
-
-    /// Same idea as `focusOnRegion`, one administrative level finer — no
-    /// hand-authored camera place exists for départements, so both the
-    /// camera and the perimeter come from `DepartementBoundaries` (computed
-    /// geometrically, see geo_pipeline).
-    public func focusOnDepartement(_ nom: String) {
-        guard let place = DepartementBoundaries.places[nom] else { return }
-        title = nom
-        coordinate = place.coordinate
-        spanDegrees = place.span
-        regionRings = DepartementBoundaries.rings[nom] ?? []
-        departementRingGroups = []
-    }
-
-    /// Draws every named département's perimeter at once and zooms out to
-    /// show all of France — "Afficher sur la carte" on the top-N list.
-    public func focusOnDepartements(_ noms: [String]) {
-        guard let france = GeoCoordinates.countries["France"] else { return }
-        title = "France"
-        coordinate = france.coordinate
-        spanDegrees = france.span
-        regionRings = []
-        departementRingGroups = noms.map { ($0, DepartementBoundaries.rings[$0] ?? []) }
-    }
-
-    /// Clears whatever perimeter is drawn, without moving the camera —
-    /// tapping the map to deselect the top-N départements.
-    public func clearRegionRings() {
-        regionRings = []
-        departementRingGroups = []
-    }
-
     /// Redraws the top-N départements' perimeters without touching the
     /// camera — keeps "Afficher sur la carte" in sync as weights change.
     public func updateDepartementRingGroups(_ noms: [String]) {

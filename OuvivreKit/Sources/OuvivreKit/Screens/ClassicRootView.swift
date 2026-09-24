@@ -29,10 +29,6 @@ public struct ClassicRootView: View {
         )
     }
 
-    /// Mirrors the old `showMapPanel` rule: force-hidden on the Sources
-    /// screen, and on Pays/Géographie 2, which embed their own full-bleed
-    /// map instead of using the inspector — the toolbar icon stays visible
-    /// on Pays regardless, it's just a no-op there for now.
     private var isDepartement: Bool { state.selectedDepartementCode != nil }
     private var isFavoris: Bool { state.screen == .favoris || isDepartement }
     private var isBigMac: Bool { state.screen == .selecteur }
@@ -47,7 +43,7 @@ public struct ClassicRootView: View {
                 // écrans). Il ne s'ouvre qu'en cliquant un département sur la
                 // carte de Big Mac (voir `BigMacView`).
                 let visible = isBigMac ? mapState.bigMacInspectorVisible : mapState.isVisible
-                return visible && state.screen != .sources && state.screen != .geo2 && state.screen != .pays && !isFavoris
+                return visible && state.screen != .sources && !isFavoris
             },
             set: { newValue in
                 withAnimation(.easeInOut(duration: 0.28)) {
@@ -67,10 +63,6 @@ public struct ClassicRootView: View {
                 if let code = state.selectedDepartementCode, state.favoriteDepartementCodes.contains(code) {
                     DepartementView(departementCode: code)
                         .id(code)
-                } else if state.screen == .pays {
-                    PaysView(derived: derived)
-                } else if state.screen == .geo2 {
-                    GeoView2(derived: derived)
                 } else if state.screen == .selecteur {
                     SelecteurView(derived: derived)
                 } else {
@@ -83,8 +75,8 @@ public struct ClassicRootView: View {
                     // Two separate, plain toolbar buttons (not the native
                     // combined MapZoomStepper, and no custom capsule/frame
                     // wrapping either — those both caused trouble before).
-                    // Only meaningful while Géographie 2's Map is on screen.
-                    if state.screen == .geo2 || isBigMac {
+                    // Only meaningful while Big Mac's map is on screen.
+                    if isBigMac {
                         ToolbarItem {
                             Button { mapState.recenterOnCountry(state.country) } label: {
                                 Image(systemName: "mappin.and.ellipse")
@@ -153,13 +145,7 @@ public struct ClassicRootView: View {
     private func content(_ derived: ClassicDerived) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             switch state.screen {
-            case .pays: EmptyView() // rendered full-bleed outside content(), see body
-            case .geo: GeoView(derived: derived)
-            case .geo2: EmptyView() // rendered full-bleed outside content(), see body
             case .selecteur: EmptyView() // rendered full-bleed outside content(), see body
-            case .meteo: MeteoView(derived: derived)
-            case .affiner: AffinerView(derived: derived)
-            case .ville: VilleView(derived: derived)
             case .sources: SourcesView(derived: derived)
             case .favoris: FavorisView(derived: derived)
             }
