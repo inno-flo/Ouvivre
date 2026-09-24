@@ -18,12 +18,15 @@ public struct SidebarNav: View {
 
     private var isTous: Bool { state.screen == .favoris && state.selectedDepartementCode == nil }
 
-    /// Départements favoris, dans l'ordre alphabétique — la liste suit
+    /// Départements favoris, badge `checkmark.seal` en tête, puis ordre alphabétique — la liste suit
     /// `favoriteDepartementCodes` (ajout/retrait depuis n'importe où).
     private var favoriteDepartements: [FranceGeoData.DepartementScore] {
         FranceGeoData.departements
             .filter { state.favoriteDepartementCodes.contains($0.codeInsee) }
-            .sorted { $0.nom.localizedStandardCompare($1.nom) == .orderedAscending }
+            .sorted {
+                let a = topCodes.contains($0.codeInsee), b = topCodes.contains($1.codeInsee)
+                return a != b ? a : $0.nom.localizedStandardCompare($1.nom) == .orderedAscending
+            }
     }
 
     private var topCodes: Set<String> { FavorisView.topDepartementCodes(among: state.favoriteDepartementCodes) }
@@ -38,10 +41,11 @@ public struct SidebarNav: View {
                 Text("Sélection").foregroundStyle(.secondary)
             }
 
+            if !state.favoriteDepartementCodes.isEmpty {
             Section {
                 if favoritesExpanded {
                     HStack(spacing: 9) {
-                        Image(systemName: state.favoriteDepartementCodes.isEmpty ? "star" : "star.fill").frame(width: 16).foregroundStyle(state.favoriteDepartementCodes.isEmpty ? Color.primary : ClassicTheme.favorite)
+                        Image(systemName: "star").frame(width: 16).foregroundStyle(.black)
                         Text("Tous").font(.system(size: 13, weight: isTous ? .bold : .regular))
                         Spacer(minLength: 4)
                         // Même corps que les compteurs de la sidebar de PierreVincent (13 pt,
@@ -54,13 +58,13 @@ public struct SidebarNav: View {
                     .tag(SidebarDestination.screen(.favoris))
                     ForEach(favoriteDepartements, id: \.codeInsee) { dep in
                         HStack(spacing: 9) {
-                            Image(systemName: "mappin").frame(width: 16)
+                            if topCodes.contains(dep.codeInsee) {
+                                Image(systemName: "checkmark.seal").frame(width: 16).foregroundStyle(.black)
+                            } else {
+                                Image(systemName: "mappin").frame(width: 16)
+                            }
                             Text(dep.nom).font(.system(size: 13, weight: state.selectedDepartementCode == dep.codeInsee ? .bold : .regular))
                             Spacer(minLength: 4)
-                            if topCodes.contains(dep.codeInsee) {
-                                Image(systemName: "checkmark.seal.text.page").foregroundStyle(ClassicTheme.favorite)
-                                    .help("Le plus de meilleures valeurs")
-                            }
                         }
                         .tag(SidebarDestination.departement(dep.codeInsee))
                     }
@@ -70,17 +74,18 @@ public struct SidebarNav: View {
                     withAnimation(.easeInOut(duration: 0.15)) { favoritesExpanded.toggle() }
                 } label: {
                     HStack(spacing: 6) {
-                        Image(systemName: favoritesExpanded ? "chevron.down" : "chevron.right")
-                            .font(.system(size: 9, weight: .semibold)).frame(width: 10)
-                        Image(systemName: state.favoriteDepartementCodes.isEmpty ? "star" : "star.fill")
-                            .foregroundStyle(state.favoriteDepartementCodes.isEmpty ? Color.secondary : ClassicTheme.favorite)
                         Text("Favoris")
                         Spacer(minLength: 0)
+                        Image(systemName: favoritesExpanded ? "chevron.down" : "chevron.right")
+                            .font(.system(size: 9, weight: .semibold))
+                            .frame(width: 10)
+                            .padding(.trailing, 11)
                     }
                     .foregroundStyle(.secondary)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+            }
             }
         }
         .listStyle(.sidebar)
