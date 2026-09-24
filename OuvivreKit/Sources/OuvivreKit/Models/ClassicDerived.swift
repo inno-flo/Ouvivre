@@ -106,7 +106,7 @@ public struct ClassicDerived {
         let defs: [(String, String, ClassicScreen, String?)] = [
             ("01d", "Sélecteur", .selecteur, nil)
         ]
-        return defs.map { NavItem(num: $0.0, label: $0.1, meta: $0.3, screen: $0.2, active: state.screen == $0.2) }
+        return defs.map { NavItem(num: $0.0, label: $0.1, meta: $0.3, screen: $0.2, active: state.screen == $0.2 && state.selectedDepartementCode == nil) }
     }
 
     public struct CountryChip: Identifiable { public var id: String { name }; public let name: String; public let selected: Bool }

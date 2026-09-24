@@ -61,8 +61,14 @@ public struct MeteoDetailView: View {
     /// Regroupement des barres de précipitations : par mois ou par trimestre.
     @State private var rainGrouping: RainGrouping = .month
     let departementCode: String
+    /// Mode intégré (vue Département de la sidebar) : sans en-tête, carte,
+    /// défilement ni cadre de fenêtre — le parent les fournit.
+    let embedded: Bool
 
-    public init(departementCode: String) { self.departementCode = departementCode }
+    public init(departementCode: String, embedded: Bool = false) {
+        self.departementCode = departementCode
+        self.embedded = embedded
+    }
 
     private static let calendar: Calendar = {
         var c = Calendar(identifier: .gregorian)
@@ -92,10 +98,12 @@ public struct MeteoDetailView: View {
     private var unit: String { metric == .precipitation ? "mm" : "°C" }
 
     public var body: some View {
-        ScrollView {
+        OptionalScroll(enabled: !embedded) {
             VStack(alignment: .leading, spacing: 24) {
-                header
-                DepartementMapCard(name: name, accent: theme.accent, focusCoordinate: FranceGeoData.chefsLieuxCoordinates[departementCode], focusTick: mapFocusTick, roundedFont: true)
+                if !embedded {
+                    header
+                    DepartementMapCard(name: name, accent: theme.accent, focusCoordinate: FranceGeoData.chefsLieuxCoordinates[departementCode], focusTick: mapFocusTick, roundedFont: true)
+                }
                 if Self.showSynthesis { synthesisView }
                 if series.isEmpty {
                     Text("Aucune donnée pour ce département.")
@@ -222,20 +230,20 @@ public struct MeteoDetailView: View {
                         .font(CFont.rounded(11)).foregroundStyle(ClassicTheme.faint)
                 }
             }
-            .padding(24)
+            .padding(embedded ? 0 : 24)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         // Fond blanc pur (au lieu du fond crème partagé des fenêtres de
         // détail) : demande spécifique à cette fenêtre.
-        .background(.white)
-        .frame(minWidth: 760, minHeight: 640)
+        .background(embedded ? Color.clear : .white)
+        .frame(minWidth: embedded ? 0 : 760, minHeight: embedded ? 0 : 640)
         // Flèches gauche/droite : mois précédent/suivant de la sélection
         // (graphiques et tableau), sans effet tant qu'aucun mois n'est
         // sélectionné.
         .focusable()
         .focusEffectDisabled()
         .focused($isFocused)
-        .onAppear { isFocused = true }
+        .onAppear { if !embedded { isFocused = true } }
         .onChange(of: selectedMonth) { _, new in
             if new != nil { isFocused = true } else { selectedYear = nil }
         }
@@ -754,5 +762,15 @@ public struct MeteoDetailView: View {
     private static func monthName(_ m: Int) -> String {
         let names = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"]
         return names[m - 1]
+    }
+}
+
+/// Enveloppe dans un `ScrollView` seulement quand `enabled`.
+struct OptionalScroll<Content: View>: View {
+    let enabled: Bool
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        if enabled { ScrollView { content } } else { content }
     }
 }

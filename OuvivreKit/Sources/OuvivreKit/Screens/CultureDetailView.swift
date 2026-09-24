@@ -19,7 +19,14 @@ public struct CultureDetailView: View {
     @State private var mapFocusTick = 0
     @State private var collapsedSections: Set<String> = ["Musées", "Lieux du patrimoine", "Festivals"]
 
-    public init(departementCode: String) { self.departementCode = departementCode }
+    /// Mode intégré (vue Département de la sidebar) : sans en-tête, carte,
+    /// défilement ni cadre de fenêtre — le parent les fournit.
+    let embedded: Bool
+
+    public init(departementCode: String, embedded: Bool = false) {
+        self.departementCode = departementCode
+        self.embedded = embedded
+    }
 
     private var departementName: String {
         FranceGeoData.departements.first { $0.codeInsee == departementCode }?.nom ?? departementCode
@@ -28,20 +35,21 @@ public struct CultureDetailView: View {
     private let columns = [GridItem(.adaptive(minimum: 230), spacing: 16, alignment: .topLeading)]
 
     public var body: some View {
-        ScrollView {
+        OptionalScroll(enabled: !embedded) {
             VStack(alignment: .leading, spacing: 28) {
-                DepartementDetailHeader(departementCode: departementCode, name: departementName, accent: theme.accent, state: state) { mapFocusTick += 1 }
-
-                DepartementMapCard(name: departementName, accent: theme.accent, focusCoordinate: FranceGeoData.chefsLieuxCoordinates[departementCode], focusTick: mapFocusTick, roundedFont: true)
+                if !embedded {
+                    DepartementDetailHeader(departementCode: departementCode, name: departementName, accent: theme.accent, state: state) { mapFocusTick += 1 }
+                    DepartementMapCard(name: departementName, accent: theme.accent, focusCoordinate: FranceGeoData.chefsLieuxCoordinates[departementCode], focusTick: mapFocusTick, roundedFont: true)
+                }
 
                 museesSection
                 patrimoineSection
                 festivalsSection
             }
-            .padding(24)
+            .padding(embedded ? 0 : 24)
             .frame(maxWidth: .infinity, alignment: .topLeading)
         }
-        .departementDetailWindow()
+        .modifier(WindowStyle(enabled: !embedded))
         .environmentObject(theme)
     }
 
@@ -204,5 +212,12 @@ public struct CultureDetailView: View {
                 .buttonStyle(.plain)
             }
         }
+    }
+}
+
+private struct WindowStyle: ViewModifier {
+    let enabled: Bool
+    func body(content: Content) -> some View {
+        if enabled { content.departementDetailWindow() } else { content }
     }
 }

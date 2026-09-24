@@ -5,12 +5,20 @@ public enum ClassicScreen: String, CaseIterable, Identifiable, Hashable {
     public var id: Self { self }
 }
 
+/// Destination de la sidebar : une rubrique, ou la vue d'un département favori.
+public enum SidebarDestination: Hashable {
+    case screen(ClassicScreen)
+    case departement(String)
+}
+
 /// Root app state — mirrors the dc export's `Component` state/logic:
 /// current screen, country query, and the geo/meteo/groups weight sliders
 /// (0...5), all mutated in place and re-derived on read.
 @MainActor
 public final class ClassicState: ObservableObject {
     @Published public var screen: ClassicScreen = .selecteur
+    /// Code INSEE du département favori affiché (vue Département), sinon `nil`.
+    @Published public var selectedDepartementCode: String?
     @Published public var country: String = "France"
     @Published public var query: String = "France"
     @Published public var geo: [Int] = ClassicStatic.geo.map(\.1)
@@ -72,7 +80,9 @@ public final class ClassicState: ObservableObject {
         if let favoritesObserver { NotificationCenter.default.removeObserver(favoritesObserver) }
     }
 
-    public func go(_ screen: ClassicScreen) { self.screen = screen }
+    public func go(_ screen: ClassicScreen) { self.screen = screen; selectedDepartementCode = nil }
+
+    public func goToDepartement(_ code: String) { selectedDepartementCode = code }
 
     public func resetGeo() { geo = ClassicStatic.geo.map(\.1) }
     public func resetGeo2() { geo2 = ClassicStatic.geo.map { _ in 0 } }

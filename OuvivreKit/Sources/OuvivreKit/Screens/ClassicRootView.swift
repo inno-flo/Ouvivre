@@ -15,15 +15,25 @@ public struct ClassicRootView: View {
     /// Shim binding for `List(selection:)`/`NavigationSplitView`, which need
     /// an optional selection — `state.screen` itself stays non-optional
     /// everywhere else, so a `nil` write (deselection) is simply ignored.
-    private var sidebarSelectionBinding: Binding<ClassicScreen?> {
-        Binding(get: { state.screen }, set: { if let screen = $0 { state.go(screen) } })
+    private var sidebarSelectionBinding: Binding<SidebarDestination?> {
+        Binding(
+            get: { state.selectedDepartementCode.map { .departement($0) } ?? .screen(state.screen) },
+            set: {
+                switch $0 {
+                case .screen(let screen): state.go(screen)
+                case .departement(let code): state.goToDepartement(code)
+                case nil: break
+                }
+            }
+        )
     }
 
     /// Mirrors the old `showMapPanel` rule: force-hidden on the Sources
     /// screen, and on Pays/Géographie 2, which embed their own full-bleed
     /// map instead of using the inspector — the toolbar icon stays visible
     /// on Pays regardless, it's just a no-op there for now.
-    private var isFavoris: Bool { state.screen == .favoris }
+    private var isDepartement: Bool { state.selectedDepartementCode != nil }
+    private var isFavoris: Bool { state.screen == .favoris || isDepartement }
     private var isBigMac: Bool { state.screen == .selecteur }
 
     private var inspectorBinding: Binding<Bool> {
@@ -53,7 +63,10 @@ public struct ClassicRootView: View {
             SidebarNav(derived: derived, selection: sidebarSelectionBinding)
         } detail: {
             Group {
-                if state.screen == .pays {
+                if let code = state.selectedDepartementCode, state.favoriteDepartementCodes.contains(code) {
+                    DepartementView(departementCode: code)
+                        .id(code)
+                } else if state.screen == .pays {
                     PaysView(derived: derived)
                 } else if state.screen == .geo2 {
                     GeoView2(derived: derived)
