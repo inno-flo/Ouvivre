@@ -77,6 +77,7 @@ public struct ClassicRootView: View {
                         .frame(maxWidth: .infinity)
                 }
             }
+                .background(state.screen == .favoris ? ClassicTheme.cardAlt : Color.clear)
                 .toolbar {
                     // Two separate, plain toolbar buttons (not the native
                     // combined MapZoomStepper, and no custom capsule/frame
@@ -139,7 +140,7 @@ public struct ClassicRootView: View {
                 }
         }
         .navigationTitle("")
-        .background(state.screen == .favoris ? ClassicTheme.cardAlt : ClassicTheme.background)
+        .background(ClassicTheme.background)
         .environmentObject(theme)
         .environmentObject(state)
         .environmentObject(mapState)

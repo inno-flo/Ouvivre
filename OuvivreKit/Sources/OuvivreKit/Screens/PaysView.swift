@@ -122,6 +122,7 @@ public struct PaysView: View {
 public struct PaysCountryBlock: View {
     @EnvironmentObject var state: ClassicState
     @EnvironmentObject var theme: ClassicTheme
+    @Environment(\.colorScheme) private var colorScheme
     let derived: ClassicDerived
     let ink: Color
     let faint: Color
@@ -150,7 +151,7 @@ public struct PaysCountryBlock: View {
                             .padding(.horizontal, 12).padding(.vertical, 8)
                             .background(c.selected ? theme.accent : .clear)
                             .clipShape(Capsule())
-                            .overlay(Capsule().stroke(c.selected ? theme.accent : ClassicTheme.border, lineWidth: 1))
+                            .overlay(Capsule().stroke(c.selected ? theme.accent : (colorScheme == .dark ? Color.white.opacity(0.3) : ClassicTheme.border), lineWidth: 1))
                     }
                     .buttonStyle(.plain)
                 }

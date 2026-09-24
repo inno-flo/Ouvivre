@@ -13,6 +13,11 @@ public struct InspectorPanelView: View {
     @EnvironmentObject var state: ClassicState
     @Environment(\.openURL) private var openURL
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.colorScheme) private var colorScheme
+    private var inkColor: Color { colorScheme == .dark ? Color(hex: 0xF4F2EE) : ClassicTheme.ink }
+    private var bodyColor: Color { colorScheme == .dark ? Color(hex: 0xD9D4C9) : ClassicTheme.body }
+    private var faintColor: Color { colorScheme == .dark ? Color(hex: 0xA39D91) : ClassicTheme.faint }
+    private var badgeFill: Color { colorScheme == .dark ? Color.white.opacity(0.12) : ClassicTheme.border.opacity(0.5) }
     let title: String
     /// Critère (libellé + clé `CultureScores.criterionKeys`) et département
     /// courant — `nil` en dehors de Big Mac ou tant qu'aucun département
@@ -64,13 +69,13 @@ public struct InspectorPanelView: View {
                         HStack(alignment: .center, spacing: 8) {
                             Text(title)
                                 .font(CFont.rounded(20, weight: .bold))
-                                .foregroundStyle(ClassicTheme.ink)
+                                .foregroundStyle(inkColor)
                             Text(code)
                                 .font(CFont.rounded(20, weight: .bold))
-                                .foregroundStyle(ClassicTheme.ink)
+                                .foregroundStyle(inkColor)
                                 .padding(.horizontal, 7)
                                 .padding(.vertical, 3)
-                                .background(ClassicTheme.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
+                                .background(badgeFill, in: RoundedRectangle(cornerRadius: 5))
                             Spacer(minLength: 8)
                             Button {
                                 state.toggleFavoriteDepartement(code)
@@ -78,7 +83,7 @@ public struct InspectorPanelView: View {
                                 let isFavorite = state.favoriteDepartementCodes.contains(code)
                                 Image(systemName: isFavorite ? "star.fill" : "star")
                                     .font(.system(size: 13))
-                                    .foregroundStyle(isFavorite ? ClassicTheme.favorite : ClassicTheme.faint)
+                                    .foregroundStyle(isFavorite ? ClassicTheme.favorite : faintColor)
                             }
                             .buttonStyle(.plain)
                             .help(state.favoriteDepartementCodes.contains(code) ? "Retirer des favoris" : "Ajouter aux favoris")
@@ -87,13 +92,13 @@ public struct InspectorPanelView: View {
                             HStack(spacing: 8) {
                                 Text(chefLieu)
                                     .font(CFont.rounded(18))
-                                    .foregroundStyle(ClassicTheme.faint)
+                                    .foregroundStyle(faintColor)
                                 Button {
                                     centerMap(onDepartement: code)
                                 } label: {
                                     Image(systemName: "mappin.and.ellipse")
                                         .font(CFont.rounded(13))
-                                        .foregroundStyle(ClassicTheme.faint)
+                                        .foregroundStyle(faintColor)
                                 }
                                 .buttonStyle(.plain)
                                 .help("Centrer la carte sur \(chefLieu)")
@@ -107,14 +112,14 @@ public struct InspectorPanelView: View {
                     if !activeCultureCriteria.isEmpty {
                         Divider()
                         HStack(spacing: 8) {
-                            Eyebrow("Culture", color: ClassicTheme.faint, font: CFont.rounded(13, weight: .medium))
+                            Eyebrow("Culture", color: faintColor, font: CFont.rounded(13, weight: .medium))
                             Spacer()
                             Button {
                                 openWindow(id: CultureDetailView.windowID, value: code)
                             } label: {
                                 Image(systemName: "interface.window.on.rectangle")
                                     .font(.system(size: 13))
-                                    .foregroundStyle(ClassicTheme.faint)
+                                    .foregroundStyle(faintColor)
                             }
                             .buttonStyle(.plain)
                             .help("Ouvrir la vue détaillée")
@@ -178,9 +183,9 @@ public struct InspectorPanelView: View {
                     HStack(spacing: 6) {
                         Image(systemName: isCountryExpanded ? "chevron.down" : "chevron.right")
                             .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(ClassicTheme.faint)
+                            .foregroundStyle(faintColor)
                             .frame(width: 10)
-                        Eyebrow("Pays", color: ClassicTheme.faint, font: CFont.rounded(10))
+                        Eyebrow("Pays", color: faintColor, font: CFont.rounded(10))
                         Spacer()
                     }
                     .contentShape(Rectangle())
@@ -191,12 +196,12 @@ public struct InspectorPanelView: View {
             if isCountryExpanded || !showsCountryHeader {
                 Text([Self.countryFlags[countryName], countryName].compactMap { $0 }.joined(separator: " "))
                     .font(CFont.rounded(20, weight: .semibold))
-                    .foregroundStyle(ClassicTheme.ink)
+                    .foregroundStyle(inkColor)
                 VStack(alignment: .leading, spacing: 14) {
                     ForEach(countryFacts) { f in
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(f.key == "Population totale" ? "Population" : f.key).font(CFont.rounded(13)).foregroundStyle(ClassicTheme.faint)
-                            Text(Self.displayValue(f)).font(CFont.rounded(15, weight: .medium)).foregroundStyle(ClassicTheme.ink)
+                            Text(f.key == "Population totale" ? "Population" : f.key).font(CFont.rounded(13)).foregroundStyle(faintColor)
+                            Text(Self.displayValue(f)).font(CFont.rounded(15, weight: .medium)).foregroundStyle(inkColor)
                         }
                     }
                 }
@@ -222,7 +227,7 @@ public struct InspectorPanelView: View {
             HStack(spacing: 8) {
                 // Même en-tête que CULTURE (Eyebrow), sans chevron ni icône :
                 // la rubrique Météo est toujours dépliée.
-                Eyebrow("Météo", color: ClassicTheme.faint, font: CFont.rounded(13, weight: .medium))
+                Eyebrow("Météo", color: faintColor, font: CFont.rounded(13, weight: .medium))
                 Spacer()
 
                 // Ouvre la fenêtre de détail (comme le double-clic).
@@ -231,7 +236,7 @@ public struct InspectorPanelView: View {
                 } label: {
                     Image(systemName: "interface.window.on.rectangle")
                         .font(.system(size: 13))
-                        .foregroundStyle(ClassicTheme.faint)
+                        .foregroundStyle(faintColor)
                 }
                 .buttonStyle(.plain)
                 .help("Ouvrir la vue détaillée")
@@ -241,16 +246,16 @@ public struct InspectorPanelView: View {
                 if series.isEmpty {
                     Text("Aucune donnée pour ce département.")
                         .font(CFont.rounded(13))
-                        .foregroundStyle(ClassicTheme.faint)
+                        .foregroundStyle(faintColor)
                 } else {
                     let yearBands = Self.yearBands(series)
 
                     Text("Température moyenne (°C /mois)")
-                        .font(CFont.rounded(12)).foregroundStyle(.black)
+                        .font(CFont.rounded(12)).foregroundStyle(inkColor)
                     Chart {
                         ForEach(yearBands.filter(\.alternate), id: \.start) { band in
                             RectangleMark(xStart: .value("Début", band.start), xEnd: .value("Fin", band.end))
-                                .foregroundStyle(ClassicTheme.ink.opacity(0.05))
+                                .foregroundStyle(inkColor.opacity(0.05))
                         }
                         ForEach(series.filter { $0.temperature != nil }) { point in
                             LineMark(x: .value("Mois", point.date, unit: .month), y: .value("°C", point.temperature ?? 0))
@@ -263,12 +268,12 @@ public struct InspectorPanelView: View {
                     .frame(height: 110)
 
                     Text("Précipitations (mm / mois)")
-                        .font(CFont.rounded(12)).foregroundStyle(.black)
+                        .font(CFont.rounded(12)).foregroundStyle(inkColor)
                         .padding(.top, 14)
                     Chart {
                         ForEach(yearBands.filter(\.alternate), id: \.start) { band in
                             RectangleMark(xStart: .value("Début", band.start), xEnd: .value("Fin", band.end))
-                                .foregroundStyle(ClassicTheme.ink.opacity(0.05))
+                                .foregroundStyle(inkColor.opacity(0.05))
                         }
                         // Test : courbe (comme la température) au lieu de barres.
                         ForEach(series.filter { $0.precipitation != nil }) { point in
@@ -283,7 +288,7 @@ public struct InspectorPanelView: View {
 
                     if series.last?.partial == true {
                         Text("Dernier mois en cours (données partielles).")
-                            .font(CFont.rounded(11)).foregroundStyle(ClassicTheme.faint)
+                            .font(CFont.rounded(11)).foregroundStyle(faintColor)
                     }
                 }
             }
@@ -347,17 +352,17 @@ public struct InspectorPanelView: View {
                 HStack(spacing: 6) {
                     Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
                         .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(ClassicTheme.faint)
+                        .foregroundStyle(faintColor)
                         .frame(width: 10)
                     Image(systemName: Self.headerIcon(forCriterionKey: criterion.key))
                         .foregroundStyle(theme.accent)
                     Text(criterion.label)
                         .font(CFont.rounded(12))
-                        .foregroundStyle(.black)
+                        .foregroundStyle(inkColor)
                     Spacer()
                     Text("\(names.count + (criterion.key == "patrimoine" ? sprCount : 0))")
                         .font(CFont.rounded(12))
-                        .foregroundStyle(ClassicTheme.faint)
+                        .foregroundStyle(faintColor)
                 }
                 .contentShape(Rectangle())
             }
@@ -371,7 +376,7 @@ public struct InspectorPanelView: View {
                     // musées/festivals/patrimoine.
                     Text("Aucune donnée pour ce département.")
                         .font(CFont.rounded(13))
-                        .foregroundStyle(ClassicTheme.faint)
+                        .foregroundStyle(faintColor)
                 } else if criterion.key == "musees" {
                     // Les Micro-Folies (réseau de petits équipements
                     // numériques, distinct des musées classiques) sont
@@ -402,7 +407,7 @@ public struct InspectorPanelView: View {
                     VStack(alignment: .leading, spacing: 10) {
                         ForEach(ordered, id: \.self) { discipline in
                             VStack(alignment: .leading, spacing: 9) {
-                                (Text(discipline.prefix(1).uppercased() + discipline.dropFirst().lowercased()).foregroundStyle(.black) + Text(" · \(byDiscipline[discipline]!.count)").foregroundStyle(ClassicTheme.faint))
+                                (Text(discipline.prefix(1).uppercased() + discipline.dropFirst().lowercased()).foregroundStyle(inkColor) + Text(" · \(byDiscipline[discipline]!.count)").foregroundStyle(faintColor))
                                     .font(CFont.rounded(11, weight: .semibold))
                                     .padding(.top, 12)
                                 ForEach(byDiscipline[discipline]!, id: \.self) { name in
@@ -429,8 +434,8 @@ public struct InspectorPanelView: View {
                                 HStack(spacing: 6) {
                                     Image(systemName: "eye")
                                         .font(CFont.rounded(11, weight: .semibold))
-                                        .foregroundStyle(ClassicTheme.faint)
-                                    (Text("Sites patrimoniaux remarquables").foregroundStyle(.black) + Text(" · \(spr.count)").foregroundStyle(ClassicTheme.faint))
+                                        .foregroundStyle(faintColor)
+                                    (Text("Sites patrimoniaux remarquables").foregroundStyle(inkColor) + Text(" · \(spr.count)").foregroundStyle(faintColor))
                                         .font(CFont.rounded(11, weight: .semibold))
                                     Spacer()
                                 }
@@ -467,7 +472,7 @@ public struct InspectorPanelView: View {
             Text(Self.titleCased(name))
                 .font(CFont.rounded(13))
                 .lineSpacing(3)
-                .foregroundStyle(ClassicTheme.body)
+                .foregroundStyle(bodyColor)
                 .multilineTextAlignment(.leading)
         }
         .buttonStyle(.plain)

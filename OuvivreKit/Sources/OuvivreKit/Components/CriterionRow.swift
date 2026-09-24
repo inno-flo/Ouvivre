@@ -5,6 +5,7 @@ import SwiftUI
 /// on Géographie / Météo / Affiner.
 public struct CriterionRow: View {
     @EnvironmentObject var theme: ClassicTheme
+    @Environment(\.colorScheme) private var colorScheme
     let row: WeightedRow
     var thumbSize: CGFloat = 16
     var trackHeight: CGFloat = 4
@@ -68,7 +69,7 @@ public struct CriterionRow: View {
                 Text("\(row.label) :").font(labelFont).foregroundStyle(labelColor)
                 Text(tagText)
                     .font(tagFont ?? CFont.mono(11, weight: .medium))
-                    .foregroundStyle(row.value >= row.maxValue - 1 ? theme.accent : (row.value == 0 ? ClassicTheme.faint : ClassicTheme.body))
+                    .foregroundStyle(row.value >= row.maxValue - 1 ? theme.accent : (row.value == 0 ? (colorScheme == .dark ? Color(hex: 0xA39D91) : ClassicTheme.faint) : (colorScheme == .dark ? Color(hex: 0xD9D4C9) : ClassicTheme.body)))
                 Spacer(minLength: 0)
             }
             GeometryReader { geo in
@@ -79,7 +80,7 @@ public struct CriterionRow: View {
                 let trackWidth = max(0, geo.size.width - thumbSize)
                 let thumbCenterX = thumbSize / 2 + trackWidth * row.pct
                 ZStack(alignment: .leading) {
-                    Capsule().fill(ClassicTheme.track).frame(height: trackHeight)
+                    Capsule().fill(colorScheme == .dark ? Color.white.opacity(0.2) : ClassicTheme.track).frame(height: trackHeight)
                         .padding(.horizontal, thumbSize / 2)
                     Capsule().fill(theme.accent)
                         .frame(width: max(thumbSize / 2, thumbCenterX), height: trackHeight)
@@ -91,7 +92,7 @@ public struct CriterionRow: View {
                         // supplémentaire (réglettes de proximité : +10 %).
                         let dotSize = 4 * pow(dotGrowthPerStep, CGFloat(step)) * (step > 0 ? extraDotScaleFromSecond : 1)
                         Circle()
-                            .fill(step <= row.value ? Color.white.opacity(0.9) : ClassicTheme.faint2)
+                            .fill(step <= row.value ? Color.white.opacity(0.9) : (colorScheme == .dark ? Color.white.opacity(0.4) : ClassicTheme.faint2))
                             .frame(width: dotSize, height: dotSize)
                             .offset(x: stepX - dotSize / 2)
                     }

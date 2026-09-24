@@ -18,6 +18,10 @@ public struct SelecteurView: View {
     private var columnInk: Color { colorScheme == .dark ? Color(hex: 0xF4F2EE) : ClassicTheme.ink }
     private var columnBody: Color { colorScheme == .dark ? Color(hex: 0xD9D4C9) : ClassicTheme.body }
     private var columnFaint: Color { colorScheme == .dark ? Color(hex: 0xA39D91) : ClassicTheme.faint }
+    private var blockFill: Color { colorScheme == .dark ? Color.black.opacity(0.35) : Color.white.opacity(0.528) }
+    private var blockStroke: Color { colorScheme == .dark ? Color.white.opacity(0.15) : ClassicTheme.border.opacity(0.6) }
+    private var checkboxOffFill: Color { colorScheme == .dark ? Color.white.opacity(0.08) : .white }
+    private var checkboxOffStroke: Color { colorScheme == .dark ? Color.white.opacity(0.35) : ClassicTheme.border }
 
     @State private var position: MapCameraPosition = .automatic
     @State private var lastRegion: MKCoordinateRegion?
@@ -308,7 +312,7 @@ public struct SelecteurView: View {
     // MARK: Bloc 1 — Pays
 
     private var paysBlock: some View {
-        blockDisclosure(title: "Pays", bold: true, isExpanded: $state.bigMacExpandedPays, enabled: true, background: .white.opacity(0.528)) {
+        blockDisclosure(title: "Pays", bold: true, isExpanded: $state.bigMacExpandedPays, enabled: true, background: blockFill) {
             PaysCountryBlock(derived: derived, ink: columnInk, faint: columnFaint, showFacts: false, countryFont: CFont.rounded(13, weight: .medium))
         }
     }
@@ -333,7 +337,7 @@ public struct SelecteurView: View {
     private var regionsBlock: some View {
         // Réservé à la France (données départementales) : pour tout autre pays
         // le bloc est replié et ne peut pas être déplié.
-        blockDisclosure(title: "Géographie et Culture", bold: true, isExpanded: $state.bigMacExpandedRegions, enabled: state.country == "France", background: .white.opacity(0.528)) {
+        blockDisclosure(title: "Géographie et Culture", bold: true, isExpanded: $state.bigMacExpandedRegions, enabled: state.country == "France", background: blockFill) {
             VStack(alignment: .leading, spacing: 14) {
                 RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody, labelFont: CFont.rounded(13, weight: .medium))
 
@@ -457,9 +461,9 @@ public struct SelecteurView: View {
             Button { isOn.wrappedValue.toggle() } label: {
                 HStack(spacing: 8) {
                     RoundedRectangle(cornerRadius: 3)
-                        .fill(isOn.wrappedValue ? theme.accent : .white)
+                        .fill(isOn.wrappedValue ? theme.accent : checkboxOffFill)
                         .frame(width: 16, height: 16)
-                        .overlay(RoundedRectangle(cornerRadius: 3).stroke(isOn.wrappedValue ? theme.accent : ClassicTheme.border, lineWidth: 1))
+                        .overlay(RoundedRectangle(cornerRadius: 3).stroke(isOn.wrappedValue ? theme.accent : checkboxOffStroke, lineWidth: 1))
                         .overlay {
                             if isOn.wrappedValue {
                                 Image(systemName: "checkmark")
@@ -569,7 +573,7 @@ public struct SelecteurView: View {
             RoundedRectangle(cornerRadius: 10).fill(.ultraThinMaterial)
             RoundedRectangle(cornerRadius: 10).fill(background)
         }
-        .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(ClassicTheme.border.opacity(0.6), lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(blockStroke, lineWidth: 1))
     }
 
     // MARK: Caméra (identique à PaysView/GeoView2)
@@ -655,7 +659,7 @@ private struct InfoPopoverButton: View {
         .popover(isPresented: $showing, arrowEdge: .trailing) {
             Text(text)
                 .font(CFont.rounded(13, weight: .medium))
-                .foregroundStyle(ClassicTheme.body)
+                .foregroundStyle(.primary)
                 .padding(12)
                 .frame(width: 240, alignment: .leading)
         }
