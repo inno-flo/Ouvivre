@@ -38,12 +38,9 @@ public struct SidebarNav: View {
 
     public var body: some View {
         List(selection: selection) {
-            Section {
-                ForEach(derived.navSteps) { item in
-                    NavItemRow(item: item).tag(SidebarDestination.screen(item.screen))
-                }
-            } header: {
-                Text("Sélection").foregroundStyle(.secondary)
+            // Sélecteur : en tête de la sidebar, sans en-tête de section.
+            ForEach(derived.navSteps) { item in
+                NavItemRow(item: item).tag(SidebarDestination.screen(item.screen))
             }
 
             if !state.favoriteDepartementCodes.isEmpty {
