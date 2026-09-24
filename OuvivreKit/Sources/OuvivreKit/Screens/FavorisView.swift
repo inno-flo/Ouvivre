@@ -285,8 +285,8 @@ public struct FavorisView: View {
 
     private func headerContent(_ d: FranceGeoData.DepartementScore) -> some View {
         VStack(alignment: .center, spacing: 4) {
-            Text(d.nom).font(CFont.rounded(13, weight: .semibold)).foregroundStyle(.white)
-            Text(d.nomRegion).font(CFont.rounded(10)).foregroundStyle(Color(hex: 0xF4F2EE))
+            Text(d.nom).font(CFont.rounded(13, weight: .semibold)).foregroundStyle(ClassicTheme.body)
+            Text(d.nomRegion).font(CFont.rounded(10)).foregroundStyle(ClassicTheme.sub)
             HStack(spacing: 6) {
                 Button { pendingRemovalCode = d.codeInsee } label: {
                     Image(systemName: "star.fill").foregroundStyle(ClassicTheme.favorite)
@@ -332,7 +332,7 @@ public struct FavorisView: View {
         return VStack(spacing: 0) {
             headerContent(d)
                 .frame(width: colW).padding(.vertical, 12)
-                .background(Color(hex: 0x71A0F9))
+                .background(ClassicTheme.cardAlt)
                 .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.border).frame(height: 1) }
             ForEach(sections) { section in
                 if !section.title.isEmpty {
@@ -392,7 +392,7 @@ public struct FavorisView: View {
                     headerContent(d)
                     .frame(width: colW, alignment: .center)
                     .padding(.vertical, 12)
-                    .background(d.codeInsee == selectedCode ? Color.white.opacity(0.2) : Color.clear)
+                    .background(d.codeInsee == selectedCode ? theme.accent.opacity(0.12) : Color.clear)
                     .overlay(Rectangle().fill(ClassicTheme.border).frame(width: 1), alignment: .leading)
                     .contentShape(Rectangle())
                     .opacity(draggingCode == d.codeInsee ? 0.5 : 1)
@@ -412,7 +412,6 @@ public struct FavorisView: View {
                     .help("Glisser pour réordonner les colonnes")
                 }
             }
-            .background(Color(hex: 0x71A0F9))
             .overlay(alignment: .bottom) { Rectangle().fill(ClassicTheme.border).frame(height: 1) }
             // `.compositingGroup()` : sans lui, le fond de cette ligne
             // (contenant plusieurs cellules avec leurs propres gestes de
