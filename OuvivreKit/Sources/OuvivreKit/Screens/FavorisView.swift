@@ -284,9 +284,9 @@ public struct FavorisView: View {
         .multilineTextAlignment(.center)
     }
 
-    /// Test : `false` supprime tous les encadrements de valeurs du tableau
+    /// `false` supprime tous les encadrements de valeurs du tableau
     /// (filet encre des meilleures valeurs, rouge/bleu ciel des températures).
-    private static let showsValueOutlines = false
+    private static let showsValueOutlines = true
 
     /// Hauteur de contenu commune au libellé de critère et aux valeurs : elle
     /// fixe la hauteur de toutes les rangées, quelle que soit la hauteur
