@@ -139,7 +139,7 @@ public struct ClassicRootView: View {
                 }
         }
         .navigationTitle("")
-        .background(ClassicTheme.background)
+        .background(state.screen == .favoris ? ClassicTheme.cardAlt : ClassicTheme.background)
         .environmentObject(theme)
         .environmentObject(state)
         .environmentObject(mapState)

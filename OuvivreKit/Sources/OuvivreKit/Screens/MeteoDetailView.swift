@@ -233,9 +233,7 @@ public struct MeteoDetailView: View {
             .padding(embedded ? 0 : 24)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        // Fond blanc pur (au lieu du fond crème partagé des fenêtres de
-        // détail) : demande spécifique à cette fenêtre.
-        .background(embedded ? Color.clear : .white)
+        .background(embedded ? Color.clear : ClassicTheme.cardAlt)
         .frame(minWidth: embedded ? 0 : 760, minHeight: embedded ? 0 : 640)
         // Flèches gauche/droite : mois précédent/suivant de la sélection
         // (graphiques et tableau), sans effet tant qu'aucun mois n'est

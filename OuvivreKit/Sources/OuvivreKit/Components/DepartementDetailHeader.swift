@@ -51,9 +51,9 @@ struct DepartementDetailHeader: View {
 }
 
 extension View {
-    /// Fond crème et taille minimale communes aux fenêtres de détail.
+    /// Fond #FAF9F6 et taille minimale communes aux fenêtres de détail.
     func departementDetailWindow() -> some View {
-        background(ClassicTheme.background)
+        background(ClassicTheme.cardAlt)
             .frame(minWidth: 760, minHeight: 640)
     }
 }
