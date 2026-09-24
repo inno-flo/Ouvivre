@@ -284,17 +284,23 @@ public struct FavorisView: View {
         .multilineTextAlignment(.center)
     }
 
+    /// Test : `false` supprime tous les encadrements de valeurs du tableau
+    /// (filet encre des meilleures valeurs, rouge/bleu ciel des températures).
+    private static let showsValueOutlines = false
+
+    /// Hauteur de contenu commune au libellé de critère et aux valeurs : elle
+    /// fixe la hauteur de toutes les rangées, quelle que soit la hauteur
+    /// propre du texte ou de l'icône SF Symbol (qui varie d'un symbole à l'autre).
+    private static let rowContentHeight: CGFloat = 22
+
     private func valueLabel(_ c: Cell, outline: Color?, icon: String? = nil) -> some View {
-        let highlighted = outline != nil
-        // Poids fixe (medium), identique à celui du libellé de critère —
-        // faire varier le poids selon `highlighted` donnait des hauteurs de
-        // texte légèrement différentes d'une ligne à l'autre, malgré une
-        // taille de police unique de 13 pt partout dans le tableau.
+        // Test : les valeurs mises en évidence ont le style des valeurs normales.
         return Text(c.text)
             .font(CFont.rounded(13, weight: .medium))
-            .foregroundStyle(highlighted ? ClassicTheme.ink : ClassicTheme.sub)
-            .padding(.horizontal, 8).padding(.vertical, 3)
-            .overlay { if let outline { RoundedRectangle(cornerRadius: 4).stroke(outline, lineWidth: 1) } }
+            .foregroundStyle(ClassicTheme.sub)
+            .padding(.horizontal, 8)
+            .frame(height: Self.rowContentHeight)
+            .overlay { if Self.showsValueOutlines, let outline { RoundedRectangle(cornerRadius: 4).stroke(outline, lineWidth: 1) } }
             // À gauche de la valeur, sans la décentrer.
             .overlay(alignment: .leading) {
                 if let icon { Image(systemName: icon).font(.system(size: 13)).foregroundStyle(ClassicTheme.sub).offset(x: -22) }
@@ -411,24 +417,13 @@ public struct FavorisView: View {
                 }
 
                 ForEach(section.rows) { row in
-                    // Ligne de base plutôt que centrage : les poids de police
-                    // différents entre le libellé (medium) et les valeurs
-                    // (regular/semibold) ont des hauteurs de texte légèrement
-                    // différentes même avec un padding identique, ce qui
-                    // laissait un décalage résiduel d'un pixel ou deux.
-                    HStack(alignment: .firstTextBaseline, spacing: 0) {
+                    HStack(alignment: .center, spacing: 0) {
                         HStack(spacing: 8) {
-                            Image(systemName: ClassicStatic.criterionIcons[row.label] ?? "circle").frame(width: 18)
+                            Image(systemName: ClassicStatic.criterionIcons[row.label] ?? "circle").frame(width: 18, height: Self.rowContentHeight)
                                 .foregroundStyle(theme.accent)
                             Text(row.label).font(CFont.rounded(13, weight: .medium)).foregroundStyle(ClassicTheme.body)
                         }
-                            // Même hauteur de cellule que les colonnes de valeurs
-                            // (`valueLabel` a ce même padding vertical de 3 pt) —
-                            // sans lui, SwiftUI centrait la cellule label, plus
-                            // courte, dans la hauteur de la ligne, ce qui
-                            // décalait son contenu de quelques pixels vers le
-                            // haut par rapport aux colonnes de départements.
-                            .padding(.vertical, 3)
+                            .frame(height: Self.rowContentHeight)
                             .frame(width: labelColW, alignment: .leading)
                             .padding(.horizontal, 18).padding(.vertical, 13)
                             .overlay(alignment: .bottom) {
