@@ -16,6 +16,11 @@ public struct SidebarNav: View {
         self.selection = selection
     }
 
+    /// Colonne de droite commune au chevron de l'en-tête et au compteur de
+    /// « Tous » : leur centre tombe sur celui du bouton de fermeture de la sidebar
+    /// (≈ 25 pt du bord droit, contre ≈ 10 pt de marge intérieure des lignes).
+    private static let trailingColumnWidth: CGFloat = 30
+
     private var isTous: Bool { state.screen == .favoris && state.selectedDepartementCode == nil }
 
     /// Départements favoris, badge `checkmark.seal` en tête, puis ordre alphabétique — la liste suit
@@ -43,6 +48,20 @@ public struct SidebarNav: View {
 
             if !state.favoriteDepartementCodes.isEmpty {
             Section {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.15)) { favoritesExpanded.toggle() }
+                } label: {
+                    HStack(spacing: 6) {
+                        Text("Favoris").font(.system(size: 11, weight: .semibold))
+                        Spacer(minLength: 0)
+                        Image(systemName: favoritesExpanded ? "chevron.down" : "chevron.right")
+                            .font(.system(size: 9, weight: .semibold))
+                            .frame(width: Self.trailingColumnWidth)
+                    }
+                    .foregroundStyle(.secondary)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
                 if favoritesExpanded {
                     HStack(spacing: 9) {
                         Image(systemName: "star").frame(width: 16).foregroundStyle(.black)
@@ -54,6 +73,7 @@ public struct SidebarNav: View {
                             .font(.system(size: 13))
                             .fontWeight(isTous ? .bold : .regular)
                             .opacity(0.5)
+                            .frame(width: Self.trailingColumnWidth)
                     }
                     .tag(SidebarDestination.screen(.favoris))
                     ForEach(favoriteDepartements, id: \.codeInsee) { dep in
@@ -69,22 +89,6 @@ public struct SidebarNav: View {
                         .tag(SidebarDestination.departement(dep.codeInsee))
                     }
                 }
-            } header: {
-                Button {
-                    withAnimation(.easeInOut(duration: 0.15)) { favoritesExpanded.toggle() }
-                } label: {
-                    HStack(spacing: 6) {
-                        Text("Favoris")
-                        Spacer(minLength: 0)
-                        Image(systemName: favoritesExpanded ? "chevron.down" : "chevron.right")
-                            .font(.system(size: 9, weight: .semibold))
-                            .frame(width: 10)
-                            .padding(.trailing, 11)
-                    }
-                    .foregroundStyle(.secondary)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
             }
             }
         }
