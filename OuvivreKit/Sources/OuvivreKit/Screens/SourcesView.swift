@@ -22,10 +22,15 @@ public struct SourcesView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.bottom, 24)
 
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 14, alignment: .leading), GridItem(.flexible(), spacing: 14, alignment: .leading)], spacing: 14) {
-                ForEach(ClassicStatic.countries, id: \.self) { country in
-                    if let profile = ClassicStatic.countryProfiles[country], !profile.sources.isEmpty {
-                        countryCard(country, sources: profile.sources)
+            // Grille non paresseuse : les deux cartes d'une rangée s'étirent à la
+            // hauteur de la plus haute, leur contenu restant aligné en haut.
+            Grid(horizontalSpacing: 14, verticalSpacing: 14) {
+                ForEach(Array(countriesWithSources.chunked(by: 2).enumerated()), id: \.offset) { _, pair in
+                    GridRow {
+                        ForEach(pair, id: \.country) { entry in
+                            countryCard(entry.country, sources: entry.sources)
+                        }
+                        if pair.count == 1 { Color.clear.frame(maxWidth: .infinity) }
                     }
                 }
             }
@@ -37,6 +42,13 @@ public struct SourcesView: View {
         }
         .onAppear {
             Task { await freshness.checkIfDue() }
+        }
+    }
+
+    private var countriesWithSources: [(country: String, sources: [ClassicStatic.CountrySource])] {
+        ClassicStatic.countries.compactMap { country in
+            guard let profile = ClassicStatic.countryProfiles[country], !profile.sources.isEmpty else { return nil }
+            return (country, profile.sources)
         }
     }
 
@@ -88,7 +100,7 @@ public struct SourcesView: View {
                     .overlay(alignment: .top) { Rectangle().fill(pal.divider).frame(height: 1) }
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
     }
 
@@ -100,5 +112,11 @@ public struct SourcesView: View {
             .background(pal.card)
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .overlay(RoundedRectangle(cornerRadius: 10).stroke(pal.border, lineWidth: 1))
+    }
+}
+
+private extension Array {
+    func chunked(by size: Int) -> [[Element]] {
+        stride(from: 0, to: count, by: size).map { Array(self[$0..<Swift.min($0 + size, count)]) }
     }
 }
