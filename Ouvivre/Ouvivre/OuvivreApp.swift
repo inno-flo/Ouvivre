@@ -1,6 +1,6 @@
 //
 //  OuvivreApp.swift
-//  Ouvivre
+//  Oùvivre
 //
 //  Created by Florian Innocente on 15/09/2026.
 //

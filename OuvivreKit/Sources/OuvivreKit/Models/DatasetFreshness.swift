@@ -80,13 +80,18 @@ public final class DatasetFreshness: ObservableObject {
         }
 
         var stale: [String] = []
+        var anySucceeded = false
         for dataset in bundledDatasets() {
             guard let upstream = await Self.fetchLastModified(datasetId: dataset.id) else { continue }
+            anySucceeded = true
             if let generatedAt = dataset.generatedAt, upstream > generatedAt {
                 stale.append(dataset.label)
             }
         }
 
+        // Hors ligne (ou API en panne) : on ne mémorise pas la vérification,
+        // pour réessayer au prochain affichage plutôt que dans 15 jours.
+        guard anySucceeded else { return }
         staleDatasets = stale
         lastCheckedAt = Date()
         UserDefaults.standard.set(lastCheckedAt, forKey: Self.lastCheckedKey)

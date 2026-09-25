@@ -1,4 +1,4 @@
-// Renders the Ouvivre app icon: light / dark / tinted 1024×1024 + macOS sizes.
+// Renders the Oùvivre app icon: light / dark / tinted 1024×1024 + macOS sizes.
 //   swift MakeIcon.swift ../../Ouvivre/Ouvivre/Assets.xcassets/AppIcon.appiconset
 // A landscape painting: a sky and two hills seen through a frosted-glass frame,
 // on a solid ground. Same construction as Plutar — opaque artwork behind, real
