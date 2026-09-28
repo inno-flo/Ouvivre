@@ -240,7 +240,7 @@ public struct FavorisView: View {
             ]),
             Section(id: "geo", title: "Géographie (les scores de correspondance entre le département et les critères de choix sont sur 100)", rows: geoRows),
             Section(id: "culture", title: "Culture (nombre de lieux et d'événements)", rows: cultureRows),
-            Section(id: "meteo", title: "Météo (valeurs calculées sur les 12 derniers mois)", rows: meteoRows)
+            Section(id: "meteo", title: "Climat (valeurs calculées sur les 12 derniers mois)", rows: meteoRows)
         ]
     }
 
@@ -375,7 +375,7 @@ public struct FavorisView: View {
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .help(row.id == "meteo-temp" ? "Ouvrir le détail Météo dans une fenêtre" : "Ouvrir les données culturelles dans une fenêtre")
+            .help(row.id == "meteo-temp" ? "Ouvrir la fenêtre détaillée du Climat" : "Ouvrir les données culturelles dans une fenêtre")
         }
     }
 

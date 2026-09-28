@@ -227,7 +227,7 @@ public struct InspectorPanelView: View {
             HStack(spacing: 8) {
                 // Même en-tête que CULTURE (Eyebrow), sans chevron ni icône :
                 // la rubrique Météo est toujours dépliée.
-                Eyebrow("Météo", color: faintColor, font: CFont.rounded(13, weight: .medium))
+                Eyebrow("Climat", color: faintColor, font: CFont.rounded(13, weight: .medium))
                 Spacer()
 
                 // Ouvre la fenêtre de détail (comme le double-clic).
