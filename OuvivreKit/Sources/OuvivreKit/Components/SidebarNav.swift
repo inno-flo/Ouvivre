@@ -116,7 +116,7 @@ private struct NavItemRow: View {
     /// other rows (Outils, Sources) render without a leading icon.
     private var icon: String? {
         switch item.screen {
-        case .selecteur: "chart.bar.horizontal.page"
+        case .selecteur: "list.bullet.clipboard"
         default: nil
         }
     }
