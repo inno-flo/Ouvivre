@@ -3,12 +3,12 @@ import MapKit
 
 /// The four plan types offered by the panel's type picker, mirroring Apple
 /// Maps' own choices (Explorer / Conduite / Transports / Satellite).
-public enum MapPlanType: String, CaseIterable, Identifiable {
+enum MapPlanType: String, CaseIterable, Identifiable {
     case explorer, voiture, transports, satellite
 
-    public var id: String { rawValue }
+    var id: String { rawValue }
 
-    public var label: String {
+    var label: String {
         switch self {
         case .explorer: "Explorer"
         case .voiture: "Voiture"
@@ -17,7 +17,7 @@ public enum MapPlanType: String, CaseIterable, Identifiable {
         }
     }
 
-    public var icon: String {
+    var icon: String {
         switch self {
         case .explorer: "map"
         case .voiture: "car"

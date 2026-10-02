@@ -2,26 +2,20 @@ import SwiftUI
 import MapKit
 
 /// "Big Mac" (nom provisoire) — présentation plein cadre
-/// (fond MapKit + colonne flottante translucide), mais la colonne empile 4
+/// (fond MapKit + colonne flottante translucide), mais la colonne empile 2
 /// blocs rétractables (`DisclosureGroup`) qui reprennent, dans l'ordre,
-/// Pays → Régions (+ tailles de commune) → Culture. Chaque bloc
+/// Pays → Géographie et Culture (tailles de commune, proximités, Culture). Chaque bloc
 /// hérite de l'état partagé `ClassicState`, donc les choix persistent d'un
 /// bloc à l'autre ; les blocs sont indépendants (pas d'entonnoir) : chaque réglage
 /// met à jour la carte en direct.
-public struct SelecteurView: View {
-    @EnvironmentObject var theme: ClassicTheme
+struct SelecteurView: View {
     @EnvironmentObject var state: ClassicState
     @EnvironmentObject var mapState: MapPanelState
     @Environment(\.colorScheme) private var colorScheme
-    let derived: ClassicDerived
+    private var c: DetailColors { DetailColors(colorScheme) }
 
-    private var columnInk: Color { colorScheme == .dark ? Color(hex: 0xF4F2EE) : ClassicTheme.ink }
-    private var columnBody: Color { colorScheme == .dark ? Color(hex: 0xD9D4C9) : ClassicTheme.body }
-    private var columnFaint: Color { colorScheme == .dark ? Color(hex: 0xA39D91) : ClassicTheme.faint }
     private var blockFill: Color { colorScheme == .dark ? Color.black.opacity(0.35) : Color.white.opacity(0.528) }
     private var blockStroke: Color { colorScheme == .dark ? Color.white.opacity(0.15) : ClassicTheme.border.opacity(0.6) }
-    private var checkboxOffFill: Color { colorScheme == .dark ? Color.white.opacity(0.08) : .white }
-    private var checkboxOffStroke: Color { colorScheme == .dark ? Color.white.opacity(0.35) : ClassicTheme.border }
 
     @State private var position: MapCameraPosition = .automatic
     @State private var lastRegion: MKCoordinateRegion?
@@ -39,28 +33,14 @@ public struct SelecteurView: View {
     // sur cet écran — sinon `SelecteurView` est recréée à chaque fois et tout
     // se replie.
 
-    // Liste des communes correspondantes (bloc Régions) : les 30 premières
-    // s'affichent directement, le reste se déplie.
-    @State private var showMoreCommunes = false
     /// Vrai pendant l'application du dépli par défaut à l'apparition.
     @State private var isApplyingDefaultExpansion = false
 
     private let columnWidth: CGFloat = 420
     private let columnOuterPadding: CGFloat = 20
     private let columnInnerPadding: CGFloat = 16
-    private let topCommunesCount = 30
-    private let moreCommunesMaxHeight: CGFloat = 440
-    /// Nombre de départements affichés sur la carte — sans ce plafond, tous
-    /// les départements correspondant aux tailles de commune restent
-    /// affichés quel que soit leur classement, et les réglages de
-    /// proximité/Culture (qui ne font que réordonner la liste) n'ont donc
-    /// aucun effet visible (même bug que "0 communes" : effet invisible
-    /// plutôt qu'absent).
-    private let topDepartementsCount = 25
 
-    public init(derived: ClassicDerived) { self.derived = derived }
-
-    public var body: some View {
+    var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .topLeading) {
                 MapReader { proxy in
@@ -81,7 +61,7 @@ public struct SelecteurView: View {
                                 if let name = departementName(at: value.location, proxy: proxy) {
                                     selectedDepartementName = name
                                     mapState.title = name
-                                    withAnimation(.easeInOut(duration: 0.28)) { mapState.bigMacInspectorVisible = true }
+                                    withAnimation(.easeInOut(duration: 0.28)) { mapState.isVisible = true }
                                 } else {
                                     // Clic hors de tout département dessiné : désélectionne,
                                     // sans fermer l'inspecteur (il affiche un message à la
@@ -118,19 +98,12 @@ public struct SelecteurView: View {
             .onChange(of: mapState.coordinate.longitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: mapState.spanDegrees) { _, newSpan in applyZoom(newSpan) }
             .onChange(of: mapState.recenterTick) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
-            // Accordéon : Pays se replie dès qu'un autre bloc s'ouvre (mais
-            // ouvrir Pays ne referme pas les autres — seul Pays a ce
-            // comportement, pour rester l'état "par défaut" au premier bloc).
+            // Accordéon : Pays se replie dès que "Géographie et Culture"
+            // s'ouvre (mais ouvrir Pays ne referme pas l'autre bloc — seul
+            // Pays a ce comportement, pour rester l'état "par défaut" au
+            // premier bloc).
             .onChange(of: state.bigMacExpandedRegions) { _, isExpanded in if isExpanded && !isApplyingDefaultExpansion { state.bigMacExpandedPays = false } }
-            .onChange(of: state.bigMacExpandedCulture) { _, isExpanded in if isExpanded && !isApplyingDefaultExpansion { state.bigMacExpandedPays = false } }
-            .onChange(of: state.excludeOverseas) { _, _ in refreshDepartementsOnMap() }
-            .onChange(of: state.excludeCorse) { _, _ in refreshDepartementsOnMap() }
-            .onChange(of: state.geo2) { _, _ in refreshDepartementsOnMap() }
-            .onChange(of: state.includeVillage) { _, _ in refreshDepartementsOnMap() }
-            .onChange(of: state.includePetiteVille) { _, _ in refreshDepartementsOnMap() }
-            .onChange(of: state.includeVilleMoyenne) { _, _ in refreshDepartementsOnMap() }
-            .onChange(of: state.includeGrandeVille) { _, _ in refreshDepartementsOnMap() }
-            .onChange(of: state.groups) { _, _ in refreshDepartementsOnMap() }
+            .onChange(of: mapFilters) { _, _ in refreshDepartementsOnMap() }
             .onChange(of: geo.size.width) { _, newValue in moveCamera(totalWidth: newValue, animated: false) }
         }
     }
@@ -152,11 +125,11 @@ public struct SelecteurView: View {
     /// inline dépassait le temps de type-check du compilateur.
     @MapContentBuilder
     private var mapContent: some MapContent {
-        if mapState.departementRingGroups.isEmpty {
+        if mapState.departementNames.isEmpty {
             Marker(mapState.title, coordinate: mapState.coordinate)
         } else {
-            ForEach(mapState.departementRingGroups, id: \.name) { group in
-                departementRings(group.rings, isHovered: group.name == hoveredDepartementName, isSelected: group.name == selectedDepartementName)
+            ForEach(mapState.departementNames, id: \.self) { name in
+                departementRings(DepartementBoundaries.rings[name] ?? [], isHovered: name == hoveredDepartementName, isSelected: name == selectedDepartementName)
             }
         }
     }
@@ -164,73 +137,48 @@ public struct SelecteurView: View {
     @MapContentBuilder
     private func departementRings(_ rings: [[CLLocationCoordinate2D]], isHovered: Bool, isSelected: Bool) -> some MapContent {
         let opacity = 0.05 + (isSelected ? 0.05 : 0) + (isHovered ? 0.07 : 0)
+        let trace = ClassicTheme.accent.mapTrace(dark: colorScheme == .dark)
         ForEach(Array(rings.enumerated()), id: \.offset) { _, ring in
             MapPolygon(coordinates: ring)
-                .foregroundStyle(theme.accent.mapTrace(dark: colorScheme == .dark).opacity(opacity))
-                .stroke(theme.accent.mapTrace(dark: colorScheme == .dark), lineWidth: 2)
+                .foregroundStyle(trace.opacity(opacity))
+                .stroke(trace, lineWidth: 2)
         }
     }
 
-    /// Hit-test manuel : convertit un point écran en coordonnée puis
-    /// cherche le premier département dont un des anneaux le contient
-    /// (ray casting) — MapKit ne propose pas de survol/tap par forme sur
-    /// `MapPolygon`.
+    /// Département tracé sous le point écran `point` (hit-test manuel, voir
+    /// `DepartementBoundaries.departement(at:among:)`).
     private func departementName(at point: CGPoint, proxy: MapProxy) -> String? {
         guard let coordinate = proxy.convert(point, from: .local) else { return nil }
-        for group in mapState.departementRingGroups {
-            if group.rings.contains(where: { Self.ring($0, contains: coordinate) }) {
-                return group.name
-            }
-        }
-        return nil
-    }
-
-    /// Ray casting standard (pair/impair) sur un anneau de coordonnées.
-    private static func ring(_ ring: [CLLocationCoordinate2D], contains coordinate: CLLocationCoordinate2D) -> Bool {
-        guard ring.count > 2 else { return false }
-        var inside = false
-        var j = ring.count - 1
-        for i in 0..<ring.count {
-            let pi = ring[i], pj = ring[j]
-            if (pi.latitude > coordinate.latitude) != (pj.latitude > coordinate.latitude) {
-                let slope = (pj.longitude - pi.longitude) / (pj.latitude - pi.latitude)
-                let longitudeAtLatitude = pi.longitude + slope * (coordinate.latitude - pi.latitude)
-                if coordinate.longitude < longitudeAtLatitude { inside.toggle() }
-            }
-            j = i
-        }
-        return inside
+        return DepartementBoundaries.departement(at: coordinate, among: mapState.departementNames)
     }
 
     // MARK: Départements correspondant aux communes filtrées + Culture
 
-    /// Codes département des communes qui correspondent aux tailles cochées
-    /// — précalculé côté `CommuneSizeData` (groupes par catégorie), évite de
-    /// refiltrer/trier ~35k communes à chaque changement d'état.
-    private var matchingDepartementCodes: Set<String> {
-        CommuneSizeData.matchingDepartementCodes(
-            includeVillage: state.includeVillage,
-            includePetiteVille: state.includePetiteVille,
-            includeVilleMoyenne: state.includeVilleMoyenne,
-            includeGrandeVille: state.includeGrandeVille
-        )
+    /// Réglages dont dépend la liste des départements tracés — un seul
+    /// `onChange` pour tous.
+    private struct MapFilters: Equatable {
+        let excludeOverseas: Bool
+        let excludeCorse: Bool
+        let geo2: [Int]
+        let communeSizes: Set<CommuneSizeCategory>
+        let culture: [Int]
     }
 
-    /// Poids Culture (Musées, Lieux du patrimoine, Festivals) actuellement
-    /// réglés, dans l'ordre de `CultureScores.criterionKeys`.
-    private var cultureWeights: [Int] {
-        cultureRows.map(\.row.value)
+    private var mapFilters: MapFilters {
+        MapFilters(excludeOverseas: state.excludeOverseas, excludeCorse: state.excludeCorse, geo2: state.geo2, communeSizes: state.communeSizes, culture: state.culture)
     }
 
-    /// Ces départements, classés par pertinence en combinant les réglages de
-    /// proximité (`state.geo2`) et les poids Culture (moyenne des deux
-    /// scores 0-100) — filtrés à l'ensemble issu des tailles de commune, et
-    /// plafonnés aux 10 mieux classés seulement si un critère est réglé.
+    /// Départements correspondant aux tailles de commune cochées (codes
+    /// précalculés côté `CommuneSizeData`), classés par pertinence en
+    /// combinant les réglages de proximité (`state.geo2`) et les poids
+    /// Culture (moyenne des deux scores 0-100). Tous les départements
+    /// correspondants sont montrés, sans plafond.
     private var matchingDepartementNames: [String] {
-        let weights = cultureWeights
+        let weights = state.culture
+        let matchingCodes = CommuneSizeData.matchingDepartementCodes(state.communeSizes)
         // Un critère Culture à "déterminant" (poids 2) devient lui
         // aussi une condition ET, au même titre que Mer/Pays étranger côté
-        // proximité (voir `rankedDepartements(maxWeight:)`) — sinon Festivals
+        // proximité (voir `ClassicState.rankedDepartements`) — sinon Festivals
         // à "déterminant" ne fait que réordonner les départements qui ont
         // déjà passé les filtres de proximité, sans jamais en écarter aucun.
         // Même tolérance progressive qu'en proximité (voir
@@ -238,16 +186,13 @@ public struct SelecteurView: View {
         // Culture : les 3 exigés à la fois ne laissaient que 3 départements
         // sur 101, alors que le Rhône ou les Bouches-du-Rhône n'en ratent
         // qu'un seul.
-        let activeCultureFilters = weights.prefix(CultureScores.criterionKeys.count).filter { $0 > 0 }.count
-        let allowedCultureMisses = FranceGeoData.allowedMisses(activeFilterCount: activeCultureFilters)
-        let ranked = derived.rankedDepartements(weights: state.geo2, maxWeight: 2)
-            .filter { matchingDepartementCodes.contains($0.dep.codeInsee) }
+        let allowedCultureMisses = FranceGeoData.allowedMisses(activeFilterCount: weights.filter { $0 > 0 }.count)
+        return state.rankedDepartements()
+            .filter { matchingCodes.contains($0.dep.codeInsee) }
             .filter { entry in
-                let misses = CultureScores.criterionKeys.enumerated().reduce(0) { count, pair in
-                    let (i, key) = pair
-                    guard i < weights.count else { return count }
-                    return CultureScores.passesHardFilter(forDepartementCode: entry.dep.codeInsee, key: key, weight: weights[i], maxWeight: 2) ? count : count + 1
-                }
+                let misses = zip(CultureScores.criterionKeys, weights).filter {
+                    !CultureScores.passesHardFilter(forDepartementCode: entry.dep.codeInsee, key: $0.0, weight: $0.1, maxWeight: ClassicState.maxWeight)
+                }.count
                 return misses <= allowedCultureMisses
             }
             .map { entry -> (name: String, score: Double) in
@@ -255,10 +200,7 @@ public struct SelecteurView: View {
                 return (entry.dep.nom, (entry.score + cultureScore) / 2)
             }
             .sorted { $0.score > $1.score }
-        // Plafond top-25 temporairement désactivé pour tester l'affichage
-        // sans limite — tous les départements correspondants sont montrés,
-        // classés par pertinence.
-        return ranked.map(\.name)
+            .map(\.name)
     }
 
     /// Redessine les périmètres des départements correspondants — appelé à
@@ -266,7 +208,7 @@ public struct SelecteurView: View {
     /// de proximité ou de poids Culture, sans déplacer la caméra.
     private func refreshDepartementsOnMap() {
         let names = matchingDepartementNames
-        mapState.updateDepartementRingGroups(names)
+        mapState.departementNames = names
         // Si le département sélectionné disparaît du nouvel ensemble (les
         // filtres ont changé), on désélectionne plutôt que de garder
         // l'inspecteur sur un département qui n'est plus affiché.
@@ -282,9 +224,6 @@ public struct SelecteurView: View {
         VStack(alignment: .leading, spacing: 10) {
             paysBlock
             regionsBlock
-            if isCultureBlockVisible {
-                cultureBlock
-            }
         }
         .padding(columnInnerPadding)
     }
@@ -292,74 +231,55 @@ public struct SelecteurView: View {
     // MARK: Bloc 1 — Pays
 
     private var paysBlock: some View {
-        blockDisclosure(title: "Pays", bold: true, isExpanded: $state.bigMacExpandedPays, enabled: true, background: blockFill) {
-            PaysCountryBlock(derived: derived, ink: columnInk, faint: columnFaint, showFacts: false, countryFont: CFont.rounded(13, weight: .medium))
+        blockDisclosure(title: "Pays", isExpanded: $state.bigMacExpandedPays, enabled: true) {
+            PaysCountryBlock(ink: c.ink)
         }
     }
 
-    // MARK: Bloc 2 — Régions + tailles de commune
-
-    private var matchingCommunes: [CommuneSizeEntry] {
-        CommuneSizeData.matching(
-            includeVillage: state.includeVillage,
-            includePetiteVille: state.includePetiteVille,
-            includeVilleMoyenne: state.includeVilleMoyenne,
-            includeGrandeVille: state.includeGrandeVille
-        )
-    }
-    /// Les 30 premières communes correspondantes, toujours affichées — et
-    /// aussi celles utilisées comme pins sur la carte (pour éviter d'en
-    /// surcharger l'affichage avec les "autres communes").
-    private var shownCommunes: [CommuneSizeEntry] { Array(matchingCommunes.prefix(topCommunesCount)) }
-    private var moreCommunes: [CommuneSizeEntry] { Array(matchingCommunes.dropFirst(topCommunesCount)) }
+    // MARK: Bloc 2 — Régions + tailles de commune + Culture
 
     private var regionsBlock: some View {
         // Réservé à la France (données départementales) : pour tout autre pays
         // le bloc est replié et ne peut pas être déplié.
-        blockDisclosure(title: "Géographie et Culture", bold: true, isExpanded: $state.bigMacExpandedRegions, enabled: state.country == "France", background: blockFill) {
+        blockDisclosure(title: "Géographie et Culture", isExpanded: $state.bigMacExpandedRegions, enabled: state.country == "France") {
             VStack(alignment: .leading, spacing: 14) {
-                RegionExclusionToggles(excludeOverseas: $state.excludeOverseas, excludeCorse: $state.excludeCorse, accent: theme.accent, ink: columnBody, labelFont: CFont.rounded(13, weight: .medium))
+                // Les deux bascules d'exclusion (Territoires ultramarins / Corse).
+                VStack(alignment: .leading, spacing: 8) {
+                    SelecteurCheckbox(label: "Exclure les Territoires ultramarins", isOn: $state.excludeOverseas, ink: c.body)
+                    SelecteurCheckbox(label: "Exclure la Corse", isOn: $state.excludeCorse, ink: c.body)
+                }
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Eyebrow("Communes", color: columnFaint, font: CFont.rounded(13, weight: .medium))
-                    sizeCheckbox("Village", description: CommuneSizeCategory.village.description, isOn: $state.includeVillage)
-                    sizeCheckbox("Petite ville", description: CommuneSizeCategory.petiteVille.description, isOn: $state.includePetiteVille)
-                    sizeCheckbox("Ville moyenne", description: CommuneSizeCategory.villeMoyenne.description, isOn: $state.includeVilleMoyenne)
-                    sizeCheckbox("Grande ville", description: CommuneSizeCategory.grandeVille.description, isOn: $state.includeGrandeVille)
+                    Eyebrow("Communes", color: c.faint, font: CFont.rounded(13, weight: .medium))
+                    ForEach(CommuneSizeCategory.allCases) { category in
+                        HStack(spacing: 8) {
+                            SelecteurCheckbox(label: category.rawValue, isOn: communeSizeBinding(category), ink: c.body)
+                            Spacer(minLength: 0)
+                            InfoPopoverButton(text: category.description, tint: c.faint)
+                        }
+                    }
                 }
                 .padding(.top, 4)
 
-                // La liste des communes (30 premières + "autres" dépliables)
-                // est retirée de l'affichage pour l'instant — on la
-                // réutilisera plus tard. `communesList`/`communeRow` restent
-                // définies ci-dessous ; `shownCommunes` continue d'alimenter
-                // les pins sur la carte.
-
                 VStack(alignment: .leading, spacing: 12) {
-                    HStack(alignment: .center) {
-                        Eyebrow("Proximités", color: columnFaint, font: CFont.rounded(13, weight: .medium))
-                        Spacer()
-                        resetButton { state.resetGeo2() }
-                    }
-
-                    ForEach(derived.geo2Rows) { row in
-                        CriterionRow(row: row, thumbSize: 14.4, labelFont: CFont.rounded(13, weight: .medium), labelColor: columnBody, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10, weight: .medium), tagCase: .capitalized, icon: ClassicStatic.criterionIcons[row.label]) { state.setGeo2(row.id, value: $0) }
+                    sectionHeader("Proximités") { state.resetGeo2() }
+                    ForEach(state.geo2Rows) { row in
+                        CriterionRow(row: row, thumbSize: 14.4) { state.setGeo2(row.id, value: $0) }
                             .padding(.trailing, 8)
                     }
                 }
                 .padding(.top, 12)
 
-                // Réglages Culture transférés ici (après Proximités) depuis
-                // l'ancien bloc "Culture", désormais masqué.
+                // Réglages Culture, après Proximités.
                 VStack(alignment: .leading, spacing: 12) {
-                    HStack(alignment: .center) {
-                        Eyebrow("Culture", color: columnFaint, font: CFont.rounded(13, weight: .medium))
-                        Spacer()
-                        resetButton {
-                            for entry in cultureRows { state.setGroup(cultureGroupIndex, entry.rowIndex, value: 0) }
+                    sectionHeader("Culture") { state.resetCulture() }
+                    VStack(alignment: .leading, spacing: 4) {
+                        ForEach(state.cultureRows) { row in
+                            CriterionRow(row: row) { state.setCulture(row.id, value: $0) }
+                                .padding(.vertical, 4)
+                                .padding(.trailing, 8)
                         }
                     }
-                    cultureRowsContent
                 }
                 .padding(.top, 12)
                 .padding(.bottom, 6)
@@ -367,145 +287,28 @@ public struct SelecteurView: View {
         }
     }
 
-    /// Bouton « RÉINITIALISER » en pastille, commun aux en-têtes Proximités et Culture.
-    private func resetButton(action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text("Réinitialiser")
-                .font(CFont.rounded(10, weight: .medium))
-                .foregroundStyle(columnFaint)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 3)
-                .overlay(Capsule().stroke(columnFaint.opacity(0.6), lineWidth: 1))
-        }
-        .buttonStyle(.plain)
+    private func communeSizeBinding(_ category: CommuneSizeCategory) -> Binding<Bool> {
+        Binding(
+            get: { state.communeSizes.contains(category) },
+            set: { if $0 { state.communeSizes.insert(category) } else { state.communeSizes.remove(category) } }
+        )
     }
 
-    /// Liste des communes correspondant aux filtres — 30 premières en clair,
-    /// le reste replié derrière "AUTRES COMMUNES".
-    private var communesList: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            if !shownCommunes.isEmpty {
-                Eyebrow("COMMUNES", color: columnFaint, font: CFont.rounded(10, weight: .medium))
-                    .padding(.bottom, 6)
-
-                VStack(spacing: 0) {
-                    ForEach(shownCommunes) { entry in
-                        communeRow(entry)
-                    }
-                }
-            }
-
-            if !moreCommunes.isEmpty {
-                Button {
-                    withAnimation(.easeInOut(duration: 0.2)) { showMoreCommunes.toggle() }
-                } label: {
-                    HStack {
-                        Image(systemName: showMoreCommunes ? "chevron.down" : "chevron.right")
-                            .font(.system(size: 10, weight: .semibold))
-                            .foregroundStyle(columnFaint)
-                        Eyebrow("AUTRES COMMUNES", color: columnFaint, font: CFont.rounded(10, weight: .medium))
-                        Spacer()
-                    }
-                    .padding(.top, 12)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-
-                if showMoreCommunes {
-                    ScrollView {
-                        VStack(spacing: 0) {
-                            ForEach(moreCommunes) { entry in
-                                communeRow(entry)
-                            }
-                        }
-                    }
-                    .frame(maxHeight: moreCommunesMaxHeight)
-                    .padding(.top, 8)
-                }
-            }
-        }
-    }
-
-    private func communeRow(_ entry: CommuneSizeEntry) -> some View {
-        Text(entry.name)
-            .font(CFont.rounded(14, weight: .medium))
-            .foregroundStyle(columnInk)
-            .padding(.vertical, 6)
-            .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private func sizeCheckbox(_ label: String, description: String, isOn: Binding<Bool>) -> some View {
-        HStack(spacing: 8) {
-            Button { isOn.wrappedValue.toggle() } label: {
-                HStack(spacing: 8) {
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(isOn.wrappedValue ? theme.accent : checkboxOffFill)
-                        .frame(width: 16, height: 16)
-                        .overlay(RoundedRectangle(cornerRadius: 3).stroke(isOn.wrappedValue ? theme.accent : checkboxOffStroke, lineWidth: 1))
-                        .overlay {
-                            if isOn.wrappedValue {
-                                Image(systemName: "checkmark")
-                                    .font(.system(size: 10, weight: .bold))
-                                    .foregroundStyle(.white)
-                            }
-                        }
-                    Text(label).font(CFont.rounded(13, weight: .medium)).foregroundStyle(columnBody)
-                }
+    /// En-tête de section (Proximités, Culture) avec son bouton
+    /// « RÉINITIALISER » en pastille.
+    private func sectionHeader(_ title: String, reset: @escaping () -> Void) -> some View {
+        HStack(alignment: .center) {
+            Eyebrow(title, color: c.faint, font: CFont.rounded(13, weight: .medium))
+            Spacer()
+            Button(action: reset) {
+                Text("Réinitialiser")
+                    .font(CFont.rounded(10, weight: .medium))
+                    .foregroundStyle(c.faint)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .overlay(Capsule().stroke(c.faint.opacity(0.6), lineWidth: 1))
             }
             .buttonStyle(.plain)
-            Spacer(minLength: 0)
-            InfoPopoverButton(text: description, tint: columnFaint)
-        }
-    }
-
-    // MARK: Bloc 3 — Culture (Musées, Lieux du patrimoine, Festivals uniquement)
-
-    /// Les 3 lignes de `ClassicStatic.groups` CULTURE conservées pour ce
-    /// bloc — sources :
-    /// - Musées : https://culture.data.gouv.fr/datasets/61777ddaa9101d073e5506cd
-    /// - Lieux du patrimoine : https://culture.data.gouv.fr/datasets/628da9ff836d8bf454c7fd48
-    /// - Festivals : https://culture.data.gouv.fr/datasets/62cf95993d99f22480f49334
-    /// Mêmes 3 niveaux que "Proximités" (indifférent/important/
-    /// déterminant, 0...2) plutôt que l'échelle à 6 niveaux par défaut des
-    /// groupes — `WeightedRow` est reconstruite avec `maxValue`/`tags`
-    /// substitués, la valeur brute de `state.groups` étant déjà clampée à 2
-    /// par `setGroup` côté écriture (voir `cultureBlock`).
-    private var cultureRows: [(rowIndex: Int, row: WeightedRow)] {
-        guard let cultureGroup = derived.groups.first(where: { $0.title == "CULTURE" }) else { return [] }
-        let keep: Set<String> = ["Musées", "Lieux du patrimoine", "Festivals"]
-        return cultureGroup.rows.enumerated()
-            .filter { keep.contains($0.element.label) }
-            .map { offset, row in
-                (rowIndex: offset, row: WeightedRow(id: row.id, label: row.label, value: min(row.value, 2), maxValue: 2, tags: ClassicStatic.tagsGeo2))
-            }
-    }
-    private var cultureGroupIndex: Int {
-        ClassicStatic.groups.firstIndex { $0.title == "CULTURE" } ?? 0
-    }
-
-    /// Les 3 réglettes Culture — affichées dans le bloc "Géographie et
-    /// Culture" (après Proximités). Les réglages restent actifs (ils
-    /// pilotent toujours le classement des départements) ; seul l'ancien
-    /// bloc "Culture" séparé est masqué (`isCultureBlockVisible`).
-    private var cultureRowsContent: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            ForEach(cultureRows, id: \.rowIndex) { entry in
-                CriterionRow(row: entry.row, thumbSize: 16, trackHeight: 4, labelFont: CFont.rounded(13, weight: .medium), labelColor: columnBody, dotGrowthPerStep: 1.5, tagFont: CFont.rounded(10, weight: .medium), tagCase: .capitalized, icon: ClassicStatic.criterionIcons[entry.row.label]) {
-                    state.setGroup(cultureGroupIndex, entry.rowIndex, value: min($0, 2))
-                }
-                .padding(.vertical, 4)
-                .padding(.trailing, 8)
-            }
-        }
-    }
-
-    /// Ancien bloc "Culture" séparé : masqué (son contenu vit désormais
-    /// dans "Géographie et Culture"). Repasser à `true` pour le réafficher.
-    private let isCultureBlockVisible = false
-
-    private var cultureBlock: some View {
-        blockDisclosure(title: "Culture", isExpanded: $state.bigMacExpandedCulture, enabled: true) {
-            cultureRowsContent
         }
     }
 
@@ -514,7 +317,7 @@ public struct SelecteurView: View {
     /// `DisclosureGroup` stylé pour matcher les panneaux flottants existants
     /// (matériau translucide de la colonne, typographie `Eyebrow`/`CFont`) —
     /// première utilisation de `DisclosureGroup` dans ce module.
-    private func blockDisclosure<Content: View>(title: String, bold: Bool = false, isExpanded: Binding<Bool>, enabled: Bool, background: Color = ClassicTheme.sidebarBg, @ViewBuilder content: @escaping () -> Content) -> some View {
+    private func blockDisclosure<Content: View>(title: String, isExpanded: Binding<Bool>, enabled: Bool, @ViewBuilder content: @escaping () -> Content) -> some View {
         // Anime explicitement le dépli/repli : `DisclosureGroup` change son
         // binding directement au clic sur le chevron, sans passer par
         // `withAnimation`, ce qui donnait un repli/dépli instantané et sec.
@@ -534,8 +337,8 @@ public struct SelecteurView: View {
                 // que ce dernier sur macOS).
                 HStack(spacing: 0) {
                     Text(title.uppercased())
-                        .font(CFont.rounded(14, weight: bold ? .bold : .semibold))
-                        .foregroundStyle(enabled && isExpanded.wrappedValue ? columnInk : columnFaint)
+                        .font(CFont.rounded(14, weight: .bold))
+                        .foregroundStyle(enabled && isExpanded.wrappedValue ? c.ink : c.faint)
                     Spacer(minLength: 0)
                 }
                 .contentShape(Rectangle())
@@ -543,13 +346,13 @@ public struct SelecteurView: View {
                     if enabled { animatedExpanded.wrappedValue.toggle() }
                 }
             }
-            .tint(columnFaint)
+            .tint(c.faint)
         }
         .padding(.vertical, 10)
         .padding(.horizontal, 12)
         .background {
             RoundedRectangle(cornerRadius: 10).fill(.ultraThinMaterial)
-            RoundedRectangle(cornerRadius: 10).fill(background)
+            RoundedRectangle(cornerRadius: 10).fill(blockFill)
         }
         .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(blockStroke, lineWidth: 1))
     }
@@ -615,30 +418,5 @@ public struct SelecteurView: View {
             }
         }
         lastRegion = target
-    }
-}
-
-/// Petit bouton `info.circle` qui affiche une description au clic, via
-/// `.popover` — utilisé par les 4 cases à cocher "taille de commune" du
-/// bloc Régions.
-private struct InfoPopoverButton: View {
-    let text: String
-    let tint: Color
-    @State private var showing = false
-
-    var body: some View {
-        Button { showing = true } label: {
-            Image(systemName: "info.circle")
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(tint)
-        }
-        .buttonStyle(.plain)
-        .popover(isPresented: $showing, arrowEdge: .trailing) {
-            Text(text)
-                .font(CFont.rounded(13, weight: .medium))
-                .foregroundStyle(.primary)
-                .padding(12)
-                .frame(width: 240, alignment: .leading)
-        }
     }
 }

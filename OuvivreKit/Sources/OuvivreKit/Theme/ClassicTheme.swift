@@ -1,47 +1,32 @@
 import SwiftUI
-#if canImport(UIKit)
-import UIKit
-#elseif canImport(AppKit)
 import AppKit
-#endif
 
-/// Look-and-feel knobs mirroring the dc export's `$preview` props
-/// (`accent`, `density`).
-public final class ClassicTheme: ObservableObject {
-    @Published public var accent: Color
-    @Published public var compact: Bool
-
-    public init(
-        accent: Color = .accentColor,
-        compact: Bool = false
-    ) {
-        self.accent = accent
-        self.compact = compact
-    }
+/// Look-and-feel constants mirroring the dc export's `$preview` props
+/// (`accent`, `density`) — l'accent suit la couleur d'accent de l'app.
+enum ClassicTheme {
+    static let accent = Color.accentColor
 
     // Fixed palette (not user-configurable in the dc export).
-    public static let background = Color(hex: 0xFFFFFF)
-    public static let sidebarBg = Color(hex: 0xEFECE6)
-    public static let border = Color(hex: 0xDDD8CE)
-    public static let dividerLight = Color(hex: 0xF0ECE4)
-    public static let cardAlt = Color(hex: 0xFAF9F6)
-    public static let ink = Color(hex: 0x1C1B19)
-    public static let body = Color(hex: 0x4A463F)
-    public static let sub = Color(hex: 0x6F6A60)
-    public static let faint = Color(hex: 0x8C867B)
-    public static let faint2 = Color(hex: 0xA39D91)
+    static let background = Color(hex: 0xFFFFFF)
+    static let border = Color(hex: 0xDDD8CE)
+    static let dividerLight = Color(hex: 0xF0ECE4)
+    static let cardAlt = Color(hex: 0xFAF9F6)
+    static let ink = Color(hex: 0x1C1B19)
+    static let body = Color(hex: 0x4A463F)
+    static let sub = Color(hex: 0x6F6A60)
+    static let faint = Color(hex: 0x8C867B)
+    static let faint2 = Color(hex: 0xA39D91)
     /// Étoile et sceau des favoris, partout dans l'app.
-    public static let favorite = Color(hex: 0xFFD500)
-    public static let track = Color(hex: 0xEAE6DE)
+    static let favorite = Color(hex: 0xFFD500)
+    static let track = Color(hex: 0xEAE6DE)
 
-    // Density-driven metrics.
-    public var mainPadding: CGFloat { compact ? 24 : 40 }
-    public var mainPaddingBottom: CGFloat { compact ? 40 : 56 }
-    public var gap: CGFloat { compact ? 18 : 28 }
-    public var cardPadX: CGFloat { compact ? 16 : 20 }
+    // Density-driven metrics (densité normale).
+    static let mainPadding: CGFloat = 40
+    static let mainPaddingBottom: CGFloat = 56
+    static let cardPadX: CGFloat = 20
 }
 
-public extension Color {
+extension Color {
     init(hex: UInt32, opacity: Double = 1) {
         let r = Double((hex >> 16) & 0xFF) / 255
         let g = Double((hex >> 8) & 0xFF) / 255
@@ -66,42 +51,27 @@ public extension Color {
     func mapTrace(dark: Bool) -> Color { dark ? mixed(with: .white, fraction: 0.6) : self }
 
     private func resolveComponents() -> (Double, Double, Double) {
-        #if canImport(UIKit)
-        let ui = UIColor(self)
-        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
-        ui.getRed(&r, green: &g, blue: &b, alpha: &a)
-        return (Double(r), Double(g), Double(b))
-        #elseif canImport(AppKit)
         let ns = NSColor(self).usingColorSpace(.deviceRGB) ?? NSColor(self)
         return (Double(ns.redComponent), Double(ns.greenComponent), Double(ns.blueComponent))
-        #else
-        return (0, 0, 0)
-        #endif
     }
 }
 
-public enum CFont {
-    /// Archivo (display/body) — conservé pour compatibilité, non utilisé par
-    /// les vues actives de l'app (toutes en SF Pro via `.rounded`/`.mono`) ;
-    /// tombe sur le sans système si la police n'est pas embarquée.
-    public static func sans(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
-        .custom("Archivo", size: size).weight(weight)
-    }
+enum CFont {
     /// SF Pro Rounded (police système, design arrondi) — police de corps par
     /// défaut de toutes les vues actives de l'app.
-    public static func rounded(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
+    static func rounded(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
         .system(size: size, weight: weight, design: .rounded)
     }
     /// SF Mono (police système, design monospace) — pour libellés/valeurs
     /// numériques. Note : un ancien commentaire mentionnait "IBM Plex Mono",
     /// mais c'est bien la police monospace système qui est utilisée ici.
-    public static func mono(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
+    static func mono(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
         .system(size: size, weight: weight, design: .monospaced)
     }
 }
 
-/// Palette adaptative clair/sombre des fenêtres de détail (Météo, Culture) ;
-/// en sombre, mêmes teintes que le bloc « Géographie et Culture » du Sélecteur.
+/// Palette adaptative clair/sombre des fenêtres de détail (Météo, Culture),
+/// reprise par le Sélecteur et l'inspecteur.
 struct DetailColors {
     let dark: Bool
     init(_ scheme: ColorScheme) { dark = scheme == .dark }
@@ -115,4 +85,6 @@ struct DetailColors {
     var border: Color { dark ? Color.white.opacity(0.15) : ClassicTheme.border }
     var divider: Color { dark ? Color.white.opacity(0.08) : ClassicTheme.dividerLight }
     var track: Color { dark ? Color.white.opacity(0.12) : ClassicTheme.track }
+    /// Pastille du code département (inspecteur, carte des favoris).
+    var badge: Color { dark ? Color.white.opacity(0.12) : ClassicTheme.border.opacity(0.5) }
 }

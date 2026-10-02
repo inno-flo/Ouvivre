@@ -1,42 +1,37 @@
 import SwiftUI
-#if canImport(AppKit)
 import AppKit
-#endif
 
 /// Favoris — tableau comparatif des départements mis en favori (étoile de
 /// l'inspecteur), un département par colonne, la meilleure valeur de chaque
 /// ligne étant mise en avant.
-public struct FavorisView: View {
+struct FavorisView: View {
     @Environment(\.colorScheme) private var colorScheme
     private var pal: DetailColors { DetailColors(colorScheme) }
-    @EnvironmentObject var theme: ClassicTheme
     @EnvironmentObject var state: ClassicState
     @Environment(\.undoManager) private var undoManager
     @Environment(\.openWindow) private var openWindow
 
-    public init(derived: ClassicDerived) {}
-
     /// Départements portant le badge `checkmark.seal.fill` parmi `codes` —
     /// utilisé par la sidebar (n'accède à aucun objet d'environnement).
     static func topDepartementCodes(among codes: Set<String>) -> Set<String> {
-        let deps = FranceGeoData.departements.filter { codes.contains($0.codeInsee) }
-        return FavorisView(derived: ClassicDerived(state: ClassicState(), theme: ClassicTheme())).topDepartementCodes(in: deps)
+        topDepartementCodes(in: FranceGeoData.departements.filter { codes.contains($0.codeInsee) })
+    }
+
+    /// Police SF Pro Rounded mesurée pour ajuster les colonnes à leur texte.
+    private static func roundedFont(_ size: CGFloat, _ weight: NSFont.Weight) -> NSFont {
+        let base = NSFont.systemFont(ofSize: size, weight: weight)
+        return base.fontDescriptor.withDesign(.rounded).flatMap { NSFont(descriptor: $0, size: size) } ?? base
     }
 
     /// Largeur de la colonne des critères : icône (18) + espace (8) + libellé le
     /// plus large, mesuré en SF Pro Rounded 13 medium — la cellule s'ajuste
     /// donc au texte (« Température maximale moyenne » tient sur une ligne).
-    private var labelColW: CGFloat {
-        let labels = sections.flatMap(\.rows).map(\.label)
-        #if canImport(AppKit)
-        let base = NSFont.systemFont(ofSize: 13, weight: .medium)
-        let font = base.fontDescriptor.withDesign(.rounded).flatMap { NSFont(descriptor: $0, size: 13) } ?? base
-        let widest = labels.map { ($0 as NSString).size(withAttributes: [.font: font]).width }.max() ?? 0
+    /// Les libellés étant fixes, elle n'est calculée qu'une fois.
+    private static let labelColW: CGFloat = {
+        let font = roundedFont(13, .medium)
+        let widest = buildSections([]).flatMap(\.rows).map { ($0.label as NSString).size(withAttributes: [.font: font]).width }.max() ?? 0
         return ceil(18 + 8 + widest)
-        #else
-        return CGFloat(18 + 8) + CGFloat(labels.map(\.count).max() ?? 0) * 7
-        #endif
-    }
+    }()
     /// Département dont la colonne est sélectionnée (clic sur la carte).
     @State private var selectedCode: String?
     /// Ordre des colonnes (codes INSEE), réordonnable par glisser-déposer
@@ -51,13 +46,8 @@ public struct FavorisView: View {
     /// Largeur mesurée (SF Pro Rounded) du texte le plus large de l'en-tête —
     /// nom de département (13 semibold) ou de région (10) —, plus 1 caractère
     /// moyen d'espacement de chaque côté.
-    private var colW: CGFloat {
-        #if canImport(AppKit)
-        func rounded(_ size: CGFloat, _ weight: NSFont.Weight) -> NSFont {
-            let base = NSFont.systemFont(ofSize: size, weight: weight)
-            return base.fontDescriptor.withDesign(.rounded).flatMap { NSFont(descriptor: $0, size: size) } ?? base
-        }
-        let nameFont = rounded(13, .semibold), regionFont = rounded(10, .regular)
+    private static func colW(_ departements: [FranceGeoData.DepartementScore]) -> CGFloat {
+        let nameFont = roundedFont(13, .semibold), regionFont = roundedFont(10, .regular)
         let candidates = departements.flatMap { d in
             [(d.nom, nameFont), (d.nomRegion, regionFont)]
         }.map { text, font in
@@ -65,16 +55,29 @@ public struct FavorisView: View {
         }
         guard let widest = candidates.max(by: { $0.width < $1.width }) else { return 0 }
         return ceil(widest.width + 2 * widest.width / CGFloat(widest.count))
-        #else
-        let longest = departements.flatMap { [$0.nom.count, $0.nomRegion.count] }.max() ?? 0
-        return CGFloat(longest + 2) * 7
-        #endif
     }
 
-    /// Largeur exacte du tableau : colonne Critère (avec ses marges) + colonnes
-    /// des départements — il se resserre quand il y a moins de favoris.
-    private var tableWidth: CGFloat { labelColW + 36 + CGFloat(departements.count) * colW }
+    /// Données du tableau, calculées une seule fois par rendu (et non à
+    /// chaque cellule).
+    private struct Model {
+        /// Colonnes affichées : les départements qui ont le badge
+        /// `checkmark.seal.fill` d'abord, chaque groupe gardant l'ordre de l'utilisateur.
+        let departements: [FranceGeoData.DepartementScore]
+        let sections: [Section]
+        let topCodes: Set<String>
+        let colW: CGFloat
 
+        /// Largeur exacte du tableau : colonne Critère (avec ses marges) + colonnes
+        /// des départements — il se resserre quand il y a moins de favoris.
+        var tableWidth: CGFloat { FavorisView.labelColW + 36 + CGFloat(departements.count) * colW }
+    }
+
+    private var model: Model {
+        let base = baseDepartements
+        let top = Self.topDepartementCodes(in: base)
+        let deps = base.filter { top.contains($0.codeInsee) } + base.filter { !top.contains($0.codeInsee) }
+        return Model(departements: deps, sections: Self.buildSections(deps), topCodes: top, colW: Self.colW(deps))
+    }
 
     private struct Cell { let text: String; let value: Double? }
     private struct Row: Identifiable {
@@ -107,21 +110,13 @@ public struct FavorisView: View {
             }
     }
 
-    /// Colonnes affichées : les départements qui ont le badge
-    /// `checkmark.seal.fill` d'abord, chaque groupe gardant l'ordre de l'utilisateur.
-    private var departements: [FranceGeoData.DepartementScore] {
-        let base = baseDepartements
-        let top = topDepartementCodes(in: base)
-        return base.filter { top.contains($0.codeInsee) } + base.filter { !top.contains($0.codeInsee) }
-    }
-
-    /// Place la colonne `code` à l'emplacement de la colonne `target`.
     private func toggleSelection(_ code: String) {
         selectedCode = selectedCode == code ? nil : code
     }
 
+    /// Place la colonne `code` à l'emplacement de la colonne `target`.
     private func moveColumn(_ code: String, before target: String) {
-        var order = departements.map(\.codeInsee)
+        var order = model.departements.map(\.codeInsee)
         guard code != target, let from = order.firstIndex(of: code), let to = order.firstIndex(of: target) else { return }
         order.move(fromOffsets: [from], toOffset: to > from ? to + 1 : to)
         columnOrder = order
@@ -145,7 +140,9 @@ public struct FavorisView: View {
         }
     }
 
-    public var body: some View {
+    var body: some View {
+        let model = model
+        let departements = model.departements
         VStack(alignment: .leading, spacing: 0) {
             if departements.isEmpty {
                 Text("Aucun favori pour l'instant. Cliquez sur l'étoile d'un département dans l'inspecteur pour l'ajouter ici.")
@@ -154,19 +151,15 @@ public struct FavorisView: View {
                     .frame(maxWidth: 460, alignment: .leading)
             } else {
                 ScrollView(.horizontal, showsIndicators: true) {
-                    table.frame(width: tableWidth)
+                    table(model).frame(width: model.tableWidth)
                 }
                 DepartementMapCard(
                     names: departements.map(\.nom),
-                    accent: theme.accent,
                     selectedName: departements.first { $0.codeInsee == selectedCode }?.nom,
                     onSelect: { name in
-                        let code = departements.first { $0.nom == name }?.codeInsee
-                        if let code { toggleSelection(code) }
+                        if let code = FranceGeoData.byName[name]?.codeInsee { toggleSelection(code) }
                     },
-                    height: 862,
-                    actionsFirst: true,
-                    roundedFont: true
+                    height: 862
                 )
                     .padding(.top, 32)
             }
@@ -188,23 +181,19 @@ public struct FavorisView: View {
     }
 
     private var pendingRemovalName: String {
-        FranceGeoData.departements.first { $0.codeInsee == pendingRemovalCode }?.nom ?? ""
+        pendingRemovalCode.map(FranceGeoData.nom(forCode:)) ?? ""
     }
 
     // MARK: - Données
 
-    private var sections: [Section] { buildSections(departements) }
-
-    private func buildSections(_ deps: [FranceGeoData.DepartementScore]) -> [Section] {
-        func score(_ text: (Double) -> String = { "\(Int($0.rounded()))" }, _ f: (FranceGeoData.DepartementScore) -> Double?) -> [Cell] {
-            deps.map { d in f(d).map { Cell(text: text($0), value: $0) } ?? Cell(text: "—", value: nil) }
+    private static func buildSections(_ deps: [FranceGeoData.DepartementScore]) -> [Section] {
+        func score(_ f: (FranceGeoData.DepartementScore) -> Double?) -> [Cell] {
+            deps.map { d in f(d).map { Cell(text: "\(Int($0.rounded()))", value: $0) } ?? Cell(text: "—", value: nil) }
         }
-        let geoLabels = ["paysEtranger": "Pays étranger", "mer": "Mer ou océan", "montagne": "Montagne",
-                         "lacs": "Lacs", "fleuves": "Fleuves et rivières", "forets": "Parcs et forêts"]
-        let geoRows = FranceGeoData.criterionKeys.map { key in
-            Row(id: "geo-\(key)", label: geoLabels[key] ?? key, cells: score { $0.scores[key] }, higherIsBetter: true)
+        let geoRows = zip(FranceGeoData.criterionKeys, ClassicStatic.geo).map { key, label in
+            Row(id: "geo-\(key)", label: label, cells: score { $0.scores[key] }, higherIsBetter: true)
         }
-        let cultureRows: [Row] = [("musees", "Musées"), ("patrimoine", "Lieux du patrimoine"), ("festivals", "Festivals")].map { key, label in
+        let cultureRows: [Row] = zip(CultureScores.criterionKeys, ClassicStatic.culture).map { key, label in
             let cells = deps.map { d -> Cell in
                 var n = CultureScores.names(forDepartementCode: d.codeInsee, criterionKey: key).count
                 if key == "patrimoine" { n += CultureScores.names(forDepartementCode: d.codeInsee, criterionKey: "spr").count }
@@ -251,7 +240,7 @@ public struct FavorisView: View {
             guard let v = cell.value, let hi = values.max(), let lo = values.min(), hi != lo else { return nil }
             return v == hi ? .red : v == lo ? Color(red: 0.35, green: 0.70, blue: 0.95) : nil
         }
-        return isBest(cell, in: row) ? pal.ink : nil
+        return Self.isBest(cell, in: row) ? pal.ink : nil
     }
 
     /// Icône en face de la plus haute / plus basse valeur d'une ligne à icônes.
@@ -262,7 +251,7 @@ public struct FavorisView: View {
         return v == hi ? icons.high : v == lo ? icons.low : nil
     }
 
-    private func isBest(_ cell: Cell, in row: Row) -> Bool {
+    private static func isBest(_ cell: Cell, in row: Row) -> Bool {
         guard let higher = row.higherIsBetter, let v = cell.value else { return false }
         let values = row.cells.compactMap(\.value)
         guard values.count > 1, let best = higher ? values.max() : values.min(), let worst = higher ? values.min() : values.max(), best != worst else { return false }
@@ -271,7 +260,7 @@ public struct FavorisView: View {
 
     /// Codes des départements ayant le plus de valeurs mises en avant (tous
     /// ceux à égalité, tant que ce maximum est supérieur à 0).
-    func topDepartementCodes(in deps: [FranceGeoData.DepartementScore]) -> Set<String> {
+    private static func topDepartementCodes(in deps: [FranceGeoData.DepartementScore]) -> Set<String> {
         var counts = Array(repeating: 0, count: deps.count)
         for row in buildSections(deps).flatMap(\.rows) {
             for (i, cell) in row.cells.enumerated() where isBest(cell, in: row) { counts[i] += 1 }
@@ -280,12 +269,9 @@ public struct FavorisView: View {
         return Set(zip(deps, counts).filter { $0.1 == top }.map(\.0.codeInsee))
     }
 
-    private var topDepartementCodes: Set<String> { topDepartementCodes(in: baseDepartements) }
-
-
     // MARK: - Éléments de colonne
 
-    private func headerContent(_ d: FranceGeoData.DepartementScore) -> some View {
+    private func headerContent(_ d: FranceGeoData.DepartementScore, isTop: Bool) -> some View {
         VStack(alignment: .center, spacing: 4) {
             Text(d.nom).font(CFont.rounded(13, weight: .semibold)).foregroundStyle(pal.body)
             Text(d.nomRegion).font(CFont.rounded(10)).foregroundStyle(pal.sub)
@@ -295,7 +281,7 @@ public struct FavorisView: View {
                 }
                 .buttonStyle(.plain)
                 .help("Retirer des favoris")
-                if topDepartementCodes.contains(d.codeInsee) {
+                if isTop {
                     Image(systemName: "checkmark.seal.fill").foregroundStyle(ClassicTheme.favorite)
                         .help("Le plus de meilleures valeurs")
                 }
@@ -303,10 +289,6 @@ public struct FavorisView: View {
         }
         .multilineTextAlignment(.center)
     }
-
-    /// `false` supprime tous les encadrements de valeurs du tableau
-    /// (filet encre des meilleures valeurs, rouge/bleu ciel des températures).
-    private static let showsValueOutlines = true
 
     /// Hauteur de contenu commune au libellé de critère et aux valeurs : elle
     /// fixe la hauteur de toutes les rangées, quelle que soit la hauteur
@@ -320,7 +302,7 @@ public struct FavorisView: View {
             .foregroundStyle(pal.sub)
             .padding(.horizontal, 8)
             .frame(height: Self.rowContentHeight)
-            .overlay { if Self.showsValueOutlines, let outline { RoundedRectangle(cornerRadius: 4).stroke(outline, lineWidth: 1) } }
+            .overlay { if let outline { RoundedRectangle(cornerRadius: 4).stroke(outline, lineWidth: 1) } }
             // À gauche de la valeur, sans la décentrer.
             .overlay(alignment: .leading) {
                 if let icon { Image(systemName: icon).font(.system(size: 13)).foregroundStyle(pal.sub).offset(x: -22) }
@@ -329,14 +311,14 @@ public struct FavorisView: View {
 
     /// Aperçu suivant le curseur pendant le glissement : toute la colonne
     /// (en-tête, intitulés de rubrique vides et valeurs), en transparence.
-    private func columnPreview(_ d: FranceGeoData.DepartementScore) -> some View {
-        let index = departements.firstIndex { $0.codeInsee == d.codeInsee } ?? 0
+    private func columnPreview(_ d: FranceGeoData.DepartementScore, index: Int, model: Model) -> some View {
+        let colW = model.colW
         return VStack(spacing: 0) {
-            headerContent(d)
+            headerContent(d, isTop: model.topCodes.contains(d.codeInsee))
                 .frame(width: colW).padding(.vertical, 12)
                 .background(pal.window)
                 .overlay(alignment: .bottom) { Rectangle().fill(pal.border).frame(height: 1) }
-            ForEach(sections) { section in
+            ForEach(model.sections) { section in
                 if !section.title.isEmpty {
                     Text(" ").font(CFont.rounded(13, weight: .medium))
                         .padding(.vertical, 8)
@@ -385,16 +367,17 @@ public struct FavorisView: View {
 
     // MARK: - Tableau
 
-    private var table: some View {
-        VStack(spacing: 0) {
+    private func table(_ model: Model) -> some View {
+        let departements = model.departements, colW = model.colW
+        return VStack(spacing: 0) {
             HStack(spacing: 0) {
                 Color.clear
-                    .frame(width: labelColW, alignment: .leading).padding(.horizontal, 18).padding(.vertical, 14)
-                ForEach(departements, id: \.codeInsee) { d in
-                    headerContent(d)
+                    .frame(width: Self.labelColW, alignment: .leading).padding(.horizontal, 18).padding(.vertical, 14)
+                ForEach(Array(departements.enumerated()), id: \.element.codeInsee) { index, d in
+                    headerContent(d, isTop: model.topCodes.contains(d.codeInsee))
                     .frame(width: colW, alignment: .center)
                     .padding(.vertical, 12)
-                    .background(d.codeInsee == selectedCode ? theme.accent.opacity(0.12) : Color.clear)
+                    .background(d.codeInsee == selectedCode ? ClassicTheme.accent.opacity(0.12) : Color.clear)
                     .overlay(Rectangle().fill(pal.border).frame(width: 1), alignment: .leading)
                     .contentShape(Rectangle())
                     .opacity(draggingCode == d.codeInsee ? 0.5 : 1)
@@ -403,7 +386,7 @@ public struct FavorisView: View {
                         draggingCode = d.codeInsee
                         return NSItemProvider(object: d.codeInsee as NSString)
                     } preview: {
-                        columnPreview(d)
+                        columnPreview(d, index: index, model: model)
                     }
                     .onDrop(of: [.text], delegate: ColumnDropDelegate(
                         target: d.codeInsee,
@@ -422,28 +405,28 @@ public struct FavorisView: View {
             // une bande blanche en bas de la ligne dès l'ouverture de l'écran.
             .compositingGroup()
 
-            ForEach(sections) { section in
+            ForEach(model.sections) { section in
                 if !section.title.isEmpty {
-                HStack(spacing: 0) {
-                    Eyebrow(section.title, color: pal.faint, font: CFont.rounded(13, weight: .medium), tracking: 1)
-                        .padding(.horizontal, 18).padding(.vertical, 8)
-                    Spacer(minLength: 0)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(pal.track.opacity(0.45))
-                .overlay(alignment: .bottom) { Rectangle().fill(pal.divider).frame(height: 1) }
-                .compositingGroup()
+                    HStack(spacing: 0) {
+                        Eyebrow(section.title, color: pal.faint, font: CFont.rounded(13, weight: .medium), tracking: 1)
+                            .padding(.horizontal, 18).padding(.vertical, 8)
+                        Spacer(minLength: 0)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(pal.track.opacity(0.45))
+                    .overlay(alignment: .bottom) { Rectangle().fill(pal.divider).frame(height: 1) }
+                    .compositingGroup()
                 }
 
                 ForEach(section.rows) { row in
                     HStack(alignment: .center, spacing: 0) {
                         HStack(spacing: 8) {
                             Image(systemName: ClassicStatic.criterionIcons[row.label] ?? "circle").frame(width: 18, height: Self.rowContentHeight)
-                                .foregroundStyle(theme.accent)
+                                .foregroundStyle(ClassicTheme.accent)
                             Text(row.label).font(CFont.rounded(13, weight: .medium)).foregroundStyle(pal.body)
                         }
                             .frame(height: Self.rowContentHeight)
-                            .frame(width: labelColW, alignment: .leading)
+                            .frame(width: Self.labelColW, alignment: .leading)
                             .padding(.horizontal, 18).padding(.vertical, 13)
                             .overlay(alignment: .bottom) {
                                 // Entre deux critères d'une même rubrique : filet
@@ -464,7 +447,7 @@ public struct FavorisView: View {
                             // courte et son filet de séparation flottait au
                             // milieu de la ligne au lieu de longer sa base.
                             .frame(maxHeight: .infinity)
-                            .background(d.codeInsee == selectedCode ? theme.accent.opacity(0.12) : .clear)
+                            .background(d.codeInsee == selectedCode ? ClassicTheme.accent.opacity(0.12) : .clear)
                             .opacity(draggingCode == d.codeInsee ? 0.5 : 1)
                             .contentShape(Rectangle())
                             .onTapGesture { toggleSelection(d.codeInsee) }

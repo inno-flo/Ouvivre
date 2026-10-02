@@ -13,12 +13,10 @@ public struct CultureDetailView: View {
 
     let departementCode: String
     @Environment(\.openURL) private var openURL
-    @StateObject private var theme = ClassicTheme()
     /// Instance propre à cette fenêtre, utilisée pour les favoris seulement
     /// (synchronisés avec la fenêtre principale via `UserDefaults`).
     @StateObject private var state = ClassicState()
-    /// Rubriques repliées par l'utilisateur — toutes dépliées par défaut.
-    @State private var mapFocusTick = 0
+    /// Rubriques repliées par l'utilisateur — toutes repliées par défaut.
     @State private var collapsedSections: Set<String> = ["Musées", "Lieux du patrimoine", "Festivals"]
 
     /// Mode intégré (vue Département de la sidebar) : sans en-tête, carte,
@@ -30,18 +28,13 @@ public struct CultureDetailView: View {
         self.embedded = embedded
     }
 
-    private var departementName: String {
-        FranceGeoData.departements.first { $0.codeInsee == departementCode }?.nom ?? departementCode
-    }
-
     private let columns = [GridItem(.adaptive(minimum: 230), spacing: 16, alignment: .topLeading)]
 
     public var body: some View {
         OptionalScroll(enabled: !embedded) {
             VStack(alignment: .leading, spacing: 28) {
                 if !embedded {
-                    DepartementDetailHeader(departementCode: departementCode, name: departementName, accent: theme.accent, state: state) { mapFocusTick += 1 }
-                    DepartementMapCard(name: departementName, accent: theme.accent, focusCoordinate: FranceGeoData.chefsLieuxCoordinates[departementCode], focusTick: mapFocusTick, roundedFont: true)
+                    DepartementHeaderAndMap(departementCode: departementCode, state: state)
                 }
 
                 museesSection
@@ -51,28 +44,28 @@ public struct CultureDetailView: View {
             .padding(embedded ? 0 : 24)
             .frame(maxWidth: .infinity, alignment: .topLeading)
         }
-        .modifier(WindowStyle(enabled: !embedded))
-        .environmentObject(theme)
+        .departementDetailWindow(!embedded)
     }
 
     // MARK: Sections
 
+    private func names(_ criterionKey: String, mergeVariants: Bool = false) -> [String] {
+        CultureScores.dedupedNames(CultureScores.names(forDepartementCode: departementCode, criterionKey: criterionKey), mergeVariants: mergeVariants)
+    }
+
     private var museesSection: some View {
-        let all = InspectorPanelView.dedupedNames(CultureScores.names(forDepartementCode: departementCode, criterionKey: "musees"), mergeVariants: true)
-        let microFolies = all.filter { $0.localizedCaseInsensitiveContains("micro-folie") || $0.localizedCaseInsensitiveContains("microfolie") }
-        let regular = all.filter { !microFolies.contains($0) }
+        let all = names("musees", mergeVariants: true)
+        let regular = all.filter { !CultureScores.isMicroFolie($0) }
+        let microFolies = CultureScores.sortedByTitle(all.filter(CultureScores.isMicroFolie))
         return section(title: "Musées", icon: "photo.artframe", count: all.count) {
             alphabeticalGrid(regular, criterionKey: "musees")
             if !regular.isEmpty, !microFolies.isEmpty { Divider() }
-            let sortedMicroFolies = microFolies.sorted {
-                InspectorPanelView.titleCased($0).localizedStandardCompare(InspectorPanelView.titleCased($1)) == .orderedAscending
-            }
-            grid(sortedMicroFolies, criterionKey: "musees")
+            grid(microFolies, criterionKey: "musees")
         }
     }
 
     private var patrimoineSection: some View {
-        let monuments = InspectorPanelView.dedupedNames(CultureScores.names(forDepartementCode: departementCode, criterionKey: "patrimoine"), mergeVariants: false)
+        let monuments = names("patrimoine")
         let spr = CultureScores.names(forDepartementCode: departementCode, criterionKey: "spr")
         return section(title: "Lieux du patrimoine", icon: "building.classical.columns", count: monuments.count) {
             alphabeticalGrid(monuments, criterionKey: "patrimoine")
@@ -86,21 +79,14 @@ public struct CultureDetailView: View {
     }
 
     private var festivalsSection: some View {
-        let names = InspectorPanelView.dedupedNames(CultureScores.names(forDepartementCode: departementCode, criterionKey: "festivals"), mergeVariants: false)
-        let byDiscipline = Dictionary(grouping: names) {
-            CultureScores.discipline(forDepartementCode: departementCode, criterionKey: "festivals", name: $0) ?? "Autre"
-        }
-        let ordered = byDiscipline.keys.sorted {
-            if $0 == "Autre" || $1 == "Autre" { return $1 == "Autre" && $0 != "Autre" }
-            return byDiscipline[$0]!.count != byDiscipline[$1]!.count ? byDiscipline[$0]!.count > byDiscipline[$1]!.count : $0 < $1
-        }
-        return section(title: "Festivals", icon: "fireworks", count: names.count) {
-            ForEach(ordered, id: \.self) { discipline in
+        let festivals = names("festivals")
+        return section(title: "Festivals", icon: "fireworks", count: festivals.count) {
+            ForEach(CultureScores.festivalsByDiscipline(forDepartementCode: departementCode, names: festivals), id: \.discipline) { group in
                 VStack(alignment: .leading, spacing: 8) {
-                    (Text(discipline.prefix(1).uppercased() + discipline.dropFirst().lowercased()).foregroundStyle(c.ink) + Text(" · \(byDiscipline[discipline]!.count)").foregroundStyle(c.faint))
+                    (Text(group.discipline.prefix(1).uppercased() + group.discipline.dropFirst().lowercased()).foregroundStyle(c.ink) + Text(" · \(group.names.count)").foregroundStyle(c.faint))
                         .font(CFont.rounded(11, weight: .semibold))
                         .padding(.top, 12)
-                    alphabeticalGrid(byDiscipline[discipline]!, criterionKey: "festivals")
+                    alphabeticalGrid(group.names, criterionKey: "festivals")
                 }
             }
         }
@@ -110,7 +96,7 @@ public struct CultureDetailView: View {
     /// changement de rang (utilisé pour la liste des lieux du patrimoine).
     private struct AlphabeticalGroup: Identifiable {
         let letter: String
-        let names: [String]
+        var names: [String]
         var id: String { letter }
     }
 
@@ -120,21 +106,18 @@ public struct CultureDetailView: View {
     /// avant les lettres ; une lettre accentuée est classée avec sa lettre
     /// de base (É → E).
     private func leadingLetter(_ name: String) -> String {
-        let displayName = InspectorPanelView.titleCased(name)
+        let displayName = CultureScores.titleCased(name)
         guard let char = displayName.first(where: { $0.isLetter || $0.isNumber }) else { return "" }
         if char.isNumber { return String(char) }
         return String(char).folding(options: .diacriticInsensitive, locale: nil).uppercased()
     }
 
     private func alphabeticalGroups(_ names: [String]) -> [AlphabeticalGroup] {
-        let sorted = names.sorted {
-            InspectorPanelView.titleCased($0).localizedStandardCompare(InspectorPanelView.titleCased($1)) == .orderedAscending
-        }
         var groups: [AlphabeticalGroup] = []
-        for name in sorted {
+        for name in CultureScores.sortedByTitle(names) {
             let letter = leadingLetter(name)
-            if let last = groups.last, last.letter == letter {
-                groups[groups.count - 1] = AlphabeticalGroup(letter: letter, names: last.names + [name])
+            if groups.last?.letter == letter {
+                groups[groups.count - 1].names.append(name)
             } else {
                 groups.append(AlphabeticalGroup(letter: letter, names: [name]))
             }
@@ -171,7 +154,7 @@ public struct CultureDetailView: View {
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(c.faint)
                         .frame(width: 11)
-                    Image(systemName: icon).foregroundStyle(theme.accent)
+                    Image(systemName: icon).foregroundStyle(ClassicTheme.accent)
                     (Text(title).foregroundStyle(c.body) + Text(" · \(count)").foregroundStyle(c.faint))
                         .font(CFont.rounded(13, weight: .medium))
                     Spacer()
@@ -197,14 +180,9 @@ public struct CultureDetailView: View {
         LazyVGrid(columns: columns, alignment: .leading, spacing: 12) {
             ForEach(names, id: \.self) { name in
                 Button {
-                    if let site = CultureScores.url(forDepartementCode: departementCode, criterionKey: criterionKey, name: name) {
-                        openURL(site)
-                    } else {
-                        let query = InspectorPanelView.titleCased(name).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-                        if let url = URL(string: "https://www.google.com/search?q=\(query)") { openURL(url) }
-                    }
+                    if let url = CultureScores.link(forDepartementCode: departementCode, criterionKey: criterionKey, name: name) { openURL(url) }
                 } label: {
-                    Text(InspectorPanelView.titleCased(name))
+                    Text(CultureScores.titleCased(name))
                         .font(CFont.rounded(13))
                         .lineSpacing(3)
                         .foregroundStyle(c.body)
@@ -214,12 +192,5 @@ public struct CultureDetailView: View {
                 .buttonStyle(.plain)
             }
         }
-    }
-}
-
-private struct WindowStyle: ViewModifier {
-    let enabled: Bool
-    func body(content: Content) -> some View {
-        if enabled { content.departementDetailWindow() } else { content }
     }
 }

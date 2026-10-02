@@ -2,17 +2,12 @@ import SwiftUI
 
 /// Sources — every open-data reference used across the app: the country
 /// profile sources for all supported countries, plus the livability sources.
-public struct SourcesView: View {
-    @EnvironmentObject var theme: ClassicTheme
-    @EnvironmentObject var state: ClassicState
+struct SourcesView: View {
     @StateObject private var freshness = DatasetFreshness()
     @Environment(\.colorScheme) private var colorScheme
     private var pal: DetailColors { DetailColors(colorScheme) }
-    let derived: ClassicDerived
 
-    public init(derived: ClassicDerived) { self.derived = derived }
-
-    public var body: some View {
+    var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("Références des sources ouvertes utilisées pour les profils de pays et les classements de livabilité".uppercased())
                 .font(CFont.rounded(14, weight: .bold))
@@ -34,15 +29,11 @@ public struct SourcesView: View {
                     }
                 }
             }
-            .padding(.bottom, 14)
-
-                .padding(.bottom, 14)
+            .padding(.bottom, 28)
 
             freshnessCard
         }
-        .onAppear {
-            Task { await freshness.checkIfDue() }
-        }
+        .task { await freshness.checkIfDue() }
     }
 
     private var countriesWithSources: [(country: String, sources: [ClassicStatic.CountrySource])] {
@@ -67,7 +58,7 @@ public struct SourcesView: View {
                         Spacer()
                         Text(row.status)
                             .font(CFont.mono(11, weight: .medium))
-                            .foregroundStyle(row.isStale ? theme.accent : pal.ink)
+                            .foregroundStyle(row.isStale ? ClassicTheme.accent : pal.ink)
                             .multilineTextAlignment(.trailing)
                             .frame(maxWidth: 260, alignment: .trailing)
                     }
@@ -78,17 +69,16 @@ public struct SourcesView: View {
     }
 
     private var freshnessRows: [(label: String, status: String, isStale: Bool)] {
-        let allLabels = ["Communes de France", "Musées (Basilic)", "Lieux du patrimoine (SPR)", "Festivals"]
-        return allLabels.map { label in
-            let stale = freshness.staleDatasets.contains(label)
-            return (label, stale ? "mise à jour disponible — retraiter via geo_pipeline/" : "à jour", stale)
+        DatasetFreshness.datasets.map { dataset in
+            let stale = freshness.staleDatasets.contains(dataset.label)
+            return (dataset.label, stale ? "mise à jour disponible — retraiter via geo_pipeline/" : "à jour", stale)
         }
     }
 
     private func countryCard(_ country: String, sources: [ClassicStatic.CountrySource]) -> some View {
         sourceCard {
             VStack(alignment: .leading, spacing: 0) {
-                Eyebrow("\(Self.flags[country].map { $0 + " " } ?? "")\(country.uppercased())", color: pal.faint, font: CFont.rounded(13, weight: .medium), tracking: 1).padding(.bottom, 10)
+                Eyebrow("\(ClassicStatic.countryFlags[country].map { $0 + " " } ?? "")\(country.uppercased())", color: pal.faint, font: CFont.rounded(13, weight: .medium), tracking: 1).padding(.bottom, 10)
                 ForEach(sources) { s in
                     Link(destination: URL(string: s.url) ?? URL(string: "https://")!) {
                         Text(s.label)
@@ -104,11 +94,9 @@ public struct SourcesView: View {
         }
     }
 
-    private static let flags = ["France": "🇫🇷", "Danemark": "🇩🇰", "Suède": "🇸🇪", "Japon": "🇯🇵"]
-
     private func sourceCard<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         content()
-            .padding(theme.cardPadX)
+            .padding(ClassicTheme.cardPadX)
             .background(pal.card)
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .overlay(RoundedRectangle(cornerRadius: 10).stroke(pal.border, lineWidth: 1))

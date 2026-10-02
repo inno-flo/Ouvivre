@@ -1,75 +1,63 @@
 import SwiftUI
 
-public enum ClassicScreen: String, CaseIterable, Identifiable, Hashable {
+enum ClassicScreen {
     case selecteur, sources, favoris
-    public var id: Self { self }
 }
 
 /// Destination de la sidebar : une rubrique, ou la vue d'un département favori.
-public enum SidebarDestination: Hashable {
+enum SidebarDestination: Hashable {
     case screen(ClassicScreen)
     case departement(String)
 }
 
 /// Root app state — mirrors the dc export's `Component` state/logic:
-/// current screen, country query, and the geo/meteo/groups weight sliders
-/// (0...5), all mutated in place and re-derived on read.
+/// current screen, country, and the proximity/Culture weight sliders
+/// (0...2), all mutated in place and re-derived on read.
 @MainActor
-public final class ClassicState: ObservableObject {
-    @Published public var screen: ClassicScreen = .selecteur
+final class ClassicState: ObservableObject {
+    /// Échelle des réglettes du Sélecteur (proximités et Culture) :
+    /// indifférent (0), important (1), déterminant (2).
+    nonisolated static let maxWeight = 2
+
+    @Published var screen: ClassicScreen = .selecteur
     /// Code INSEE du département favori affiché (vue Département), sinon `nil`.
-    @Published public var selectedDepartementCode: String?
-    @Published public var country: String = "France"
-    @Published public var query: String = "France"
-    @Published public var geo: [Int] = ClassicStatic.geo.map(\.1)
-    /// Géographie 2's own weights, on its 5-level (0...4) scale.
-    @Published public var geo2: [Int] = ClassicStatic.geo.map { _ in 0 }
-    @Published public var excludeOverseas: Bool = false
-    @Published public var excludeCorse: Bool = false
+    @Published var selectedDepartementCode: String?
+    @Published var country: String = "France"
+    /// Géographie 2's own weights, on its 3-level (0...2) scale.
+    @Published var geo2: [Int] = ClassicStatic.geo.map { _ in 0 }
+    @Published var excludeOverseas: Bool = false
+    @Published var excludeCorse: Bool = false
     /// Filtres de taille de commune pour "Big Mac" (Block 2) — tout
     /// désélectionné par défaut au premier lancement, l'utilisateur choisit
     /// activement les tailles qui l'intéressent.
-    @Published public var includeVillage: Bool = false
-    @Published public var includePetiteVille: Bool = false
-    @Published public var includeVilleMoyenne: Bool = false
-    @Published public var includeGrandeVille: Bool = false
-    /// Ouverture/fermeture des 4 blocs "Big Mac" — dans `ClassicState`
-    /// plutôt qu'en `@State` sur `BigMacView` pour persister quand on quitte
+    @Published var communeSizes: Set<CommuneSizeCategory> = []
+    /// Ouverture/fermeture des blocs "Big Mac" — dans `ClassicState`
+    /// plutôt qu'en `@State` sur `SelecteurView` pour persister quand on quitte
     /// puis revient sur cet écran (un seul bloc ouvert par défaut : Pays).
-    @Published public var bigMacExpandedPays: Bool = true
-    @Published public var bigMacExpandedRegions: Bool = false
-    @Published public var bigMacExpandedCulture: Bool = false
+    @Published var bigMacExpandedPays: Bool = true
+    @Published var bigMacExpandedRegions: Bool = false
     /// Codes INSEE des départements mis en favori depuis l'inspecteur,
     /// persistés dans `UserDefaults` entre les lancements.
-    @Published public var favoriteDepartementCodes: Set<String> = Set(UserDefaults.standard.stringArray(forKey: "favoriteDepartementCodes") ?? []) {
-        didSet { UserDefaults.standard.set(Array(favoriteDepartementCodes).sorted(), forKey: "favoriteDepartementCodes") }
+    @Published var favoriteDepartementCodes: Set<String> = ClassicState.storedFavorites {
+        didSet { UserDefaults.standard.set(Array(favoriteDepartementCodes).sorted(), forKey: Self.favoritesKey) }
     }
-    /// One weight array per group, indexed like `ClassicStatic.groups`. Les 3
-    /// critères CULTURE repris par "Big Mac" (Musées, Lieux du patrimoine,
-    /// Festivals) démarrent à 0 (indifférent) plutôt qu'avec les valeurs
-    /// pré-remplies de `ClassicStatic` — celles-ci restent utilisées telles
-    /// quelles par "Communes et services" pour les 4 autres critères CULTURE.
-    @Published public var groups: [[Int]] = {
-        var groups = ClassicStatic.groups.map { $0.rows.map(\.1) }
-        if let cultureIndex = ClassicStatic.groups.firstIndex(where: { $0.title == "CULTURE" }) {
-            let zeroedLabels: Set<String> = ["Musées", "Lieux du patrimoine", "Festivals"]
-            for (rowIndex, row) in ClassicStatic.groups[cultureIndex].rows.enumerated() where zeroedLabels.contains(row.0) {
-                groups[cultureIndex][rowIndex] = 0
-            }
-        }
-        return groups
-    }()
+    /// Poids des 3 critères Culture repris par "Big Mac" (Musées, Lieux du
+    /// patrimoine, Festivals), dans l'ordre de `CultureScores.criterionKeys` —
+    /// démarrent à 0 (indifférent).
+    @Published var culture: [Int] = ClassicStatic.culture.map { _ in 0 }
 
+    private static let favoritesKey = "favoriteDepartementCodes"
+    private static var storedFavorites: Set<String> { Set(UserDefaults.standard.stringArray(forKey: favoritesKey) ?? []) }
     private var favoritesObserver: NSObjectProtocol?
 
-    public init() {
+    init() {
         // Les favoris sont partagés entre instances (fenêtre principale et
         // fenêtre de détail météo, chacune avec sa propre `ClassicState`) via
         // `UserDefaults` : on recharge quand une autre instance les modifie.
         favoritesObserver = NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated {
                 guard let self else { return }
-                let stored = Set(UserDefaults.standard.stringArray(forKey: "favoriteDepartementCodes") ?? [])
+                let stored = Self.storedFavorites
                 if stored != self.favoriteDepartementCodes { self.favoriteDepartementCodes = stored }
             }
         }
@@ -79,34 +67,37 @@ public final class ClassicState: ObservableObject {
         if let favoritesObserver { NotificationCenter.default.removeObserver(favoritesObserver) }
     }
 
-    public func go(_ screen: ClassicScreen) { self.screen = screen; selectedDepartementCode = nil }
+    func go(_ screen: ClassicScreen) { self.screen = screen; selectedDepartementCode = nil }
 
-    public func goToDepartement(_ code: String) { selectedDepartementCode = code }
+    func goToDepartement(_ code: String) { selectedDepartementCode = code }
 
-    public func resetGeo2() { geo2 = ClassicStatic.geo.map { _ in 0 } }
+    func resetGeo2() { geo2 = ClassicStatic.geo.map { _ in 0 } }
 
-    public func setGeo2(_ index: Int, value: Int) { geo2[index] = max(0, min(2, value)) }
-    public func setGroup(_ groupIndex: Int, _ rowIndex: Int, value: Int) {
+    func resetCulture() { culture = ClassicStatic.culture.map { _ in 0 } }
+
+    func setGeo2(_ index: Int, value: Int) { geo2[index] = max(0, min(Self.maxWeight, value)) }
+
+    func setCulture(_ index: Int, value: Int) {
         // Différé au prochain tick : appelé en direct depuis le
-        // `DragGesture.onChanged` de `CriterionRow`, muter `groups`
+        // `DragGesture.onChanged` de `CriterionRow`, muter `culture`
         // (@Published) pendant que SwiftUI traite encore la mise à jour de
         // vue en cours déclenche "Publishing changes from within view
         // updates is not allowed" — observé sur les réglettes Culture de
-        // Big Mac, dont le `.onChange(of: state.groups)` redessine aussitôt
+        // Big Mac, dont le `.onChange(of: state.culture)` redessine aussitôt
         // les départements pendant le même cycle.
-        let clamped = max(0, min(5, value))
+        let clamped = max(0, min(Self.maxWeight, value))
         DispatchQueue.main.async { [weak self] in
-            self?.groups[groupIndex][rowIndex] = clamped
+            self?.culture[index] = clamped
         }
     }
 
-    public func toggleFavoriteDepartement(_ code: String) {
-        if favoriteDepartementCodes.contains(code) { favoriteDepartementCodes.remove(code) } else { favoriteDepartementCodes.insert(code) }
+    func toggleFavoriteDepartement(_ code: String) {
+        setFavorite(code, isOn: !favoriteDepartementCodes.contains(code), undoManager: nil)
     }
 
     /// Ajoute ou retire un favori en enregistrant l'inverse auprès de
     /// l'`UndoManager` de la fenêtre : Édition > Annuler / Rétablir.
-    public func setFavorite(_ code: String, isOn: Bool, undoManager: UndoManager?) {
+    func setFavorite(_ code: String, isOn: Bool, undoManager: UndoManager?) {
         if isOn { favoriteDepartementCodes.insert(code) } else { favoriteDepartementCodes.remove(code) }
         undoManager?.registerUndo(withTarget: self) { state in
             MainActor.assumeIsolated { state.setFavorite(code, isOn: !isOn, undoManager: undoManager) }
@@ -114,5 +105,68 @@ public final class ClassicState: ObservableObject {
         undoManager?.setActionName(isOn ? "Ajout aux favoris" : "Retrait des favoris")
     }
 
-    public func setCountry(_ name: String) { country = name; query = name }
+    // MARK: Valeurs dérivées (miroir de `renderVals()` dans l'export dc)
+
+    var countryFacts: [LabeledValue] {
+        ClassicStatic.countryProfiles[country]?.facts ?? []
+    }
+
+    /// Géographie 2's rows, on its own 3-level (0...2) scale — "souhaitable" et "accessoire" fusionnés dans "important".
+    var geo2Rows: [WeightedRow] {
+        ClassicStatic.geo.enumerated().map { WeightedRow(id: $0, label: $1, value: geo2[$0]) }
+    }
+
+    /// Les 3 réglettes Culture, mêmes 3 niveaux que "Proximités" — sources :
+    /// - Musées : https://culture.data.gouv.fr/datasets/61777ddaa9101d073e5506cd
+    /// - Lieux du patrimoine : https://culture.data.gouv.fr/datasets/628da9ff836d8bf454c7fd48
+    /// - Festivals : https://culture.data.gouv.fr/datasets/62cf95993d99f22480f49334
+    var cultureRows: [WeightedRow] {
+        ClassicStatic.culture.enumerated().map { WeightedRow(id: $0, label: $1, value: culture[$0]) }
+    }
+
+    /// Les critères Culture dont le réglage est au-dessus de 0 (différent
+    /// d'"Indifférent"), avec la clé `CultureScores.criterionKeys`
+    /// correspondante — utilisé par l'inspecteur pour lister les critères
+    /// actifs et le contenu culturel du département cliqué.
+    var activeCultureCriteria: [(label: String, key: String)] {
+        zip(zip(ClassicStatic.culture, CultureScores.criterionKeys), culture)
+            .filter { $0.1 > 0 }
+            .map { (label: $0.0.0, key: $0.0.1) }
+    }
+
+    /// Real département scores (weighted by `geo2`), ranked — backed by
+    /// `FranceGeoData` (IGN-derived, see geo_pipeline/). Replaces the old
+    /// fake `topScore = 60 + geoSum*1.6` formula.
+    func rankedDepartements() -> [(dep: FranceGeoData.DepartementScore, score: Double)] {
+        let weights = geo2
+        let maxWeight = Self.maxWeight
+        // Hard-filtered criteria (see `FranceGeoData.hardFilterCriteria`) get
+        // an eligibility floor on top of the weighted average below — a
+        // weight alone can't make "déterminant" mean "only départements
+        // that actually touch a coast/border".
+        let hardFilterWeights: [(key: String, weight: Int)] = zip(FranceGeoData.criterionKeys, weights)
+            .filter { FranceGeoData.hardFilterCriteria.contains($0.0) }
+            .map { (key: $0.0, weight: $0.1) }
+        // "pays étranger" gets its own km-based filter (see
+        // `FranceGeoData.maxPaysEtrangerKm`) rather than the score-band one
+        // above — its score is a compressed continuous distance, not a
+        // handful of discrete buckets like "mer".
+        let paysEtrangerWeight = FranceGeoData.criterionKeys.firstIndex(of: "paysEtranger").map { weights[$0] } ?? 0
+        let activeFilterCount = hardFilterWeights.filter { $0.weight > 0 }.count + (paysEtrangerWeight > 0 ? 1 : 0)
+        let allowedMisses = FranceGeoData.allowedMisses(activeFilterCount: activeFilterCount)
+        return FranceGeoData.departements
+            .filter { !(excludeOverseas && $0.isOverseas) && !(excludeCorse && $0.isCorse) }
+            // Un ou deux critères réglés s'appliquent en ET strict ; au-delà,
+            // un raté est toléré (deux à partir de 5 critères), sinon leurs
+            // exigences se concurrencent au point de tout éliminer — voir
+            // `FranceGeoData.allowedMisses`.
+            .filter { dep in
+                let misses = hardFilterWeights.filter {
+                    !FranceGeoData.passesHardFilter(dep, key: $0.key, weight: $0.weight, maxWeight: maxWeight)
+                }.count + (FranceGeoData.passesPaysEtrangerFilter(dep, weight: paysEtrangerWeight, maxWeight: maxWeight) ? 0 : 1)
+                return misses <= allowedMisses
+            }
+            .map { ($0, FranceGeoData.weightedScore($0, weights: weights)) }
+            .sorted { $0.1 > $1.1 }
+    }
 }

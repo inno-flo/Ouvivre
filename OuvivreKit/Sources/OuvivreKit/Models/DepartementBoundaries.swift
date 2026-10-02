@@ -1,38 +1,44 @@
 import Foundation
 import CoreLocation
 
-/// Simplified département outlines + a camera place (centroid + a span
-/// sized to its bounding box) for drawing the selected département's real
-/// perimeter on the map. Départements have no hand-authored GeoCoordinates
-/// entry, so the place is computed geometrically (see geo_pipeline) instead.
-public enum DepartementBoundaries {
-    public struct Place {
-        public let coordinate: CLLocationCoordinate2D
-        public let span: Double
-    }
-
+/// Simplified département outlines for drawing the selected département's
+/// real perimeter on the map (see geo_pipeline), keyed by département name.
+enum DepartementBoundaries {
     private struct Entry: Decodable {
         let nom: String
-        let lat: Double
-        let lon: Double
-        let span: Double
         let geometry: GeoJSONGeometry
     }
 
-    public static let rings: [String: [[CLLocationCoordinate2D]]] = entriesByName.mapValues { $0.rings }
-    public static let places: [String: Place] = entriesByName.mapValues { $0.place }
-
-    private static let entriesByName: [String: (rings: [[CLLocationCoordinate2D]], place: Place)] = {
+    static let rings: [String: [[CLLocationCoordinate2D]]] = {
         guard let url = Bundle.module.url(forResource: "france_departements_boundaries", withExtension: "json"),
               let data = try? Data(contentsOf: url),
               let entries = try? JSONDecoder().decode([Entry].self, from: data) else {
             return [:]
         }
-        var result: [String: (rings: [[CLLocationCoordinate2D]], place: Place)] = [:]
-        for entry in entries {
-            let place = Place(coordinate: CLLocationCoordinate2D(latitude: entry.lat, longitude: entry.lon), span: entry.span)
-            result[entry.nom] = (geoJSONOuterRings(of: entry.geometry), place)
-        }
-        return result
+        return Dictionary(entries.map { ($0.nom, geoJSONOuterRings(of: $0.geometry)) }, uniquingKeysWith: { _, last in last })
     }()
+
+    /// Hit-test manuel : premier département de `names` dont un des anneaux
+    /// contient `coordinate` — MapKit ne propose pas de survol/tap par forme
+    /// sur `MapPolygon`.
+    static func departement(at coordinate: CLLocationCoordinate2D, among names: [String]) -> String? {
+        names.first { name in (rings[name] ?? []).contains { ring($0, contains: coordinate) } }
+    }
+
+    /// Ray casting standard (pair/impair) sur un anneau de coordonnées.
+    private static func ring(_ ring: [CLLocationCoordinate2D], contains coordinate: CLLocationCoordinate2D) -> Bool {
+        guard ring.count > 2 else { return false }
+        var inside = false
+        var j = ring.count - 1
+        for i in 0..<ring.count {
+            let pi = ring[i], pj = ring[j]
+            if (pi.latitude > coordinate.latitude) != (pj.latitude > coordinate.latitude) {
+                let slope = (pj.longitude - pi.longitude) / (pj.latitude - pi.latitude)
+                let longitudeAtLatitude = pi.longitude + slope * (coordinate.latitude - pi.latitude)
+                if coordinate.longitude < longitudeAtLatitude { inside.toggle() }
+            }
+            j = i
+        }
+        return inside
+    }
 }

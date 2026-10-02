@@ -1,25 +1,22 @@
 import Foundation
 
-public struct LabeledValue: Identifiable, Hashable {
-    public var id: String { key }
-    public let key: String
-    public let value: String
-    public init(_ key: String, _ value: String) { self.key = key; self.value = value }
+struct LabeledValue: Identifiable {
+    var id: String { key }
+    let key: String
+    let value: String
+    init(_ key: String, _ value: String) { self.key = key; self.value = value }
 }
 
 /// Static reference data — mirrors the JS constants at the top of the dc export.
-public enum ClassicStatic {
-    public static let geo: [(String, Int)] = [
-        ("Pays étranger", 2),
-        ("Mer ou océan", 1),
-        ("Montagne", 5),
-        ("Lacs", 5),
-        ("Fleuves et rivières", 3),
-        ("Parcs et forêts", 4)
-    ]
+enum ClassicStatic {
+    /// Libellés des 6 critères de proximité, dans l'ordre de
+    /// `FranceGeoData.criterionKeys`.
+    static let geo = ["Pays étranger", "Mer ou océan", "Montagne", "Lacs", "Fleuves et rivières", "Parcs et forêts"]
+    /// Libellés des 3 critères Culture, dans l'ordre de `CultureScores.criterionKeys`.
+    static let culture = ["Musées", "Lieux du patrimoine", "Festivals"]
     /// Icône SF Symbols de chaque critère, indexée par son libellé —
     /// partagée par le tableau Favoris et les réglettes du Sélecteur.
-    public static let criterionIcons: [String: String] = [
+    static let criterionIcons: [String: String] = [
         "Chef-lieu": "mappin.and.ellipse",
         "Pays étranger": "globe.desk",
         "Mer ou océan": "figure.sailing",
@@ -35,29 +32,18 @@ public enum ClassicStatic {
         "Précipitations annuelles": "cloud.rain"
     ]
 
-    public struct Group {
-        public let title: String
-        public let rows: [(String, Int)]
-    }
-    public static let groups: [Group] = [
-        Group(title: "CULTURE", rows: [("Musées", 4), ("Équipements culturels", 3), ("Lieux du patrimoine", 4), ("Centre ancien", 5), ("Événements annuels", 3), ("Festivals", 3), ("Salons", 1)]),
-        Group(title: "TAILLE", rows: [("Superficie de la ville", 2), ("Nombre d'habitants", 3)]),
-        Group(title: "QUALITÉ DE VIE", rows: [("Classements de livabilité", 4)])
-    ]
-
-    public static let countries = ["France", "Danemark", "Suède", "Japon"]
-    public static let tags = ["indifférent", "accessoire", "souhaitable", "important", "prioritaire", "déterminant"]
+    static let countries = ["France", "Danemark", "Suède", "Japon"]
+    static let countryFlags = ["France": "🇫🇷", "Danemark": "🇩🇰", "Suède": "🇸🇪", "Japon": "🇯🇵"]
     /// Géographie 2's 3-level scale (0...2) — "accessoire", "souhaitable" et "prioritaire" fusionnés dans "important".
-    public static let tagsGeo2 = ["indifférent", "important", "déterminant"]
+    static let tags = ["indifférent", "important", "déterminant"]
 
-
-    public struct CountrySource: Identifiable { public var id: String { label }; public let label: String; public let url: String }
-    public struct CountryProfile {
-        public let facts: [LabeledValue]
-        public let sources: [CountrySource]
+    struct CountrySource: Identifiable { var id: String { label }; let label: String; let url: String }
+    struct CountryProfile {
+        let facts: [LabeledValue]
+        let sources: [CountrySource]
     }
 
-    public static let countryProfiles: [String: CountryProfile] = [
+    static let countryProfiles: [String: CountryProfile] = [
         "France": CountryProfile(
             facts: [
                 LabeledValue("Régions et départements", "18 régions · 101 départements"),

@@ -1,75 +1,51 @@
 import SwiftUI
 
+/// A single weighted-criterion row (0...2), shared by the proximity and
+/// Culture sliders — mirrors the dc export's `row()` helper.
+struct WeightedRow: Identifiable {
+    let id: Int
+    let label: String
+    let value: Int
+    var maxValue: Int { ClassicState.maxWeight }
+
+    /// Libellé du niveau, majuscule initiale ("Important").
+    var tag: String {
+        let raw = ClassicStatic.tags[min(value, ClassicStatic.tags.count - 1)]
+        return raw.prefix(1).uppercased() + raw.dropFirst().lowercased()
+    }
+    var pct: CGFloat { CGFloat(value) / CGFloat(maxValue) }
+}
+
 /// One weighted-criterion row: label + tag on top, a draggable track with a
-/// circular thumb below (0...5) — mirrors the dc export's slider rows used
-/// on Géographie / Météo / Affiner.
-public struct CriterionRow: View {
-    @EnvironmentObject var theme: ClassicTheme
+/// circular thumb below (0...2) — mirrors the dc export's slider rows,
+/// with the criterion's SF Symbol (`ClassicStatic.criterionIcons`, shared
+/// with the Favoris table) before the label.
+struct CriterionRow: View {
     @Environment(\.colorScheme) private var colorScheme
     let row: WeightedRow
     var thumbSize: CGFloat = 16
-    var trackHeight: CGFloat = 4
-    var labelFont: Font = CFont.rounded(14, weight: .medium)
-    var labelColor: Color = ClassicTheme.ink
-    /// Multiplicateur supplémentaire appliqué à toutes les puces sauf la
-    /// première (dont la taille de base reste inchangée) — utilisé par les
-    /// réglettes de proximité, qui veulent des puces 2, 3, 4... 10 % plus
-    /// grosses que le reste des réglettes de l'app.
-    var extraDotScaleFromSecond: CGFloat = 1.0
-    /// Facteur de croissance de chaque puce par rapport à la précédente
-    /// (1,25 par défaut = +25 % ; "Géographie et Culture" de Big Mac passe
-    /// 1,5 = +50 % : "important" 50 % plus grosse qu'"indifférent",
-    /// "déterminant" 50 % plus grosse qu'"important").
-    var dotGrowthPerStep: CGFloat = 1.25
-    /// Override for the tag's default font — every active call site passes
-    /// an explicit `CFont.rounded(...)` (SF Pro Rounded).
-    var tagFont: Font?
-    /// Casse du tag : `.upper` par défaut (`WeightedRow.tag`), ou minuscules /
-    /// majuscule initiale à partir du libellé brut.
-    public enum TagCase { case upper, lower, capitalized }
-    var tagCase: TagCase = .upper
-    /// SF Symbol affiché devant le libellé — `ClassicStatic.criterionIcons`
-    /// pour reprendre celui du tableau Favoris. Absent par défaut : les
-    /// réglettes sans icône (Météo, Affiner) gardent leur mise en page.
-    var icon: String?
     let onChange: (Int) -> Void
 
-    public init(row: WeightedRow, thumbSize: CGFloat = 16, trackHeight: CGFloat = 4, labelFont: Font = CFont.rounded(14, weight: .medium), labelColor: Color = ClassicTheme.ink, extraDotScaleFromSecond: CGFloat = 1.0, dotGrowthPerStep: CGFloat = 1.25, tagFont: Font? = nil, tagCase: TagCase = .upper, icon: String? = nil, onChange: @escaping (Int) -> Void) {
-        self.row = row
-        self.thumbSize = thumbSize
-        self.trackHeight = trackHeight
-        self.labelFont = labelFont
-        self.labelColor = labelColor
-        self.extraDotScaleFromSecond = extraDotScaleFromSecond
-        self.dotGrowthPerStep = dotGrowthPerStep
-        self.tagFont = tagFont
-        self.tagCase = tagCase
-        self.icon = icon
-        self.onChange = onChange
-    }
+    private let trackHeight: CGFloat = 4
+    /// Facteur de croissance de chaque puce par rapport à la précédente
+    /// (1,5 = +50 % : "important" 50 % plus grosse qu'"indifférent",
+    /// "déterminant" 50 % plus grosse qu'"important").
+    private let dotGrowthPerStep: CGFloat = 1.5
 
-    private var tagText: String {
-        let raw = row.tags[min(row.value, row.tags.count - 1)]
-        switch tagCase {
-        case .upper: return row.tag
-        case .lower: return raw.lowercased()
-        case .capitalized: return raw.prefix(1).uppercased() + raw.dropFirst().lowercased()
-        }
-    }
-
-    public var body: some View {
+    var body: some View {
+        let c = DetailColors(colorScheme)
         VStack(alignment: .leading, spacing: 9) {
             HStack(alignment: .firstTextBaseline, spacing: 5) {
-                if let icon {
+                if let icon = ClassicStatic.criterionIcons[row.label] {
                     Image(systemName: icon)
                         .font(.system(size: 12))
-                        .foregroundStyle(theme.accent)
+                        .foregroundStyle(ClassicTheme.accent)
                         .frame(width: 18, alignment: .leading)
                 }
-                Text("\(row.label) :").font(labelFont).foregroundStyle(labelColor)
-                Text(tagText)
-                    .font(tagFont ?? CFont.mono(11, weight: .medium))
-                    .foregroundStyle(row.value >= row.maxValue - 1 ? theme.accent : (row.value == 0 ? (colorScheme == .dark ? Color(hex: 0xA39D91) : ClassicTheme.faint) : (colorScheme == .dark ? Color(hex: 0xD9D4C9) : ClassicTheme.body)))
+                Text("\(row.label) :").font(CFont.rounded(13, weight: .medium)).foregroundStyle(c.body)
+                Text(row.tag)
+                    .font(CFont.rounded(10, weight: .medium))
+                    .foregroundStyle(row.value > 0 ? ClassicTheme.accent : c.faint)
                 Spacer(minLength: 0)
             }
             GeometryReader { geo in
@@ -82,15 +58,14 @@ public struct CriterionRow: View {
                 ZStack(alignment: .leading) {
                     Capsule().fill(colorScheme == .dark ? Color.white.opacity(0.2) : ClassicTheme.track).frame(height: trackHeight)
                         .padding(.horizontal, thumbSize / 2)
-                    Capsule().fill(theme.accent)
+                    Capsule().fill(ClassicTheme.accent)
                         .frame(width: max(thumbSize / 2, thumbCenterX), height: trackHeight)
                     ForEach(0...row.maxValue, id: \.self) { step in
                         let stepX = thumbSize / 2 + trackWidth * CGFloat(step) / CGFloat(row.maxValue)
-                        // Chaque puce est 25 % plus grosse que la précédente
-                        // (la 1ʳᵉ garde la taille de base 4pt) ; au-delà de la
-                        // 1ʳᵉ, `extraDotScaleFromSecond` applique un facteur
-                        // supplémentaire (réglettes de proximité : +10 %).
-                        let dotSize = 4 * pow(dotGrowthPerStep, CGFloat(step)) * (step > 0 ? extraDotScaleFromSecond : 1)
+                        // Chaque puce grossit de `dotGrowthPerStep` par
+                        // rapport à la précédente (la 1ʳᵉ garde la taille de
+                        // base 4pt).
+                        let dotSize = 4 * pow(dotGrowthPerStep, CGFloat(step))
                         Circle()
                             .fill(step <= row.value ? Color.white.opacity(0.9) : (colorScheme == .dark ? Color.white.opacity(0.4) : ClassicTheme.faint2))
                             .frame(width: dotSize, height: dotSize)
@@ -99,7 +74,7 @@ public struct CriterionRow: View {
                     Circle()
                         .fill(.white)
                         .frame(width: thumbSize, height: thumbSize)
-                        .overlay(Circle().stroke(theme.accent, lineWidth: 2))
+                        .overlay(Circle().stroke(ClassicTheme.accent, lineWidth: 2))
                         .offset(x: thumbCenterX - thumbSize / 2)
                 }
                 .frame(height: thumbSize)

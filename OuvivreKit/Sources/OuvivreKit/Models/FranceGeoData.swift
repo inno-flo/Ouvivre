@@ -5,32 +5,19 @@ import CoreLocation
 /// criteria, precomputed offline from IGN (BD TOPO V3, RGE ALTI) and
 /// Natural Earth data — see geo_pipeline/ at the repo root. Criterion order
 /// matches `ClassicStatic.geo` (paysEtranger, mer, montagne, lacs, fleuves, forets).
-public enum FranceGeoData {
-    public struct DepartementScore: Decodable {
-        public let codeInsee: String
-        public let nom: String
-        public let codeRegion: String
-        public let nomRegion: String
-        public let scores: [String: Double]
+enum FranceGeoData {
+    struct DepartementScore: Decodable {
+        let codeInsee: String
+        let nom: String
+        let nomRegion: String
+        let scores: [String: Double]
         /// Raw (non-normalized) distances in km, currently just
         /// "paysEtranger" — see `add_pays_etranger_km.py`. Absent for
         /// criteria that don't need a real-world unit for filtering.
-        public let distancesKm: [String: Double]
+        let distancesKm: [String: Double]
 
-        private enum CodingKeys: String, CodingKey { case codeInsee, nom, codeRegion, nomRegion, scores, distancesKm }
-
-        public init(from decoder: Decoder) throws {
-            let c = try decoder.container(keyedBy: CodingKeys.self)
-            codeInsee = try c.decode(String.self, forKey: .codeInsee)
-            nom = try c.decode(String.self, forKey: .nom)
-            codeRegion = try c.decode(String.self, forKey: .codeRegion)
-            nomRegion = try c.decode(String.self, forKey: .nomRegion)
-            scores = try c.decode([String: Double].self, forKey: .scores)
-            distancesKm = try c.decodeIfPresent([String: Double].self, forKey: .distancesKm) ?? [:]
-        }
-
-        public var isOverseas: Bool { codeInsee.hasPrefix("97") }
-        public var isCorse: Bool { codeInsee == "2A" || codeInsee == "2B" }
+        var isOverseas: Bool { codeInsee.hasPrefix("97") }
+        var isCorse: Bool { codeInsee == "2A" || codeInsee == "2B" }
     }
 
     private struct Root: Decodable {
@@ -38,9 +25,9 @@ public enum FranceGeoData {
     }
 
     /// Stable key order, matching `ClassicStatic.geo`'s 6 rows.
-    public static let criterionKeys = ["paysEtranger", "mer", "montagne", "lacs", "fleuves", "forets"]
+    static let criterionKeys = ["paysEtranger", "mer", "montagne", "lacs", "fleuves", "forets"]
 
-    public static let departements: [DepartementScore] = {
+    static let departements: [DepartementScore] = {
         guard let url = Bundle.module.url(forResource: "france_geo_scores", withExtension: "json"),
               let data = try? Data(contentsOf: url),
               let root = try? JSONDecoder().decode(Root.self, from: data) else {
@@ -49,19 +36,18 @@ public enum FranceGeoData {
         return root.departements
     }()
 
+    /// Départements indexés par code INSEE et par nom — évite un parcours
+    /// linéaire des 101 départements à chaque recherche.
+    static let byCode = Dictionary(uniqueKeysWithValues: departements.map { ($0.codeInsee, $0) })
+    static let byName = Dictionary(uniqueKeysWithValues: departements.map { ($0.nom, $0) })
+
+    /// Nom du département, à défaut son code.
+    static func nom(forCode code: String) -> String { byCode[code]?.nom ?? code }
+
     /// Weighted match (0-100) of a département against 6 weights (0...5, same
     /// order as `criterionKeys`), by weighted average of its criterion scores.
-    /// `excluding` drops criteria (by index into `criterionKeys`) from the
-    /// average entirely, e.g. for Géographie 2's 5-criteria variant.
-    public static func weightedScore(_ dep: DepartementScore, weights: [Int], excluding: Set<Int> = []) -> Double {
-        var weightedSum = 0.0
-        var weightTotal = 0.0
-        for (i, key) in criterionKeys.enumerated() where i < weights.count && !excluding.contains(i) {
-            let w = Double(weights[i])
-            weightedSum += w * (dep.scores[key] ?? 50.0)
-            weightTotal += w
-        }
-        return weightTotal > 0 ? weightedSum / weightTotal : 50.0
+    static func weightedScore(_ dep: DepartementScore, weights: [Int]) -> Double {
+        weightedAverage(dep.scores, keys: criterionKeys, weights: weights)
     }
 
     /// Criteria that get a hard eligibility filter on top of the usual
@@ -72,7 +58,12 @@ public enum FranceGeoData {
     /// doesn't line up with real-world closeness the way it does here).
     /// Fires at "important" (looser) and "déterminant" (strict) — see
     /// `filterPercentile`.
-    public static let hardFilterCriteria: Set<String> = ["mer", "montagne", "lacs", "fleuves", "forets"]
+    static let hardFilterCriteria: Set<String> = ["mer", "montagne", "lacs", "fleuves", "forets"]
+
+    /// Scores triés de chaque critère filtrant, calculés une seule fois.
+    private static let sortedScores: [String: [Double]] = Dictionary(uniqueKeysWithValues: hardFilterCriteria.map { key in
+        (key, departements.compactMap { $0.scores[key] }.sorted())
+    })
 
     /// Per-criterion floor a département must clear to pass its hard filter
     /// at "déterminant" — the 85th percentile of that criterion's real
@@ -82,12 +73,8 @@ public enum FranceGeoData {
     /// continuous criteria like "forets" or "lacs" where near-101 depts sit
     /// well under 100 — the percentile keeps "déterminant" meaningfully
     /// strict without emptying the result for every criterion but "mer".
-    public static func hardFilterThreshold(forKey key: String, percentile: Double = determinantPercentile) -> Double? {
-        guard hardFilterCriteria.contains(key) else { return nil }
-        let values = departements.compactMap { $0.scores[key] }.sorted()
-        guard !values.isEmpty else { return nil }
-        let index = min(values.count - 1, Int((Double(values.count) * percentile).rounded(.down)))
-        return values[index]
+    static func hardFilterThreshold(forKey key: String, percentile: Double = determinantPercentile) -> Double? {
+        sortedScores[key].flatMap { percentileValue($0, percentile) }
     }
 
     /// Percentile au-dessus duquel un département passe le filtre d'un
@@ -95,10 +82,10 @@ public enum FranceGeoData {
     /// ~40 %). "Important" filtre aussi : sans exclusion, il ne faisait que
     /// réordonner une liste déjà quasi complète et ne se distinguait pas
     /// d'"indifférent".
-    public static let determinantPercentile = 0.85
-    public static let importantPercentile = 0.60
+    static let determinantPercentile = 0.85
+    static let importantPercentile = 0.60
 
-    public static func filterPercentile(forWeight weight: Int, maxWeight: Int) -> Double? {
+    static func filterPercentile(forWeight weight: Int, maxWeight: Int) -> Double? {
         guard maxWeight > 0, weight > 0 else { return nil }
         return weight >= maxWeight ? determinantPercentile : importantPercentile
     }
@@ -113,7 +100,7 @@ public enum FranceGeoData {
     /// annule le filtre : "Mer et océan" seul sur déterminant laissait passer
     /// la Haute-Vienne. D'où le palier — la tolérance n'apparaît que lorsque
     /// les exigences commencent réellement à se concurrencer.
-    public static func allowedMisses(activeFilterCount: Int) -> Int {
+    static func allowedMisses(activeFilterCount: Int) -> Int {
         max(0, (activeFilterCount - 1) / 2)
     }
 
@@ -122,7 +109,7 @@ public enum FranceGeoData {
     /// "déterminant"); anything below stays a pure weight in
     /// `weightedScore`'s average. Criteria not in `hardFilterCriteria`
     /// always pass.
-    public static func passesHardFilter(_ dep: DepartementScore, key: String, weight: Int, maxWeight: Int) -> Bool {
+    static func passesHardFilter(_ dep: DepartementScore, key: String, weight: Int, maxWeight: Int) -> Bool {
         guard let percentile = filterPercentile(forWeight: weight, maxWeight: maxWeight),
               let threshold = hardFilterThreshold(forKey: key, percentile: percentile) else { return true }
         return (dep.scores[key] ?? 50.0) >= threshold
@@ -136,7 +123,7 @@ public enum FranceGeoData {
     /// "important", 30 km at "déterminant" — 30 km already covers every land border (0 km)
     /// plus the closest sea crossings (Pas-de-Calais 5 km from Belgium,
     /// Manche 22 km from Jersey).
-    public static func maxPaysEtrangerKm(forWeight weight: Int, maxWeight: Int) -> Double? {
+    static func maxPaysEtrangerKm(forWeight weight: Int, maxWeight: Int) -> Double? {
         guard maxWeight > 0, weight > 0 else { return nil }
         return weight >= maxWeight ? 30 : 100
     }
@@ -144,7 +131,7 @@ public enum FranceGeoData {
     /// Whether `dep` passes the "pays étranger" km filter for `weight` (see
     /// `maxPaysEtrangerKm`). Falls back to passing when the raw distance is
     /// missing (shouldn't happen — every département has one).
-    public static func passesPaysEtrangerFilter(_ dep: DepartementScore, weight: Int, maxWeight: Int) -> Bool {
+    static func passesPaysEtrangerFilter(_ dep: DepartementScore, weight: Int, maxWeight: Int) -> Bool {
         guard let maxKm = maxPaysEtrangerKm(forWeight: weight, maxWeight: maxWeight) else { return true }
         guard let km = dep.distancesKm["paysEtranger"] else { return true }
         return km <= maxKm
@@ -153,7 +140,7 @@ public enum FranceGeoData {
     /// Chef-lieu (préfecture) de chaque département, par code INSEE —
     /// géographie officielle établie, liste statique (aucune donnée de ce
     /// type dans `france_geo_scores.json` ni ailleurs dans le pipeline).
-    public static let chefsLieux: [String: String] = [
+    static let chefsLieux: [String: String] = [
         "01": "Bourg-en-Bresse", "02": "Laon", "03": "Moulins", "04": "Digne-les-Bains",
         "05": "Gap", "06": "Nice", "07": "Privas", "08": "Charleville-Mézières",
         "09": "Foix", "10": "Troyes", "11": "Carcassonne", "12": "Rodez",
@@ -185,7 +172,7 @@ public enum FranceGeoData {
     /// Position (centre de la commune) de chaque chef-lieu, par code INSEE de
     /// département — source : API officielle geo.api.gouv.fr (contours
     /// communaux de l'IGN), relevée une fois et figée ici.
-    public static let chefsLieuxCoordinates: [String: CLLocationCoordinate2D] = [
+    static let chefsLieuxCoordinates: [String: CLLocationCoordinate2D] = [
         "01": CLLocationCoordinate2D(latitude: 46.2027, longitude: 5.2469),
         "02": CLLocationCoordinate2D(latitude: 49.5711, longitude: 3.6130),
         "03": CLLocationCoordinate2D(latitude: 46.5591, longitude: 3.3255),
@@ -288,4 +275,24 @@ public enum FranceGeoData {
         "974": CLLocationCoordinate2D(latitude: -20.9434, longitude: 55.4444),
         "976": CLLocationCoordinate2D(latitude: -12.7875, longitude: 45.1964),
     ]
+}
+
+/// Moyenne pondérée (0-100) de `scores` sur `keys`, poids dans le même
+/// ordre que `keys` ; un score absent compte pour 50, et l'absence de tout
+/// poids donne 50 — commune à `FranceGeoData` et `CultureScores`.
+func weightedAverage(_ scores: [String: Double], keys: [String], weights: [Int]) -> Double {
+    var weightedSum = 0.0
+    var weightTotal = 0.0
+    for (key, weight) in zip(keys, weights) {
+        let w = Double(weight)
+        weightedSum += w * (scores[key] ?? 50.0)
+        weightTotal += w
+    }
+    return weightTotal > 0 ? weightedSum / weightTotal : 50.0
+}
+
+/// Valeur au percentile `percentile` d'une liste déjà triée.
+func percentileValue(_ sorted: [Double], _ percentile: Double) -> Double? {
+    guard !sorted.isEmpty else { return nil }
+    return sorted[min(sorted.count - 1, Int((Double(sorted.count) * percentile).rounded(.down)))]
 }

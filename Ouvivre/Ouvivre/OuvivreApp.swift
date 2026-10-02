@@ -14,12 +14,12 @@ struct OuvivreApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ClassicRootView()
         }
         .commands {
             CommandGroup(after: .sidebar) {
-                Button(mapState.isVisible ? "Masquer la carte" : "Afficher la carte") {
-                    mapState.isVisible.toggle()
+                Button(mapState.isVisible ? "Masquer l'inspecteur" : "Afficher l'inspecteur") {
+                    withAnimation(.easeInOut(duration: 0.28)) { mapState.isVisible.toggle() }
                 }
             }
         }

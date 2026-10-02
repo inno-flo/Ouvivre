@@ -1,12 +1,10 @@
 import SwiftUI
-import MapKit
 
-/// Entry point for the "classic" theme — owns `ClassicTheme`/`ClassicState`
-/// and lays out a native sidebar + detail split, with the map shown as a
+/// Entry point for the "classic" theme — owns `ClassicState` and lays out a
+/// native sidebar + detail split, with the Sélecteur's details shown as a
 /// native inspector panel.
 public struct ClassicRootView: View {
     @Environment(\.colorScheme) private var colorScheme
-    @StateObject private var theme = ClassicTheme()
     @StateObject private var state = ClassicState()
     @StateObject private var mapState = MapPanelState.shared
     @State private var columnVisibility: NavigationSplitViewVisibility = .automatic
@@ -29,44 +27,40 @@ public struct ClassicRootView: View {
         )
     }
 
-    private var isDepartement: Bool { state.selectedDepartementCode != nil }
-    private var isFavoris: Bool { state.screen == .favoris || isDepartement }
-    private var isBigMac: Bool { state.screen == .selecteur }
+    /// Département favori affiché (vue Département), sinon `nil` — un
+    /// département retiré des favoris n'est plus affiché.
+    private var shownDepartementCode: String? {
+        state.selectedDepartementCode.flatMap { state.favoriteDepartementCodes.contains($0) ? $0 : nil }
+    }
 
+    /// Le Sélecteur (carte plein cadre) est affiché : seul écran doté d'une
+    /// carte, de boutons de toolbar et d'un inspecteur.
+    private var isSelecteur: Bool { state.screen == .selecteur && shownDepartementCode == nil }
+
+    /// L'inspecteur ne s'ouvre que sur action de l'utilisateur (bouton de la
+    /// toolbar, menu) ou en cliquant un département sur la carte du Sélecteur
+    /// (voir `SelecteurView`).
     private var inspectorBinding: Binding<Bool> {
         Binding(
-            get: {
-                // Big Mac garde son propre indicateur (`bigMacInspectorVisible`,
-                // par défaut fermé) plutôt que le `isVisible` partagé — sinon
-                // l'inspecteur s'ouvrirait dès l'arrivée sur cet écran (valeur
-                // par défaut de `isVisible` = true, utilisée par les autres
-                // écrans). Il ne s'ouvre qu'en cliquant un département sur la
-                // carte de Big Mac (voir `BigMacView`).
-                let visible = isBigMac ? mapState.bigMacInspectorVisible : mapState.isVisible
-                return visible && state.screen != .sources && !isFavoris
-            },
+            get: { mapState.isVisible && isSelecteur },
             set: { newValue in
-                withAnimation(.easeInOut(duration: 0.28)) {
-                    if isBigMac { mapState.bigMacInspectorVisible = newValue } else { mapState.isVisible = newValue }
-                }
+                withAnimation(.easeInOut(duration: 0.28)) { mapState.isVisible = newValue }
             }
         )
     }
 
     public var body: some View {
-        let derived = ClassicDerived(state: state, theme: theme)
-
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            SidebarNav(derived: derived, selection: sidebarSelectionBinding)
+            SidebarNav(selection: sidebarSelectionBinding)
         } detail: {
             Group {
-                if let code = state.selectedDepartementCode, state.favoriteDepartementCodes.contains(code) {
+                if let code = shownDepartementCode {
                     DepartementView(departementCode: code)
                         .id(code)
                 } else if state.screen == .selecteur {
-                    SelecteurView(derived: derived)
+                    SelecteurView()
                 } else {
-                    ScrollView { content(derived) }
+                    ScrollView { content }
                         .frame(maxWidth: .infinity)
                 }
             }
@@ -75,8 +69,8 @@ public struct ClassicRootView: View {
                     // Two separate, plain toolbar buttons (not the native
                     // combined MapZoomStepper, and no custom capsule/frame
                     // wrapping either — those both caused trouble before).
-                    // Only meaningful while Big Mac's map is on screen.
-                    if isBigMac {
+                    // Only meaningful while the Sélecteur's map is on screen.
+                    if isSelecteur {
                         ToolbarItem {
                             Button { mapState.recenterOnCountry(state.country) } label: {
                                 Image(systemName: "mappin.and.ellipse")
@@ -95,8 +89,6 @@ public struct ClassicRootView: View {
                             }
                             .help("Zoomer")
                         }
-                    }
-                    if !isFavoris && state.screen != .sources {
                         ToolbarItem {
                             Menu {
                                 ForEach(MapPlanType.allCases) { type in
@@ -107,8 +99,6 @@ public struct ClassicRootView: View {
                             }
                             .help("Type de carte")
                         }
-                    }
-                    if !isFavoris && state.screen != .sources {
                         ToolbarItem {
                             Button {
                                 inspectorBinding.wrappedValue.toggle()
@@ -120,39 +110,28 @@ public struct ClassicRootView: View {
                     }
                 }
                 .inspector(isPresented: inspectorBinding) {
-                    InspectorPanelView(
-                        title: mapState.title,
-                        activeCultureCriteria: isBigMac ? derived.bigMacActiveCultureCriteria : [],
-                        departementCode: FranceGeoData.departements.first { $0.nom == mapState.title }?.codeInsee,
-                        countryName: isBigMac ? state.country : "",
-                        countryFacts: isBigMac ? derived.countryFacts : [],
-                        isCountryExpanded: $state.bigMacExpandedPays,
-                        showsCountryHeader: state.screen != .selecteur
-                    )
-                    .inspectorColumnWidth(min: 220, ideal: 320, max: 800)
+                    InspectorPanelView()
+                        .inspectorColumnWidth(min: 220, ideal: 320, max: 800)
                 }
         }
         .navigationTitle("")
         .background(ClassicTheme.background)
-        .environmentObject(theme)
         .environmentObject(state)
         .environmentObject(mapState)
         .onAppear { mapState.focusOnCountry(state.country) }
         .onChange(of: state.country) { _, newValue in mapState.focusOnCountry(newValue) }
     }
 
+    /// Écrans défilants (Sources, Favoris) — le Sélecteur est rendu plein
+    /// cadre, voir `body`.
     @ViewBuilder
-    private func content(_ derived: ClassicDerived) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            switch state.screen {
-            case .selecteur: EmptyView() // rendered full-bleed outside content(), see body
-            case .sources: SourcesView(derived: derived)
-            case .favoris: FavorisView(derived: derived)
-            }
+    private var content: some View {
+        Group {
+            if state.screen == .favoris { FavorisView() } else { SourcesView() }
         }
-        .padding(.horizontal, theme.mainPadding)
-        .padding(.top, theme.mainPadding)
-        .padding(.bottom, theme.mainPaddingBottom)
+        .padding(.horizontal, ClassicTheme.mainPadding)
+        .padding(.top, ClassicTheme.mainPadding)
+        .padding(.bottom, ClassicTheme.mainPaddingBottom)
         .frame(maxWidth: 1340, alignment: .leading)
         .frame(maxWidth: .infinity)
     }

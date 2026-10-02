@@ -1,22 +1,30 @@
-# CODING AGENTS: READ THIS FIRST
+# Oùvivre
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+Application macOS (SwiftUI) d'aide au choix d'un lieu de vie : on règle des
+critères (pays, tailles de commune, proximités géographiques, culture) et la
+carte affiche les départements français correspondants, classés par
+pertinence. Toutes les données sont embarquées (open data préparé hors ligne) ;
+le seul appel réseau vérifie, au plus tous les 15 jours, si les jeux de données
+sources ont été mis à jour sur data.gouv.fr.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+## Organisation du dépôt
 
-## What you should do — IMPORTANT
+```
+Ouvivre/          projet Xcode de l'app (cible macOS « Ouvivre », point d'entrée OuvivreApp.swift)
+OuvivreKit/       package Swift contenant toute l'interface, les modèles et les données (voir son README)
+geo_pipeline/     scripts Python qui génèrent les JSON de OuvivreKit/Sources/OuvivreKit/Resources
+Design/AppIcon/   script de génération de l'icône de l'app
+*.dc.html, support.js  maquettes HTML d'origine (export Claude Design), pour référence visuelle
+```
 
-**Read `ouvivre-trouver-sa-ville-id-ale/project/Ouvivre classic.dc.html` in full.** The user had this file open when they triggered the handoff, so it's almost certainly the primary design they want built. Read it top to bottom — don't skim. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+## Compiler
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+Ouvrir `Ouvivre/Ouvivre.xcodeproj` dans Xcode et lancer la cible `Ouvivre`
+(macOS). Le package seul se compile avec `swift build` depuis `OuvivreKit/`.
 
-## About the design files
+## Mettre à jour les données
 
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
-
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
-
-## Bundle contents
-
-- `ouvivre-trouver-sa-ville-id-ale/README.md` — this file
-- `ouvivre-trouver-sa-ville-id-ale/project/` — the `Ouvivre : trouver sa ville idéale` project files (HTML prototypes, assets, components)
+Les JSON embarqués sont produits par `geo_pipeline/` (procédure dans
+`geo_pipeline/README.md`) ; l'app ne lance jamais ce pipeline elle-même. La vue
+Sources signale quand un jeu de données amont est plus récent que la version
+embarquée.

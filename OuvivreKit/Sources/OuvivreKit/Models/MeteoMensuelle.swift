@@ -4,61 +4,42 @@ import Foundation
 /// dernières années glissantes, précomputées offline depuis les données
 /// climatologiques mensuelles de Météo-France — voir
 /// geo_pipeline/build_meteo_data.py. Mirrors `CultureScores`' loading pattern.
-public enum MeteoMensuelle {
-    public struct Point: Identifiable {
+enum MeteoMensuelle {
+    struct Point: Identifiable {
         /// Premier jour du mois (fuseau UTC, pour un axe temporel stable).
-        public let date: Date
+        let date: Date
         /// Température moyenne du mois (°C), moyenne des postes du département.
-        public let temperature: Double?
+        let temperature: Double?
         /// Moyenne des températures maximales quotidiennes du mois (°C).
-        public let maxTemperature: Double?
-        /// Maximum absolu du mois (°C) dans le département, avec le poste et le
-        /// jour du mois où il a été relevé.
-        public let absoluteMax: Double?
-        public let absoluteMaxStation: String?
-        public let absoluteMaxDay: Int?
-        /// Température ressentie du mois (°C), calculée hors ligne depuis la
-        /// température moyenne, l'humidité et le vent (indice de chaleur /
-        /// refroidissement éolien) — estimation, pas une mesure.
-        public let feltTemperature: Double?
+        let maxTemperature: Double?
+        /// Maximum absolu du mois (°C) dans le département.
+        let absoluteMax: Double?
         /// Cumul de précipitations du mois (mm), moyenne des postes.
-        public let precipitation: Double?
+        let precipitation: Double?
         /// Mois en cours : les valeurs ne couvrent pas le mois entier.
-        public let partial: Bool
-        public var id: Date { date }
+        let partial: Bool
+        var id: Date { date }
     }
 
     private struct RawPoint: Decodable {
         let tm: Double?
         let tx: Double?
-        let tr: Double?
         let xa: Double?
-        let xn: String?
-        let xd: Int?
         let rr: Double?
         let partial: Bool?
     }
 
     private struct Root: Decodable {
-        let generatedAt: String
-        let source: String
         let departements: [String: [String: RawPoint]]
     }
 
-    private static let calendar: Calendar = {
+    /// Calendrier grégorien UTC, pour un axe temporel stable (partagé par
+    /// l'inspecteur et la fenêtre Météo).
+    static let calendar: Calendar = {
         var c = Calendar(identifier: .gregorian)
         c.timeZone = TimeZone(identifier: "UTC")!
         return c
     }()
-
-    private static let root: Root? = {
-        guard let url = Bundle.module.url(forResource: "meteo_monthly", withExtension: "json"),
-              let data = try? Data(contentsOf: url) else { return nil }
-        return try? JSONDecoder().decode(Root.self, from: data)
-    }()
-
-    public static let generatedAt: String? = root?.generatedAt
-    public static let source: String? = root?.source
 
     /// "AAAAMM" → premier jour du mois.
     private static func monthStart(_ key: String) -> Date? {
@@ -68,11 +49,13 @@ public enum MeteoMensuelle {
 
     /// Série mensuelle triée chronologiquement, indexée par code département.
     private static let seriesByCode: [String: [Point]] = {
-        guard let root else { return [:] }
+        guard let url = Bundle.module.url(forResource: "meteo_monthly", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let root = try? JSONDecoder().decode(Root.self, from: data) else { return [:] }
         return root.departements.mapValues { months in
             months.compactMap { key, raw -> Point? in
                 guard let date = monthStart(key) else { return nil }
-                return Point(date: date, temperature: raw.tm, maxTemperature: raw.tx, absoluteMax: raw.xa, absoluteMaxStation: raw.xn, absoluteMaxDay: raw.xd, feltTemperature: raw.tr, precipitation: raw.rr, partial: raw.partial ?? false)
+                return Point(date: date, temperature: raw.tm, maxTemperature: raw.tx, absoluteMax: raw.xa, precipitation: raw.rr, partial: raw.partial ?? false)
             }
             .sorted { $0.date < $1.date }
         }
@@ -80,7 +63,7 @@ public enum MeteoMensuelle {
 
     /// Mois disponibles pour un département — vide si Météo-France n'en
     /// publie pas (ex. Mayotte).
-    public static func series(forDepartementCode code: String) -> [Point] {
+    static func series(forDepartementCode code: String) -> [Point] {
         seriesByCode[code] ?? []
     }
 }
