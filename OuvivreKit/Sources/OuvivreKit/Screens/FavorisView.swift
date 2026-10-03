@@ -164,7 +164,7 @@ struct FavorisView: View {
                     .padding(.top, 32)
             }
         }
-        .alert("Retirer \(pendingRemovalName) des favoris ?", isPresented: Binding(
+        .alert("Retirer \(pendingRemovalName) des favoris", isPresented: Binding(
             get: { pendingRemovalCode != nil },
             set: { if !$0 { pendingRemovalCode = nil } }
         )) {
