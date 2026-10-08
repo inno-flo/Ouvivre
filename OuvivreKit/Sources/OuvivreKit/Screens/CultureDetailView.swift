@@ -37,6 +37,11 @@ public struct CultureDetailView: View {
                     DepartementHeaderAndMap(departementCode: departementCode, state: state)
                 }
 
+                // Titre de section sous la carte (en mode intégré, la carte est
+                // celle de la vue Département, juste au-dessus).
+                Eyebrow("Culture", color: c.ink, font: CFont.rounded(18, weight: .medium))
+                    .padding(.bottom, -14)
+
                 museesSection
                 patrimoineSection
                 festivalsSection

@@ -89,12 +89,17 @@ public struct MeteoDetailView: View {
                 if !embedded {
                     DepartementHeaderAndMap(departementCode: departementCode, state: state)
                 }
+                // Titre de section sous la carte ; en mode intégré (vue Département),
+                // une ligne vide le sépare de la rubrique Culture qui précède.
+                Eyebrow("Climat", color: c.ink, font: CFont.rounded(18, weight: .medium))
+                    .padding(.top, embedded ? 22 : 0)
+                    .padding(.bottom, -14)
                 if series.isEmpty {
                     Text("Aucune donnée pour ce département.")
                         .font(CFont.rounded(13)).foregroundStyle(c.faint)
                 } else {
                     let tempAxis = temperatureAxis
-                    chartCard(title: "Températures moyennes, maximales et records mensuels (°C)", yTicks: tempAxis.ticks) {
+                    chartCard(title: "Températures moyennes, maximales et records mensuels (°C)", yTicks: tempAxis.ticks, footnote: Self.weightingNote) {
                         let points = series.filter { $0.temperature != nil }
                         Chart {
                             yearBands
@@ -242,7 +247,11 @@ public struct MeteoDetailView: View {
     private func recordHighlight(_ p: MeteoMensuelle.Point) -> some ChartContent {
         if let xa = p.absoluteMax {
             PointMark(x: .value("Mois", p.date, unit: .month), y: .value("°C", xa))
-                .foregroundStyle(c.ink).symbol(.diamond).symbolSize(90)
+                .symbol {
+                    Image(systemName: "sun.max.fill")
+                        .font(.system(size: 17))
+                        .foregroundStyle(Color(hex: 0xD1382E))
+                }
         }
     }
 
@@ -461,11 +470,15 @@ public struct MeteoDetailView: View {
         }
     }
 
-    private func chartCard<C: View>(title: String, yTicks: [Double]? = nil, @ViewBuilder chart: () -> C) -> some View {
-        chartCard(title: title, yTicks: yTicks, trailing: { EmptyView() }, chart: chart)
+    /// Légende du graphique des températures : méthode de calcul de la valeur
+    /// départementale (voir geo_pipeline/build_meteo_data.py).
+    private static let weightingNote = "Température moyenne mensuelle : moyenne des postes de mesure du département, pondérée par la population. Chaque commune est rattachée au poste le plus proche ; un poste pèse le nombre d'habitants des communes qui lui sont rattachées, ce qui limite le poids des postes d'altitude, peu habités. La température maximale moyenne est pondérée de la même façon ; le record est celui du poste le plus chaud du département."
+
+    private func chartCard<C: View>(title: String, yTicks: [Double]? = nil, footnote: String? = nil, @ViewBuilder chart: () -> C) -> some View {
+        chartCard(title: title, yTicks: yTicks, footnote: footnote, trailing: { EmptyView() }, chart: chart)
     }
 
-    private func chartCard<C: View, T: View>(title: String, yTicks: [Double]? = nil, @ViewBuilder trailing: () -> T, @ViewBuilder chart: () -> C) -> some View {
+    private func chartCard<C: View, T: View>(title: String, yTicks: [Double]? = nil, footnote: String? = nil, @ViewBuilder trailing: () -> T, @ViewBuilder chart: () -> C) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .center) {
                 Text(title).font(CFont.rounded(13, weight: .medium)).foregroundStyle(c.ink)
@@ -503,6 +516,13 @@ public struct MeteoDetailView: View {
                     }
                 }
                 .frame(height: 325)
+            if let footnote {
+                // Une ligne vide sépare la légende des pastilles de couleur du graphique.
+                Text(footnote)
+                    .font(CFont.rounded(11)).foregroundStyle(c.faint)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, 14)
+            }
         }
         .padding(16)
         .background(c.card, in: RoundedRectangle(cornerRadius: 10))

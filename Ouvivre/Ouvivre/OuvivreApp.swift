@@ -12,6 +12,15 @@ import OuvivreKit
 struct OuvivreApp: App {
     @StateObject private var mapState = MapPanelState.shared
 
+    init() {
+        #if os(macOS)
+        // Délai d'affichage des infobulles `.help(...)` : 500 ms au lieu du défaut
+        // système (~1 s). `register` ne remplace pas une valeur déjà définie par
+        // l'utilisateur ; la clé n'est pas documentée par Apple mais est lue par AppKit.
+        UserDefaults.standard.register(defaults: ["NSInitialToolTipDelay": 500])
+        #endif
+    }
+
     var body: some Scene {
         WindowGroup {
             ClassicRootView()
