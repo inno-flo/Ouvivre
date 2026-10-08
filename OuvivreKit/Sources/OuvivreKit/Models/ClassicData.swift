@@ -29,7 +29,8 @@ enum ClassicStatic {
         "Festivals": "fireworks",
         "Température moyenne": "thermometer.medium",
         "Température maximale moyenne": "thermometer.high",
-        "Record de température": "thermometer.high",
+        "Record de chaleur": "sun.max.fill",
+        "Record de froid": "snowflake",
         "Précipitations annuelles": "cloud.rain"
     ]
 

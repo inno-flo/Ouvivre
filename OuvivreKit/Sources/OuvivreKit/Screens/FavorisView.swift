@@ -79,7 +79,8 @@ struct FavorisView: View {
         return Model(departements: deps, sections: Self.buildSections(deps), topCodes: top, colW: Self.colW(deps))
     }
 
-    private struct Cell { let text: String; let value: Double? }
+    /// `tooltip` : infobulle de la cellule (mois de relève des températures).
+    private struct Cell { let text: String; let value: Double?; var tooltip: String? = nil }
     private struct Row: Identifiable {
         let id: String
         let label: String
@@ -201,29 +202,53 @@ struct FavorisView: View {
             }
             return Row(id: "culture-\(key)", label: label, cells: cells, higherIsBetter: true)
         }
-        let meteo = deps.map { d -> (temp: Double?, tmax: Double?, record: Double?, rain: Double?) in
+        // « septembre 2025 » — les dates de la série sont en UTC (1er du mois).
+        let monthFormatter = DateFormatter()
+        monthFormatter.locale = Locale(identifier: "fr_FR")
+        monthFormatter.timeZone = TimeZone(identifier: "UTC")
+        monthFormatter.dateFormat = "LLLL yyyy"
+        func month(_ p: MeteoMensuelle.Point) -> String { monthFormatter.string(from: p.date) }
+
+        struct Climat {
+            var temp, tmax, record, cold, rain: Double?
+            /// Période des 12 mois, et mois où chaque record a été relevé.
+            var period, recordMonth, coldMonth: String?
+        }
+        let meteo = deps.map { d -> Climat in
             // 12 derniers mois complets.
-            let recent = MeteoMensuelle.series(forDepartementCode: d.codeInsee).filter { !$0.partial }.suffix(12)
+            let recent = Array(MeteoMensuelle.series(forDepartementCode: d.codeInsee).filter { !$0.partial }.suffix(12))
             let temps = recent.compactMap(\.temperature)
             let maxes = recent.compactMap(\.maxTemperature)
-            let records = recent.compactMap(\.absoluteMax)
             let rains = recent.compactMap(\.precipitation)
-            return (temps.isEmpty ? nil : temps.reduce(0, +) / Double(temps.count),
-                    maxes.isEmpty ? nil : maxes.reduce(0, +) / Double(maxes.count),
-                    records.max(),
-                    rains.isEmpty ? nil : rains.reduce(0, +))
+            let hottest = recent.filter { $0.absoluteMax != nil }.max { $0.absoluteMax! < $1.absoluteMax! }
+            let coldest = recent.filter { $0.absoluteMin != nil }.min { $0.absoluteMin! < $1.absoluteMin! }
+            return Climat(
+                temp: temps.isEmpty ? nil : temps.reduce(0, +) / Double(temps.count),
+                tmax: maxes.isEmpty ? nil : maxes.reduce(0, +) / Double(maxes.count),
+                record: hottest?.absoluteMax,
+                cold: coldest?.absoluteMin,
+                rain: rains.isEmpty ? nil : rains.reduce(0, +),
+                period: recent.first.flatMap { f in recent.last.map { "De \(month(f)) à \(month($0))" } },
+                recordMonth: hottest.map { "Record relevé en \(month($0))" },
+                coldMonth: coldest.map { "Record relevé en \(month($0))" })
         }
+        let dash = Cell(text: "—", value: nil)
         let meteoRows = [
+            // Moyenne sur les 12 mois : l'infobulle donne la période.
             Row(id: "meteo-temp", label: "Température moyenne", cells: meteo.map { m in
-                m.temp.map { Cell(text: frDecimal($0) + " °C", value: $0) } ?? Cell(text: "—", value: nil)
+                m.temp.map { Cell(text: frDecimal($0) + " °C", value: $0, tooltip: m.period.map { "Moyenne sur 12 mois — \($0)" }) } ?? dash
             }, higherIsBetter: nil, extremes: true),
             // Moyenne des températures maximales quotidiennes de chaque mois.
             Row(id: "meteo-tmax", label: "Température maximale moyenne", cells: meteo.map { m in
-                m.tmax.map { Cell(text: frDecimal($0) + " °C", value: $0) } ?? Cell(text: "—", value: nil)
+                m.tmax.map { Cell(text: frDecimal($0) + " °C", value: $0, tooltip: m.period.map { "Moyenne des maximales sur 12 mois — \($0)" }) } ?? dash
             }, higherIsBetter: nil, extremes: true),
             // Maximum absolu relevé dans le département sur les 12 mois.
-            Row(id: "meteo-record", label: "Record de température", cells: meteo.map { m in
-                m.record.map { Cell(text: frDecimal($0) + " °C", value: $0) } ?? Cell(text: "—", value: nil)
+            Row(id: "meteo-record", label: "Record de chaleur", cells: meteo.map { m in
+                m.record.map { Cell(text: frDecimal($0) + " °C", value: $0, tooltip: m.recordMonth) } ?? dash
+            }, higherIsBetter: nil, extremes: true),
+            // Minimum absolu relevé dans le département sur les 12 mois.
+            Row(id: "meteo-cold", label: "Record de froid", cells: meteo.map { m in
+                m.cold.map { Cell(text: frDecimal($0) + " °C", value: $0, tooltip: m.coldMonth) } ?? dash
             }, higherIsBetter: nil, extremes: true),
             Row(id: "meteo-rain", label: "Précipitations annuelles", cells: meteo.map { m in
                 m.rain.map { Cell(text: "\(frThousands(Int($0.rounded()))) mm", value: $0) } ?? Cell(text: "—", value: nil)
@@ -308,6 +333,7 @@ struct FavorisView: View {
             .foregroundStyle(pal.sub)
             .padding(.horizontal, 8)
             .frame(height: Self.rowContentHeight)
+            .help(c.tooltip ?? "")
             .overlay { if let outline { RoundedRectangle(cornerRadius: 4).stroke(outline, lineWidth: 1) } }
             // À gauche de la valeur, sans la décentrer.
             .overlay(alignment: .leading) {
@@ -369,7 +395,7 @@ struct FavorisView: View {
 
     /// Lignes dont le séparateur est un filet court centré dans chaque
     /// colonne : Musées, Lieux du patrimoine, Températures moyenne et maximale.
-    private static let shortSeparatorRowIDs: Set<String> = ["culture-musees", "culture-patrimoine", "meteo-temp", "meteo-tmax", "meteo-record"]
+    private static let shortSeparatorRowIDs: Set<String> = ["culture-musees", "culture-patrimoine", "meteo-temp", "meteo-tmax", "meteo-record", "meteo-cold"]
 
     // MARK: - Tableau
 

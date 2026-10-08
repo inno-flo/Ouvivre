@@ -14,6 +14,8 @@ enum MeteoMensuelle {
         let maxTemperature: Double?
         /// Maximum absolu du mois (°C) dans le département.
         let absoluteMax: Double?
+        /// Minimum absolu du mois (°C) dans le département (record de froid).
+        let absoluteMin: Double?
         /// Cumul de précipitations du mois (mm), moyenne des postes.
         let precipitation: Double?
         /// Mois en cours : les valeurs ne couvrent pas le mois entier.
@@ -25,6 +27,7 @@ enum MeteoMensuelle {
         let tm: Double?
         let tx: Double?
         let xa: Double?
+        let na: Double?
         let rr: Double?
         let partial: Bool?
     }
@@ -55,7 +58,7 @@ enum MeteoMensuelle {
         return root.departements.mapValues { months in
             months.compactMap { key, raw -> Point? in
                 guard let date = monthStart(key) else { return nil }
-                return Point(date: date, temperature: raw.tm, maxTemperature: raw.tx, absoluteMax: raw.xa, precipitation: raw.rr, partial: raw.partial ?? false)
+                return Point(date: date, temperature: raw.tm, maxTemperature: raw.tx, absoluteMax: raw.xa, absoluteMin: raw.na, precipitation: raw.rr, partial: raw.partial ?? false)
             }
             .sorted { $0.date < $1.date }
         }
