@@ -29,6 +29,7 @@ enum ClassicStatic {
         "Festivals": "fireworks",
         "Température moyenne": "thermometer.medium",
         "Température maximale moyenne": "thermometer.high",
+        "Record de température": "thermometer.high",
         "Précipitations annuelles": "cloud.rain"
     ]
 

@@ -201,14 +201,16 @@ struct FavorisView: View {
             }
             return Row(id: "culture-\(key)", label: label, cells: cells, higherIsBetter: true)
         }
-        let meteo = deps.map { d -> (temp: Double?, tmax: Double?, rain: Double?) in
+        let meteo = deps.map { d -> (temp: Double?, tmax: Double?, record: Double?, rain: Double?) in
             // 12 derniers mois complets.
             let recent = MeteoMensuelle.series(forDepartementCode: d.codeInsee).filter { !$0.partial }.suffix(12)
             let temps = recent.compactMap(\.temperature)
             let maxes = recent.compactMap(\.maxTemperature)
+            let records = recent.compactMap(\.absoluteMax)
             let rains = recent.compactMap(\.precipitation)
             return (temps.isEmpty ? nil : temps.reduce(0, +) / Double(temps.count),
                     maxes.isEmpty ? nil : maxes.reduce(0, +) / Double(maxes.count),
+                    records.max(),
                     rains.isEmpty ? nil : rains.reduce(0, +))
         }
         let meteoRows = [
@@ -218,6 +220,10 @@ struct FavorisView: View {
             // Moyenne des températures maximales quotidiennes de chaque mois.
             Row(id: "meteo-tmax", label: "Température maximale moyenne", cells: meteo.map { m in
                 m.tmax.map { Cell(text: frDecimal($0) + " °C", value: $0) } ?? Cell(text: "—", value: nil)
+            }, higherIsBetter: nil, extremes: true),
+            // Maximum absolu relevé dans le département sur les 12 mois.
+            Row(id: "meteo-record", label: "Record de température", cells: meteo.map { m in
+                m.record.map { Cell(text: frDecimal($0) + " °C", value: $0) } ?? Cell(text: "—", value: nil)
             }, higherIsBetter: nil, extremes: true),
             Row(id: "meteo-rain", label: "Précipitations annuelles", cells: meteo.map { m in
                 m.rain.map { Cell(text: "\(frThousands(Int($0.rounded()))) mm", value: $0) } ?? Cell(text: "—", value: nil)
@@ -363,7 +369,7 @@ struct FavorisView: View {
 
     /// Lignes dont le séparateur est un filet court centré dans chaque
     /// colonne : Musées, Lieux du patrimoine, Températures moyenne et maximale.
-    private static let shortSeparatorRowIDs: Set<String> = ["culture-musees", "culture-patrimoine", "meteo-temp", "meteo-tmax"]
+    private static let shortSeparatorRowIDs: Set<String> = ["culture-musees", "culture-patrimoine", "meteo-temp", "meteo-tmax", "meteo-record"]
 
     // MARK: - Tableau
 
