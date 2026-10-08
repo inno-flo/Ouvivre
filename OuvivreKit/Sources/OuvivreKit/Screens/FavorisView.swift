@@ -160,7 +160,8 @@ struct FavorisView: View {
                     onSelect: { name in
                         if let code = FranceGeoData.byName[name]?.codeInsee { toggleSelection(code) }
                     },
-                    height: 862
+                    height: 862,
+                    resizable: true
                 )
                     .padding(.top, 32)
             }

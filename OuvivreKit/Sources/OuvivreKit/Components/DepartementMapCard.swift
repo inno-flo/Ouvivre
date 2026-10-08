@@ -1,5 +1,8 @@
 import SwiftUI
 import MapKit
+#if os(macOS)
+import AppKit
+#endif
 
 /// Cadre contenant une carte centrée sur un département (périmètre tracé,
 /// ajusté pour occuper au mieux le cadre), avec deux boutons de type de
@@ -25,8 +28,15 @@ struct DepartementMapCard: View {
     var pinMarks: [RecordPinMark] = []
     /// `false` dans les fenêtres Météo et Culture : périmètre tracé seul, sans voile.
     var fillsDepartement = true
+    /// Poignée de redimensionnement au centre du bord inférieur du cadre : glisser vers
+    /// le bas agrandit la carte (les sections en dessous suivent), double-clic
+    /// revient à `height`, qui reste la hauteur minimale.
+    var resizable = false
 
     @State private var hoveredName: String?
+    /// Hauteur ajoutée à `height` par la poignée (jamais négative).
+    @State private var extraHeight: CGFloat = 0
+    @State private var dragStartExtra: CGFloat?
     @State private var mapType: MapPlanType = .explorer
     @State private var mapPosition: MapCameraPosition = .automatic
     /// Dernière région affichée, pour que les boutons de zoom partent de la
@@ -118,6 +128,35 @@ struct DepartementMapCard: View {
         .buttonStyle(.plain).foregroundStyle(c.ink).help(help)
     }
 
+    private var resizeHandle: some View {
+        Image(systemName: "line.3.horizontal")
+            .font(.system(size: 13, weight: .medium))
+            .foregroundStyle(c.faint)
+            // Zone de saisie plus large que l'icône, dans la marge basse du cadre.
+            .frame(width: 56, height: 16)
+            .contentShape(Rectangle())
+            .help("Glisser pour agrandir la carte · double-clic pour revenir à la taille par défaut")
+            #if os(macOS)
+            .onHover { inside in
+                if inside { NSCursor.resizeUpDown.push() } else { NSCursor.pop() }
+            }
+            #endif
+            // Coordonnées globales : la poignée suit le bord qui bouge, une
+            // translation locale se mettrait à osciller.
+            .gesture(
+                DragGesture(minimumDistance: 3, coordinateSpace: .global)
+                    .onChanged { value in
+                        let start = dragStartExtra ?? extraHeight
+                        dragStartExtra = start
+                        extraHeight = max(0, start + value.translation.height)
+                    }
+                    .onEnded { _ in dragStartExtra = nil }
+            )
+            .onTapGesture(count: 2) {
+                withAnimation(.easeInOut(duration: 0.2)) { extraHeight = 0 }
+            }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
@@ -193,7 +232,7 @@ struct DepartementMapCard: View {
                 .onChange(of: names) { _, _ in
                     fitSelection()
                 }
-                .frame(height: height)
+                .frame(height: height + extraHeight)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             } else {
                 Text("Carte indisponible pour ce département.")
@@ -203,5 +242,7 @@ struct DepartementMapCard: View {
         .padding(16)
         .background(c.card, in: RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10).stroke(c.border, lineWidth: 1))
+        // Poignée centrée dans le bord inférieur du cadre, sous la carte.
+        .overlay(alignment: .bottom) { if resizable { resizeHandle } }
     }
 }

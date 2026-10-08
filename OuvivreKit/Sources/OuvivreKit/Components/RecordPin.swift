@@ -51,7 +51,8 @@ struct PinnedMapCard: View {
             focusCoordinate: focusCoordinate,
             focusTick: focusTick,
             pinMarks: pin.marks,
-            fillsDepartement: false
+            fillsDepartement: false,
+            resizable: true
         )
     }
 }
