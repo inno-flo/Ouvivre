@@ -27,7 +27,7 @@ public struct MeteoDetailView: View {
             switch self {
             case .temperature: "thermometer.medium"
             case .maxTemperature: "thermometer.high"
-            case .record: "thermometer.sun"
+            case .record: "sun.max.fill"
             case .precipitation: "cloud.rain"
             }
         }
