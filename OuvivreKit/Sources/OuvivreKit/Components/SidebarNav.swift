@@ -1,10 +1,12 @@
 import SwiftUI
 
 /// The native sidebar list: "Sélecteur" (steps) + "Outils" sections, plus a
-/// "Sources" row — selection and highlighting are driven by `List`. Row and
-/// header font sizes mirror the PierreVincent project's sidebar convention:
-/// 13pt (`NSFont.systemFontSize`) for row labels, 11pt for section headers,
-/// headers always staying smaller than the labels they group.
+/// "Sources" row — selection and highlighting are driven by `List`. Les
+/// lignes icône + titre sont des `Label` natifs sans taille forcée : dans une
+/// liste `.sidebar` ils prennent les valeurs du système (police système ≈ 13 pt,
+/// icône à la taille de sidebar choisie dans Réglages Système > Apparence,
+/// emplacement d'icône et alignement vertical gérés par SwiftUI). Seul l'en-tête
+/// de section « Favoris » garde un corps fixe (11 pt), plus petit que les titres.
 struct SidebarNav: View {
     let selection: Binding<SidebarDestination?>
     @EnvironmentObject private var state: ClassicState
@@ -20,7 +22,7 @@ struct SidebarNav: View {
 
     private var isTous: Bool { state.screen == .favoris && state.selectedDepartementCode == nil }
 
-    /// Départements favoris, badge `checkmark.seal` en tête, puis ordre alphabétique — la liste suit
+    /// Départements favoris, badge `checkmark.seal.fill` en tête, puis ordre alphabétique — la liste suit
     /// `favoriteDepartementCodes` (ajout/retrait depuis n'importe où).
     private func favoriteDepartements(topCodes: Set<String>) -> [FranceGeoData.DepartementScore] {
         FranceGeoData.departements
@@ -31,16 +33,28 @@ struct SidebarNav: View {
             }
     }
 
+    /// Ligne icône + titre : `Label` natif, sans taille ni cadre forcés — le
+    /// système fixe police, taille d'icône et alignement vertical. Seule la
+    /// graisse du titre varie (gras quand la ligne est sélectionnée).
+    @ViewBuilder
+    private static func rowLabel(_ title: String, systemImage: String, bold: Bool, badge: Bool = false) -> some View {
+        Label {
+            Text(title).fontWeight(bold ? .bold : .regular)
+        } icon: {
+            if badge { Image(systemName: systemImage).modifier(ActiveBadgeStyle()) } else { Image(systemName: systemImage) }
+        }
+    }
+
     var body: some View {
         let topCodes = FavorisView.topDepartementCodes(among: state.favoriteDepartementCodes)
         List(selection: selection) {
             // Sélecteur : en tête de la sidebar, sans en-tête de section.
-            HStack(spacing: 9) {
-                Image(systemName: "list.bullet.clipboard").frame(width: 16)
+            HStack(spacing: 0) {
+                Self.rowLabel("Sélecteur", systemImage: "list.bullet.clipboard.fill",
+                              bold: state.screen == .selecteur && state.selectedDepartementCode == nil)
                     .background(GeometryReader { proxy in
                         Color.clear.preference(key: IconLeadingKey.self, value: proxy.frame(in: .named("sidebar")).minX)
                     })
-                Text("Sélecteur").font(.system(size: 13, weight: state.screen == .selecteur && state.selectedDepartementCode == nil ? .bold : .regular))
                 Spacer(minLength: 4)
             }
             .tag(SidebarDestination.screen(.selecteur))
@@ -62,31 +76,27 @@ struct SidebarNav: View {
                     }
                     .buttonStyle(.plain)
                     if favoritesExpanded {
-                        // Titre et compteur partagent la même police (13 pt, gras quand la
-                        // rubrique est sélectionnée).
-                        HStack(spacing: 9) {
-                            Image(systemName: "star").frame(width: 16).modifier(ActiveBadgeStyle())
-                            Text("Tous")
+                        // Titre et compteur partagent la même police (celle du système,
+                        // gras quand la rubrique est sélectionnée).
+                        HStack(spacing: 0) {
+                            Self.rowLabel("Tous les départements", systemImage: "star.fill", bold: isTous, badge: true)
                             Spacer(minLength: 4)
                             Text("\(state.favoriteDepartementCodes.count)")
+                                .fontWeight(isTous ? .bold : .regular)
                                 .opacity(0.5)
                                 .frame(width: Self.trailingColumnWidth)
                         }
-                        .font(.system(size: 13, weight: isTous ? .bold : .regular))
                         .tag(SidebarDestination.screen(.favoris))
                         ForEach(favoriteDepartements(topCodes: topCodes), id: \.codeInsee) { dep in
-                            HStack(spacing: 9) {
-                                if topCodes.contains(dep.codeInsee) {
-                                    Image(systemName: "checkmark.seal").frame(width: 16).modifier(ActiveBadgeStyle())
-                                } else {
-                                    Image(systemName: "mappin").frame(width: 16)
-                                }
-                                Text(dep.nom).font(.system(size: 13, weight: state.selectedDepartementCode == dep.codeInsee ? .bold : .regular))
+                            let isTop = topCodes.contains(dep.codeInsee)
+                            HStack(spacing: 0) {
+                                Self.rowLabel(dep.nom, systemImage: isTop ? "checkmark.seal.fill" : "mappin",
+                                              bold: state.selectedDepartementCode == dep.codeInsee, badge: isTop)
                                 Spacer(minLength: 4)
                             }
                             .contentShape(Rectangle())
-                        .simultaneousGesture(TapGesture(count: 2).onEnded { openWindow(id: DepartementWindowView.windowID, value: dep.codeInsee) })
-                        .tag(SidebarDestination.departement(dep.codeInsee))
+                            .simultaneousGesture(TapGesture(count: 2).onEnded { openWindow(id: DepartementWindowView.windowID, value: dep.codeInsee) })
+                            .tag(SidebarDestination.departement(dep.codeInsee))
                         }
                     }
                 }
@@ -96,9 +106,8 @@ struct SidebarNav: View {
         // Sources : ancré tout en bas de la sidebar, hors de la liste.
         .safeAreaInset(edge: .bottom, spacing: 0) {
             Button { selection.wrappedValue = .screen(.sources) } label: {
-                HStack(spacing: 9) {
-                    Image(systemName: "books.vertical").frame(width: 16)
-                    Text("Sources").font(.system(size: 13, weight: state.screen == .sources ? .bold : .regular))
+                HStack(spacing: 0) {
+                    Self.rowLabel("Sources", systemImage: "books.vertical", bold: state.screen == .sources)
                     Spacer(minLength: 4)
                 }
                 .padding(.leading, iconLeading ?? 12).padding(.trailing, 12).padding(.vertical, 8)
