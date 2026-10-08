@@ -257,7 +257,7 @@ struct FavorisView: View {
         ]
         return [
             Section(id: "chefLieu", title: "", rows: [
-                Row(id: "chefLieu", label: "Chef-lieu", cells: deps.map { Cell(text: FranceGeoData.chefsLieux[$0.codeInsee].map { "(\($0))" } ?? "—", value: nil) }, higherIsBetter: nil)
+                Row(id: "chefLieu", label: "Chef-lieu", cells: deps.map { Cell(text: FranceGeoData.chefsLieux[$0.codeInsee] ?? "—", value: nil) }, higherIsBetter: nil)
             ]),
             Section(id: "geo", title: "Géographie (les scores de correspondance entre le département et les critères de choix sont sur 100)", rows: geoRows),
             Section(id: "culture", title: "Culture (nombre de lieux et d'événements)", rows: cultureRows),

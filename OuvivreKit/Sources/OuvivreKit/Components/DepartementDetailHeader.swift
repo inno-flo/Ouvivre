@@ -23,7 +23,7 @@ struct DepartementDetailHeader: View {
                     .font(CFont.rounded(20, weight: .bold))
                     .foregroundStyle(c.ink)
                 if let chefLieu = FranceGeoData.chefsLieux[departementCode] {
-                    Text(chefLieu)
+                    Text("(\(chefLieu))")
                         .font(CFont.rounded(18))
                         .foregroundStyle(c.faint)
                     Button(action: onRecenter) {

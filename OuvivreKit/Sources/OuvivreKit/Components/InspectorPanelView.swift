@@ -97,7 +97,7 @@ struct InspectorPanelView: View {
             }
             if let chefLieu = FranceGeoData.chefsLieux[code] {
                 HStack(spacing: 8) {
-                    Text(chefLieu)
+                    Text("(\(chefLieu))")
                         .font(CFont.rounded(18))
                         .foregroundStyle(c.faint)
                     Button {
