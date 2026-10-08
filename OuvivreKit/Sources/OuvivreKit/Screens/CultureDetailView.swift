@@ -18,6 +18,8 @@ public struct CultureDetailView: View {
     @StateObject private var state = ClassicState()
     /// Rubriques repliées par l'utilisateur — toutes repliées par défaut.
     @State private var collapsedSections: Set<String> = ["Musées", "Lieux du patrimoine", "Festivals"]
+    /// Rubrique « Culture » entière repliée (le titre reste affiché).
+    @State private var cultureCollapsed = false
 
     /// Mode intégré (vue Département de la sidebar) : sans en-tête, carte,
     /// défilement ni cadre de fenêtre — le parent les fournit.
@@ -39,12 +41,26 @@ public struct CultureDetailView: View {
 
                 // Titre de section sous la carte (en mode intégré, la carte est
                 // celle de la vue Département, juste au-dessus).
-                Eyebrow("Culture", color: c.ink, font: CFont.rounded(18, weight: .medium))
-                    .padding(.bottom, -14)
+                Button {
+                    withAnimation(.easeInOut(duration: 0.15)) { cultureCollapsed.toggle() }
+                } label: {
+                    HStack(spacing: 8) {
+                        Eyebrow("Culture", color: c.ink, font: CFont.rounded(18, weight: .medium))
+                        Image(systemName: cultureCollapsed ? "chevron.right" : "chevron.down")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(c.faint)
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .padding(.bottom, cultureCollapsed ? 0 : -14)
+                .help(cultureCollapsed ? "Déplier la rubrique Culture" : "Replier la rubrique Culture")
 
-                museesSection
-                patrimoineSection
-                festivalsSection
+                if !cultureCollapsed {
+                    museesSection
+                    patrimoineSection
+                    festivalsSection
+                }
             }
             .padding(embedded ? 0 : 24)
             .frame(maxWidth: .infinity, alignment: .topLeading)
@@ -155,14 +171,12 @@ public struct CultureDetailView: View {
                 }
             } label: {
                 HStack(spacing: 6) {
-                    Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(c.faint)
-                        .frame(width: 11)
                     Image(systemName: icon).foregroundStyle(ClassicTheme.accent)
                     (Text(title).foregroundStyle(c.body) + Text(" · \(count)").foregroundStyle(c.faint))
                         .font(CFont.rounded(13, weight: .medium))
-                    Spacer()
+                    Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(c.faint)
                 }
                 .contentShape(Rectangle())
             }

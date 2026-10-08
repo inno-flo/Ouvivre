@@ -46,6 +46,8 @@ public struct MeteoDetailView: View {
     @FocusState private var isFocused: Bool
     /// Date survolée dans chaque graphique (`chartXSelection`), pour l'infobulle.
     @State private var hoveredTemperatureDate: Date?
+    /// Rubrique « Climat » entière repliée (le titre reste affiché).
+    @State private var climatCollapsed = false
     /// Repère du record de chaleur sur la carte : celui du parent en mode
     /// intégré (vue Département), le nôtre dans la fenêtre Climat.
     @Environment(\.recordPin) private var parentRecordPin
@@ -91,9 +93,22 @@ public struct MeteoDetailView: View {
                 }
                 // Titre de section sous la carte ; en mode intégré (vue Département),
                 // une ligne vide le sépare de la rubrique Culture qui précède.
-                Eyebrow("Climat", color: c.ink, font: CFont.rounded(18, weight: .medium))
-                    .padding(.top, embedded ? 22 : 0)
-                    .padding(.bottom, -14)
+                Button {
+                    withAnimation(.easeInOut(duration: 0.15)) { climatCollapsed.toggle() }
+                } label: {
+                    HStack(spacing: 8) {
+                        Eyebrow("Climat", color: c.ink, font: CFont.rounded(18, weight: .medium))
+                        Image(systemName: climatCollapsed ? "chevron.right" : "chevron.down")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(c.faint)
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .padding(.top, embedded ? 22 : 0)
+                .padding(.bottom, climatCollapsed ? 0 : -14)
+                .help(climatCollapsed ? "Déplier la rubrique Climat" : "Replier la rubrique Climat")
+                if !climatCollapsed {
                 if series.isEmpty {
                     Text("Aucune donnée pour ce département.")
                         .font(CFont.rounded(13)).foregroundStyle(c.faint)
@@ -210,6 +225,7 @@ public struct MeteoDetailView: View {
                     monthTable
                     Text("Moyenne des postes Météo-France du département. Le dernier mois est en cours (données partielles).")
                         .font(CFont.rounded(11)).foregroundStyle(c.faint)
+                }
                 }
             }
             .padding(embedded ? 0 : 24)
