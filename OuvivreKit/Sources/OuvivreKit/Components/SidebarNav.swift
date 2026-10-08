@@ -8,6 +8,7 @@ import SwiftUI
 struct SidebarNav: View {
     let selection: Binding<SidebarDestination?>
     @EnvironmentObject private var state: ClassicState
+    @Environment(\.openWindow) private var openWindow
     @State private var favoritesExpanded = true
     /// Abscisse de l'icône de Sélecteur, mesurée : Sources (hors de la liste) s'y aligne.
     @State private var iconLeading: CGFloat?
@@ -83,7 +84,9 @@ struct SidebarNav: View {
                                 Text(dep.nom).font(.system(size: 13, weight: state.selectedDepartementCode == dep.codeInsee ? .bold : .regular))
                                 Spacer(minLength: 4)
                             }
-                            .tag(SidebarDestination.departement(dep.codeInsee))
+                            .contentShape(Rectangle())
+                        .simultaneousGesture(TapGesture(count: 2).onEnded { openWindow(id: DepartementWindowView.windowID, value: dep.codeInsee) })
+                        .tag(SidebarDestination.departement(dep.codeInsee))
                         }
                     }
                 }

@@ -24,6 +24,12 @@ struct OuvivreApp: App {
             }
         }
 
+        // Vue d'un département favori (double-clic dans la sidebar) — la
+        // valeur de la scène est le code du département.
+        WindowGroup("Département", id: DepartementWindowView.windowID, for: String.self) { $code in
+            if let code { DepartementWindowView(departementCode: code) }
+        }
+
         // Détail météo d'un département (double-clic sur la section Météo de
         // l'inspecteur) — la valeur de la scène est le code du département.
         WindowGroup("Climat", id: MeteoDetailView.windowID, for: String.self) { $code in

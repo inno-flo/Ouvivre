@@ -21,3 +21,23 @@ struct DepartementView: View {
         .background(DetailColors(colorScheme).window)
     }
 }
+
+/// Fenêtre séparée d'un département favori (double-clic dans la sidebar) :
+/// la vue Département avec son propre état (favoris
+/// synchronisés avec la fenêtre principale via `UserDefaults`).
+public struct DepartementWindowView: View {
+    /// Identifiant de la scène `WindowGroup(for: String.self)` déclarée par
+    /// l'app — la valeur passée à `openWindow` est le code du département.
+    public static let windowID = "departement-detail"
+
+    let departementCode: String
+    @StateObject private var state = ClassicState()
+
+    public init(departementCode: String) { self.departementCode = departementCode }
+
+    public var body: some View {
+        DepartementView(departementCode: departementCode)
+            .departementDetailWindow(true)
+            .environmentObject(state)
+    }
+}
