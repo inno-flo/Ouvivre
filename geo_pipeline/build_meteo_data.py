@@ -15,15 +15,24 @@ Paramètres retenus (une ligne = un poste × un mois, colonne AAAAMM) :
   - TM : moyenne mensuelle des températures quotidiennes (°C)
   - TX : moyenne mensuelle des températures maximales quotidiennes (°C)
   - TXAB / TXDAT : maximum absolu du mois (°C) et jour où il a été relevé
+  - TNAB : minimum absolu du mois (°C) — « record de froid », min. des postes
   - UMM : humidité relative moyenne mensuelle (%)
   - FFM : vitesse moyenne mensuelle du vent à 10 m (m/s)
   - RR : cumul mensuel des précipitations (mm)
   - NBRR : nombre de jours renseignés pour RR (sert à repérer un mois en cours)
 
-Méthode : moyenne simple des valeurs de tous les postes du département pour
-chaque mois (postes sans valeur ignorés). La composition du réseau de postes
-(et leur altitude) varie d'un département et d'un mois à l'autre — c'est un
-ordre de grandeur départemental, pas une série homogénéisée.
+Méthode : moyenne des postes du département pour chaque mois, pondérée par
+la population (TM, TX et RR). Chaque commune (communes_data.json, avec
+coordonnées et population) est rattachée au poste le plus proche parmi ceux
+qui ont une mesure ce mois-là ; chaque poste pèse la population des communes
+qui lui sont rattachées. Cela évite que des postes d'altitude, nombreux mais
+peu habités, tirent la valeur d'un département de montagne vers le bas
+(effet de +0,3 °C en plaine à +3,6 °C en Savoie sur la moyenne annuelle).
+Repli sur la moyenne simple si le département n'a aucune commune localisée.
+Les records absolus (TXAB, TNAB), eux, restent le maximum / minimum des postes,
+et l'humidité / le vent (pour la température ressentie) la moyenne simple. La
+composition du réseau de postes varie d'une année à l'autre — c'est un ordre
+de grandeur départemental, pas une série homogénéisée.
 
 Température ressentie (`tr`) : non publiée par Météo-France, calculée ici à
 partir des moyennes départementales du mois (voir `feels_like`) — indice de
@@ -137,8 +146,46 @@ def mean(values):
     return round(sum(values) / len(values), 1) if values else None
 
 
-def build_departement(code, months, wanted, resolve_corsica):
-    """{AAAAMM: {tm, tx, tr, xa, xn, xd, rr, partial}} pour un département (ou 2A/2B)."""
+def communes_by_departement():
+    """{code département: [(lat, lon, population)]} — communes localisées et
+    habitées seulement (les autres ne peuvent pas être rattachées à un poste)."""
+    out = {}
+    for c in json.loads(COMMUNES.read_text())["communes"]:
+        if c.get("lat") is not None and c.get("lon") is not None and c.get("population"):
+            out.setdefault(c["departementCode"], []).append((c["lat"], c["lon"], c["population"]))
+    return out
+
+
+def rank_stations(communes, coords):
+    """Pour chaque commune, [(population, postes triés du plus proche au plus
+    éloigné)] — calculé une fois par département, réutilisé pour chaque mois."""
+    ranked = []
+    for lat, lon, pop in communes:
+        k = math.cos(math.radians(lat))
+        order = sorted(coords, key=lambda n: (coords[n][0] - lat) ** 2 + ((coords[n][1] - lon) * k) ** 2)
+        ranked.append((pop, order))
+    return ranked
+
+
+def weighted_mean(values, ranked):
+    """Moyenne des `values` ({poste: valeur}) pondérée par la population des
+    communes rattachées à chaque poste disponible ; moyenne simple en repli."""
+    if not values:
+        return None
+    weights = {}
+    for pop, order in ranked:
+        for n in order:
+            if n in values:
+                weights[n] = weights.get(n, 0) + pop
+                break
+    total = sum(weights.values())
+    if total == 0:
+        return mean(list(values.values()))
+    return round(sum(values[n] * w for n, w in weights.items()) / total, 1)
+
+
+def build_departement(code, months, wanted, resolve_corsica, communes):
+    """{AAAAMM: {tm, tx, tr, xa, xn, xd, na, rr, partial}} pour un département (ou 2A/2B)."""
     file_dep = "20" if code in ("2A", "2B") else code
     years = {m[:4] for m in months}
     names = []
@@ -146,8 +193,11 @@ def build_departement(code, months, wanted, resolve_corsica):
         names.append(f"MENSQ_{file_dep}_previous-1950-2024.csv.gz")
     names.append(f"MENSQ_{file_dep}_latest-2025-2026.csv.gz")
 
-    tm, tx, um, ff, rr, nbrr = {}, {}, {}, {}, {}, {}
+    tm, tx, rr = {}, {}, {}  # AAAAMM -> {poste: valeur}, pondérés par la population
+    um, ff, nbrr = {}, {}, {}
+    coords = {}  # poste -> (lat, lon)
     record = {}  # AAAAMM -> (TXAB, nom du poste, jour) du poste le plus chaud
+    cold = {}  # AAAAMM -> TNAB le plus bas des postes (record de froid)
     for name in names:
         rows = fetch_rows(file_dep, name)
         if rows is None:
@@ -158,34 +208,41 @@ def build_departement(code, months, wanted, resolve_corsica):
                 continue
             if file_dep == "20" and resolve_corsica(row) != code:
                 continue
+            num = row["NUM_POSTE"]
+            coords[num] = (float(row["LAT"]), float(row["LON"]))
             if row["TM"]:
-                tm.setdefault(m, []).append(float(row["TM"]))
+                tm.setdefault(m, {})[num] = float(row["TM"])
             if row["TX"]:
-                tx.setdefault(m, []).append(float(row["TX"]))
+                tx.setdefault(m, {})[num] = float(row["TX"])
             if row["TXAB"] and (m not in record or float(row["TXAB"]) > record[m][0]):
                 record[m] = (float(row["TXAB"]), row["NOM_USUEL"], int(row["TXDAT"]) if row["TXDAT"] else None)
+            if row["TNAB"] and (m not in cold or float(row["TNAB"]) < cold[m]):
+                cold[m] = float(row["TNAB"])
             if row["UMM"]:
                 um.setdefault(m, []).append(float(row["UMM"]))
             if row["FFM"]:
                 ff.setdefault(m, []).append(float(row["FFM"]))
             if row["RR"]:
-                rr.setdefault(m, []).append(float(row["RR"]))
+                rr.setdefault(m, {})[num] = float(row["RR"])
                 if row["NBRR"]:
                     nbrr.setdefault(m, []).append(int(row["NBRR"]))
 
+    ranked = rank_stations(communes, coords)
     result = {}
     for m in months:
         if m not in tm and m not in rr:
             continue
-        t = mean(tm.get(m, []))
+        t = weighted_mean(tm.get(m, {}), ranked)
         entry = {
             "tm": t,
-            "tx": mean(tx.get(m, [])),
+            "tx": weighted_mean(tx.get(m, {}), ranked),
             "tr": feels_like(t, mean(um.get(m, [])), mean(ff.get(m, []))),
-            "rr": mean(rr.get(m, [])),
+            "rr": weighted_mean(rr.get(m, {}), ranked),
         }
         if m in record:
             entry["xa"], entry["xn"], entry["xd"] = record[m]
+        if m in cold:
+            entry["na"] = cold[m]
         if m == months[-1]:
             entry["partial"] = True
         result[m] = entry
@@ -198,11 +255,12 @@ def main():
     wanted = set(months)
     departements = load_departements()
     resolve_corsica = corsica_resolver()
+    communes = communes_by_departement()
 
     out = {}
     missing = []
     for code, nom in sorted(departements.items()):
-        series = build_departement(code, months, wanted, resolve_corsica)
+        series = build_departement(code, months, wanted, resolve_corsica, communes.get(code, []))
         if not series:
             missing.append(code)
             continue

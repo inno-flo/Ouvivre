@@ -141,7 +141,8 @@ depuis les données climatologiques mensuelles de Météo-France :
 https://meteo.data.gouv.fr/datasets/6569b3d7d193b4daf2b43edc
 
 Un fichier CSV.gz par département et par période (`previous-1950-2024`,
-`latest-2025-2026`). Chaque département = moyenne simple des postes ; le mois
+`latest-2025-2026`). Chaque département = moyenne des postes pondérée par la population (chaque
+commune est rattachée au poste le plus proche ayant une mesure ce mois-là) ; le mois
 courant est partiel (`partial: true`). Corse : fichier unique "20" réparti en
 2A/2B via la commune INSEE du poste. Mayotte (976) n'est pas publiée.
 
