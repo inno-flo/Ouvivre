@@ -46,6 +46,11 @@ public struct MeteoDetailView: View {
     @FocusState private var isFocused: Bool
     /// Date survolée dans chaque graphique (`chartXSelection`), pour l'infobulle.
     @State private var hoveredTemperatureDate: Date?
+    /// Repère du record de chaleur sur la carte : celui du parent en mode
+    /// intégré (vue Département), le nôtre dans la fenêtre Climat.
+    @Environment(\.recordPin) private var parentRecordPin
+    @StateObject private var ownRecordPin = RecordPinModel()
+    private var recordPin: RecordPinModel { embedded ? parentRecordPin : ownRecordPin }
     @State private var hoveredPrecipitationDate: Date?
     /// Regroupement des barres de précipitations : par mois ou par trimestre.
     @State private var rainGrouping: RainGrouping = .month
@@ -206,14 +211,19 @@ public struct MeteoDetailView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .departementDetailWindow(!embedded)
+        .environment(\.recordPin, recordPin)
         // Flèches gauche/droite : mois précédent/suivant de la sélection
         // (graphiques et tableau), sans effet tant qu'aucun mois n'est
         // sélectionné.
         .focusable()
         .focusEffectDisabled()
         .focused($isFocused)
-        .onAppear { if !embedded { isFocused = true } }
+        .onAppear {
+            if !embedded { isFocused = true }
+            updateRecordPins()
+        }
         .onChange(of: selectedMonth) { _, new in
+            updateRecordPins()
             if new != nil { isFocused = true } else { selectedYear = nil }
         }
         .onKeyPress(.leftArrow) { moveSelection(by: -1) }
@@ -267,9 +277,26 @@ public struct MeteoDetailView: View {
         }
     }
 
+    /// Repère sur la carte, par un soleil rouge, le relevé du record de chaleur
+    /// du mois sélectionné pour chaque année : un repère par emplacement, avec
+    /// la ou les années où le record y a été relevé.
+    private func updateRecordPins() {
+        guard let m = selectedMonth else { recordPin.marks = []; return }
+        var order: [String] = []
+        var byKey: [String: (coordinate: RecordPinCoordinate, years: [Int])] = [:]
+        for p in series where month(p) == m {
+            guard let location = p.absoluteMaxLocation else { continue }
+            let key = "\(location.latitude),\(location.longitude)"
+            if byKey[key] == nil { byKey[key] = (location, []); order.append(key) }
+            byKey[key]?.years.append(year(p))
+        }
+        recordPin.marks = order.compactMap { byKey[$0] }.map { RecordPinMark(coordinate: $0.coordinate, years: $0.years.sorted()) }
+    }
+
     private func moveSelection(by delta: Int) -> KeyPress.Result {
         guard let m = selectedMonth else { return .ignored }
-        selectedMonth = max(1, min(12, m + delta))
+        // Déplacement en boucle : décembre → janvier et janvier → décembre.
+        selectedMonth = ((m - 1 + delta) % 12 + 12) % 12 + 1
         return .handled
     }
 

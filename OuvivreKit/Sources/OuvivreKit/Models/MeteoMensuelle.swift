@@ -1,4 +1,5 @@
 import Foundation
+import CoreLocation
 
 /// Températures et précipitations mensuelles par département sur les 5
 /// dernières années glissantes, précomputées offline depuis les données
@@ -14,6 +15,8 @@ enum MeteoMensuelle {
         let maxTemperature: Double?
         /// Maximum absolu du mois (°C) dans le département.
         let absoluteMax: Double?
+        /// Poste où le maximum absolu a été relevé (pour le repérer sur la carte).
+        let absoluteMaxLocation: CLLocationCoordinate2D?
         /// Minimum absolu du mois (°C) dans le département (record de froid).
         let absoluteMin: Double?
         /// Cumul de précipitations du mois (mm), moyenne des postes.
@@ -27,6 +30,8 @@ enum MeteoMensuelle {
         let tm: Double?
         let tx: Double?
         let xa: Double?
+        let xy: Double?
+        let xx: Double?
         let na: Double?
         let rr: Double?
         let partial: Bool?
@@ -58,7 +63,11 @@ enum MeteoMensuelle {
         return root.departements.mapValues { months in
             months.compactMap { key, raw -> Point? in
                 guard let date = monthStart(key) else { return nil }
-                return Point(date: date, temperature: raw.tm, maxTemperature: raw.tx, absoluteMax: raw.xa, absoluteMin: raw.na, precipitation: raw.rr, partial: raw.partial ?? false)
+                let location: CLLocationCoordinate2D? = {
+                    guard let lat = raw.xy, let lon = raw.xx else { return nil }
+                    return CLLocationCoordinate2D(latitude: lat, longitude: lon)
+                }()
+                return Point(date: date, temperature: raw.tm, maxTemperature: raw.tx, absoluteMax: raw.xa, absoluteMaxLocation: location, absoluteMin: raw.na, precipitation: raw.rr, partial: raw.partial ?? false)
             }
             .sorted { $0.date < $1.date }
         }

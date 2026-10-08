@@ -14,7 +14,8 @@ https://www.data.gouv.fr/api/1/datasets/r/766dbe58-0c5a-428b-b76e-a24b3cd250e1
 Paramètres retenus (une ligne = un poste × un mois, colonne AAAAMM) :
   - TM : moyenne mensuelle des températures quotidiennes (°C)
   - TX : moyenne mensuelle des températures maximales quotidiennes (°C)
-  - TXAB / TXDAT : maximum absolu du mois (°C) et jour où il a été relevé
+  - TXAB / TXDAT : maximum absolu du mois (°C) et jour où il a été relevé ; LAT / LON
+    du poste du record (xy / xx) pour le placer sur la carte
   - TNAB : minimum absolu du mois (°C) — « record de froid », min. des postes
   - UMM : humidité relative moyenne mensuelle (%)
   - FFM : vitesse moyenne mensuelle du vent à 10 m (m/s)
@@ -185,7 +186,7 @@ def weighted_mean(values, ranked):
 
 
 def build_departement(code, months, wanted, resolve_corsica, communes):
-    """{AAAAMM: {tm, tx, tr, xa, xn, xd, na, rr, partial}} pour un département (ou 2A/2B)."""
+    """{AAAAMM: {tm, tx, tr, xa, xn, xd, xy, xx, na, rr, partial}} pour un département (ou 2A/2B)."""
     file_dep = "20" if code in ("2A", "2B") else code
     years = {m[:4] for m in months}
     names = []
@@ -196,7 +197,7 @@ def build_departement(code, months, wanted, resolve_corsica, communes):
     tm, tx, rr = {}, {}, {}  # AAAAMM -> {poste: valeur}, pondérés par la population
     um, ff, nbrr = {}, {}, {}
     coords = {}  # poste -> (lat, lon)
-    record = {}  # AAAAMM -> (TXAB, nom du poste, jour) du poste le plus chaud
+    record = {}  # AAAAMM -> (TXAB, nom du poste, jour, lat, lon) du poste le plus chaud
     cold = {}  # AAAAMM -> TNAB le plus bas des postes (record de froid)
     for name in names:
         rows = fetch_rows(file_dep, name)
@@ -215,7 +216,8 @@ def build_departement(code, months, wanted, resolve_corsica, communes):
             if row["TX"]:
                 tx.setdefault(m, {})[num] = float(row["TX"])
             if row["TXAB"] and (m not in record or float(row["TXAB"]) > record[m][0]):
-                record[m] = (float(row["TXAB"]), row["NOM_USUEL"], int(row["TXDAT"]) if row["TXDAT"] else None)
+                record[m] = (float(row["TXAB"]), row["NOM_USUEL"], int(row["TXDAT"]) if row["TXDAT"] else None,
+                             round(float(row["LAT"]), 4), round(float(row["LON"]), 4))
             if row["TNAB"] and (m not in cold or float(row["TNAB"]) < cold[m]):
                 cold[m] = float(row["TNAB"])
             if row["UMM"]:
@@ -240,7 +242,7 @@ def build_departement(code, months, wanted, resolve_corsica, communes):
             "rr": weighted_mean(rr.get(m, {}), ranked),
         }
         if m in record:
-            entry["xa"], entry["xn"], entry["xd"] = record[m]
+            entry["xa"], entry["xn"], entry["xd"], entry["xy"], entry["xx"] = record[m]
         if m in cold:
             entry["na"] = cold[m]
         if m == months[-1]:

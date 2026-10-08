@@ -60,14 +60,15 @@ struct DepartementHeaderAndMap: View {
     let departementCode: String
     @ObservedObject var state: ClassicState
     @State private var mapFocusTick = 0
+    @Environment(\.recordPin) private var recordPin
 
     var body: some View {
         DepartementDetailHeader(departementCode: departementCode, state: state) { mapFocusTick += 1 }
-        DepartementMapCard(
+        PinnedMapCard(
+            pin: recordPin,
             names: [FranceGeoData.nom(forCode: departementCode)],
             focusCoordinate: FranceGeoData.chefsLieuxCoordinates[departementCode],
-            focusTick: mapFocusTick,
-            fillsDepartement: false
+            focusTick: mapFocusTick
         )
     }
 }

@@ -20,6 +20,9 @@ struct DepartementMapCard: View {
     /// à chaque incrément de `focusTick`.
     var focusCoordinate: CLLocationCoordinate2D?
     var focusTick = 0
+    /// Emplacements des relevés de record de chaleur du mois sélectionné, repérés
+    /// par un soleil rouge et l'année du relevé (couleur de la courbe des records) — fenêtre Climat.
+    var pinMarks: [RecordPinMark] = []
     /// `false` dans les fenêtres Météo et Culture : périmètre tracé seul, sans voile.
     var fillsDepartement = true
 
@@ -127,6 +130,27 @@ struct DepartementMapCard: View {
             if names.contains(where: { !(DepartementBoundaries.rings[$0] ?? []).isEmpty }) {
                 MapReader { proxy in
                     Map(position: $mapPosition) {
+                        ForEach(pinMarks) { mark in
+                            Annotation("", coordinate: mark.coordinate, anchor: .center) {
+                                // L'année est en surimpression : elle ne décale pas
+                                // l'icône, qui reste centrée sur le relevé.
+                                Image(systemName: "sun.max.fill")
+                                    .font(.system(size: 22))
+                                    .foregroundStyle(Color(hex: 0xD1382E))
+                                    .shadow(color: .white.opacity(0.9), radius: 2)
+                                    .shadow(color: .black.opacity(0.35), radius: 3, y: 1)
+                                    .overlay(alignment: .bottom) {
+                                        Text(mark.years.map(String.init).joined(separator: ", "))
+                                            .font(CFont.rounded(11, weight: .bold))
+                                            .foregroundStyle(Color(hex: 0xD1382E))
+                                            .shadow(color: .white, radius: 1.5)
+                                            .shadow(color: .white, radius: 1.5)
+                                            .fixedSize()
+                                            .offset(y: 15)
+                                    }
+                                    .allowsHitTesting(false)
+                            }
+                        }
                         ForEach(names, id: \.self) { name in
                             let selected = name == selectedName
                             let hovered = name == hoveredName

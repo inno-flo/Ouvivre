@@ -1,4 +1,5 @@
 import SwiftUI
+import CoreLocation
 
 /// Vue d'un département favori (sidebar > Favoris) : en-tête, carte, puis les
 /// contenus des fenêtres Culture et Météo réunis.
@@ -6,6 +7,7 @@ struct DepartementView: View {
     let departementCode: String
     @EnvironmentObject private var state: ClassicState
     @Environment(\.colorScheme) private var colorScheme
+    @StateObject private var recordPin = RecordPinModel()
 
     var body: some View {
         ScrollView {
@@ -14,6 +16,7 @@ struct DepartementView: View {
                 CultureDetailView(departementCode: departementCode, embedded: true)
                 MeteoDetailView(departementCode: departementCode, embedded: true)
             }
+            .environment(\.recordPin, recordPin)
             .padding(24)
             .frame(maxWidth: 1340, alignment: .leading)
             .frame(maxWidth: .infinity)
