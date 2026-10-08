@@ -74,15 +74,15 @@ struct InspectorPanelView: View {
     private func departementHeader(_ code: String) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .center, spacing: 8) {
-                Text(mapState.title)
-                    .font(CFont.rounded(20, weight: .bold))
-                    .foregroundStyle(c.ink)
                 Text(code)
                     .font(CFont.rounded(20, weight: .bold))
                     .foregroundStyle(c.ink)
                     .padding(.horizontal, 7)
                     .padding(.vertical, 3)
                     .background(c.badge, in: RoundedRectangle(cornerRadius: 5))
+                Text(mapState.title)
+                    .font(CFont.rounded(20, weight: .bold))
+                    .foregroundStyle(c.ink)
                 Spacer(minLength: 8)
                 let isFavorite = state.favoriteDepartementCodes.contains(code)
                 Button {
@@ -94,10 +94,20 @@ struct InspectorPanelView: View {
                 }
                 .buttonStyle(.plain)
                 .help(isFavorite ? "Retirer des favoris" : "Ajouter aux favoris")
+                // Ouvre la fenêtre du département (comme le double-clic dans la sidebar).
+                Button {
+                    openWindow(id: DepartementWindowView.windowID, value: code)
+                } label: {
+                    Image(systemName: "interface.window.on.rectangle")
+                        .font(.system(size: 13))
+                        .foregroundStyle(c.faint)
+                }
+                .buttonStyle(.plain)
+                .help("Ouvrir la fenêtre du département")
             }
             if let chefLieu = FranceGeoData.chefsLieux[code] {
                 HStack(spacing: 8) {
-                    Text("(\(chefLieu))")
+                    Text(chefLieu)
                         .font(CFont.rounded(18))
                         .foregroundStyle(c.faint)
                     Button {
@@ -262,10 +272,6 @@ struct InspectorPanelView: View {
                 }
             } label: {
                 HStack(spacing: 6) {
-                    Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(c.faint)
-                        .frame(width: 10)
                     Image(systemName: ClassicStatic.criterionIcons[criterion.label] ?? "checkmark.circle.fill")
                         .foregroundStyle(ClassicTheme.accent)
                     Text(criterion.label)
@@ -275,7 +281,13 @@ struct InspectorPanelView: View {
                     Text("\(names.count + spr.count)")
                         .font(CFont.rounded(12))
                         .foregroundStyle(c.faint)
+                    Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(c.faint)
+                        .frame(width: 10)
                 }
+                // Chevron à droite du compteur, en retrait du bord droit.
+                .padding(.trailing, 16)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
