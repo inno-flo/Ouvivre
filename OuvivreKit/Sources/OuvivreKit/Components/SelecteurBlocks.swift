@@ -8,14 +8,18 @@ struct PaysCountryBlock: View {
     @Environment(\.colorScheme) private var colorScheme
     let ink: Color
 
+    /// Pays dont le nom est grisé (données pas encore exploitées).
+    private static let dimmedCountries: Set<String> = ["Danemark", "Suède", "Japon"]
+
     var body: some View {
         FlowLayout(spacing: 8, rowSpacing: 8) {
             ForEach(ClassicStatic.countries, id: \.self) { name in
                 let selected = name == state.country
+                let dimmed = Self.dimmedCountries.contains(name) && !selected
                 Button { state.country = name } label: {
                     Text(name)
                         .font(CFont.rounded(13, weight: .medium))
-                        .foregroundStyle(selected ? .white : ink)
+                        .foregroundStyle(selected ? .white : (dimmed ? Color.secondary : ink))
                         .padding(.horizontal, 12).padding(.vertical, 8)
                         .background(selected ? ClassicTheme.accent : .clear)
                         .clipShape(Capsule())

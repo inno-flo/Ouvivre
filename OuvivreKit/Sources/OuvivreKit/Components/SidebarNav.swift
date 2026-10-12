@@ -50,7 +50,7 @@ struct SidebarNav: View {
         List(selection: selection) {
             // Sélecteur : en tête de la sidebar, sans en-tête de section.
             HStack(spacing: 0) {
-                Self.rowLabel("Sélecteur", systemImage: "list.bullet.clipboard.fill",
+                Self.rowLabel("Sélecteur de départements", systemImage: "list.bullet.clipboard.fill",
                               bold: state.screen == .selecteur && state.selectedDepartementCode == nil)
                     .background(GeometryReader { proxy in
                         Color.clear.preference(key: IconLeadingKey.self, value: proxy.frame(in: .named("sidebar")).minX)
