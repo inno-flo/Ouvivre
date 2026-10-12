@@ -17,7 +17,7 @@ enum ClassicStatic {
     /// Icône SF Symbols de chaque critère, indexée par son libellé —
     /// partagée par le tableau Favoris et les réglettes du Sélecteur.
     static let criterionIcons: [String: String] = [
-        "Chef-lieu": "mappin.and.ellipse",
+        "Chef-lieu": "building.2",
         "Pays étranger": "globe.desk",
         "Mer ou océan": "figure.sailing",
         "Montagne": "mountain.2",

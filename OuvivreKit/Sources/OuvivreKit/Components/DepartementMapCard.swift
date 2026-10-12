@@ -32,6 +32,8 @@ struct DepartementMapCard: View {
     /// le bas agrandit la carte (les sections en dessous suivent), double-clic
     /// revient à `height`, qui reste la hauteur minimale.
     var resizable = false
+    /// Numéro du département, affiché dans le coin supérieur gauche de la carte.
+    var badge: String?
 
     @State private var hoveredName: String?
     /// Hauteur ajoutée à `height` par la poignée (jamais négative).
@@ -157,10 +159,25 @@ struct DepartementMapCard: View {
             }
     }
 
+    private func focusOnChefLieu() {
+        guard let coordinate = focusCoordinate else { return }
+        withAnimation(.easeInOut(duration: 0.25)) {
+            mapPosition = .region(MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)))
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
                 hoverLabel
+                if let badge {
+                    Text(badge)
+                        .font(CFont.rounded(20, weight: .bold))
+                        .foregroundStyle(c.ink)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(c.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
+                }
                 Spacer()
                 actionButtons
                 typeButtons
@@ -221,12 +238,7 @@ struct DepartementMapCard: View {
                     .onMapCameraChange { context in mapRegion = context.region }
                 }
                 .onAppear { if let rect = departementRect { mapPosition = .rect(rect) } }
-                .onChange(of: focusTick) { _, _ in
-                    guard let coordinate = focusCoordinate else { return }
-                    withAnimation(.easeInOut(duration: 0.25)) {
-                        mapPosition = .region(MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)))
-                    }
-                }
+                .onChange(of: focusTick) { _, _ in focusOnChefLieu() }
                 // Sélection modifiée (favori ajouté/retiré) : le cadrage suit
                 // pour garder tous les départements sélectionnés visibles.
                 .onChange(of: names) { _, _ in

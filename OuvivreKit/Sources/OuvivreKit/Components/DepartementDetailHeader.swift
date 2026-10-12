@@ -1,8 +1,7 @@
 import SwiftUI
 
 /// En-tête commun aux fenêtres de détail d'un département (Météo, Culture) :
-/// numéro, nom, chef-lieu, bouton de recentrage de la carte et, à sa droite,
-/// étoile de favoris, sur une seule ligne.
+/// nom, région entre parenthèses, étoile de favoris puis, sur une 2e ligne, chef-lieu et bouton de recentrage, sur une seule ligne.
 struct DepartementDetailHeader: View {
     @Environment(\.colorScheme) private var colorScheme
     private var c: DetailColors { DetailColors(colorScheme) }
@@ -11,29 +10,16 @@ struct DepartementDetailHeader: View {
     let onRecenter: () -> Void
 
     var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
         HStack(alignment: .center, spacing: 10) {
             HStack(alignment: .center, spacing: 8) {
-                Text(departementCode)
-                    .font(CFont.rounded(20, weight: .bold))
-                    .foregroundStyle(c.ink)
-                    .padding(.horizontal, 7)
-                    .padding(.vertical, 3)
-                    .background(c.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
                 Text(FranceGeoData.nom(forCode: departementCode))
                     .font(CFont.rounded(20, weight: .bold))
                     .foregroundStyle(c.ink)
-                if let chefLieu = FranceGeoData.chefsLieux[departementCode] {
-                    Text("(\(chefLieu))")
+                if let region = FranceGeoData.departements.first(where: { $0.codeInsee == departementCode })?.nomRegion {
+                    Text("(\(region))")
                         .font(CFont.rounded(18))
                         .foregroundStyle(c.faint)
-                    Button(action: onRecenter) {
-                        Image(systemName: "mappin.and.ellipse")
-                            .font(.system(size: 13))
-                            .frame(width: 16, height: 16)
-                            .foregroundStyle(c.faint)
-                    }
-                    .buttonStyle(.plain)
-                    .help("Centrer la carte sur \(chefLieu)")
                 }
                 // Étoile de favoris, à droite de l'icône de recentrage.
                 let isFavorite = state.favoriteDepartementCodes.contains(departementCode)
@@ -50,12 +36,32 @@ struct DepartementDetailHeader: View {
             }
             Spacer(minLength: 8)
         }
+        if let chefLieu = FranceGeoData.chefsLieux[departementCode] {
+            HStack(alignment: .center, spacing: 6) {
+                Image(systemName: "building.2")
+                    .font(.system(size: 13))
+                    .frame(width: 16, height: 16)
+                    .foregroundStyle(c.faint)
+                Text(chefLieu)
+                    .font(CFont.rounded(16))
+                    .foregroundStyle(c.faint)
+                Button(action: onRecenter) {
+                    Image(systemName: "mappin.and.ellipse")
+                        .font(.system(size: 13))
+                        .frame(width: 16, height: 16)
+                        .foregroundStyle(c.faint)
+                }
+                .buttonStyle(.plain)
+                .help("Centrer la carte sur \(chefLieu)")
+            }
+        }
+        }
     }
 }
 
 /// En-tête puis carte du département, communs aux fenêtres de détail
-/// (Météo, Culture) et à la vue Département : le bouton de recentrage de
-/// l'en-tête centre la carte sur le chef-lieu.
+/// (Météo, Culture) et à la vue Département : le bouton de recentrage
+/// de l'en-tête centre la carte sur le chef-lieu.
 struct DepartementHeaderAndMap: View {
     let departementCode: String
     @ObservedObject var state: ClassicState
@@ -68,7 +74,8 @@ struct DepartementHeaderAndMap: View {
             pin: recordPin,
             names: [FranceGeoData.nom(forCode: departementCode)],
             focusCoordinate: FranceGeoData.chefsLieuxCoordinates[departementCode],
-            focusTick: mapFocusTick
+            focusTick: mapFocusTick,
+            badge: departementCode
         )
     }
 }
