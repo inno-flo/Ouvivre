@@ -23,6 +23,15 @@ public struct MeteoDetailView: View {
         case record = "Records"
         case precipitation = "Précipitations"
         var id: String { rawValue }
+        /// Infobulle du bouton du tableau de détail.
+        var help: String? {
+            switch self {
+            case .temperature: "Moyenne de toutes les températures du mois, nuits comprises"
+            case .maxTemperature: "Moyenne des pics de l’après-midi"
+            case .record: "Le pic le plus chaud du mois"
+            default: nil
+            }
+        }
         var icon: String {
             switch self {
             case .temperature: "thermometer.medium"
@@ -221,8 +230,8 @@ public struct MeteoDetailView: View {
                         // vue Mois et Trimestres, pour comparer les deux.
                         .chartYScale(domain: 0...rainScaleMax)
                     }
-                    yearlySummary
                     monthTable
+                    yearlySummary
                     Text("Moyenne des postes Météo-France du département. Le dernier mois est en cours (données partielles).")
                         .font(CFont.rounded(11)).foregroundStyle(c.faint)
                 }
@@ -583,6 +592,19 @@ public struct MeteoDetailView: View {
 
     /// Tableau mois (lignes) × années (colonnes), commutable entre
     /// températures et précipitations.
+    /// Valeur mensuelle la plus haute d'une année pour la métrique affichée —
+    /// mise en rouge dans le tableau de détail (températures maximales, records et ressenties — pas les moyennes ni les précipitations).
+    private func yearMax(_ y: Int) -> Double? {
+        series.filter { year($0) == y }.compactMap(value).max()
+    }
+
+    /// `true` pour la valeur mensuelle la plus haute de l'année `y` (hors
+    /// moyennes et précipitations) : valeur et nom du mois passent en rouge.
+    private func isYearRecord(_ p: MeteoMensuelle.Point?, year y: Int) -> Bool {
+        guard metric != .precipitation, metric != .temperature, let v = p.flatMap(value) else { return false }
+        return v == yearMax(y)
+    }
+
     private var monthTable: some View {
         VStack(alignment: .leading, spacing: 10) {
             // Titre et boutons sur une seule ligne, alignés sur leur ligne de
@@ -604,6 +626,7 @@ public struct MeteoDetailView: View {
                             .fixedSize()
                     }
                     .buttonStyle(.plain)
+                    .help(m.help ?? "")
                 }
                 }
             }
@@ -619,25 +642,31 @@ public struct MeteoDetailView: View {
                 Divider().padding(.bottom, 2)
                 ForEach(1...12, id: \.self) { m in
                     let isSelected = selectedMonth == m
+                    let hasYearRecord = years.contains { y in isYearRecord(series.first { year($0) == y && month($0) == m }, year: y) }
                     HStack(spacing: 0) {
-                        Text(Self.monthName(m)).font(CFont.rounded(13, weight: isSelected ? .semibold : .regular)).foregroundStyle(c.body)
+                        Text(Self.monthName(m)).font(CFont.rounded(13, weight: isSelected ? .semibold : .regular)).foregroundStyle(hasYearRecord ? Color.red : c.body)
                             .frame(width: 110, alignment: .leading)
                         ForEach(years, id: \.self) { y in
                             let p = series.first { year($0) == y && month($0) == m }
+                            let isYearRecord = isYearRecord(p, year: y)
                             Text(p.flatMap(value).map { metric == .precipitation ? String(format: "%.0f", $0) : frDecimal($0) } ?? "–")
                                 .font(CFont.mono(12))
-                                .foregroundStyle(p?.partial == true ? c.faint : c.ink)
+                                .foregroundStyle(isYearRecord ? Color.red : (p?.partial == true ? c.faint : c.ink))
                                 .frame(maxWidth: .infinity, alignment: .trailing)
                         }
                     }
                     .padding(.horizontal, 8).padding(.vertical, 5)
-                    .background(isSelected ? ClassicTheme.accent.opacity(0.15) : .clear, in: RoundedRectangle(cornerRadius: 6))
+                    .background(isSelected ? ClassicTheme.accent.opacity(0.15) : (m % 2 == 1 ? c.track.opacity(0.45) : .clear), in: RoundedRectangle(cornerRadius: 6))
                     .contentShape(Rectangle())
                     // Un clic sélectionne la ligne entière ; recliquer la désélectionne.
                     .onTapGesture { selectedMonth = isSelected ? nil : m }
                 }
             }
-            Text("Valeurs en \(unit).").font(CFont.rounded(11)).foregroundStyle(c.faint2)
+            if metric != .precipitation {
+                Text(Self.weightingNote)
+                    .font(CFont.rounded(11)).foregroundStyle(c.faint)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
         .padding(16)
         .background(c.card, in: RoundedRectangle(cornerRadius: 10))
