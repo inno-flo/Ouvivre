@@ -1,10 +1,13 @@
 import SwiftUI
+import AppKit
 
 /// Sources — every open-data reference used across the app: the country
 /// profile sources for all supported countries, plus the livability sources.
 struct SourcesView: View {
-    @StateObject private var freshness = DatasetFreshness()
+    @ObservedObject private var freshness = DatasetFreshness.shared
     @Environment(\.colorScheme) private var colorScheme
+    /// Base dont les instructions viennent d'être copiées (retour visuel temporaire).
+    @State private var copiedLabel: String?
     private var pal: DetailColors { DetailColors(colorScheme) }
 
     var body: some View {
@@ -51,16 +54,34 @@ struct SourcesView: View {
     private var freshnessCard: some View {
         sourceCard {
             VStack(alignment: .leading, spacing: 0) {
-                Eyebrow("FRAÎCHEUR DES DONNÉES", color: pal.faint, font: CFont.rounded(13, weight: .medium), tracking: 1).padding(.bottom, 10)
+                HStack(spacing: 8) {
+                    Eyebrow("\(ClassicStatic.countryFlags["France"] ?? "🇫🇷") FRAÎCHEUR DES DONNÉES", color: pal.faint, font: CFont.rounded(13, weight: .medium), tracking: 1)
+                    Button {
+                        Task { await freshness.forceCheck() }
+                    } label: {
+                        Group {
+                            if freshness.isChecking {
+                                Image(systemName: "progress.indicator").symbolEffect(.variableColor.iterative, isActive: true)
+                            } else {
+                                Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
+                            }
+                        }
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(pal.faint)
+                        .frame(width: 18, height: 18)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(freshness.isChecking)
+                    .help("Vérifier maintenant la fraîcheur des données")
+                    Spacer(minLength: 0)
+                }
+                .padding(.bottom, 10)
                 ForEach(freshnessRows, id: \.label) { row in
                     HStack(alignment: .top) {
                         Text(row.label).font(CFont.rounded(12)).foregroundStyle(pal.body)
                         Spacer()
-                        Text(row.status)
-                            .font(CFont.mono(11, weight: .medium))
-                            .foregroundStyle(row.isStale ? ClassicTheme.accent : pal.ink)
-                            .multilineTextAlignment(.trailing)
-                            .frame(maxWidth: 260, alignment: .trailing)
+                        statusView(row)
                     }
                     .padding(.vertical, 7)
                 }
@@ -68,11 +89,69 @@ struct SourcesView: View {
         }
     }
 
-    private var freshnessRows: [(label: String, status: String, isStale: Bool)] {
-        DatasetFreshness.datasets.map { dataset in
-            let stale = freshness.staleDatasets.contains(dataset.label)
-            return (dataset.label, stale ? "mise à jour disponible — retraiter via geo_pipeline/" : "à jour", stale)
+    @ViewBuilder
+    private func statusView(_ row: (label: String, isStale: Bool)) -> some View {
+        if freshness.checkingLabels.contains(row.label) {
+            Image(systemName: "progress.indicator")
+                .symbolEffect(.variableColor.iterative, isActive: true)
+                .font(.system(size: 12))
+                .foregroundStyle(pal.faint)
+        } else if row.isStale {
+            Button {
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(updateHelp(for: row.label), forType: .string)
+                copiedLabel = row.label
+                Task {
+                    try? await Task.sleep(for: .seconds(2))
+                    if copiedLabel == row.label { copiedLabel = nil }
+                }
+            } label: {
+                HStack(alignment: .top, spacing: 5) {
+                    if copiedLabel == row.label {
+                        Text("Instructions copiées")
+                            .font(CFont.mono(11, weight: .medium))
+                            .foregroundStyle(pal.ink)
+                        Image(systemName: "doc.on.clipboard.fill").foregroundStyle(.green)
+                    } else {
+                        Text("mise à jour disponible — retraiter via geo_pipeline/")
+                            .font(CFont.mono(11, weight: .medium))
+                            .foregroundStyle(ClassicTheme.accent)
+                            .multilineTextAlignment(.trailing)
+                            .frame(maxWidth: 260, alignment: .trailing)
+                        Image(systemName: "checkmark.circle.trianglebadge.exclamationmark.fill").foregroundStyle(.orange)
+                    }
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help("Copier les instructions de mise à jour")
+        } else if let date = freshness.verifiedAt[row.label] {
+            HStack(spacing: 5) {
+                Text("Vérification \(freshness.manuallyVerified.contains(row.label) ? "manuelle" : "automatique") faite le \(date.formatted(date: .long, time: .omitted))")
+                    .font(CFont.mono(11, weight: .medium))
+                    .foregroundStyle(pal.ink)
+                Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+            }
         }
+    }
+
+    /// Procédure de mise à jour (voir `geo_pipeline/README.md`).
+    private func updateHelp(for label: String) -> String {
+        let isCommunes = label == "Communes de France"
+        let script = isCommunes ? "build_communes_data.py" : "build_culture_data.py"
+        let output = isCommunes ? "communes_data.json" : "culture_scores.json"
+        return """
+        Une version plus récente de « \(label) » existe sur data.gouv.fr.
+        Pour récupérer les données à jour :
+        1. Dans le dossier geo_pipeline/, activer l'environnement Python (.venv avec requests).
+        2. Lancer .venv/bin/python \(script) — il télécharge les données et écrit data/out/\(output).
+        3. Copier ce fichier dans OuvivreKit/Sources/OuvivreKit/Resources/.
+        4. Recompiler l'app.
+        """
+    }
+
+    private var freshnessRows: [(label: String, isStale: Bool)] {
+        DatasetFreshness.datasets.map { ($0.label, freshness.staleDatasets.contains($0.label)) }
     }
 
     private func countryCard(_ country: String, sources: [ClassicStatic.CountrySource]) -> some View {
@@ -85,6 +164,8 @@ struct SourcesView: View {
                             .font(CFont.rounded(13))
                             .foregroundStyle(pal.body)
                             .underline()
+                            .multilineTextAlignment(.leading)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .padding(.vertical, 6)
                     .overlay(alignment: .top) { Rectangle().fill(pal.divider).frame(height: 1) }

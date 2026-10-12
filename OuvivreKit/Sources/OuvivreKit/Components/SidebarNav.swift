@@ -11,6 +11,7 @@ struct SidebarNav: View {
     let selection: Binding<SidebarDestination?>
     @EnvironmentObject private var state: ClassicState
     @Environment(\.openWindow) private var openWindow
+    @ObservedObject private var freshness = DatasetFreshness.shared
     @State private var favoritesExpanded = true
     /// Abscisse de l'icône de Sélecteur, mesurée : Sources (hors de la liste) s'y aligne.
     @State private var iconLeading: CGFloat?
@@ -108,6 +109,12 @@ struct SidebarNav: View {
             Button { selection.wrappedValue = .screen(.sources) } label: {
                 HStack(spacing: 0) {
                     Self.rowLabel("Sources", systemImage: "books.vertical", bold: state.screen == .sources)
+                    if !freshness.staleDatasets.isEmpty {
+                        Image(systemName: "bell.badge.fill")
+                            .foregroundStyle(.orange)
+                            .padding(.leading, 6)
+                            .help("Une base de données n'est plus à jour")
+                    }
                     Spacer(minLength: 4)
                 }
                 .padding(.leading, iconLeading ?? 12).padding(.trailing, 12).padding(.vertical, 8)
@@ -117,6 +124,7 @@ struct SidebarNav: View {
         }
         .coordinateSpace(name: "sidebar")
         .onPreferenceChange(IconLeadingKey.self) { iconLeading = $0 }
+        .task { await freshness.checkIfDue() }
     }
 }
 

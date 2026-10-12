@@ -21,7 +21,23 @@ final class DatasetFreshness: ObservableObject {
     /// Libellés des jeux de données bundlés qui se sont révélés plus récents
     /// côté data.gouv.fr que la dernière génération offline — vide tant que
     /// rien n'est à jour ou que la vérification n'a pas encore eu lieu.
-    @Published private(set) var staleDatasets: [String] = []
+    @Published private(set) var staleDatasets: [String] = UserDefaults.standard.stringArray(forKey: DatasetFreshness.staleKey) ?? []
+
+    /// Libellés des jeux en cours de vérification.
+    @Published private(set) var checkingLabels: Set<String> = []
+    var isChecking: Bool { !checkingLabels.isEmpty }
+    /// Date de la dernière vérification réussie, par jeu de données.
+    @Published private(set) var verifiedAt: [String: Date] =
+        UserDefaults.standard.dictionary(forKey: DatasetFreshness.verifiedKey) as? [String: Date] ?? [:]
+    private static let verifiedKey = "DatasetFreshness.verifiedAt"
+    /// Jeux dont la dernière vérification a été lancée à la main (sinon : automatique).
+    @Published private(set) var manuallyVerified: Set<String> =
+        Set(UserDefaults.standard.stringArray(forKey: DatasetFreshness.manualKey) ?? [])
+    private static let manualKey = "DatasetFreshness.manuallyVerified"
+
+    /// Instance partagée : la sidebar (pastille) et la vue Sources (tableau).
+    static let shared = DatasetFreshness()
+    private static let staleKey = "DatasetFreshness.staleDatasets"
     private var lastCheckedAt = UserDefaults.standard.object(forKey: DatasetFreshness.lastCheckedKey) as? Date
 
     private static let lastCheckedKey = "DatasetFreshness.lastCheckedAt"
@@ -60,12 +76,28 @@ final class DatasetFreshness: ObservableObject {
         if let lastCheckedAt, Date().timeIntervalSince(lastCheckedAt) < Self.checkInterval {
             return
         }
+        await runCheck(manual: false)
+    }
+
+    /// Force la vérification, sans tenir compte du délai de 15 jours.
+    func forceCheck() async {
+        await runCheck(manual: true)
+    }
+
+    private func runCheck(manual: Bool) async {
+        guard checkingLabels.isEmpty else { return }
+        checkingLabels = Set(Self.datasets.map(\.label))
+        defer { checkingLabels = [] }
 
         var stale: [String] = []
         var anySucceeded = false
         for dataset in Self.datasets {
-            guard let upstream = await Self.fetchLastModified(datasetId: dataset.id) else { continue }
+            let upstream = await Self.fetchLastModified(datasetId: dataset.id)
+            checkingLabels.remove(dataset.label)
+            guard let upstream else { continue }
             anySucceeded = true
+            verifiedAt[dataset.label] = Date()
+            if manual { manuallyVerified.insert(dataset.label) } else { manuallyVerified.remove(dataset.label) }
             if let generatedAt = dataset.generatedAt, upstream > generatedAt {
                 stale.append(dataset.label)
             }
@@ -75,6 +107,9 @@ final class DatasetFreshness: ObservableObject {
         // pour réessayer au prochain affichage plutôt que dans 15 jours.
         guard anySucceeded else { return }
         staleDatasets = stale
+        UserDefaults.standard.set(stale, forKey: Self.staleKey)
+        UserDefaults.standard.set(verifiedAt, forKey: Self.verifiedKey)
+        UserDefaults.standard.set(Array(manuallyVerified), forKey: Self.manualKey)
         lastCheckedAt = Date()
         UserDefaults.standard.set(lastCheckedAt, forKey: Self.lastCheckedKey)
     }

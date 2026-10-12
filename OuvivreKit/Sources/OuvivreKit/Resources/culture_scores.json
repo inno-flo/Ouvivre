@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-09-22T06:39:00.410175+00:00",
+ "generatedAt": "2026-10-12T17:21:03.101673+00:00",
  "source": "culture.data.gouv.fr — Base des lieux et équipements culturels (Basilic, filtré Musée): https://static.data.gouv.fr/resources/base-des-lieux-et-equipements-culturels-basilic/20260218-084338/base-des-lieux-et-des-equipements-culturels.csv | Immeubles protégés au titre des Monuments Historiques (Mérimée): https://ministere-culture.s3.sbg.io.cloud.ovh.net/POP/merimee.csv | Liste des sites patrimoniaux remarquables (SPR, affichage): https://ministere-culture.s3.sbg.io.cloud.ovh.net/SPR/liste_sites_patrimoniaux_remarquables.csv | Liste des festivals en France: https://static.data.gouv.fr/resources/liste-des-festivals-en-france/20250827-132958/festivals-global-festivals-pl.csv",
  "departements": [
   {
