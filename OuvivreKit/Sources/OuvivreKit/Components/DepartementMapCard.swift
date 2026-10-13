@@ -45,6 +45,7 @@ struct DepartementMapCard: View {
     /// vue courante (déplacement manuel compris).
     @State private var mapRegion: MKCoordinateRegion?
     @State private var is3D = false
+    @Namespace private var mapScope
     @State private var mapCamera: MapCamera?
 
     /// Rectangle englobant le périmètre du département, avec une petite
@@ -187,7 +188,7 @@ struct DepartementMapCard: View {
             // Test léger (sans calculer le rectangle englobant à chaque survol).
             if names.contains(where: { !(DepartementBoundaries.rings[$0] ?? []).isEmpty }) {
                 MapReader { proxy in
-                    Map(position: $mapPosition) {
+                    Map(position: $mapPosition, scope: mapScope) {
                         ForEach(pinMarks) { mark in
                             Annotation("", coordinate: mark.coordinate, anchor: .center) {
                                 // L'année est en surimpression : elle ne décale pas
@@ -238,7 +239,7 @@ struct DepartementMapCard: View {
                         onSelect(name)
                     }
                     .onMapCameraChange { context in mapRegion = context.region; mapCamera = context.camera }
-                    .satelliteTiltButton(isSatellite: mapType == .satellite, is3D: $is3D, position: $mapPosition, camera: mapCamera)
+                    .satelliteTiltButton(isSatellite: mapType == .satellite, is3D: $is3D, position: $mapPosition, camera: mapCamera, mapScope: mapScope)
                 }
                 .onAppear { if let rect = departementRect { mapPosition = .rect(rect) } }
                 .onChange(of: focusTick) { _, _ in focusOnChefLieu() }
