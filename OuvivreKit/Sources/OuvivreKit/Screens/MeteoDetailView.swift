@@ -100,8 +100,7 @@ public struct MeteoDetailView: View {
                 if !embedded {
                     DepartementHeaderAndMap(departementCode: departementCode, state: state)
                 }
-                // Titre de section sous la carte ; en mode intégré (vue Département),
-                // une ligne vide le sépare de la rubrique Culture qui précède.
+                // Titre de section sous la carte.
                 Button {
                     withAnimation(.easeInOut(duration: 0.15)) { climatCollapsed.toggle() }
                 } label: {
@@ -114,7 +113,6 @@ public struct MeteoDetailView: View {
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .padding(.top, embedded ? 22 : 0)
                 .padding(.bottom, climatCollapsed ? 0 : -14)
                 .help(climatCollapsed ? "Déplier la rubrique Climat" : "Replier la rubrique Climat")
                 if !climatCollapsed {
@@ -497,7 +495,8 @@ public struct MeteoDetailView: View {
 
     /// Légende du graphique des températures : méthode de calcul de la valeur
     /// départementale (voir geo_pipeline/build_meteo_data.py).
-    private static let weightingNote = "Température moyenne mensuelle : moyenne des postes de mesure du département, pondérée par la population. Chaque commune est rattachée au poste le plus proche ; un poste pèse le nombre d'habitants des communes qui lui sont rattachées, ce qui limite le poids des postes d'altitude, peu habités. La température maximale moyenne est pondérée de la même façon ; le record est celui du poste le plus chaud du département."
+    /// Légende explicative des températures — partagée avec le tableau Favoris.
+    static let weightingNote = "Température moyenne : moyenne des postes de mesure du département, pondérée par la population. Chaque commune est rattachée au poste le plus proche ; un poste pèse le nombre d'habitants des communes qui lui sont rattachées, ce qui limite le poids des postes d'altitude, peu habités. La température maximale moyenne est pondérée de la même façon ; le record est celui du poste le plus chaud du département."
 
     private func chartCard<C: View>(title: String, yTicks: [Double]? = nil, footnote: String? = nil, @ViewBuilder chart: () -> C) -> some View {
         chartCard(title: title, yTicks: yTicks, footnote: footnote, trailing: { EmptyView() }, chart: chart)

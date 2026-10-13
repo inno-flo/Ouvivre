@@ -2,7 +2,7 @@ import SwiftUI
 import CoreLocation
 
 /// Vue d'un département favori (sidebar > Favoris) : en-tête, carte, puis les
-/// contenus des fenêtres Culture et Météo réunis.
+/// contenus des fenêtres Climat et Culture réunis, dans cet ordre.
 struct DepartementView: View {
     let departementCode: String
     @EnvironmentObject private var state: ClassicState
@@ -13,8 +13,10 @@ struct DepartementView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
                 DepartementHeaderAndMap(departementCode: departementCode, state: state)
-                CultureDetailView(departementCode: departementCode, embedded: true)
                 MeteoDetailView(departementCode: departementCode, embedded: true)
+                // Une ligne vide sépare la rubrique Culture de la fin du Climat.
+                CultureDetailView(departementCode: departementCode, embedded: true)
+                    .padding(.top, 22)
             }
             .environment(\.recordPin, recordPin)
             .padding(24)

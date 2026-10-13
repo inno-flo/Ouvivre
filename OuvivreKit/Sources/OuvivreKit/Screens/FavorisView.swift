@@ -98,6 +98,8 @@ struct FavorisView: View {
         let id: String
         let title: String
         let rows: [Row]
+        /// Légende affichée sous le titre, à la ligne (largeur du tableau).
+        var note: String? = nil
     }
 
     /// Favoris dans l'ordre choisi par l'utilisateur (glisser-déposer).
@@ -261,7 +263,7 @@ struct FavorisView: View {
             ]),
             Section(id: "geo", title: "Géographie (les scores de correspondance entre le département et les critères de choix sont sur 100)", rows: geoRows),
             Section(id: "culture", title: "Culture (nombre de lieux et d'événements)", rows: cultureRows),
-            Section(id: "meteo", title: "Climat (valeurs calculées sur les 12 derniers mois)", rows: meteoRows)
+            Section(id: "meteo", title: "Climat (valeurs calculées sur les 12 derniers mois)", rows: meteoRows, note: MeteoDetailView.weightingNote)
         ]
     }
 
@@ -441,8 +443,15 @@ struct FavorisView: View {
             ForEach(model.sections) { section in
                 if !section.title.isEmpty {
                     HStack(spacing: 0) {
-                        Eyebrow(section.title, color: pal.faint, font: CFont.rounded(13, weight: .medium), tracking: 1)
-                            .padding(.horizontal, 18).padding(.vertical, 8)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Eyebrow(section.title, color: pal.faint, font: CFont.rounded(13, weight: .medium), tracking: 1)
+                            if let note = section.note {
+                                Text(note)
+                                    .font(CFont.rounded(11)).foregroundStyle(pal.faint)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                        .padding(.horizontal, 18).padding(.vertical, 8)
                         Spacer(minLength: 0)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
