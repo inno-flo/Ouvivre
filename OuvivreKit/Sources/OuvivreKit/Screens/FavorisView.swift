@@ -43,6 +43,14 @@ struct FavorisView: View {
     @State private var draggingCode: String?
     /// Département dont le retrait des favoris attend confirmation.
     @State private var pendingRemovalCode: String?
+    /// Largeur disponible pour le contenu (fenêtre moins marges) : les colonnes
+    /// s'élargissent pour que le tableau l'occupe entièrement.
+    @State private var availableWidth: CGFloat = 0
+
+    private struct WidthKey: PreferenceKey {
+        static let defaultValue: CGFloat = 0
+        static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
+    }
     /// Largeur mesurée (SF Pro Rounded) du texte le plus large de l'en-tête —
     /// nom de département (13 semibold) ou de région (10) —, plus 1 caractère
     /// moyen d'espacement de chaque côté.
@@ -76,7 +84,11 @@ struct FavorisView: View {
         let base = baseDepartements
         let top = Self.topDepartementCodes(in: base)
         let deps = base.filter { top.contains($0.codeInsee) } + base.filter { !top.contains($0.codeInsee) }
-        return Model(departements: deps, sections: Self.buildSections(deps), topCodes: top, colW: Self.colW(deps))
+        // Largeur minimale (texte le plus large) ; au-delà, les colonnes se
+        // partagent la largeur disponible pour que le tableau suive la fenêtre.
+        let fitted = Self.colW(deps)
+        let stretched = deps.isEmpty ? 0 : floor((availableWidth - Self.labelColW - 36) / CGFloat(deps.count))
+        return Model(departements: deps, sections: Self.buildSections(deps), topCodes: top, colW: max(fitted, stretched))
     }
 
     /// `tooltip` : infobulle de la cellule (mois de relève des températures).
@@ -168,6 +180,8 @@ struct FavorisView: View {
                     .padding(.top, 32)
             }
         }
+        .background(GeometryReader { Color.clear.preference(key: WidthKey.self, value: $0.size.width) })
+        .onPreferenceChange(WidthKey.self) { availableWidth = $0 }
         .alert("Retirer \(pendingRemovalName) des favoris", isPresented: Binding(
             get: { pendingRemovalCode != nil },
             set: { if !$0 { pendingRemovalCode = nil } }

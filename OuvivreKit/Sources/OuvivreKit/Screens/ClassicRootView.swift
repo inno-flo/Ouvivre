@@ -132,7 +132,8 @@ public struct ClassicRootView: View {
         .padding(.horizontal, ClassicTheme.mainPadding)
         .padding(.top, ClassicTheme.mainPadding)
         .padding(.bottom, ClassicTheme.mainPaddingBottom)
-        .frame(maxWidth: 1340, alignment: .leading)
+        // Favoris occupe toute la largeur de la fenêtre (tableau et carte).
+        .frame(maxWidth: state.screen == .favoris ? .infinity : 1340, alignment: .leading)
         .frame(maxWidth: .infinity)
     }
 }
