@@ -32,8 +32,6 @@ struct DepartementMapCard: View {
     /// le bas agrandit la carte (les sections en dessous suivent), double-clic
     /// revient à `height`, qui reste la hauteur minimale.
     var resizable = false
-    /// Numéro du département, affiché dans le coin supérieur gauche de la carte.
-    var badge: String?
 
     @State private var hoveredName: String?
     /// Hauteur ajoutée à `height` par la poignée (jamais négative).
@@ -45,6 +43,8 @@ struct DepartementMapCard: View {
     /// vue courante (déplacement manuel compris).
     @State private var mapRegion: MKCoordinateRegion?
     @State private var is3D = false
+    /// Lieu trouvé par la recherche, repéré sur la carte.
+    @State private var searchPin: (name: String, coordinate: CLLocationCoordinate2D)?
     @Namespace private var mapScope
     @State private var mapCamera: MapCamera?
 
@@ -121,7 +121,7 @@ struct DepartementMapCard: View {
     /// boutons Explorer / Satellite (texte 12 pt + 5 pt de marge verticale).
     @ViewBuilder
     private var actionButtons: some View {
-        actionButton("mappin.and.ellipse", help: "Recentrer la carte", action: fitSelection)
+        actionButton("mappin.and.ellipse", help: "Centrer la carte sur le département", action: fitSelection)
         actionButton("minus.magnifyingglass", help: "Dézoomer") { zoomMap(by: 2) }
         actionButton("plus.magnifyingglass", help: "Zoomer") { zoomMap(by: 0.5) }
     }
@@ -173,22 +173,25 @@ struct DepartementMapCard: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
                 hoverLabel
-                if let badge {
-                    Text(badge)
-                        .font(CFont.rounded(20, weight: .bold))
-                        .foregroundStyle(c.ink)
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 3)
-                        .background(c.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
+                MapSearchField(region: mapRegion) { item in
+                    let coordinate = item.placemark.coordinate
+                    searchPin = (item.name ?? "", coordinate)
+                    withAnimation(.easeInOut(duration: 0.4)) {
+                        mapPosition = .region(MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)))
+                    }
                 }
                 Spacer()
                 actionButtons
                 typeButtons
             }
+            // Au-dessus de la carte, pour que les suggestions de recherche
+            // s'affichent en surimposition.
+            .zIndex(1)
             // Test léger (sans calculer le rectangle englobant à chaque survol).
             if names.contains(where: { !(DepartementBoundaries.rings[$0] ?? []).isEmpty }) {
                 MapReader { proxy in
                     Map(position: $mapPosition, scope: mapScope) {
+                        if let searchPin { Marker(searchPin.name, coordinate: searchPin.coordinate) }
                         ForEach(pinMarks) { mark in
                             Annotation("", coordinate: mark.coordinate, anchor: .center) {
                                 // L'année est en surimpression : elle ne décale pas

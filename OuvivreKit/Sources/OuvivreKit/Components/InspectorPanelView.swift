@@ -121,7 +121,7 @@ struct InspectorPanelView: View {
                             .foregroundStyle(c.faint)
                     }
                     .buttonStyle(.plain)
-                    .help("Centrer la carte sur \(chefLieu)")
+                    .help("Centrer la carte sur le chef-lieu")
                 }
             }
         }

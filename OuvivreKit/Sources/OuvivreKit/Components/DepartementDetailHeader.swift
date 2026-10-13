@@ -16,6 +16,12 @@ struct DepartementDetailHeader: View {
                 Text(FranceGeoData.nom(forCode: departementCode))
                     .font(CFont.rounded(20, weight: .bold))
                     .foregroundStyle(c.ink)
+                Text(departementCode)
+                    .font(CFont.rounded(20, weight: .bold))
+                    .foregroundStyle(c.ink)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 3)
+                    .background(c.border.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
                 if let region = FranceGeoData.departements.first(where: { $0.codeInsee == departementCode })?.nomRegion {
                     Text("(\(region))")
                         .font(CFont.rounded(18))
@@ -52,7 +58,7 @@ struct DepartementDetailHeader: View {
                         .foregroundStyle(c.faint)
                 }
                 .buttonStyle(.plain)
-                .help("Centrer la carte sur \(chefLieu)")
+                .help("Centrer la carte sur le chef-lieu")
             }
         }
         }
@@ -74,8 +80,7 @@ struct DepartementHeaderAndMap: View {
             pin: recordPin,
             names: [FranceGeoData.nom(forCode: departementCode)],
             focusCoordinate: FranceGeoData.chefsLieuxCoordinates[departementCode],
-            focusTick: mapFocusTick,
-            badge: departementCode
+            focusTick: mapFocusTick
         )
     }
 }

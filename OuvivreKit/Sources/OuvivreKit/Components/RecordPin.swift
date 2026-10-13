@@ -44,7 +44,6 @@ struct PinnedMapCard: View {
     let names: [String]
     var focusCoordinate: CLLocationCoordinate2D?
     var focusTick = 0
-    var badge: String?
 
     var body: some View {
         DepartementMapCard(
@@ -53,8 +52,7 @@ struct PinnedMapCard: View {
             focusTick: focusTick,
             pinMarks: pin.marks,
             fillsDepartement: false,
-            resizable: true,
-            badge: badge
+            resizable: true
         )
     }
 }
