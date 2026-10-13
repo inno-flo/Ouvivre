@@ -44,6 +44,8 @@ struct DepartementMapCard: View {
     /// Dernière région affichée, pour que les boutons de zoom partent de la
     /// vue courante (déplacement manuel compris).
     @State private var mapRegion: MKCoordinateRegion?
+    @State private var is3D = false
+    @State private var mapCamera: MapCamera?
 
     /// Rectangle englobant le périmètre du département, avec une petite
     /// marge — la carte s'y ajuste pour que le département occupe au mieux
@@ -217,7 +219,7 @@ struct DepartementMapCard: View {
                             }
                         }
                     }
-                    .mapStyle(mapType.style(elevation: .automatic))
+                    .mapStyle(mapType.style(elevation: mapType == .satellite && is3D ? .realistic : .automatic))
                     .mapControls {}
                     // Survol : mêmes règles d'opacité que la carte de Big Mac Tests
                     // (remplissage 0,05, ou 0,085 sous le curseur).
@@ -235,7 +237,8 @@ struct DepartementMapCard: View {
                               let name = DepartementBoundaries.departement(at: coordinate, among: names) else { return }
                         onSelect(name)
                     }
-                    .onMapCameraChange { context in mapRegion = context.region }
+                    .onMapCameraChange { context in mapRegion = context.region; mapCamera = context.camera }
+                    .satelliteTiltButton(isSatellite: mapType == .satellite, is3D: $is3D, position: $mapPosition, camera: mapCamera)
                 }
                 .onAppear { if let rect = departementRect { mapPosition = .rect(rect) } }
                 .onChange(of: focusTick) { _, _ in focusOnChefLieu() }

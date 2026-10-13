@@ -19,6 +19,8 @@ struct SelecteurView: View {
 
     @State private var position: MapCameraPosition = .automatic
     @State private var lastRegion: MKCoordinateRegion?
+    @State private var is3D = false
+    @State private var lastCamera: MapCamera?
     @State private var transitionGeneration = 0
     /// Département actuellement survolé — rend son polygone opaque. MapKit ne
     /// propose pas de survol par forme, donc on hit-teste manuellement le
@@ -45,9 +47,10 @@ struct SelecteurView: View {
             ZStack(alignment: .topLeading) {
                 MapReader { proxy in
                     Map(position: $position) { mapContent }
-                        .mapStyle(mapState.planType.style(elevation: .automatic))
+                        .mapStyle(mapState.planType.style(elevation: mapState.planType == .satellite && is3D ? .realistic : .automatic))
                         .mapControls {}
-                        .onMapCameraChange { context in lastRegion = context.region }
+                        .onMapCameraChange { context in lastRegion = context.region; lastCamera = context.camera }
+                        .satelliteTiltButton(isSatellite: mapState.planType == .satellite, is3D: $is3D, position: $position, camera: lastCamera)
                         .onContinuousHover { phase in
                             switch phase {
                             case .active(let point):
