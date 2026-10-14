@@ -131,9 +131,8 @@ struct SidebarNav: View {
 /// Couleur forcée (noir en clair, blanc en sombre) tant que la fenêtre est
 /// active ; en arrière-plan, l'icône reprend le style par défaut de la sidebar.
 private struct ActiveBadgeStyle: ViewModifier {
-    @Environment(\.controlActiveState) private var activeState
-    @ViewBuilder func body(content: Content) -> some View {
-        if activeState == .inactive { content } else { content.foregroundStyle(.primary) }
+    func body(content: Content) -> some View {
+        content.foregroundStyle(ClassicTheme.favorite)
     }
 }
 

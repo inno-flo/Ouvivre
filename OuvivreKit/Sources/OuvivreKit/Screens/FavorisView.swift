@@ -175,7 +175,8 @@ struct FavorisView: View {
                         if let code = FranceGeoData.byName[name]?.codeInsee { toggleSelection(code) }
                     },
                     height: 862,
-                    resizable: true
+                    resizable: true,
+                    recenterHelp: "Centrer la carte sur tous les favoris"
                 )
                     .padding(.top, 32)
             }

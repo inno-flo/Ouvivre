@@ -16,8 +16,9 @@ enum ClassicTheme {
     static let sub = Color(hex: 0x6F6A60)
     static let faint = Color(hex: 0x8C867B)
     static let faint2 = Color(hex: 0xA39D91)
-    /// Étoile et sceau des favoris, partout dans l'app.
-    static let favorite = Color(hex: 0xFFD500)
+    /// Étoile (cochée ou non), sceau des favoris et contour du département sélectionné : jaune doré, plus foncé que l'ancien
+    /// #FFD500 sans virer au marron.
+    static let favorite = Color(hex: 0xD9B000)
     static let track = Color(hex: 0xEAE6DE)
 
     // Density-driven metrics (densité normale).

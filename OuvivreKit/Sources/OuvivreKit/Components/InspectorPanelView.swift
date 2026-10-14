@@ -90,7 +90,7 @@ struct InspectorPanelView: View {
                 } label: {
                     Image(systemName: isFavorite ? "star.fill" : "star")
                         .font(.system(size: 13))
-                        .foregroundStyle(isFavorite ? ClassicTheme.favorite : c.faint)
+                        .foregroundStyle(ClassicTheme.favorite)
                 }
                 .buttonStyle(.plain)
                 .help(isFavorite ? "Retirer des favoris" : "Ajouter aux favoris")

@@ -32,6 +32,8 @@ struct DepartementMapCard: View {
     /// le bas agrandit la carte (les sections en dessous suivent), double-clic
     /// revient à `height`, qui reste la hauteur minimale.
     var resizable = false
+    /// Infobulle du bouton de recentrage sur les départements affichés.
+    var recenterHelp = "Centrer la carte sur le département"
 
     @State private var hoveredName: String?
     /// Hauteur ajoutée à `height` par la poignée (jamais négative).
@@ -81,23 +83,20 @@ struct DepartementMapCard: View {
         mapRegion = updated
     }
 
-    /// Nom et région du département survolé, à défaut du département sélectionné
-    /// (clic sur la carte ou sur une colonne) — carte des favoris, sur une ligne, alignés à
-    /// gauche, dans le style de l'en-tête de colonne du tableau.
+    /// Numéro et nom du département survolé, à défaut du département sélectionné
+    /// (clic sur la carte ou sur une colonne), en surimposition dans le coin
+    /// supérieur gauche de la carte : texte noir sur rectangle blanc arrondi.
     @ViewBuilder
     private var hoverLabel: some View {
         if let shown = hoveredName ?? selectedName, let dep = FranceGeoData.byName[shown] {
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Text(dep.nom).font(CFont.rounded(13, weight: .semibold)).foregroundStyle(c.ink)
-                // Pastille du code, comme dans l'inspecteur (20 pt) mais à l'échelle de 13 pt.
-                Text(dep.codeInsee)
-                    .font(CFont.rounded(13, weight: .semibold))
-                    .foregroundStyle(c.ink)
-                    .padding(.horizontal, 5)
-                    .padding(.vertical, 2)
-                    .background(c.badge, in: RoundedRectangle(cornerRadius: 3.5))
-                Text(dep.nomRegion).font(CFont.rounded(10)).foregroundStyle(c.faint)
-            }
+            Text("\(dep.codeInsee)  \(dep.nom)")
+                .font(CFont.rounded(14, weight: .bold))
+                .foregroundStyle(.black)
+                .padding(.horizontal, 7)
+                .padding(.vertical, 3)
+                .background(.white, in: RoundedRectangle(cornerRadius: 5))
+                .padding(8)
+                .allowsHitTesting(false)
         }
     }
 
@@ -121,7 +120,7 @@ struct DepartementMapCard: View {
     /// boutons Explorer / Satellite (texte 12 pt + 5 pt de marge verticale).
     @ViewBuilder
     private var actionButtons: some View {
-        actionButton("mappin.and.ellipse", help: "Centrer la carte sur le département", action: fitSelection)
+        actionButton("mappin.and.ellipse", help: recenterHelp, action: fitSelection)
         actionButton("minus.magnifyingglass", help: "Dézoomer") { zoomMap(by: 2) }
         actionButton("plus.magnifyingglass", help: "Zoomer") { zoomMap(by: 0.5) }
     }
@@ -172,7 +171,6 @@ struct DepartementMapCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
-                hoverLabel
                 MapSearchField(region: mapRegion) { item in
                     let coordinate = item.placemark.coordinate
                     searchPin = (item.name ?? "", coordinate)
@@ -219,7 +217,7 @@ struct DepartementMapCard: View {
                             ForEach(Array((DepartementBoundaries.rings[name] ?? []).enumerated()), id: \.offset) { _, ring in
                                 MapPolygon(coordinates: ring)
                                     .foregroundStyle(fillsDepartement ? ClassicTheme.accent.mapTrace(dark: c.dark).opacity(hovered ? 0.085 : 0.05) : .clear)
-                                    .stroke(ClassicTheme.accent.mapTrace(dark: c.dark), lineWidth: selected ? 3 : 2)
+                                    .stroke(selected ? ClassicTheme.favorite : ClassicTheme.accent.mapTrace(dark: c.dark), lineWidth: selected ? 3 : 2)
                             }
                         }
                     }
@@ -251,6 +249,7 @@ struct DepartementMapCard: View {
                 .onChange(of: names) { _, _ in
                     fitSelection()
                 }
+                .overlay(alignment: .topLeading) { hoverLabel }
                 .frame(height: height + extraHeight)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             } else {

@@ -35,7 +35,7 @@ struct DepartementDetailHeader: View {
                     Image(systemName: isFavorite ? "star.fill" : "star")
                         .font(.system(size: 13))
                         .frame(width: 16, height: 16)
-                        .foregroundStyle(isFavorite ? ClassicTheme.favorite : c.faint)
+                        .foregroundStyle(ClassicTheme.favorite)
                 }
                 .buttonStyle(.plain)
                 .help(isFavorite ? "Retirer des favoris" : "Ajouter aux favoris")
