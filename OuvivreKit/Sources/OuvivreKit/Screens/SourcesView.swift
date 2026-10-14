@@ -63,7 +63,7 @@ struct SourcesView: View {
                             if freshness.isChecking {
                                 Image(systemName: "progress.indicator").symbolEffect(.variableColor.iterative, isActive: true)
                             } else {
-                                Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
+                                Image(systemName: "arrow.clockwise")
                             }
                         }
                         .font(.system(size: 12, weight: .medium))
