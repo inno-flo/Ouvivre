@@ -30,9 +30,9 @@ struct SelecteurView: View {
     /// Département cliqué, dont le polygone reste opaque tant qu'on ne
     /// clique pas ailleurs (contrairement au survol, transitoire).
     @State private var selectedDepartementName: String?
-    /// Infobulle de population de la localité cliquée.
-    @State private var communeTooltip: CommuneTooltip?
-    @State private var tooltipCamera = MapCameraTracker()
+    // Infobulle de population au clic sur une localité — désactivée, voir CLAUDE.md.
+    // @State private var communeTooltip: CommuneTooltip?
+    // @State private var tooltipCamera = MapCameraTracker()
 
     // L'ouverture/fermeture des blocs vit dans `ClassicState` (pas un
     // `@State` local) pour rester persistante en quittant puis en revenant
@@ -53,9 +53,10 @@ struct SelecteurView: View {
                     Map(position: $position, scope: mapScope) { mapContent }
                         .mapStyle(mapState.planType.style(elevation: mapState.planType == .satellite && is3D ? .realistic : .automatic))
                         .mapControls {}
-                        .overlay { CommuneHitZonesOverlay(proxy: proxy, camera: tooltipCamera) }
-                        .overlay { CommuneTooltipOverlay(tooltip: communeTooltip, proxy: proxy, camera: tooltipCamera) }
-                        .onMapCameraChange(frequency: .continuous) { tooltipCamera.region = $0.region }
+                        // Infobulle de population au clic sur une localité — désactivée, voir CLAUDE.md.
+                        // .overlay { CommuneHitZonesOverlay(proxy: proxy, camera: tooltipCamera) }
+                        // .overlay { CommuneTooltipOverlay(tooltip: communeTooltip, proxy: proxy, camera: tooltipCamera) }
+                        // .onMapCameraChange(frequency: .continuous) { tooltipCamera.region = $0.region }
                         .onMapCameraChange { context in lastRegion = context.region; lastCamera = context.camera }
                         .satelliteTiltButton(isSatellite: mapState.planType == .satellite, is3D: $is3D, position: $position, camera: lastCamera, mapScope: mapScope)
                         .onContinuousHover { phase in
@@ -68,7 +69,8 @@ struct SelecteurView: View {
                         }
                         .gesture(
                             SpatialTapGesture().onEnded { value in
-                                communeTooltip = CommuneTooltip(at: value.location, proxy: proxy)
+                                // Infobulle de population au clic sur une localité — désactivée, voir CLAUDE.md.
+                                // communeTooltip = CommuneTooltip(at: value.location, proxy: proxy)
                                 if let name = departementName(at: value.location, proxy: proxy) {
                                     selectedDepartementName = name
                                     mapState.title = name
@@ -105,7 +107,8 @@ struct SelecteurView: View {
                 state.bigMacExpandedRegions = true
                 DispatchQueue.main.async { isApplyingDefaultExpansion = false }
             }
-            .task(priority: .utility) { await Task.detached { CommuneLookup.preload() }.value }
+            // Infobulle de population au clic sur une localité — désactivée, voir CLAUDE.md.
+            // .task(priority: .utility) { await Task.detached { CommuneLookup.preload() }.value }
             .onChange(of: mapState.coordinate.latitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: mapState.coordinate.longitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: mapState.spanDegrees) { _, newSpan in applyZoom(newSpan) }

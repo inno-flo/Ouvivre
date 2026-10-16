@@ -41,9 +41,13 @@ https://www.data.gouv.fr/datasets/liste-des-communes-de-france-code-insee-codes-
 Ressource utilisée (CSV 2026, ~35k lignes) :
 https://static.data.gouv.fr/resources/communes-et-villes-de-france-en-csv-excel-json-parquet-et-feather/20260617-155950/communes-france-2026.csv
 
-Le CSV inclut déjà `population`, `densite` et `latitude_centre`/`longitude_centre`
-par commune — aucun calcul géométrique nécessaire, contrairement à
-`france_geo_scores.json`. Seules les lignes `typecom == "COM"` sont gardées
+Le CSV inclut déjà `population`, `densite` et les coordonnées de la mairie
+(`latitude_mairie`/`longitude_mairie`) et du centre géométrique
+(`latitude_centre`/`longitude_centre`) par commune — aucun calcul géométrique
+nécessaire, contrairement à `france_geo_scores.json`. Les coordonnées gardées
+sont celles de la mairie (le centre seulement si elle manque) : Apple Plans
+écrit le nom d'une localité sur son bourg, et l'infobulle de population des
+cartes repère le clic sur ce nom. Seules les lignes `typecom == "COM"` sont gardées
 (exclut les arrondissements municipaux de Paris/Lyon/Marseille pour éviter
 les doublons de population).
 

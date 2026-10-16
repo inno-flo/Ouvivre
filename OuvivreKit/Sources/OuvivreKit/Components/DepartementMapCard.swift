@@ -49,9 +49,9 @@ struct DepartementMapCard: View {
     @State private var searchPin: (name: String, coordinate: CLLocationCoordinate2D)?
     @Namespace private var mapScope
     @State private var mapCamera: MapCamera?
-    /// Infobulle de population de la localité cliquée.
-    @State private var communeTooltip: CommuneTooltip?
-    @State private var tooltipCamera = MapCameraTracker()
+    // Infobulle de population au clic sur une localité — désactivée, voir CLAUDE.md.
+    // @State private var communeTooltip: CommuneTooltip?
+    // @State private var tooltipCamera = MapCameraTracker()
 
     /// Rectangle englobant le périmètre du département, avec une petite
     /// marge — la carte s'y ajuste pour que le département occupe au mieux
@@ -238,14 +238,16 @@ struct DepartementMapCard: View {
                         }
                     }
                     .onTapGesture { point in
-                        communeTooltip = CommuneTooltip(at: point, proxy: proxy)
+                        // Infobulle de population au clic sur une localité — désactivée, voir CLAUDE.md.
+                        // communeTooltip = CommuneTooltip(at: point, proxy: proxy)
                         guard let onSelect, let coordinate = proxy.convert(point, from: .local),
                               let name = DepartementBoundaries.departement(at: coordinate, among: names) else { return }
                         onSelect(name)
                     }
-                    .overlay { CommuneHitZonesOverlay(proxy: proxy, camera: tooltipCamera) }
-                    .overlay { CommuneTooltipOverlay(tooltip: communeTooltip, proxy: proxy, camera: tooltipCamera) }
-                    .onMapCameraChange(frequency: .continuous) { tooltipCamera.region = $0.region }
+                    // Infobulle de population au clic sur une localité — désactivée, voir CLAUDE.md.
+                    // .overlay { CommuneHitZonesOverlay(proxy: proxy, camera: tooltipCamera) }
+                    // .overlay { CommuneTooltipOverlay(tooltip: communeTooltip, proxy: proxy, camera: tooltipCamera) }
+                    // .onMapCameraChange(frequency: .continuous) { tooltipCamera.region = $0.region }
                     .onMapCameraChange { context in mapRegion = context.region; mapCamera = context.camera }
                     .satelliteTiltButton(isSatellite: mapType == .satellite, is3D: $is3D, position: $mapPosition, camera: mapCamera, mapScope: mapScope)
                 }
@@ -264,7 +266,8 @@ struct DepartementMapCard: View {
                     .font(CFont.rounded(13)).foregroundStyle(c.faint)
             }
         }
-        .task(priority: .utility) { await Task.detached { CommuneLookup.preload() }.value }
+        // Infobulle de population au clic sur une localité — désactivée, voir CLAUDE.md.
+        // .task(priority: .utility) { await Task.detached { CommuneLookup.preload() }.value }
         .padding(16)
         .background(c.card, in: RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10).stroke(c.border, lineWidth: 1))

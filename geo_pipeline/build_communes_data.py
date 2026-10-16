@@ -87,8 +87,14 @@ def main():
                 continue
             densite_raw = to_float(row.get("densite"))
             densite = int(round(densite_raw)) if densite_raw is not None else 0
-            lat = to_float(row.get("latitude_centre")) or to_float(row.get("latitude_mairie"))
-            lon = to_float(row.get("longitude_centre")) or to_float(row.get("longitude_mairie"))
+            # Mairie d'abord : Apple Plans écrit le nom d'une localité sur son
+            # bourg, proche de la mairie, alors que le centre géométrique de la
+            # commune peut en être à plus d'un kilomètre (médiane 0,75 km) — les
+            # clics sur les noms (infobulle de population) le ratent. Le centre
+            # ne sert que si la mairie manque, et toujours comme paire complète.
+            lat, lon = to_float(row.get("latitude_mairie")), to_float(row.get("longitude_mairie"))
+            if lat is None or lon is None:
+                lat, lon = to_float(row.get("latitude_centre")), to_float(row.get("longitude_centre"))
             entries.append({
                 "insee": insee,
                 "name": row.get("nom_standard", "").strip(),

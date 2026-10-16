@@ -1,3 +1,9 @@
+// Infobulle de population au clic sur une localité — désactivée, voir CLAUDE.md.
+// Tout le fichier est en commentaire : retirer la ligne « /* » ci-dessous et la
+// ligne « */ » de fin (et décommenter les lignes marquées dans
+// DepartementMapCard.swift et SelecteurView.swift) pour réactiver la fonction.
+
+/*
 import SwiftUI
 import MapKit
 
@@ -114,3 +120,4 @@ struct CommuneHitZonesOverlay: View {
         }
     }
 }
+*/
