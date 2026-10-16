@@ -49,16 +49,8 @@ struct DepartementMapCard: View {
     @State private var searchPin: (name: String, coordinate: CLLocationCoordinate2D)?
     @Namespace private var mapScope
     @State private var mapCamera: MapCamera?
-    /// Étiquette de localité cliquée et infobulle de population associée.
-    @State private var selectedFeature: MapSelection<String>?
+    /// Infobulle de population de la localité cliquée.
     @State private var communeTooltip: CommuneTooltip?
-
-    private var featureSelection: Binding<MapSelection<String>?> {
-        Binding(get: { selectedFeature }, set: { feature in
-            selectedFeature = feature
-            communeTooltip = CommuneTooltip(feature: feature?.feature)
-        })
-    }
 
     /// Rectangle englobant le périmètre du département, avec une petite
     /// marge — la carte s'y ajuste pour que le département occupe au mieux
@@ -198,9 +190,9 @@ struct DepartementMapCard: View {
             // Test léger (sans calculer le rectangle englobant à chaque survol).
             if names.contains(where: { !(DepartementBoundaries.rings[$0] ?? []).isEmpty }) {
                 MapReader { proxy in
-                    Map(position: $mapPosition, selection: featureSelection, scope: mapScope) {
+                    Map(position: $mapPosition, scope: mapScope) {
                         if let communeTooltip {
-                            Annotation("", coordinate: communeTooltip.coordinate, anchor: .bottom) {
+                            Annotation("", coordinate: communeTooltip.info.coordinate, anchor: .bottom) {
                                 CommuneInfoCard(info: communeTooltip.info)
                             }
                         }
@@ -250,6 +242,7 @@ struct DepartementMapCard: View {
                         }
                     }
                     .onTapGesture { point in
+                        communeTooltip = CommuneTooltip(at: point, proxy: proxy)
                         guard let onSelect, let coordinate = proxy.convert(point, from: .local),
                               let name = DepartementBoundaries.departement(at: coordinate, among: names) else { return }
                         onSelect(name)

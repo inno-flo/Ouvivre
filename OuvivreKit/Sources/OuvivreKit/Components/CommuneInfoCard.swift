@@ -1,20 +1,25 @@
 import SwiftUI
 import MapKit
 
-/// Infobulle posée sur une étiquette de localité cliquée : commune, population,
-/// densité et catégorie de taille.
+/// Infobulle de population d'une commune, posée sur la localité cliquée.
 struct CommuneTooltip {
     let info: CommuneInfo
-    /// Position de l'étiquette cliquée, où l'infobulle est ancrée.
-    let coordinate: CLLocationCoordinate2D
 
-    /// Infobulle de la commune correspondant à `feature`, si c'est une
-    /// localité (région, point d'intérêt et relief sont ignorés).
-    init?(feature: MapFeature?) {
-        guard let feature, feature.kind == .territory, let title = feature.title,
-              let info = CommuneLookup.commune(named: title, near: feature.coordinate) else { return nil }
+    /// Demi-axes (points écran) de la zone de clic autour du nom d'une localité.
+    private static let hitHalfWidth: CGFloat = 40
+    private static let hitHalfHeight: CGFloat = 10
+
+    /// Commune sous le point `point` (coordonnées locales de la carte), `nil`
+    /// si le clic tombe hors de toute localité.
+    init?(at point: CGPoint, proxy: MapProxy) {
+        guard let center = proxy.convert(point, from: .local),
+              let right = proxy.convert(CGPoint(x: point.x + Self.hitHalfWidth, y: point.y), from: .local),
+              let below = proxy.convert(CGPoint(x: point.x, y: point.y + Self.hitHalfHeight), from: .local),
+              let info = CommuneLookup.commune(
+                near: center,
+                halfWidth: abs(right.longitude - center.longitude),
+                halfHeight: abs(below.latitude - center.latitude)) else { return nil }
         self.info = info
-        coordinate = feature.coordinate
     }
 }
 

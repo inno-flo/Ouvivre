@@ -30,16 +30,8 @@ struct SelecteurView: View {
     /// Département cliqué, dont le polygone reste opaque tant qu'on ne
     /// clique pas ailleurs (contrairement au survol, transitoire).
     @State private var selectedDepartementName: String?
-    /// Étiquette de localité cliquée et infobulle de population associée.
-    @State private var selectedFeature: MapSelection<String>?
+    /// Infobulle de population de la localité cliquée.
     @State private var communeTooltip: CommuneTooltip?
-
-    private var featureSelection: Binding<MapSelection<String>?> {
-        Binding(get: { selectedFeature }, set: { feature in
-            selectedFeature = feature
-            communeTooltip = CommuneTooltip(feature: feature?.feature)
-        })
-    }
 
     // L'ouverture/fermeture des blocs vit dans `ClassicState` (pas un
     // `@State` local) pour rester persistante en quittant puis en revenant
@@ -57,7 +49,7 @@ struct SelecteurView: View {
         GeometryReader { geo in
             ZStack(alignment: .topLeading) {
                 MapReader { proxy in
-                    Map(position: $position, selection: featureSelection, scope: mapScope) { mapContent }
+                    Map(position: $position, scope: mapScope) { mapContent }
                         .mapStyle(mapState.planType.style(elevation: mapState.planType == .satellite && is3D ? .realistic : .automatic))
                         .mapControls {}
                         .onMapCameraChange { context in lastRegion = context.region; lastCamera = context.camera }
@@ -72,6 +64,7 @@ struct SelecteurView: View {
                         }
                         .gesture(
                             SpatialTapGesture().onEnded { value in
+                                communeTooltip = CommuneTooltip(at: value.location, proxy: proxy)
                                 if let name = departementName(at: value.location, proxy: proxy) {
                                     selectedDepartementName = name
                                     mapState.title = name
@@ -140,7 +133,7 @@ struct SelecteurView: View {
     @MapContentBuilder
     private var mapContent: some MapContent {
         if let communeTooltip {
-            Annotation("", coordinate: communeTooltip.coordinate, anchor: .bottom) {
+            Annotation("", coordinate: communeTooltip.info.coordinate, anchor: .bottom) {
                 CommuneInfoCard(info: communeTooltip.info)
             }
         }

@@ -13,11 +13,9 @@ struct CommuneInfo {
     var category: CommuneSizeCategory { .category(forPopulation: population) }
 }
 
-/// Rapprochement d'une étiquette de localité de la carte (nom + coordonnées
-/// fournis par MapKit) avec les ~34 900 communes de `communes_data.json`.
-/// Le fichier est décodé à la première demande (pas au lancement) et gardé en
-/// mémoire, indexé par nom normalisé : un clic ne parcourt que les communes
-/// homonymes.
+/// Recherche de la commune sous un clic sur la carte, parmi les ~34 900
+/// communes de `communes_data.json`. Le fichier est décodé à la première
+/// demande (pas au lancement) et gardé en mémoire.
 enum CommuneLookup {
     private struct Commune: Decodable {
         let name: String
@@ -32,50 +30,39 @@ enum CommuneLookup {
         let communes: [Commune]
     }
 
-    /// Distance maximale entre l'étiquette cliquée et le centre de la commune
-    /// de même nom : les centroïdes INSEE s'écartent de l'étiquette Apple (qui
-    /// vise le centre-ville) de quelques kilomètres, plus pour les grandes communes.
-    private static let maxDistance: CLLocationDistance = 25_000
-
-    private static let byNormalizedName: [String: [CommuneInfo]] = {
+    private static let all: [CommuneInfo] = {
         guard let url = Bundle.module.url(forResource: "communes_data", withExtension: "json"),
               let data = try? Data(contentsOf: url),
-              let root = try? JSONDecoder().decode(Root.self, from: data) else { return [:] }
-        var index: [String: [CommuneInfo]] = [:]
-        for commune in root.communes {
-            guard let lat = commune.lat, let lon = commune.lon else { continue }
-            let info = CommuneInfo(
+              let root = try? JSONDecoder().decode(Root.self, from: data) else { return [] }
+        return root.communes.compactMap { commune in
+            guard let lat = commune.lat, let lon = commune.lon else { return nil }
+            return CommuneInfo(
                 name: commune.name, departementCode: commune.departementCode,
                 population: commune.population, densite: commune.densite,
                 coordinate: CLLocationCoordinate2D(latitude: lat, longitude: lon))
-            index[normalize(commune.name), default: []].append(info)
         }
-        return index
     }()
 
-    /// Commune de même nom que `title`, la plus proche de `coordinate`, à
-    /// moins de `maxDistance` — `nil` si l'étiquette n'est pas une commune
-    /// (région, hameau, lieu-dit…) ou si le doute est trop grand.
-    static func commune(named title: String, near coordinate: CLLocationCoordinate2D) -> CommuneInfo? {
-        guard let candidates = byNormalizedName[normalize(title)] else { return nil }
-        let origin = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-        return candidates
-            .map { ($0, origin.distance(from: CLLocation(latitude: $0.coordinate.latitude, longitude: $0.coordinate.longitude))) }
-            .filter { $0.1 <= maxDistance }
-            .min { $0.1 < $1.1 }?.0
-    }
-
-    /// Minuscules sans accents ni ponctuation, « Saint(e) » abrégé : « Saint-Étienne »
-    /// et « St Etienne » donnent la même clé.
-    private static func normalize(_ name: String) -> String {
-        let folded = name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: Locale(identifier: "fr_FR"))
-        let words = folded.split(whereSeparator: { !$0.isLetter && !$0.isNumber }).map { word -> Substring in
-            switch word {
-            case "saint": return "st"
-            case "sainte": return "ste"
-            default: return word
-            }
+    /// Commune la plus peuplée dont le centre tombe dans l'ellipse de demi-axes
+    /// `halfWidth` × `halfHeight` (en degrés) autour de `coordinate`. L'ellipse,
+    /// large et basse, couvre le nom de la localité écrit autour de son point.
+    /// Plus la carte est dézoomée, plus le seuil de population monte : on ne
+    /// retient que les communes dont Apple Plans affiche vraisemblablement le nom.
+    static func commune(near coordinate: CLLocationCoordinate2D, halfWidth: Double, halfHeight: Double) -> CommuneInfo? {
+        guard halfWidth > 0, halfHeight > 0 else { return nil }
+        let minimumPopulation: Int
+        switch halfWidth {
+        case 0.3...: minimumPopulation = 50_000
+        case 0.12...: minimumPopulation = 10_000
+        case 0.04...: minimumPopulation = 2_000
+        default: minimumPopulation = 0
         }
-        return words.joined(separator: " ")
+        var best: CommuneInfo?
+        for commune in all where commune.population >= minimumPopulation && commune.population > (best?.population ?? -1) {
+            let dx = (commune.coordinate.longitude - coordinate.longitude) / halfWidth
+            let dy = (commune.coordinate.latitude - coordinate.latitude) / halfHeight
+            if dx * dx + dy * dy <= 1 { best = commune }
+        }
+        return best
     }
 }
