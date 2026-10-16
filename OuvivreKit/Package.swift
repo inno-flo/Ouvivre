@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "OuvivreKit",
-    platforms: [.macOS(.v14)],
+    platforms: [.macOS("15.0")],
     products: [
         .library(name: "OuvivreKit", targets: ["OuvivreKit"])
     ],

@@ -49,6 +49,16 @@ struct DepartementMapCard: View {
     @State private var searchPin: (name: String, coordinate: CLLocationCoordinate2D)?
     @Namespace private var mapScope
     @State private var mapCamera: MapCamera?
+    /// Étiquette de localité cliquée et infobulle de population associée.
+    @State private var selectedFeature: MapSelection<String>?
+    @State private var communeTooltip: CommuneTooltip?
+
+    private var featureSelection: Binding<MapSelection<String>?> {
+        Binding(get: { selectedFeature }, set: { feature in
+            selectedFeature = feature
+            communeTooltip = CommuneTooltip(feature: feature?.feature)
+        })
+    }
 
     /// Rectangle englobant le périmètre du département, avec une petite
     /// marge — la carte s'y ajuste pour que le département occupe au mieux
@@ -188,7 +198,12 @@ struct DepartementMapCard: View {
             // Test léger (sans calculer le rectangle englobant à chaque survol).
             if names.contains(where: { !(DepartementBoundaries.rings[$0] ?? []).isEmpty }) {
                 MapReader { proxy in
-                    Map(position: $mapPosition, scope: mapScope) {
+                    Map(position: $mapPosition, selection: featureSelection, scope: mapScope) {
+                        if let communeTooltip {
+                            Annotation("", coordinate: communeTooltip.coordinate, anchor: .bottom) {
+                                CommuneInfoCard(info: communeTooltip.info)
+                            }
+                        }
                         if let searchPin { Marker(searchPin.name, coordinate: searchPin.coordinate) }
                         ForEach(pinMarks) { mark in
                             Annotation("", coordinate: mark.coordinate, anchor: .center) {
