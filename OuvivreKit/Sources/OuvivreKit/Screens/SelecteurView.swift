@@ -32,6 +32,7 @@ struct SelecteurView: View {
     @State private var selectedDepartementName: String?
     /// Infobulle de population de la localité cliquée.
     @State private var communeTooltip: CommuneTooltip?
+    @State private var tooltipCamera = MapCameraTracker()
 
     // L'ouverture/fermeture des blocs vit dans `ClassicState` (pas un
     // `@State` local) pour rester persistante en quittant puis en revenant
@@ -52,6 +53,9 @@ struct SelecteurView: View {
                     Map(position: $position, scope: mapScope) { mapContent }
                         .mapStyle(mapState.planType.style(elevation: mapState.planType == .satellite && is3D ? .realistic : .automatic))
                         .mapControls {}
+                        .overlay { CommuneHitZonesOverlay(proxy: proxy, camera: tooltipCamera) }
+                        .overlay { CommuneTooltipOverlay(tooltip: communeTooltip, proxy: proxy, camera: tooltipCamera) }
+                        .onMapCameraChange(frequency: .continuous) { tooltipCamera.region = $0.region }
                         .onMapCameraChange { context in lastRegion = context.region; lastCamera = context.camera }
                         .satelliteTiltButton(isSatellite: mapState.planType == .satellite, is3D: $is3D, position: $position, camera: lastCamera, mapScope: mapScope)
                         .onContinuousHover { phase in
@@ -101,6 +105,7 @@ struct SelecteurView: View {
                 state.bigMacExpandedRegions = true
                 DispatchQueue.main.async { isApplyingDefaultExpansion = false }
             }
+            .task(priority: .utility) { await Task.detached { CommuneLookup.preload() }.value }
             .onChange(of: mapState.coordinate.latitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: mapState.coordinate.longitude) { _, _ in moveCamera(totalWidth: geo.size.width, animated: true) }
             .onChange(of: mapState.spanDegrees) { _, newSpan in applyZoom(newSpan) }
@@ -132,11 +137,6 @@ struct SelecteurView: View {
     /// inline dépassait le temps de type-check du compilateur.
     @MapContentBuilder
     private var mapContent: some MapContent {
-        if let communeTooltip {
-            Annotation("", coordinate: communeTooltip.info.coordinate, anchor: .bottom) {
-                CommuneInfoCard(info: communeTooltip.info)
-            }
-        }
         if mapState.departementNames.isEmpty {
             Marker(mapState.title, coordinate: mapState.coordinate)
         } else {

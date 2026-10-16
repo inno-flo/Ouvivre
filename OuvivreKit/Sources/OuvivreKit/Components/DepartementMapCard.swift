@@ -51,6 +51,7 @@ struct DepartementMapCard: View {
     @State private var mapCamera: MapCamera?
     /// Infobulle de population de la localité cliquée.
     @State private var communeTooltip: CommuneTooltip?
+    @State private var tooltipCamera = MapCameraTracker()
 
     /// Rectangle englobant le périmètre du département, avec une petite
     /// marge — la carte s'y ajuste pour que le département occupe au mieux
@@ -191,11 +192,6 @@ struct DepartementMapCard: View {
             if names.contains(where: { !(DepartementBoundaries.rings[$0] ?? []).isEmpty }) {
                 MapReader { proxy in
                     Map(position: $mapPosition, scope: mapScope) {
-                        if let communeTooltip {
-                            Annotation("", coordinate: communeTooltip.info.coordinate, anchor: .bottom) {
-                                CommuneInfoCard(info: communeTooltip.info)
-                            }
-                        }
                         if let searchPin { Marker(searchPin.name, coordinate: searchPin.coordinate) }
                         ForEach(pinMarks) { mark in
                             Annotation("", coordinate: mark.coordinate, anchor: .center) {
@@ -247,6 +243,9 @@ struct DepartementMapCard: View {
                               let name = DepartementBoundaries.departement(at: coordinate, among: names) else { return }
                         onSelect(name)
                     }
+                    .overlay { CommuneHitZonesOverlay(proxy: proxy, camera: tooltipCamera) }
+                    .overlay { CommuneTooltipOverlay(tooltip: communeTooltip, proxy: proxy, camera: tooltipCamera) }
+                    .onMapCameraChange(frequency: .continuous) { tooltipCamera.region = $0.region }
                     .onMapCameraChange { context in mapRegion = context.region; mapCamera = context.camera }
                     .satelliteTiltButton(isSatellite: mapType == .satellite, is3D: $is3D, position: $mapPosition, camera: mapCamera, mapScope: mapScope)
                 }
@@ -265,6 +264,7 @@ struct DepartementMapCard: View {
                     .font(CFont.rounded(13)).foregroundStyle(c.faint)
             }
         }
+        .task(priority: .utility) { await Task.detached { CommuneLookup.preload() }.value }
         .padding(16)
         .background(c.card, in: RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10).stroke(c.border, lineWidth: 1))
