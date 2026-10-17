@@ -203,3 +203,81 @@ des kommuner + Christiansø égale « Hele landet ».
 ```
 
 Pas encore copiés dans `OuvivreKit/Resources` : l'app ne les lit pas encore.
+
+## Danemark — byer (build_dk_byer_data.py)
+
+Équivalent danois de `communes_data.json` : les **byer** (agglomérations
+statistiques DST, ≥ 200 hab.), avec population, superficie, densité,
+catégorie de taille (mêmes seuils que la France) et coordonnées. Une by à
+cheval sur plusieurs kommuner a une ligne par kommune (code
+`kommune-bykode`, ex. `0101-01100` pour la partie København de
+Hovedstadsområdet). La zone rurale de chaque kommune (« Landdistrikter »)
+n'a pas de point : elle est exportée à part, sous `landdistrikter`.
+
+### Sources
+
+- Danmarks Statistik, table `BY3` (1er janvier, dernière année), API
+  statbank sans clé. Les lignes sans habitant (byer d'anciennes années) et
+  « Uden fast bopæl » (sans adresse fixe, total dans `sansAdresseFixe`) sont
+  écartées.
+- Coordonnées : GeoNames `DK.zip` (CC BY 4.0), lieux de classe P — DST ne
+  publie pas de coordonnées.
+
+### Rapprochement
+
+Par nom normalisé (æ/ø/å, abréviations Skt./Gl./Nr./Sdr./St./Ll.), dans la
+kommune (code admin2 GeoNames ou point dans le contour GISCO), puis pour
+les byer partagées à moins de 10 km du contour, puis par partie des noms
+composés, puis par nom approché (« Ishøj Landsby » → Ishøj). `ALIASES`
+couvre les cas connus (Rudersdal → Holte, Furesø → Hareskovby, Nykøbing S).
+Un point hors de la kommune est ramené sur son contour. Positions
+approchées ou ramenées : `approx: true`.
+
+Dernier run (BY3 2026) : 1 419 byer, 1 385 localisées (99,6 % de la
+population urbaine), 46 positions approchées, 34 petites byer absentes de
+GeoNames (lat/lon à `null`, listées en sortie ; la plus grande est Sankt
+Klemens, Odense, 3 258 hab.).
+
+```bash
+.venv/bin/python build_dk_kommuner.py    # prérequis : contours des kommuner
+.venv/bin/python build_dk_byer_data.py   # écrit data/out/dk_byer_data.json
+```
+
+## Danemark — météo mensuelle (build_dk_meteo_data.py)
+
+Équivalent danois de `meteo_monthly.json`, au même format (clé de premier
+niveau `kommuner` au lieu de `departements`, codes à 4 chiffres) : de
+janvier N-5 au mois courant de N, mois courant `partial`.
+
+Source : DMI Climate Data API, collection `municipalityValue`
+(https://opendataapi.dmi.dk/v2/climateData, sans clé, CC BY 4.0). DMI publie
+directement une valeur par kommune, issue de sa grille interpolée : pas de
+rattachement aux postes ni de pondération par la population, contrairement
+à la France.
+
+| Clé | Paramètre DMI |
+|---|---|
+| `tm` | `mean_temp` |
+| `tx` | `mean_daily_max_temp` |
+| `xa` | `max_temp_w_date` |
+| `na` | `min_temp` |
+| `rr` | `acc_precip` |
+| `tr` | `feels_like` (de `build_meteo_data.py`) sur `mean_temp`, `mean_relative_hum`, `mean_wind_speed` |
+
+Le record de chaleur étant une valeur de grille, `xn`, `xd`, `xy`, `xx`
+(poste, jour, position) sont absents. Pour les retrouver, il faudrait la
+collection `stationValue` (qui porte la date dans `extremeOccurence`), mais
+seuls 99 postes y publient ce record mensuel, Féroé et Groenland compris :
+beaucoup de kommuner n'en ont aucun.
+
+Dernier run : 98 kommuner × 70 mois (202101–202610), aucune valeur
+manquante. Contrôle : en juillet 2026, la moyenne simple des kommuner donne
+17,7 °C, pour 17,4 °C dans le `countryValue` de DMI (Copenhague et sa
+banlieue, plus chaudes, comptent beaucoup de kommuner).
+
+```bash
+.venv/bin/python build_dk_kommuner.py    # prérequis : liste des kommuner
+.venv/bin/python build_dk_meteo_data.py  # 7 requêtes DMI, écrit data/out/dk_meteo_monthly.json
+```
+
+À relancer pour rafraîchir (la fenêtre glisse avec la date du jour).
