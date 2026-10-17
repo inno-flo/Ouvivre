@@ -161,3 +161,45 @@ indice de chaleur ≥ 27 °C, refroidissement éolien ≤ 10 °C, sinon `tm`. Es
 indicative sur moyennes mensuelles.
 
 À relancer pour rafraîchir (la fenêtre glisse avec la date du jour).
+
+## Danemark — kommuner et régions (build_dk_kommuner.py)
+
+Équivalent danois de la couche départements : les **98 kommuner** (≈
+départements) et les **4 régions du 1er janvier 2027** (Region Hovedstaden
+et Region Sjælland fusionnent en Region Østdanmark, code 1086 ; Nordjylland
+1081, Midtjylland 1082, Syddanmark 1083 inchangées). Les sources publient
+encore 5 régions : le script les convertit par une table statique
+(`REGIONS_2027`).
+
+### Sources
+
+- Population : Danmarks Statistik, table `FOLK1A` (dernier trimestre),
+  superficie : table `ARE207` — API https://api.statbank.dk/v1/, sans clé,
+  réutilisation libre avec citation de la source.
+- Contours : Eurostat GISCO LAU 2024 1:1 M (EPSG:4326, © EuroGeographics),
+  ~150 Mo pour toute l'Europe, filtré sur `CNTR_CODE == "DK"`. Les régions
+  sont la fusion des polygones de leurs kommuner. (DAWA, l'ancienne API
+  DAGI sans compte, est fermée ; Dataforsyningen exige un token.)
+
+Codes à 4 chiffres (`0101` København), identiques à `municipalityId` de
+l'API climat DMI (vérifié : mêmes 98 codes). Christiansø (411, ~90 hab.),
+hors kommune, est écarté et signalé dans `horsKommune`.
+
+Le script vérifie que FOLK1A, ARE207 et GISCO ont les mêmes 98 kommuner,
+que chaque ancienne région a le nombre de kommuner attendu, et que la somme
+des kommuner + Christiansø égale « Hele landet ».
+
+### Sorties
+
+- `dk_kommuner.json` : régions et kommuner (code, nom, région, population,
+  superficie km², densité) ;
+- `dk_kommuner_boundaries.json`, `dk_regions_boundaries.json` : même
+  format que `france_departements_boundaries.json` (`code` au lieu de
+  `codeInsee`). Les trous des régions sont des fjords et lagunes
+  (Ringkøbing Fjord, Nissum Fjord, Odense Fjord…).
+
+```bash
+.venv/bin/python build_dk_kommuner.py   # télécharge GISCO (~150 Mo, une fois) et 2 tables DST
+```
+
+Pas encore copiés dans `OuvivreKit/Resources` : l'app ne les lit pas encore.
