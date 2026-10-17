@@ -281,3 +281,62 @@ banlieue, plus chaudes, comptent beaucoup de kommuner).
 ```
 
 À relancer pour rafraîchir (la fenêtre glisse avec la date du jour).
+
+## Danemark — scores Géographie (build_dk_geo_scores.py)
+
+Équivalent danois de `france_geo_scores.json`, par kommune (`code`,
+`codeRegion` 2027). **Le critère `montagne` est supprimé** (point culminant
+171 m) : la clé est absente, l'app devra masquer ce critère pour le
+Danemark.
+
+| Critère | Mesure | Source |
+|---|---|---|
+| `mer` | sauts jusqu'au littoral, 100/75/50/25/0 (comme `recompute_mer_score.py`) | GISCO LAU 2024 : contour non partagé avec une autre kommune ni une commune allemande (> 1 km). Les deux côtés viennent du même jeu, donc le calcul géométrique est fiable ici |
+| `paysEtranger` | distance (km) au pays étranger le plus proche, min-max inversé | Natural Earth 1:50 M (`data/raw/ne_countries.json`) |
+| `lacs` | part de la surface couverte de plans d'eau, min-max | OSM via Geofabrik (`water`, `reservoir`), hors Ringkøbing Fjord, Nissum Bredning, Thyborøn Kanal |
+| `fleuves` | distance (km) au grand cours d'eau le plus proche, plafonnée à 80 km, min-max inversé | OSM via Geofabrik : rivière nommée dont les tronçons connexes font ≥ 40 km (18 : Gudenå, Skjern Å, Storå, Suså…) |
+| `forets` | part de forêt de la surface cadastrée, min-max | DST `AREALDK2` (`E Skov`) |
+
+Les valeurs brutes sont dans `mesures` et `distancesKm` (avec la rivière la
+plus proche). Choix écartés :
+- `lacs` par DST `AREALDK2` : 154 km² de grands lacs hors cadastre ne sont
+  rattachés à aucune kommune (Mossø, lacs de Silkeborg), ce qui sous-estime
+  le Jutland ;
+- `fleuves` en densité de rivières : de petites kommuner urbaines
+  traversées par un seul ruisseau classé rivière passaient en tête
+  (Rødovre, Lyngby-Taarbæk). Sans plafond, Bornholm (180 km de la Suså)
+  écrasait l'échelle.
+
+Dernier run : 76 kommuner côtières et 22 sans littoral (Silkeborg,
+Herning, Ballerup, Sorø…). Lacs en tête : Halsnæs (Arresø), Furesø,
+Skanderborg (Mossø). Forêts : Albertslund (Vestskoven), Silkeborg.
+
+```bash
+.venv/bin/pip install pyshp
+.venv/bin/python build_dk_geo_scores.py   # Geofabrik ~810 Mo la première fois, puis ~15 s
+```
+
+## Danemark — scores Culture (build_dk_culture_data.py)
+
+Équivalent danois de `culture_scores.json` (mêmes champs `scores`,
+`counts`, `names`, `urls`, `disciplines`), par kommune. **Le critère
+`festivals` est masqué** : aucune base ouverte, et Wikidata n'en localise
+que 90, surtout à Copenhague (7 245 pour la France). Pour le réactiver
+plus tard, on peut reprendre la requête des musées avec la classe Q132241.
+
+- `musees` : éléments « musée » (Q33506 et sous-classes) de Wikidata
+  (CC0), avec coordonnées et sans musées fermés ; nom danois et site web
+  pour l'inspecteur. La requête passe par le miroir QLever
+  (`qlever.dev/api/wikidata`), car le point SPARQL de Wikimedia répondait
+  429. 518 musées rattachés ; 7 kommuner n'en ont aucun.
+- `patrimoine` : bâtiments classés (fredede bygninger) du registre FBB de
+  Slots- og Kulturstyrelsen, téléchargement INSPIRE
+  (`kulturarv.dk/fbb/inspire/FrededeBygninger.gml.gz`, sans condition).
+  7 134 bâtiments, contre 6 922 dans la table DST `KFRED1` 2025 ; l'écart
+  par région est de 2 à 4 %. Les coordonnées EPSG:4936 (géocentriques,
+  sans Z) sont converties en supposant une hauteur nulle. Le fichier ne
+  porte pas de noms : `names.patrimoine` reste vide.
+
+```bash
+.venv/bin/python build_dk_culture_data.py
+```
