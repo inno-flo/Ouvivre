@@ -2,7 +2,8 @@ import Foundation
 import CoreLocation
 
 /// Simplified département outlines for drawing the selected département's
-/// real perimeter on the map (see geo_pipeline), keyed by département name.
+/// real perimeter on the map (see geo_pipeline), keyed by département name —
+/// kommuner danoises comprises (`dk_kommuner_boundaries.json`, même format).
 enum DepartementBoundaries {
     private struct Entry: Decodable {
         let nom: String
@@ -10,10 +11,11 @@ enum DepartementBoundaries {
     }
 
     static let rings: [String: [[CLLocationCoordinate2D]]] = {
-        guard let url = Bundle.module.url(forResource: "france_departements_boundaries", withExtension: "json"),
-              let data = try? Data(contentsOf: url),
-              let entries = try? JSONDecoder().decode([Entry].self, from: data) else {
-            return [:]
+        let entries = ["france_departements_boundaries", "dk_kommuner_boundaries"].flatMap { resource -> [Entry] in
+            guard let url = Bundle.module.url(forResource: resource, withExtension: "json"),
+                  let data = try? Data(contentsOf: url),
+                  let entries = try? JSONDecoder().decode([Entry].self, from: data) else { return [] }
+            return entries
         }
         return Dictionary(entries.map { ($0.nom, geoJSONOuterRings(of: $0.geometry)) }, uniquingKeysWith: { _, last in last })
     }()

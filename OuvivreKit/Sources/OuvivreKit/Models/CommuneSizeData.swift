@@ -58,6 +58,17 @@ enum CommuneSizeData {
         let communes: [Commune]
     }
 
+    /// Byer danoises (`dk_byer_data.json`, DST BY3), rattachées à leur
+    /// kommune — même catégorisation par population que les communes.
+    private struct By: Decodable {
+        let kommuneCode: String
+        let population: Int
+    }
+
+    private struct DenmarkRoot: Decodable {
+        let byer: [By]
+    }
+
     /// Codes département par catégorie, précalculés une fois depuis les
     /// ~34 900 communes réelles de `communes_data.json` (généré offline —
     /// voir `geo_pipeline/README.md`) — évite de refiltrer ~35k entrées sur
@@ -71,6 +82,15 @@ enum CommuneSizeData {
         var codes: [CommuneSizeCategory: Set<String>] = [:]
         for commune in root.communes {
             codes[.category(forPopulation: commune.population), default: []].insert(commune.departementCode)
+        }
+        // Les kommuner s'ajoutent aux mêmes ensembles : leurs codes ne
+        // recoupent aucun code département.
+        if let url = Bundle.module.url(forResource: "dk_byer_data", withExtension: "json"),
+           let data = try? Data(contentsOf: url),
+           let denmark = try? JSONDecoder().decode(DenmarkRoot.self, from: data) {
+            for by in denmark.byer {
+                codes[.category(forPopulation: by.population), default: []].insert(by.kommuneCode)
+            }
         }
         return (root.generatedAt, codes)
     }()

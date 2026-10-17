@@ -202,7 +202,13 @@ des kommuner + Christiansø égale « Hele landet ».
 .venv/bin/python build_dk_kommuner.py   # télécharge GISCO (~150 Mo, une fois) et 2 tables DST
 ```
 
-Pas encore copiés dans `OuvivreKit/Resources` : l'app ne les lit pas encore.
+L'app lit `dk_kommuner_boundaries.json` ; `dk_kommuner.json` et
+`dk_regions_boundaries.json` ne lui servent pas encore. Copie dans
+`OuvivreKit/Resources`, avec les sorties des scripts suivants :
+
+```bash
+for f in dk_kommuner_boundaries dk_geo_scores dk_culture_scores dk_byer_data dk_meteo_monthly; do cp data/out/$f.json ../OuvivreKit/Sources/OuvivreKit/Resources/; done
+```
 
 ## Danemark — byer (build_dk_byer_data.py)
 

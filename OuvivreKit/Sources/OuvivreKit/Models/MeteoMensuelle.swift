@@ -5,6 +5,8 @@ import CoreLocation
 /// dernières années glissantes, précomputées offline depuis les données
 /// climatologiques mensuelles de Météo-France — voir
 /// geo_pipeline/build_meteo_data.py. Mirrors `CultureScores`' loading pattern.
+/// Kommuner danoises comprises : valeurs DMI par kommune
+/// (`dk_meteo_monthly.json`, build_dk_meteo_data.py), sans position de record.
 enum MeteoMensuelle {
     struct Point: Identifiable {
         /// Premier jour du mois (fuseau UTC, pour un axe temporel stable).
@@ -37,8 +39,10 @@ enum MeteoMensuelle {
         let partial: Bool?
     }
 
+    /// `departements` pour la France, `kommuner` pour le Danemark.
     private struct Root: Decodable {
-        let departements: [String: [String: RawPoint]]
+        let departements: [String: [String: RawPoint]]?
+        let kommuner: [String: [String: RawPoint]]?
     }
 
     /// Calendrier grégorien UTC, pour un axe temporel stable (partagé par
@@ -57,10 +61,13 @@ enum MeteoMensuelle {
 
     /// Série mensuelle triée chronologiquement, indexée par code département.
     private static let seriesByCode: [String: [Point]] = {
-        guard let url = Bundle.module.url(forResource: "meteo_monthly", withExtension: "json"),
-              let data = try? Data(contentsOf: url),
-              let root = try? JSONDecoder().decode(Root.self, from: data) else { return [:] }
-        return root.departements.mapValues { months in
+        let raw = ["meteo_monthly", "dk_meteo_monthly"].reduce(into: [String: [String: RawPoint]]()) { all, resource in
+            guard let url = Bundle.module.url(forResource: resource, withExtension: "json"),
+                  let data = try? Data(contentsOf: url),
+                  let root = try? JSONDecoder().decode(Root.self, from: data) else { return }
+            all.merge(root.departements ?? root.kommuner ?? [:]) { first, _ in first }
+        }
+        return raw.mapValues { months in
             months.compactMap { key, raw -> Point? in
                 guard let date = monthStart(key) else { return nil }
                 let location: CLLocationCoordinate2D? = {

@@ -36,6 +36,14 @@ enum ClassicStatic {
 
     static let countries = ["France", "Danemark", "Suède", "Japon"]
     static let countryFlags = ["France": "🇫🇷", "Danemark": "🇩🇰", "Suède": "🇸🇪", "Japon": "🇯🇵"]
+    /// Pays dont les données départementales (ou par kommune) sont
+    /// chargées : le bloc « Géographie et Culture » n'est dépliable que pour eux.
+    static let countriesWithData: Set<String> = ["France", "Danemark"]
+    /// Critères (clés de `FranceGeoData.criterionKeys` et
+    /// `CultureScores.criterionKeys`) sans données pour un pays : leur
+    /// réglette est masquée et leur poids ignoré. Danemark : pas de montagne
+    /// (171 m au plus haut), pas de base ouverte des festivals.
+    static let hiddenCriteria: [String: Set<String>] = ["Danemark": ["montagne", "festivals"]]
     /// Géographie 2's 3-level scale (0...2) — "accessoire", "souhaitable" et "prioritaire" fusionnés dans "important".
     static let tags = ["indifférent", "important", "déterminant"]
 
@@ -62,16 +70,19 @@ enum ClassicStatic {
         ),
         "Danemark": CountryProfile(
             facts: [
-                LabeledValue("Régions et municipalités", "5 régions · 98 municipalités"),
-                LabeledValue("Villes et villages", "≈ 1 410 localités (byer)"),
+                LabeledValue("Régions et municipalités", "4 régions · 98 municipalités (kommuner)"),
+                LabeledValue("Villes et villages", "1 419 localités (byer)"),
                 LabeledValue("Population totale", "6,0 millions"),
                 LabeledValue("Climats dominants", "2 — continental humide, océanique tempéré")
             ],
             sources: [
-                CountrySource(label: "Statistics Denmark — Municipalities of Denmark", url: "https://en.wikipedia.org/wiki/Municipalities_of_Denmark"),
-                CountrySource(label: "Statistics Denmark — Population figures", url: "https://www.dst.dk/en/Statistik/emner/borgere/befolkning"),
-                CountrySource(label: "Statistics Denmark — Towns and urban settlements", url: "https://www.dst.dk/en/Statistik/bagtal/2023/2023-06-30-byer"),
-                CountrySource(label: "DMI — Danish Meteorological Institute", url: "https://en.wikipedia.org/wiki/Danish_Meteorological_Institute")
+                CountrySource(label: "Danmarks Statistik — StatBank (FOLK1A, BY3, AREALDK2)", url: "https://www.statbank.dk"),
+                CountrySource(label: "DMI — Climate Data API (valeurs mensuelles par kommune)", url: "https://www.dmi.dk/friedata/dokumentation/apis/climate-data-api-1"),
+                CountrySource(label: "Eurostat GISCO — Limites des kommuner (LAU 2024)", url: "https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/local-administrative-units"),
+                CountrySource(label: "Slots- og Kulturstyrelsen — Bâtiments classés (FBB)", url: "https://www.kulturarv.dk/fbb/"),
+                CountrySource(label: "Wikidata — Musées du Danemark", url: "https://www.wikidata.org"),
+                CountrySource(label: "OpenStreetMap (Geofabrik) — Lacs et cours d'eau", url: "https://download.geofabrik.de/europe/denmark.html"),
+                CountrySource(label: "GeoNames — Coordonnées des localités", url: "https://www.geonames.org")
             ]
         ),
         "Suède": CountryProfile(

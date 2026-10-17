@@ -4,9 +4,13 @@ import Foundation
 /// "Big Mac" (Musées, Lieux du patrimoine, Festivals), precomputed offline
 /// from culture.data.gouv.fr datasets — see geo_pipeline/build_culture_data.py
 /// and geo_pipeline/README.md. Mirrors `FranceGeoData`'s loading pattern.
+/// Porte aussi les kommuner danoises (`dk_culture_scores.json` : musées
+/// Wikidata, bâtiments classés FBB, pas de festivals).
 enum CultureScores {
     struct DepartementScore: Decodable {
         let codeInsee: String
+        /// Pays du département ou de la kommune.
+        fileprivate(set) var country = "France"
         let scores: [String: Double]
         /// Noms des sites/événements par critère ("musees", "patrimoine",
         /// "festivals", plus "spr" pour les sites patrimoniaux remarquables).
@@ -17,35 +21,59 @@ enum CultureScores {
         /// Discipline dominante par critère puis par nom ("festivals"
         /// seulement : les musées n'ont pas de variable thématique).
         let disciplines: [String: [String: String]]
+
+        private enum CodingKeys: String, CodingKey {
+            case codeInsee, code, scores, names, urls, disciplines
+        }
+
+        /// Les kommuner portent leur code sous `code` plutôt que `codeInsee`.
+        init(from decoder: Decoder) throws {
+            let c = try decoder.container(keyedBy: CodingKeys.self)
+            codeInsee = try c.decodeIfPresent(String.self, forKey: .codeInsee) ?? c.decode(String.self, forKey: .code)
+            scores = try c.decode([String: Double].self, forKey: .scores)
+            names = try c.decode([String: [String]].self, forKey: .names)
+            urls = try c.decode([String: [String: String]].self, forKey: .urls)
+            disciplines = try c.decode([String: [String: String]].self, forKey: .disciplines)
+        }
     }
 
+    /// `departements` pour la France, `kommuner` pour le Danemark.
     private struct Root: Decodable {
         let generatedAt: String
-        let departements: [DepartementScore]
+        let departements: [DepartementScore]?
+        let kommuner: [DepartementScore]?
     }
 
     /// Stable key order, matching the 3 Culture rows kept in `SelecteurView`.
     static let criterionKeys = ["musees", "patrimoine", "festivals"]
 
-    private static let root: Root? = {
-        guard let url = Bundle.module.url(forResource: "culture_scores", withExtension: "json"),
+    private static func load(_ resource: String) -> Root? {
+        guard let url = Bundle.module.url(forResource: resource, withExtension: "json"),
               let data = try? Data(contentsOf: url) else { return nil }
         return try? JSONDecoder().decode(Root.self, from: data)
-    }()
+    }
 
+    private static let root = load("culture_scores")
+    private static let denmarkRoot = load("dk_culture_scores")
+
+    /// Date de génération des données françaises (suivi de fraîcheur
+    /// data.gouv.fr, voir `DatasetFreshness`).
     static let generatedAt: String? = root?.generatedAt
 
     /// Scores indexed by département code — avoids a linear scan of the 101
     /// départements for every lookup when combining with commune-size
-    /// matching in `SelecteurView`.
+    /// matching in `SelecteurView`. Départements et kommuner ensemble (codes
+    /// distincts).
     private static let byDepartementCode: [String: DepartementScore] = {
-        Dictionary(uniqueKeysWithValues: (root?.departements ?? []).map { ($0.codeInsee, $0) })
+        let france = root?.departements ?? []
+        let denmark = (denmarkRoot?.kommuner ?? []).map { var d = $0; d.country = "Danemark"; return d }
+        return Dictionary(uniqueKeysWithValues: (france + denmark).map { ($0.codeInsee, $0) })
     }()
 
-    /// Scores triés de chaque critère, calculés une seule fois.
-    private static let sortedScores: [String: [Double]] = Dictionary(uniqueKeysWithValues: criterionKeys.map { key in
-        (key, byDepartementCode.values.compactMap { $0.scores[key] }.sorted())
-    })
+    /// Scores triés de chaque critère, par pays, calculés une seule fois.
+    private static let sortedScores: [String: [String: [Double]]] = Dictionary(grouping: byDepartementCode.values, by: \.country).mapValues { deps in
+        Dictionary(uniqueKeysWithValues: criterionKeys.map { key in (key, deps.compactMap { $0.scores[key] }.sorted()) })
+    }
 
     /// Weighted match (0-100) of a département against 3 weights (0...5,
     /// same order as `criterionKeys`), by weighted average of its criterion
@@ -62,8 +90,8 @@ enum CultureScores {
     /// Only the top ~15% of départements pass once a Big Mac criterion
     /// (Musées/Lieux du patrimoine/Festivals) is pushed to "déterminant" —
     /// see `passesHardFilter`.
-    static func hardFilterThreshold(forKey key: String, percentile: Double = FranceGeoData.determinantPercentile) -> Double? {
-        sortedScores[key].flatMap { percentileValue($0, percentile) }
+    static func hardFilterThreshold(forKey key: String, country: String, percentile: Double = FranceGeoData.determinantPercentile) -> Double? {
+        sortedScores[country]?[key].flatMap { percentileValue($0, percentile) }
     }
 
     /// Whether the département at `code` passes the hard filter for `key`
@@ -72,8 +100,8 @@ enum CultureScores {
     /// `FranceGeoData.passesHardFilter`.
     static func passesHardFilter(forDepartementCode code: String, key: String, weight: Int, maxWeight: Int) -> Bool {
         guard let percentile = FranceGeoData.filterPercentile(forWeight: weight, maxWeight: maxWeight),
-              let threshold = hardFilterThreshold(forKey: key, percentile: percentile),
-              let dep = byDepartementCode[code] else { return true }
+              let dep = byDepartementCode[code],
+              let threshold = hardFilterThreshold(forKey: key, country: dep.country, percentile: percentile) else { return true }
         return (dep.scores[key] ?? 50.0) >= threshold
     }
 
@@ -122,7 +150,9 @@ enum CultureScores {
     /// casse de titre, sauf en position initiale (ex. "Château de Chambord",
     /// mais "Le Havre").
     private static let lowercasedParticles: Set<String> = [
-        "de", "du", "des", "d'", "la", "le", "les", "l'", "et", "en", "à", "au", "aux", "sur"
+        "de", "du", "des", "d'", "la", "le", "les", "l'", "et", "en", "à", "au", "aux", "sur",
+        // Danois (musées Wikidata : « Museum for Varde By og Omegn »).
+        "og", "i", "på", "for", "ved", "af", "til", "med"
     ]
 
     /// Les noms bruts mélangent TOUT MAJUSCULES et tout minuscules — on les
@@ -161,9 +191,24 @@ enum CultureScores {
         return merged
     }
 
+    /// Mot dont la casse est voulue et doit être gardée telle quelle :
+    /// majuscule à l'intérieur du mot (« ARoS », « MuCEM ») ou initiales
+    /// pointées (« H.C. »). Les noms danois de Wikidata sont déjà bien
+    /// écrits ; seuls les noms français bruts ont besoin d'être recasés.
+    private static func hasDeliberateCasing(_ word: Substring) -> Bool {
+        guard word.contains(where: \.isUppercase) else { return false }
+        if word.contains(".") { return true }
+        return word.contains(where: \.isLowercase) && word.dropFirst().contains(where: \.isUppercase)
+    }
+
     static func titleCased(_ name: String) -> String {
+        let original = name.split(separator: " ")
         let words = mergeStandaloneElisions(name.lowercased().split(separator: " "))
+        // Hors noms TOUT MAJUSCULES et tant qu'aucune élision n'a fusionné de
+        // mots, les mots à casse voulue sont repris tels quels.
+        let keepsDeliberateCasing = words.count == original.count && name != name.uppercased()
         return words.enumerated().map { index, word -> String in
+            if keepsDeliberateCasing, hasDeliberateCasing(original[index]) { return String(original[index]) }
             if index > 0, lowercasedParticles.contains(word) { return word }
             if let prefix = elisionPrefixes.first(where: { word.hasPrefix($0) }), word.count > prefix.count {
                 let rest = word.dropFirst(prefix.count)

@@ -1,0 +1,2358 @@
+{
+ "generatedAt": "2026-10-17T18:02:35.136234+00:00",
+ "source": "Eurostat GISCO LAU 2024 (mer, adjacence) + Natural Earth (pays étranger) + OpenStreetMap via Geofabrik, ODbL (lacs, rivières) + Danmarks Statistik AREALDK2 2024 (forêts) ; critère montagne supprimé",
+ "kommuner": [
+  {
+   "code": "0101",
+   "nom": "København",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 90.1,
+    "mer": 100.0,
+    "fleuves": 38.2,
+    "lacs": 40.4,
+    "forets": 0.0
+   },
+   "distancesKm": {
+    "paysEtranger": 15.1,
+    "fleuves": 49.5
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 28.3,
+    "lacsPct": 5.98,
+    "fleuveProche": "Suså",
+    "foretsPct": 1.8
+   }
+  },
+  {
+   "code": "0147",
+   "nom": "Frederiksberg",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 82.8,
+    "mer": 75.0,
+    "fleuves": 33.8,
+    "lacs": 1.1,
+    "forets": 3.5
+   },
+   "distancesKm": {
+    "paysEtranger": 26.2,
+    "fleuves": 53.0
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 0.4,
+    "fleuveProche": "Suså",
+    "foretsPct": 2.8
+   }
+  },
+  {
+   "code": "0151",
+   "nom": "Ballerup",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 79.8,
+    "mer": 75.0,
+    "fleuves": 38.0,
+    "lacs": 15.0,
+    "forets": 22.0
+   },
+   "distancesKm": {
+    "paysEtranger": 30.8,
+    "fleuves": 49.6
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 2.38,
+    "fleuveProche": "Suså",
+    "foretsPct": 8.0
+   }
+  },
+  {
+   "code": "0153",
+   "nom": "Brøndby",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 79.0,
+    "mer": 100.0,
+    "fleuves": 44.5,
+    "lacs": 19.5,
+    "forets": 36.9
+   },
+   "distancesKm": {
+    "paysEtranger": 32.0,
+    "fleuves": 44.4
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 2.5,
+    "lacsPct": 3.02,
+    "fleuveProche": "Suså",
+    "foretsPct": 12.2
+   }
+  },
+  {
+   "code": "0155",
+   "nom": "Dragør",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 88.7,
+    "mer": 100.0,
+    "fleuves": 38.7,
+    "lacs": 14.2,
+    "forets": 39.7
+   },
+   "distancesKm": {
+    "paysEtranger": 17.2,
+    "fleuves": 49.1
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 12.3,
+    "lacsPct": 2.26,
+    "fleuveProche": "Suså",
+    "foretsPct": 13.0
+   }
+  },
+  {
+   "code": "0157",
+   "nom": "Gentofte",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 87.6,
+    "mer": 100.0,
+    "fleuves": 26.7,
+    "lacs": 9.1,
+    "forets": 16.7
+   },
+   "distancesKm": {
+    "paysEtranger": 18.9,
+    "fleuves": 58.6
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 6.7,
+    "lacsPct": 1.53,
+    "fleuveProche": "Suså",
+    "foretsPct": 6.5
+   }
+  },
+  {
+   "code": "0159",
+   "nom": "Gladsaxe",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 83.6,
+    "mer": 75.0,
+    "fleuves": 31.2,
+    "lacs": 26.2,
+    "forets": 21.3
+   },
+   "distancesKm": {
+    "paysEtranger": 25.0,
+    "fleuves": 55.1
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 3.96,
+    "fleuveProche": "Suså",
+    "foretsPct": 7.8
+   }
+  },
+  {
+   "code": "0161",
+   "nom": "Glostrup",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 79.0,
+    "mer": 75.0,
+    "fleuves": 41.4,
+    "lacs": 2.8,
+    "forets": 47.2
+   },
+   "distancesKm": {
+    "paysEtranger": 32.0,
+    "fleuves": 46.9
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 0.64,
+    "fleuveProche": "Suså",
+    "foretsPct": 15.1
+   }
+  },
+  {
+   "code": "0163",
+   "nom": "Herlev",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 81.3,
+    "mer": 75.0,
+    "fleuves": 33.8,
+    "lacs": 8.4,
+    "forets": 5.3
+   },
+   "distancesKm": {
+    "paysEtranger": 28.5,
+    "fleuves": 53.0
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 1.44,
+    "fleuveProche": "Suså",
+    "foretsPct": 3.3
+   }
+  },
+  {
+   "code": "0165",
+   "nom": "Albertslund",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 77.2,
+    "mer": 75.0,
+    "fleuves": 45.1,
+    "lacs": 5.1,
+    "forets": 100.0
+   },
+   "distancesKm": {
+    "paysEtranger": 34.8,
+    "fleuves": 44.0
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 0.96,
+    "fleuveProche": "Suså",
+    "foretsPct": 30.0
+   }
+  },
+  {
+   "code": "0167",
+   "nom": "Hvidovre",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 81.3,
+    "mer": 100.0,
+    "fleuves": 42.7,
+    "lacs": 6.8,
+    "forets": 7.1
+   },
+   "distancesKm": {
+    "paysEtranger": 28.6,
+    "fleuves": 45.8
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 7.3,
+    "lacsPct": 1.2,
+    "fleuveProche": "Suså",
+    "foretsPct": 3.8
+   }
+  },
+  {
+   "code": "0169",
+   "nom": "Høje-Taastrup",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 74.6,
+    "mer": 75.0,
+    "fleuves": 57.2,
+    "lacs": 7.5,
+    "forets": 20.9
+   },
+   "distancesKm": {
+    "paysEtranger": 38.8,
+    "fleuves": 34.3
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 1.31,
+    "fleuveProche": "Suså",
+    "foretsPct": 7.7
+   }
+  },
+  {
+   "code": "0173",
+   "nom": "Lyngby-Taarbæk",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 88.3,
+    "mer": 100.0,
+    "fleuves": 27.1,
+    "lacs": 70.8,
+    "forets": 70.2
+   },
+   "distancesKm": {
+    "paysEtranger": 17.8,
+    "fleuves": 58.3
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 3.2,
+    "lacsPct": 10.31,
+    "fleuveProche": "Suså",
+    "foretsPct": 21.6
+   }
+  },
+  {
+   "code": "0175",
+   "nom": "Rødovre",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 80.1,
+    "mer": 75.0,
+    "fleuves": 37.8,
+    "lacs": 7.1,
+    "forets": 6.0
+   },
+   "distancesKm": {
+    "paysEtranger": 30.3,
+    "fleuves": 49.7
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 1.25,
+    "fleuveProche": "Suså",
+    "foretsPct": 3.5
+   }
+  },
+  {
+   "code": "0183",
+   "nom": "Ishøj",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 77.0,
+    "mer": 100.0,
+    "fleuves": 54.2,
+    "lacs": 25.7,
+    "forets": 16.7
+   },
+   "distancesKm": {
+    "paysEtranger": 35.1,
+    "fleuves": 36.7
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 3.7,
+    "lacsPct": 3.89,
+    "fleuveProche": "Suså",
+    "foretsPct": 6.5
+   }
+  },
+  {
+   "code": "0185",
+   "nom": "Tårnby",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 93.1,
+    "mer": 100.0,
+    "fleuves": 39.8,
+    "lacs": 28.3,
+    "forets": 7.8
+   },
+   "distancesKm": {
+    "paysEtranger": 10.6,
+    "fleuves": 48.1
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 38.2,
+    "lacsPct": 4.27,
+    "fleuveProche": "Suså",
+    "foretsPct": 4.0
+   }
+  },
+  {
+   "code": "0187",
+   "nom": "Vallensbæk",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 77.3,
+    "mer": 100.0,
+    "fleuves": 45.7,
+    "lacs": 20.2,
+    "forets": 17.4
+   },
+   "distancesKm": {
+    "paysEtranger": 34.7,
+    "fleuves": 43.4
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 1.1,
+    "lacsPct": 3.11,
+    "fleuveProche": "Suså",
+    "foretsPct": 6.7
+   }
+  },
+  {
+   "code": "0190",
+   "nom": "Furesø",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 83.0,
+    "mer": 75.0,
+    "fleuves": 33.6,
+    "lacs": 89.1,
+    "forets": 64.2
+   },
+   "distancesKm": {
+    "paysEtranger": 25.9,
+    "fleuves": 53.1
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 12.91,
+    "fleuveProche": "Suså",
+    "foretsPct": 19.9
+   }
+  },
+  {
+   "code": "0201",
+   "nom": "Allerød",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 84.7,
+    "mer": 75.0,
+    "fleuves": 30.1,
+    "lacs": 22.9,
+    "forets": 62.1
+   },
+   "distancesKm": {
+    "paysEtranger": 23.3,
+    "fleuves": 55.9
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 3.5,
+    "fleuveProche": "Suså",
+    "foretsPct": 19.3
+   }
+  },
+  {
+   "code": "0210",
+   "nom": "Fredensborg",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 92.9,
+    "mer": 100.0,
+    "fleuves": 14.9,
+    "lacs": 46.3,
+    "forets": 53.9
+   },
+   "distancesKm": {
+    "paysEtranger": 10.8,
+    "fleuves": 68.1
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 7.1,
+    "lacsPct": 6.82,
+    "fleuveProche": "Suså",
+    "foretsPct": 17.0
+   }
+  },
+  {
+   "code": "0217",
+   "nom": "Helsingør",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 97.8,
+    "mer": 100.0,
+    "fleuves": 0.6,
+    "lacs": 40.9,
+    "forets": 79.1
+   },
+   "distancesKm": {
+    "paysEtranger": 3.4,
+    "fleuves": 79.5
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 23.4,
+    "lacsPct": 6.06,
+    "fleuveProche": "Suså",
+    "foretsPct": 24.1
+   }
+  },
+  {
+   "code": "0219",
+   "nom": "Hillerød",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 87.6,
+    "mer": 75.0,
+    "fleuves": 28.5,
+    "lacs": 56.6,
+    "forets": 73.0
+   },
+   "distancesKm": {
+    "paysEtranger": 18.9,
+    "fleuves": 57.2
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 8.29,
+    "fleuveProche": "Suså",
+    "foretsPct": 22.4
+   }
+  },
+  {
+   "code": "0223",
+   "nom": "Hørsholm",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 89.8,
+    "mer": 100.0,
+    "fleuves": 16.1,
+    "lacs": 32.9,
+    "forets": 52.1
+   },
+   "distancesKm": {
+    "paysEtranger": 15.5,
+    "fleuves": 67.1
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 6.0,
+    "lacsPct": 4.92,
+    "fleuveProche": "Suså",
+    "foretsPct": 16.5
+   }
+  },
+  {
+   "code": "0230",
+   "nom": "Rudersdal",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 89.5,
+    "mer": 100.0,
+    "fleuves": 24.8,
+    "lacs": 65.3,
+    "forets": 75.9
+   },
+   "distancesKm": {
+    "paysEtranger": 16.1,
+    "fleuves": 60.1
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 6.1,
+    "lacsPct": 9.52,
+    "fleuveProche": "Suså",
+    "foretsPct": 23.2
+   }
+  },
+  {
+   "code": "0240",
+   "nom": "Egedal",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 79.3,
+    "mer": 75.0,
+    "fleuves": 42.4,
+    "lacs": 12.4,
+    "forets": 33.3
+   },
+   "distancesKm": {
+    "paysEtranger": 31.6,
+    "fleuves": 46.1
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 2.0,
+    "fleuveProche": "Suså",
+    "foretsPct": 11.2
+   }
+  },
+  {
+   "code": "0250",
+   "nom": "Frederikssund",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 76.9,
+    "mer": 100.0,
+    "fleuves": 52.4,
+    "lacs": 6.4,
+    "forets": 36.2
+   },
+   "distancesKm": {
+    "paysEtranger": 35.3,
+    "fleuves": 38.1
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 92.5,
+    "lacsPct": 1.15,
+    "fleuveProche": "Suså",
+    "foretsPct": 12.0
+   }
+  },
+  {
+   "code": "0253",
+   "nom": "Greve",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 75.8,
+    "mer": 100.0,
+    "fleuves": 61.1,
+    "lacs": 2.7,
+    "forets": 12.1
+   },
+   "distancesKm": {
+    "paysEtranger": 36.9,
+    "fleuves": 31.1
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 9.2,
+    "lacsPct": 0.62,
+    "fleuveProche": "Suså",
+    "foretsPct": 5.2
+   }
+  },
+  {
+   "code": "0259",
+   "nom": "Køge",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 72.7,
+    "mer": 100.0,
+    "fleuves": 89.8,
+    "lacs": 4.6,
+    "forets": 64.5
+   },
+   "distancesKm": {
+    "paysEtranger": 41.7,
+    "fleuves": 8.2
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 16.7,
+    "lacsPct": 0.9,
+    "fleuveProche": "Suså",
+    "foretsPct": 20.0
+   }
+  },
+  {
+   "code": "0260",
+   "nom": "Halsnæs",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 78.0,
+    "mer": 100.0,
+    "fleuves": 28.8,
+    "lacs": 100.0,
+    "forets": 33.0
+   },
+   "distancesKm": {
+    "paysEtranger": 33.5,
+    "fleuves": 57.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 40.8,
+    "lacsPct": 14.46,
+    "fleuveProche": "Suså",
+    "foretsPct": 11.1
+   }
+  },
+  {
+   "code": "0265",
+   "nom": "Roskilde",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 73.1,
+    "mer": 100.0,
+    "fleuves": 74.5,
+    "lacs": 13.6,
+    "forets": 13.8
+   },
+   "distancesKm": {
+    "paysEtranger": 41.1,
+    "fleuves": 20.4
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 30.0,
+    "lacsPct": 2.17,
+    "fleuveProche": "Suså",
+    "foretsPct": 5.7
+   }
+  },
+  {
+   "code": "0269",
+   "nom": "Solrød",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 71.9,
+    "mer": 100.0,
+    "fleuves": 70.0,
+    "lacs": 2.7,
+    "forets": 7.1
+   },
+   "distancesKm": {
+    "paysEtranger": 42.9,
+    "fleuves": 24.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 5.9,
+    "lacsPct": 0.62,
+    "fleuveProche": "Suså",
+    "foretsPct": 3.8
+   }
+  },
+  {
+   "code": "0270",
+   "nom": "Gribskov",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 92.3,
+    "mer": 100.0,
+    "fleuves": 14.9,
+    "lacs": 57.5,
+    "forets": 55.0
+   },
+   "distancesKm": {
+    "paysEtranger": 11.7,
+    "fleuves": 68.1
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 29.9,
+    "lacsPct": 8.41,
+    "fleuveProche": "Suså",
+    "foretsPct": 17.3
+   }
+  },
+  {
+   "code": "0306",
+   "nom": "Odsherred",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 64.7,
+    "mer": 100.0,
+    "fleuves": 50.4,
+    "lacs": 6.8,
+    "forets": 31.9
+   },
+   "distancesKm": {
+    "paysEtranger": 53.9,
+    "fleuves": 39.7
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 124.5,
+    "lacsPct": 1.21,
+    "fleuveProche": "Suså",
+    "foretsPct": 10.8
+   }
+  },
+  {
+   "code": "0316",
+   "nom": "Holbæk",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 61.1,
+    "mer": 100.0,
+    "fleuves": 85.5,
+    "lacs": 7.0,
+    "forets": 36.5
+   },
+   "distancesKm": {
+    "paysEtranger": 59.4,
+    "fleuves": 11.6
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 70.6,
+    "lacsPct": 1.24,
+    "fleuveProche": "Suså",
+    "foretsPct": 12.1
+   }
+  },
+  {
+   "code": "0320",
+   "nom": "Faxe",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 72.8,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 4.7,
+    "forets": 59.6
+   },
+   "distancesKm": {
+    "paysEtranger": 41.5,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 27.5,
+    "lacsPct": 0.91,
+    "fleuveProche": "Suså",
+    "foretsPct": 18.6
+   }
+  },
+  {
+   "code": "0326",
+   "nom": "Kalundborg",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 43.5,
+    "mer": 100.0,
+    "fleuves": 79.8,
+    "lacs": 40.4,
+    "forets": 19.5
+   },
+   "distancesKm": {
+    "paysEtranger": 86.3,
+    "fleuves": 16.1
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 140.9,
+    "lacsPct": 5.99,
+    "fleuveProche": "Suså",
+    "foretsPct": 7.3
+   }
+  },
+  {
+   "code": "0329",
+   "nom": "Ringsted",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 62.1,
+    "mer": 75.0,
+    "fleuves": 100.0,
+    "lacs": 15.8,
+    "forets": 47.2
+   },
+   "distancesKm": {
+    "paysEtranger": 57.8,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 2.48,
+    "fleuveProche": "Suså",
+    "foretsPct": 15.1
+   }
+  },
+  {
+   "code": "0330",
+   "nom": "Slagelse",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 55.7,
+    "mer": 100.0,
+    "fleuves": 95.5,
+    "lacs": 7.5,
+    "forets": 31.2
+   },
+   "distancesKm": {
+    "paysEtranger": 67.7,
+    "fleuves": 3.6
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 140.4,
+    "lacsPct": 1.31,
+    "fleuveProche": "Suså",
+    "foretsPct": 10.6
+   }
+  },
+  {
+   "code": "0336",
+   "nom": "Stevns",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 81.2,
+    "mer": 100.0,
+    "fleuves": 82.3,
+    "lacs": 1.3,
+    "forets": 25.5
+   },
+   "distancesKm": {
+    "paysEtranger": 28.7,
+    "fleuves": 14.2
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 38.0,
+    "lacsPct": 0.43,
+    "fleuveProche": "Suså",
+    "foretsPct": 9.0
+   }
+  },
+  {
+   "code": "0340",
+   "nom": "Sorø",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 51.0,
+    "mer": 75.0,
+    "fleuves": 100.0,
+    "lacs": 20.7,
+    "forets": 54.3
+   },
+   "distancesKm": {
+    "paysEtranger": 74.8,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 3.19,
+    "fleuveProche": "Suså",
+    "foretsPct": 17.1
+   }
+  },
+  {
+   "code": "0350",
+   "nom": "Lejre",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 64.7,
+    "mer": 100.0,
+    "fleuves": 77.3,
+    "lacs": 6.7,
+    "forets": 44.3
+   },
+   "distancesKm": {
+    "paysEtranger": 53.8,
+    "fleuves": 18.1
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 48.5,
+    "lacsPct": 1.19,
+    "fleuveProche": "Suså",
+    "foretsPct": 14.3
+   }
+  },
+  {
+   "code": "0360",
+   "nom": "Lolland",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 88.3,
+    "mer": 100.0,
+    "fleuves": 66.6,
+    "lacs": 8.4,
+    "forets": 23.4
+   },
+   "distancesKm": {
+    "paysEtranger": 17.9,
+    "fleuves": 26.7
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 231.9,
+    "lacsPct": 1.43,
+    "fleuveProche": "Suså",
+    "foretsPct": 8.4
+   }
+  },
+  {
+   "code": "0370",
+   "nom": "Næstved",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 61.2,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 11.0,
+    "forets": 39.7
+   },
+   "distancesKm": {
+    "paysEtranger": 59.2,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 63.9,
+    "lacsPct": 1.8,
+    "fleuveProche": "Suså",
+    "foretsPct": 13.0
+   }
+  },
+  {
+   "code": "0376",
+   "nom": "Guldborgsund",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 82.0,
+    "mer": 100.0,
+    "fleuves": 65.4,
+    "lacs": 5.1,
+    "forets": 36.9
+   },
+   "distancesKm": {
+    "paysEtranger": 27.4,
+    "fleuves": 27.7
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 246.2,
+    "lacsPct": 0.97,
+    "fleuveProche": "Suså",
+    "foretsPct": 12.2
+   }
+  },
+  {
+   "code": "0390",
+   "nom": "Vordingborg",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 66.9,
+    "mer": 100.0,
+    "fleuves": 88.6,
+    "lacs": 3.4,
+    "forets": 39.4
+   },
+   "distancesKm": {
+    "paysEtranger": 50.5,
+    "fleuves": 9.1
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 287.8,
+    "lacsPct": 0.72,
+    "fleuveProche": "Suså",
+    "foretsPct": 12.9
+   }
+  },
+  {
+   "code": "0400",
+   "nom": "Bornholm",
+   "codeRegion": "1086",
+   "nomRegion": "Region Østdanmark",
+   "scores": {
+    "paysEtranger": 75.8,
+    "mer": 100.0,
+    "fleuves": 0.0,
+    "lacs": 2.0,
+    "forets": 67.7
+   },
+   "distancesKm": {
+    "paysEtranger": 37.0,
+    "fleuves": 179.8
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 102.7,
+    "lacsPct": 0.52,
+    "fleuveProche": "Suså",
+    "foretsPct": 20.9
+   }
+  },
+  {
+   "code": "0410",
+   "nom": "Middelfart",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 63.7,
+    "mer": 100.0,
+    "fleuves": 77.8,
+    "lacs": 5.9,
+    "forets": 29.8
+   },
+   "distancesKm": {
+    "paysEtranger": 55.4,
+    "fleuves": 17.8
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 95.2,
+    "lacsPct": 1.08,
+    "fleuveProche": "Odense Å",
+    "foretsPct": 10.2
+   }
+  },
+  {
+   "code": "0420",
+   "nom": "Assens",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 75.6,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 6.2,
+    "forets": 34.0
+   },
+   "distancesKm": {
+    "paysEtranger": 37.2,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 75.1,
+    "lacsPct": 1.12,
+    "fleuveProche": "Odense Å",
+    "foretsPct": 11.4
+   }
+  },
+  {
+   "code": "0430",
+   "nom": "Faaborg-Midtfyn",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 78.8,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 12.9,
+    "forets": 41.8
+   },
+   "distancesKm": {
+    "paysEtranger": 32.4,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 95.0,
+    "lacsPct": 2.07,
+    "fleuveProche": "Odense Å",
+    "foretsPct": 13.6
+   }
+  },
+  {
+   "code": "0440",
+   "nom": "Kerteminde",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 50.4,
+    "mer": 100.0,
+    "fleuves": 97.5,
+    "lacs": 4.9,
+    "forets": 18.4
+   },
+   "distancesKm": {
+    "paysEtranger": 75.7,
+    "fleuves": 2.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 115.0,
+    "lacsPct": 0.94,
+    "fleuveProche": "Odense Å",
+    "foretsPct": 7.0
+   }
+  },
+  {
+   "code": "0450",
+   "nom": "Nyborg",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 56.3,
+    "mer": 100.0,
+    "fleuves": 87.2,
+    "lacs": 5.0,
+    "forets": 32.6
+   },
+   "distancesKm": {
+    "paysEtranger": 66.7,
+    "fleuves": 10.2
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 36.9,
+    "lacsPct": 0.95,
+    "fleuveProche": "Odense Å",
+    "foretsPct": 11.0
+   }
+  },
+  {
+   "code": "0461",
+   "nom": "Odense",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 59.3,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 9.2,
+    "forets": 27.0
+   },
+   "distancesKm": {
+    "paysEtranger": 62.1,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 9.0,
+    "lacsPct": 1.55,
+    "fleuveProche": "Odense Å",
+    "foretsPct": 9.4
+   }
+  },
+  {
+   "code": "0479",
+   "nom": "Svendborg",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 75.7,
+    "mer": 100.0,
+    "fleuves": 91.5,
+    "lacs": 6.2,
+    "forets": 44.7
+   },
+   "distancesKm": {
+    "paysEtranger": 37.2,
+    "fleuves": 6.8
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 137.0,
+    "lacsPct": 1.12,
+    "fleuveProche": "Odense Å",
+    "foretsPct": 14.4
+   }
+  },
+  {
+   "code": "0480",
+   "nom": "Nordfyns",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 53.7,
+    "mer": 100.0,
+    "fleuves": 95.9,
+    "lacs": 6.8,
+    "forets": 23.0
+   },
+   "distancesKm": {
+    "paysEtranger": 70.6,
+    "fleuves": 3.3
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 100.5,
+    "lacsPct": 1.2,
+    "fleuveProche": "Odense Å",
+    "foretsPct": 8.3
+   }
+  },
+  {
+   "code": "0482",
+   "nom": "Langeland",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 79.2,
+    "mer": 100.0,
+    "fleuves": 61.0,
+    "lacs": 8.5,
+    "forets": 30.5
+   },
+   "distancesKm": {
+    "paysEtranger": 31.7,
+    "fleuves": 31.2
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 145.2,
+    "lacsPct": 1.45,
+    "fleuveProche": "Odense Å",
+    "foretsPct": 10.4
+   }
+  },
+  {
+   "code": "0492",
+   "nom": "Ærø",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 82.1,
+    "mer": 100.0,
+    "fleuves": 70.6,
+    "lacs": 5.6,
+    "forets": 2.5
+   },
+   "distancesKm": {
+    "paysEtranger": 27.3,
+    "fleuves": 23.6
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 87.2,
+    "lacsPct": 1.03,
+    "fleuveProche": "Odense Å",
+    "foretsPct": 2.5
+   }
+  },
+  {
+   "code": "0510",
+   "nom": "Haderslev",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 79.8,
+    "mer": 100.0,
+    "fleuves": 89.6,
+    "lacs": 6.2,
+    "forets": 37.9
+   },
+   "distancesKm": {
+    "paysEtranger": 30.8,
+    "fleuves": 8.3
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 86.7,
+    "lacsPct": 1.12,
+    "fleuveProche": "Kongeåen",
+    "foretsPct": 12.5
+   }
+  },
+  {
+   "code": "0530",
+   "nom": "Billund",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 54.4,
+    "mer": 75.0,
+    "fleuves": 100.0,
+    "lacs": 1.5,
+    "forets": 73.0
+   },
+   "distancesKm": {
+    "paysEtranger": 69.6,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 0.46,
+    "fleuveProche": "Holme Å",
+    "foretsPct": 22.4
+   }
+  },
+  {
+   "code": "0540",
+   "nom": "Sønderborg",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 99.2,
+    "mer": 100.0,
+    "fleuves": 62.9,
+    "lacs": 6.5,
+    "forets": 24.5
+   },
+   "distancesKm": {
+    "paysEtranger": 1.3,
+    "fleuves": 29.7
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 190.3,
+    "lacsPct": 1.17,
+    "fleuveProche": "Odense Å",
+    "foretsPct": 8.7
+   }
+  },
+  {
+   "code": "0550",
+   "nom": "Tønder",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 100.0,
+    "mer": 100.0,
+    "fleuves": 81.0,
+    "lacs": 2.3,
+    "forets": 14.9
+   },
+   "distancesKm": {
+    "paysEtranger": 0.0,
+    "fleuves": 15.2
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 95.7,
+    "lacsPct": 0.57,
+    "fleuveProche": "Kongeåen",
+    "foretsPct": 6.0
+   }
+  },
+  {
+   "code": "0561",
+   "nom": "Esbjerg",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 84.1,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 2.9,
+    "forets": 23.8
+   },
+   "distancesKm": {
+    "paysEtranger": 24.2,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 71.7,
+    "lacsPct": 0.65,
+    "fleuveProche": "Varde Å",
+    "foretsPct": 8.5
+   }
+  },
+  {
+   "code": "0563",
+   "nom": "Fanø",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 79.3,
+    "mer": 100.0,
+    "fleuves": 90.4,
+    "lacs": 3.2,
+    "forets": 31.6
+   },
+   "distancesKm": {
+    "paysEtranger": 31.6,
+    "fleuves": 7.7
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 52.9,
+    "lacsPct": 0.69,
+    "fleuveProche": "Kongeåen",
+    "foretsPct": 10.7
+   }
+  },
+  {
+   "code": "0573",
+   "nom": "Varde",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 69.2,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 7.7,
+    "forets": 39.7
+   },
+   "distancesKm": {
+    "paysEtranger": 47.0,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 73.7,
+    "lacsPct": 1.33,
+    "fleuveProche": "Varde Å",
+    "foretsPct": 13.0
+   }
+  },
+  {
+   "code": "0575",
+   "nom": "Vejen",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 73.2,
+    "mer": 75.0,
+    "fleuves": 100.0,
+    "lacs": 1.3,
+    "forets": 38.7
+   },
+   "distancesKm": {
+    "paysEtranger": 40.9,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 0.43,
+    "fleuveProche": "Holme Å",
+    "foretsPct": 12.7
+   }
+  },
+  {
+   "code": "0580",
+   "nom": "Aabenraa",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 100.0,
+    "mer": 100.0,
+    "fleuves": 60.1,
+    "lacs": 7.6,
+    "forets": 35.8
+   },
+   "distancesKm": {
+    "paysEtranger": 0.0,
+    "fleuves": 31.9
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 54.9,
+    "lacsPct": 1.32,
+    "fleuveProche": "Kongeåen",
+    "foretsPct": 11.9
+   }
+  },
+  {
+   "code": "0607",
+   "nom": "Fredericia",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 52.4,
+    "mer": 100.0,
+    "fleuves": 67.8,
+    "lacs": 6.5,
+    "forets": 39.0
+   },
+   "distancesKm": {
+    "paysEtranger": 72.6,
+    "fleuves": 25.8
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 37.8,
+    "lacsPct": 1.17,
+    "fleuveProche": "Kongeåen",
+    "foretsPct": 12.8
+   }
+  },
+  {
+   "code": "0615",
+   "nom": "Horsens",
+   "codeRegion": "1082",
+   "nomRegion": "Region Midtjylland",
+   "scores": {
+    "paysEtranger": 30.7,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 10.5,
+    "forets": 51.4
+   },
+   "distancesKm": {
+    "paysEtranger": 105.8,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 52.7,
+    "lacsPct": 1.74,
+    "fleuveProche": "Gudenå",
+    "foretsPct": 16.3
+   }
+  },
+  {
+   "code": "0621",
+   "nom": "Kolding",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 66.4,
+    "mer": 100.0,
+    "fleuves": 98.0,
+    "lacs": 4.9,
+    "forets": 36.9
+   },
+   "distancesKm": {
+    "paysEtranger": 51.2,
+    "fleuves": 1.6
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 47.8,
+    "lacsPct": 0.93,
+    "fleuveProche": "Kongeåen",
+    "foretsPct": 12.2
+   }
+  },
+  {
+   "code": "0630",
+   "nom": "Vejle",
+   "codeRegion": "1083",
+   "nomRegion": "Region Syddanmark",
+   "scores": {
+    "paysEtranger": 49.0,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 4.1,
+    "forets": 61.3
+   },
+   "distancesKm": {
+    "paysEtranger": 77.8,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 25.4,
+    "lacsPct": 0.83,
+    "fleuveProche": "Skjern Å",
+    "foretsPct": 19.1
+   }
+  },
+  {
+   "code": "0657",
+   "nom": "Herning",
+   "codeRegion": "1082",
+   "nomRegion": "Region Midtjylland",
+   "scores": {
+    "paysEtranger": 37.6,
+    "mer": 75.0,
+    "fleuves": 100.0,
+    "lacs": 4.2,
+    "forets": 55.0
+   },
+   "distancesKm": {
+    "paysEtranger": 95.2,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 0.84,
+    "fleuveProche": "Skjern Å",
+    "foretsPct": 17.3
+   }
+  },
+  {
+   "code": "0661",
+   "nom": "Holstebro",
+   "codeRegion": "1082",
+   "nomRegion": "Region Midtjylland",
+   "scores": {
+    "paysEtranger": 14.6,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 8.3,
+    "forets": 48.2
+   },
+   "distancesKm": {
+    "paysEtranger": 130.3,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 58.0,
+    "lacsPct": 1.42,
+    "fleuveProche": "Storå",
+    "foretsPct": 15.4
+   }
+  },
+  {
+   "code": "0665",
+   "nom": "Lemvig",
+   "codeRegion": "1082",
+   "nomRegion": "Region Midtjylland",
+   "scores": {
+    "paysEtranger": 5.9,
+    "mer": 100.0,
+    "fleuves": 96.8,
+    "lacs": 20.0,
+    "forets": 45.4
+   },
+   "distancesKm": {
+    "paysEtranger": 143.7,
+    "fleuves": 2.5
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 105.5,
+    "lacsPct": 3.09,
+    "fleuveProche": "Storå",
+    "foretsPct": 14.6
+   }
+  },
+  {
+   "code": "0671",
+   "nom": "Struer",
+   "codeRegion": "1082",
+   "nomRegion": "Region Midtjylland",
+   "scores": {
+    "paysEtranger": 3.0,
+    "mer": 100.0,
+    "fleuves": 96.1,
+    "lacs": 11.6,
+    "forets": 10.3
+   },
+   "distancesKm": {
+    "paysEtranger": 148.0,
+    "fleuves": 3.1
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 106.0,
+    "lacsPct": 1.89,
+    "fleuveProche": "Storå",
+    "foretsPct": 4.7
+   }
+  },
+  {
+   "code": "0706",
+   "nom": "Syddjurs",
+   "codeRegion": "1082",
+   "nomRegion": "Region Midtjylland",
+   "scores": {
+    "paysEtranger": 34.1,
+    "mer": 100.0,
+    "fleuves": 84.9,
+    "lacs": 9.0,
+    "forets": 69.1
+   },
+   "distancesKm": {
+    "paysEtranger": 100.6,
+    "fleuves": 12.1
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 116.2,
+    "lacsPct": 1.52,
+    "fleuveProche": "Gudenå",
+    "foretsPct": 21.3
+   }
+  },
+  {
+   "code": "0707",
+   "nom": "Norddjurs",
+   "codeRegion": "1082",
+   "nomRegion": "Region Midtjylland",
+   "scores": {
+    "paysEtranger": 67.1,
+    "mer": 100.0,
+    "fleuves": 86.0,
+    "lacs": 1.1,
+    "forets": 59.2
+   },
+   "distancesKm": {
+    "paysEtranger": 50.2,
+    "fleuves": 11.2
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 113.6,
+    "lacsPct": 0.4,
+    "fleuveProche": "Gudenå",
+    "foretsPct": 18.5
+   }
+  },
+  {
+   "code": "0710",
+   "nom": "Favrskov",
+   "codeRegion": "1082",
+   "nomRegion": "Region Midtjylland",
+   "scores": {
+    "paysEtranger": 9.1,
+    "mer": 75.0,
+    "fleuves": 100.0,
+    "lacs": 2.0,
+    "forets": 52.1
+   },
+   "distancesKm": {
+    "paysEtranger": 138.8,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 0.52,
+    "fleuveProche": "Gudenå",
+    "foretsPct": 16.5
+   }
+  },
+  {
+   "code": "0727",
+   "nom": "Odder",
+   "codeRegion": "1082",
+   "nomRegion": "Region Midtjylland",
+   "scores": {
+    "paysEtranger": 25.8,
+    "mer": 100.0,
+    "fleuves": 76.2,
+    "lacs": 0.0,
+    "forets": 33.7
+   },
+   "distancesKm": {
+    "paysEtranger": 113.2,
+    "fleuves": 19.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 64.5,
+    "lacsPct": 0.24,
+    "fleuveProche": "Gudenå",
+    "foretsPct": 11.3
+   }
+  },
+  {
+   "code": "0730",
+   "nom": "Randers",
+   "codeRegion": "1082",
+   "nomRegion": "Region Midtjylland",
+   "scores": {
+    "paysEtranger": 18.5,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 5.6,
+    "forets": 26.2
+   },
+   "distancesKm": {
+    "paysEtranger": 124.5,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 54.8,
+    "lacsPct": 1.03,
+    "fleuveProche": "Gudenå",
+    "foretsPct": 9.2
+   }
+  },
+  {
+   "code": "0740",
+   "nom": "Silkeborg",
+   "codeRegion": "1082",
+   "nomRegion": "Region Midtjylland",
+   "scores": {
+    "paysEtranger": 20.0,
+    "mer": 75.0,
+    "fleuves": 100.0,
+    "lacs": 17.2,
+    "forets": 94.3
+   },
+   "distancesKm": {
+    "paysEtranger": 122.1,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 2.69,
+    "fleuveProche": "Gudenå",
+    "foretsPct": 28.4
+   }
+  },
+  {
+   "code": "0741",
+   "nom": "Samsø",
+   "codeRegion": "1082",
+   "nomRegion": "Region Midtjylland",
+   "scores": {
+    "paysEtranger": 27.0,
+    "mer": 100.0,
+    "fleuves": 52.8,
+    "lacs": 2.7,
+    "forets": 19.9
+   },
+   "distancesKm": {
+    "paysEtranger": 111.4,
+    "fleuves": 37.8
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 102.2,
+    "lacsPct": 0.62,
+    "fleuveProche": "Odense Å",
+    "foretsPct": 7.4
+   }
+  },
+  {
+   "code": "0746",
+   "nom": "Skanderborg",
+   "codeRegion": "1082",
+   "nomRegion": "Region Midtjylland",
+   "scores": {
+    "paysEtranger": 19.2,
+    "mer": 75.0,
+    "fleuves": 100.0,
+    "lacs": 70.9,
+    "forets": 64.5
+   },
+   "distancesKm": {
+    "paysEtranger": 123.3,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 10.32,
+    "fleuveProche": "Gudenå",
+    "foretsPct": 20.0
+   }
+  },
+  {
+   "code": "0751",
+   "nom": "Aarhus",
+   "codeRegion": "1082",
+   "nomRegion": "Region Midtjylland",
+   "scores": {
+    "paysEtranger": 15.3,
+    "mer": 100.0,
+    "fleuves": 83.1,
+    "lacs": 11.5,
+    "forets": 27.0
+   },
+   "distancesKm": {
+    "paysEtranger": 129.3,
+    "fleuves": 13.5
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 36.9,
+    "lacsPct": 1.87,
+    "fleuveProche": "Gudenå",
+    "foretsPct": 9.4
+   }
+  },
+  {
+   "code": "0756",
+   "nom": "Ikast-Brande",
+   "codeRegion": "1082",
+   "nomRegion": "Region Midtjylland",
+   "scores": {
+    "paysEtranger": 38.9,
+    "mer": 75.0,
+    "fleuves": 100.0,
+    "lacs": 6.0,
+    "forets": 73.8
+   },
+   "distancesKm": {
+    "paysEtranger": 93.3,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 1.1,
+    "fleuveProche": "Skjern Å",
+    "foretsPct": 22.6
+   }
+  },
+  {
+   "code": "0760",
+   "nom": "Ringkøbing-Skjern",
+   "codeRegion": "1082",
+   "nomRegion": "Region Midtjylland",
+   "scores": {
+    "paysEtranger": 47.8,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 14.5,
+    "forets": 35.5
+   },
+   "distancesKm": {
+    "paysEtranger": 79.7,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 161.3,
+    "lacsPct": 2.3,
+    "fleuveProche": "Skjern Å",
+    "foretsPct": 11.8
+   }
+  },
+  {
+   "code": "0766",
+   "nom": "Hedensted",
+   "codeRegion": "1082",
+   "nomRegion": "Region Midtjylland",
+   "scores": {
+    "paysEtranger": 40.1,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 2.2,
+    "forets": 34.0
+   },
+   "distancesKm": {
+    "paysEtranger": 91.5,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 63.1,
+    "lacsPct": 0.55,
+    "fleuveProche": "Gudenå",
+    "foretsPct": 11.4
+   }
+  },
+  {
+   "code": "0773",
+   "nom": "Morsø",
+   "codeRegion": "1081",
+   "nomRegion": "Region Nordjylland",
+   "scores": {
+    "paysEtranger": 10.2,
+    "mer": 100.0,
+    "fleuves": 70.6,
+    "lacs": 10.4,
+    "forets": 7.1
+   },
+   "distancesKm": {
+    "paysEtranger": 137.1,
+    "fleuves": 23.5
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 146.5,
+    "lacsPct": 1.72,
+    "fleuveProche": "Karup Å",
+    "foretsPct": 3.8
+   }
+  },
+  {
+   "code": "0779",
+   "nom": "Skive",
+   "codeRegion": "1082",
+   "nomRegion": "Region Midtjylland",
+   "scores": {
+    "paysEtranger": 0.0,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 11.9,
+    "forets": 19.5
+   },
+   "distancesKm": {
+    "paysEtranger": 152.7,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 164.8,
+    "lacsPct": 1.93,
+    "fleuveProche": "Karup Å",
+    "foretsPct": 7.3
+   }
+  },
+  {
+   "code": "0787",
+   "nom": "Thisted",
+   "codeRegion": "1081",
+   "nomRegion": "Region Nordjylland",
+   "scores": {
+    "paysEtranger": 24.9,
+    "mer": 100.0,
+    "fleuves": 58.4,
+    "lacs": 38.2,
+    "forets": 43.3
+   },
+   "distancesKm": {
+    "paysEtranger": 114.6,
+    "fleuves": 33.3
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 199.5,
+    "lacsPct": 5.67,
+    "fleuveProche": "Karup Å",
+    "foretsPct": 14.0
+   }
+  },
+  {
+   "code": "0791",
+   "nom": "Viborg",
+   "codeRegion": "1082",
+   "nomRegion": "Region Midtjylland",
+   "scores": {
+    "paysEtranger": 9.4,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 11.5,
+    "forets": 56.0
+   },
+   "distancesKm": {
+    "paysEtranger": 138.3,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 34.3,
+    "lacsPct": 1.88,
+    "fleuveProche": "Gudenå",
+    "foretsPct": 17.6
+   }
+  },
+  {
+   "code": "0810",
+   "nom": "Brønderslev",
+   "codeRegion": "1081",
+   "nomRegion": "Region Nordjylland",
+   "scores": {
+    "paysEtranger": 37.2,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 0.9,
+    "forets": 26.6
+   },
+   "distancesKm": {
+    "paysEtranger": 95.9,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 10.1,
+    "lacsPct": 0.37,
+    "fleuveProche": "Ryå",
+    "foretsPct": 9.3
+   }
+  },
+  {
+   "code": "0813",
+   "nom": "Frederikshavn",
+   "codeRegion": "1081",
+   "nomRegion": "Region Nordjylland",
+   "scores": {
+    "paysEtranger": 60.2,
+    "mer": 100.0,
+    "fleuves": 93.9,
+    "lacs": 1.7,
+    "forets": 41.5
+   },
+   "distancesKm": {
+    "paysEtranger": 60.7,
+    "fleuves": 4.9
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 112.6,
+    "lacsPct": 0.48,
+    "fleuveProche": "Uggerby Å",
+    "foretsPct": 13.5
+   }
+  },
+  {
+   "code": "0820",
+   "nom": "Vesthimmerlands",
+   "codeRegion": "1081",
+   "nomRegion": "Region Nordjylland",
+   "scores": {
+    "paysEtranger": 9.2,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 5.6,
+    "forets": 24.8
+   },
+   "distancesKm": {
+    "paysEtranger": 138.6,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 91.5,
+    "lacsPct": 1.03,
+    "fleuveProche": "Simested Å",
+    "foretsPct": 8.8
+   }
+  },
+  {
+   "code": "0825",
+   "nom": "Læsø",
+   "codeRegion": "1081",
+   "nomRegion": "Region Nordjylland",
+   "scores": {
+    "paysEtranger": 69.0,
+    "mer": 100.0,
+    "fleuves": 48.1,
+    "lacs": 6.2,
+    "forets": 77.7
+   },
+   "distancesKm": {
+    "paysEtranger": 47.4,
+    "fleuves": 41.5
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 89.3,
+    "lacsPct": 1.12,
+    "fleuveProche": "Uggerby Å",
+    "foretsPct": 23.7
+   }
+  },
+  {
+   "code": "0840",
+   "nom": "Rebild",
+   "codeRegion": "1081",
+   "nomRegion": "Region Nordjylland",
+   "scores": {
+    "paysEtranger": 17.9,
+    "mer": 75.0,
+    "fleuves": 100.0,
+    "lacs": 3.1,
+    "forets": 47.9
+   },
+   "distancesKm": {
+    "paysEtranger": 125.3,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 1,
+    "littoralKm": 0.0,
+    "lacsPct": 0.68,
+    "fleuveProche": "Lindenborg Å",
+    "foretsPct": 15.3
+   }
+  },
+  {
+   "code": "0846",
+   "nom": "Mariagerfjord",
+   "codeRegion": "1081",
+   "nomRegion": "Region Nordjylland",
+   "scores": {
+    "paysEtranger": 21.0,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 6.4,
+    "forets": 59.2
+   },
+   "distancesKm": {
+    "paysEtranger": 120.5,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 83.2,
+    "lacsPct": 1.15,
+    "fleuveProche": "Lindenborg Å",
+    "foretsPct": 18.5
+   }
+  },
+  {
+   "code": "0849",
+   "nom": "Jammerbugt",
+   "codeRegion": "1081",
+   "nomRegion": "Region Nordjylland",
+   "scores": {
+    "paysEtranger": 20.6,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 9.4,
+    "forets": 34.4
+   },
+   "distancesKm": {
+    "paysEtranger": 121.2,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 95.6,
+    "lacsPct": 1.58,
+    "fleuveProche": "Ryå",
+    "foretsPct": 11.5
+   }
+  },
+  {
+   "code": "0851",
+   "nom": "Aalborg",
+   "codeRegion": "1081",
+   "nomRegion": "Region Nordjylland",
+   "scores": {
+    "paysEtranger": 33.1,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 5.1,
+    "forets": 28.0
+   },
+   "distancesKm": {
+    "paysEtranger": 102.1,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 178.6,
+    "lacsPct": 0.97,
+    "fleuveProche": "Ryå",
+    "foretsPct": 9.7
+   }
+  },
+  {
+   "code": "0860",
+   "nom": "Hjørring",
+   "codeRegion": "1081",
+   "nomRegion": "Region Nordjylland",
+   "scores": {
+    "paysEtranger": 45.1,
+    "mer": 100.0,
+    "fleuves": 100.0,
+    "lacs": 0.9,
+    "forets": 28.7
+   },
+   "distancesKm": {
+    "paysEtranger": 83.8,
+    "fleuves": 0.0
+   },
+   "mesures": {
+    "merSauts": 0,
+    "littoralKm": 50.6,
+    "lacsPct": 0.37,
+    "fleuveProche": "Uggerby Å",
+    "foretsPct": 9.9
+   }
+  }
+ ]
+}

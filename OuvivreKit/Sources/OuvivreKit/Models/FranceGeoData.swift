@@ -5,6 +5,11 @@ import CoreLocation
 /// criteria, precomputed offline from IGN (BD TOPO V3, RGE ALTI) and
 /// Natural Earth data — see geo_pipeline/ at the repo root. Criterion order
 /// matches `ClassicStatic.geo` (paysEtranger, mer, montagne, lacs, fleuves, forets).
+///
+/// Porte aussi les 98 kommuner danoises (`dk_geo_scores.json`, sans
+/// « montagne »), chacune marquée de son pays : leurs codes à 4 chiffres
+/// (« 0101 ») et leurs noms ne recoupent aucun département, si bien que
+/// les index par code et par nom restent communs aux deux pays.
 enum FranceGeoData {
     struct DepartementScore: Decodable {
         let codeInsee: String
@@ -15,26 +20,47 @@ enum FranceGeoData {
         /// "paysEtranger" — see `add_pays_etranger_km.py`. Absent for
         /// criteria that don't need a real-world unit for filtering.
         let distancesKm: [String: Double]
+        /// Pays du département ou de la kommune (« France », « Danemark »).
+        fileprivate(set) var country = "France"
 
         var isOverseas: Bool { codeInsee.hasPrefix("97") }
         var isCorse: Bool { codeInsee == "2A" || codeInsee == "2B" }
+
+        private enum CodingKeys: String, CodingKey {
+            case codeInsee, code, nom, nomRegion, scores, distancesKm
+        }
+
+        /// Les kommuner portent leur code sous `code` plutôt que `codeInsee`.
+        init(from decoder: Decoder) throws {
+            let c = try decoder.container(keyedBy: CodingKeys.self)
+            codeInsee = try c.decodeIfPresent(String.self, forKey: .codeInsee) ?? c.decode(String.self, forKey: .code)
+            nom = try c.decode(String.self, forKey: .nom)
+            nomRegion = try c.decode(String.self, forKey: .nomRegion)
+            scores = try c.decode([String: Double].self, forKey: .scores)
+            distancesKm = try c.decode([String: Double].self, forKey: .distancesKm)
+        }
     }
 
+    /// `departements` pour la France, `kommuner` pour le Danemark.
     private struct Root: Decodable {
-        let departements: [DepartementScore]
+        let departements: [DepartementScore]?
+        let kommuner: [DepartementScore]?
     }
 
     /// Stable key order, matching `ClassicStatic.geo`'s 6 rows.
     static let criterionKeys = ["paysEtranger", "mer", "montagne", "lacs", "fleuves", "forets"]
 
-    static let departements: [DepartementScore] = {
-        guard let url = Bundle.module.url(forResource: "france_geo_scores", withExtension: "json"),
+    private static func load(_ resource: String, country: String) -> [DepartementScore] {
+        guard let url = Bundle.module.url(forResource: resource, withExtension: "json"),
               let data = try? Data(contentsOf: url),
               let root = try? JSONDecoder().decode(Root.self, from: data) else {
             return []
         }
-        return root.departements
-    }()
+        return (root.departements ?? root.kommuner ?? []).map { var d = $0; d.country = country; return d }
+    }
+
+    /// Départements français puis kommuner danoises.
+    static let departements: [DepartementScore] = load("france_geo_scores", country: "France") + load("dk_geo_scores", country: "Danemark")
 
     /// Départements indexés par code INSEE et par nom — évite un parcours
     /// linéaire des 101 départements à chaque recherche.
@@ -60,10 +86,11 @@ enum FranceGeoData {
     /// `filterPercentile`.
     static let hardFilterCriteria: Set<String> = ["mer", "montagne", "lacs", "fleuves", "forets"]
 
-    /// Scores triés de chaque critère filtrant, calculés une seule fois.
-    private static let sortedScores: [String: [Double]] = Dictionary(uniqueKeysWithValues: hardFilterCriteria.map { key in
-        (key, departements.compactMap { $0.scores[key] }.sorted())
-    })
+    /// Scores triés de chaque critère filtrant, par pays, calculés une seule
+    /// fois : les seuils se calculent entre départements, ou entre kommuner.
+    private static let sortedScores: [String: [String: [Double]]] = Dictionary(grouping: departements, by: \.country).mapValues { deps in
+        Dictionary(uniqueKeysWithValues: hardFilterCriteria.map { key in (key, deps.compactMap { $0.scores[key] }.sorted()) })
+    }
 
     /// Per-criterion floor a département must clear to pass its hard filter
     /// at "déterminant" — the 85th percentile of that criterion's real
@@ -73,8 +100,8 @@ enum FranceGeoData {
     /// continuous criteria like "forets" or "lacs" where near-101 depts sit
     /// well under 100 — the percentile keeps "déterminant" meaningfully
     /// strict without emptying the result for every criterion but "mer".
-    static func hardFilterThreshold(forKey key: String, percentile: Double = determinantPercentile) -> Double? {
-        sortedScores[key].flatMap { percentileValue($0, percentile) }
+    static func hardFilterThreshold(forKey key: String, country: String, percentile: Double = determinantPercentile) -> Double? {
+        sortedScores[country]?[key].flatMap { percentileValue($0, percentile) }
     }
 
     /// Percentile au-dessus duquel un département passe le filtre d'un
@@ -111,7 +138,7 @@ enum FranceGeoData {
     /// always pass.
     static func passesHardFilter(_ dep: DepartementScore, key: String, weight: Int, maxWeight: Int) -> Bool {
         guard let percentile = filterPercentile(forWeight: weight, maxWeight: maxWeight),
-              let threshold = hardFilterThreshold(forKey: key, percentile: percentile) else { return true }
+              let threshold = hardFilterThreshold(forKey: key, country: dep.country, percentile: percentile) else { return true }
         return (dep.scores[key] ?? 50.0) >= threshold
     }
 

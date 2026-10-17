@@ -119,6 +119,10 @@ struct SelecteurView: View {
             // premier bloc).
             .onChange(of: state.bigMacExpandedRegions) { _, isExpanded in if isExpanded && !isApplyingDefaultExpansion { state.bigMacExpandedPays = false } }
             .onChange(of: mapFilters) { _, _ in refreshDepartementsOnMap() }
+            // Changement de pays : `ClassicRootView` recentre la carte via
+            // `focusOnCountry`, qui vide les périmètres ; on redessine ceux du
+            // nouveau pays au tick suivant, une fois ce recentrage passé.
+            .onChange(of: state.country) { _, _ in DispatchQueue.main.async { refreshDepartementsOnMap() } }
             .onChange(of: geo.size.width) { _, newValue in moveCamera(totalWidth: newValue, animated: false) }
         }
     }
@@ -189,7 +193,7 @@ struct SelecteurView: View {
     /// Culture (moyenne des deux scores 0-100). Tous les départements
     /// correspondants sont montrés, sans plafond.
     private var matchingDepartementNames: [String] {
-        let weights = state.culture
+        let weights = state.effectiveCulture
         let matchingCodes = CommuneSizeData.matchingDepartementCodes(state.communeSizes)
         // Un critère Culture à "déterminant" (poids 2) devient lui
         // aussi une condition ET, au même titre que Mer/Pays étranger côté
@@ -254,14 +258,18 @@ struct SelecteurView: View {
     // MARK: Bloc 2 — Régions + tailles de commune + Culture
 
     private var regionsBlock: some View {
-        // Réservé à la France (données départementales) : pour tout autre pays
-        // le bloc est replié et ne peut pas être déplié.
-        blockDisclosure(title: "Géographie et Culture", isExpanded: $state.bigMacExpandedRegions, enabled: state.country == "France") {
+        // Réservé aux pays dont les données sont chargées (départements
+        // français, kommuner danoises) : pour tout autre pays le bloc est
+        // replié et ne peut pas être déplié.
+        blockDisclosure(title: "Géographie et Culture", isExpanded: $state.bigMacExpandedRegions, enabled: ClassicStatic.countriesWithData.contains(state.country)) {
             VStack(alignment: .leading, spacing: 14) {
-                // Les deux bascules d'exclusion (Territoires ultramarins / Corse).
-                VStack(alignment: .leading, spacing: 8) {
-                    SelecteurCheckbox(label: "Exclure les Territoires ultramarins", isOn: $state.excludeOverseas, ink: c.body)
-                    SelecteurCheckbox(label: "Exclure la Corse", isOn: $state.excludeCorse, ink: c.body)
+                // Les deux bascules d'exclusion (Territoires ultramarins / Corse),
+                // propres à la France.
+                if state.country == "France" {
+                    VStack(alignment: .leading, spacing: 8) {
+                        SelecteurCheckbox(label: "Exclure les Territoires ultramarins", isOn: $state.excludeOverseas, ink: c.body)
+                        SelecteurCheckbox(label: "Exclure la Corse", isOn: $state.excludeCorse, ink: c.body)
+                    }
                 }
 
                 VStack(alignment: .leading, spacing: 8) {

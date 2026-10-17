@@ -1,0 +1,3043 @@
+{
+ "generatedAt": "2026-10-17T17:57:56.737819+00:00",
+ "source": "Wikidata (CC0, via QLever) pour les musées ; Slots- og Kulturstyrelsen, registre FBB (INSPIRE FrededeBygninger) pour les bâtiments classés ; festivals masqués (pas de source)",
+ "kommuner": [
+  {
+   "code": "0101",
+   "nom": "København",
+   "scores": {
+    "musees": 100.0,
+    "patrimoine": 100.0
+   },
+   "counts": {
+    "musees": 54,
+    "patrimoine": 1794
+   },
+   "names": {
+    "musees": [
+     "Amalienborgmuseet",
+     "Arbejdermuseet",
+     "Bakkehusmuseet",
+     "Bank- og Sparekassemuseet",
+     "Botanisk Museum",
+     "Brandmuseet",
+     "Carlsberg Museum",
+     "Cinemateket",
+     "Copenhagen Contemporary",
+     "Dansk Arkitektur Center",
+     "Dansk Design Center",
+     "Dansk Jødisk Museum",
+     "Davids Samling",
+     "Den Frie Udstillingsbygning",
+     "Den Hirschsprungske Samling",
+     "Den Kongelige Afstøbningssamling",
+     "Den Kongelige Mønt- og Medaillesamling",
+     "Designmuseum Danmark",
+     "Det Danske Filminstitut",
+     "Det Nationale Fotomuseum",
+     "DieselHouse",
+     "Energi & Vand Science Center",
+     "Enigma",
+     "F352 Peder Skram",
+     "Frihedsmuseet",
+     "Galerie Birch",
+     "Geologisk Museum",
+     "Kongernes Lapidarium",
+     "Krigsmuseet",
+     "Københavns Museum",
+     "Lille Mølle",
+     "LiteraturHaus",
+     "Livgardens Historiske Samling",
+     "Magasin du Nord Museum",
+     "Medicinsk Museion",
+     "Museum Münterianum",
+     "Museum of Illusions Copenhagen",
+     "Musikmuseet",
+     "Nationalmuseet",
+     "Nationalmuseets Klunkehjem",
+     "Nikolaj Kunsthal",
+     "Nordatlantens Brygge",
+     "Ny Carlsberg Glyptotek",
+     "Olgas Lyst",
+     "Politimuseet",
+     "Ravhuset",
+     "Rosenborg Slot",
+     "Rundetårn",
+     "Statens Museum for Kunst",
+     "Statens Naturhistoriske Museum ved Københavns Universitet",
+     "Teatermuseet i Hofteatret",
+     "Thorvaldsens Museum",
+     "Zoologisk Museum",
+     "Østerbro lille Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Nationalmuseets Klunkehjem": "https://en.natmus.dk/museums-and-palaces/the-victorian-home/",
+     "Ny Carlsberg Glyptotek": "http://www.glyptoteket.dk/",
+     "Rundetårn": "https://www.rundetaarn.dk/",
+     "Bank- og Sparekassemuseet": "https://www.bankogsparekassemuseet.dk",
+     "Amalienborgmuseet": "https://www.kongernessamling.dk/amalienborg/",
+     "Den Kongelige Afstøbningssamling": "http://www.smk.dk/besoeg-museet/udstillinger/den-kgl-afstoebningssamling/",
+     "Politimuseet": "http://www.politimuseum.dk/index.php/english",
+     "Det Danske Filminstitut": "https://www.dfi.dk/",
+     "Lille Mølle": "http://en.natmus.dk/museums/little-mill/",
+     "Galerie Birch": "http://www.galeriebirch.com/",
+     "Musikmuseet": "https://en.natmus.dk/museums-and-palaces/the-danish-music-museum",
+     "Museum of Illusions Copenhagen": "https://moicopenhagen.com/",
+     "Den Frie Udstillingsbygning": "https://denfrie.dk/",
+     "Energi & Vand Science Center": "https://energiogvand.dk",
+     "Kongernes Lapidarium": "https://kongeligeslotte.dk/da/slotte-og-haver/kongernes-lapidarium-i-christian-4s-bryghus.html",
+     "Thorvaldsens Museum": "https://www.thorvaldsensmuseum.dk/",
+     "Olgas Lyst": "https://www.olgaslyst.dk/",
+     "Dansk Design Center": "http://ddc.dk/",
+     "Rosenborg Slot": "https://www.kongernessamling.dk/rosenborg/",
+     "Zoologisk Museum": "https://snm.ku.dk/",
+     "Københavns Museum": "https://cphmuseum.kk.dk",
+     "Magasin du Nord Museum": "http://magasinmuseum.dk/",
+     "Enigma": "http://www.enigma.dk",
+     "Den Hirschsprungske Samling": "https://www.hirschsprung.dk/",
+     "Teatermuseet i Hofteatret": "http://www.teatermuseet.dk/",
+     "Geologisk Museum": "http://geologi.snm.ku.dk/english/",
+     "Arbejdermuseet": "http://www.arbejdermuseet.dk",
+     "F352 Peder Skram": "http://www.pederskram.dk",
+     "Frihedsmuseet": "https://natmus.dk/museer-og-slotte/frihedsmuseet/",
+     "Dansk Arkitektur Center": "http://www.dac.dk",
+     "Bakkehusmuseet": "https://frederiksbergmuseerne.dk/da/bakkehuset/",
+     "DieselHouse": "http://www.dieselhouse.dk/en",
+     "Davids Samling": "http://www.davidmus.dk",
+     "Nationalmuseet": "https://nationalmuseet.dk/en",
+     "Krigsmuseet": "https://natmus.dk/museer-og-slotte/krigsmuseet/",
+     "Statens Museum for Kunst": "https://www.smk.dk",
+     "Medicinsk Museion": "http://www.museion.ku.dk",
+     "Det Nationale Fotomuseum": "http://www.kb.dk/en/dia/fotomuseum/index.html",
+     "Livgardens Historiske Samling": "https://www2.forsvaret.dk/omos/organisation/haeren/organisation/den-kongelige-livgarde/Pages/hist.aspx",
+     "Nikolaj Kunsthal": "http://www.nikolajkunsthal.dk/",
+     "Designmuseum Danmark": "http://www.designmuseum.dk/",
+     "Nordatlantens Brygge": "http://www.bryggen.dk/",
+     "Østerbro lille Museum": "https://www.detlillemuseum.dk/",
+     "Brandmuseet": "https://hbr.dk/beredskabet/brandmuseet/",
+     "Dansk Jødisk Museum": "http://jewmus.dk",
+     "Statens Naturhistoriske Museum ved Københavns Universitet": "http://snm.ku.dk"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0147",
+   "nom": "Frederiksberg",
+   "scores": {
+    "musees": 3.7,
+    "patrimoine": 4.3
+   },
+   "counts": {
+    "musees": 2,
+    "patrimoine": 77
+   },
+   "names": {
+    "musees": [
+     "Cisternerne",
+     "Storm"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Storm": "https://frederiksbergmuseerne.dk/da/storm/",
+     "Cisternerne": "https://frederiksbergmuseerne.dk/da/cisternerne/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0151",
+   "nom": "Ballerup",
+   "scores": {
+    "musees": 0.0,
+    "patrimoine": 0.0
+   },
+   "counts": {
+    "musees": 0,
+    "patrimoine": 0
+   },
+   "names": {
+    "musees": [],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {}
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0153",
+   "nom": "Brøndby",
+   "scores": {
+    "musees": 0.0,
+    "patrimoine": 0.3
+   },
+   "counts": {
+    "musees": 0,
+    "patrimoine": 5
+   },
+   "names": {
+    "musees": [],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {}
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0155",
+   "nom": "Dragør",
+   "scores": {
+    "musees": 7.4,
+    "patrimoine": 4.8
+   },
+   "counts": {
+    "musees": 4,
+    "patrimoine": 87
+   },
+   "names": {
+    "musees": [
+     "Danmarks Lodsmuseum",
+     "Dragør Museum",
+     "Hollændergårdene",
+     "Mølsteds Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Hollændergårdene": "https://www.museumamager.dk/",
+     "Danmarks Lodsmuseum": "http://museumamager.dk/",
+     "Dragør Museum": "https://www.museumamager.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0157",
+   "nom": "Gentofte",
+   "scores": {
+    "musees": 9.3,
+    "patrimoine": 7.4
+   },
+   "counts": {
+    "musees": 5,
+    "patrimoine": 133
+   },
+   "names": {
+    "musees": [
+     "Experimentarium",
+     "Finn Juhls hus",
+     "Garderhøj Fort",
+     "Museum Ordrupgaard",
+     "Øregaard Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Experimentarium": "https://www.experimentarium.dk/",
+     "Garderhøj Fort": "http://garderhojfort.dk/",
+     "Øregaard Museum": "http://oregaard.dk/",
+     "Museum Ordrupgaard": "http://www.museumordrupgaard.dk"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0159",
+   "nom": "Gladsaxe",
+   "scores": {
+    "musees": 1.9,
+    "patrimoine": 0.3
+   },
+   "counts": {
+    "musees": 1,
+    "patrimoine": 6
+   },
+   "names": {
+    "musees": [
+     "Haaning Collection"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Haaning Collection": "https://www.haaningcollection.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0161",
+   "nom": "Glostrup",
+   "scores": {
+    "musees": 0.0,
+    "patrimoine": 0.0
+   },
+   "counts": {
+    "musees": 0,
+    "patrimoine": 0
+   },
+   "names": {
+    "musees": [],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {}
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0163",
+   "nom": "Herlev",
+   "scores": {
+    "musees": 1.9,
+    "patrimoine": 0.0
+   },
+   "counts": {
+    "musees": 1,
+    "patrimoine": 0
+   },
+   "names": {
+    "musees": [
+     "Gammelgaard"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Gammelgaard": "https://www.gammelgaard.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0165",
+   "nom": "Albertslund",
+   "scores": {
+    "musees": 3.7,
+    "patrimoine": 0.0
+   },
+   "counts": {
+    "musees": 2,
+    "patrimoine": 0
+   },
+   "names": {
+    "musees": [
+     "Naturcenter Herstedhøje",
+     "Vikingelandsbyen"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Naturcenter Herstedhøje": "http://www.naturstyrelsen.dk/Naturoplevelser/Undervisning/Naturskoler/Hovedstaden/NaturcenterHerstedhoeje/",
+     "Vikingelandsbyen": "http://www.vikingelandsbyen.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0167",
+   "nom": "Hvidovre",
+   "scores": {
+    "musees": 1.9,
+    "patrimoine": 0.1
+   },
+   "counts": {
+    "musees": 1,
+    "patrimoine": 1
+   },
+   "names": {
+    "musees": [
+     "Cirkusmuseet"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Cirkusmuseet": "https://cirkusmuseet.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0169",
+   "nom": "Høje-Taastrup",
+   "scores": {
+    "musees": 5.6,
+    "patrimoine": 0.0
+   },
+   "counts": {
+    "musees": 3,
+    "patrimoine": 0
+   },
+   "names": {
+    "musees": [
+     "Dansk Datahistorisk Museum",
+     "Hedelands Veteranbane",
+     "Kroppedal Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Hedelands Veteranbane": "http://www.ibk.dk/",
+     "Dansk Datahistorisk Museum": "https://datamuseum.dk/",
+     "Kroppedal Museum": "https://kroppedal.dk"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0173",
+   "nom": "Lyngby-Taarbæk",
+   "scores": {
+    "musees": 9.3,
+    "patrimoine": 6.5
+   },
+   "counts": {
+    "musees": 5,
+    "patrimoine": 116
+   },
+   "names": {
+    "musees": [
+     "Brede Hovedbygning",
+     "Brede Værk",
+     "Frieboeshvile",
+     "Frilandsmuseet",
+     "Sophienholm Kunsthal"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Frilandsmuseet": "http://natmus.dk/museerne/frilandsmuseet/",
+     "Brede Værk": "http://bredevaerk.natmus.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0175",
+   "nom": "Rødovre",
+   "scores": {
+    "musees": 3.7,
+    "patrimoine": 0.2
+   },
+   "counts": {
+    "musees": 2,
+    "patrimoine": 4
+   },
+   "names": {
+    "musees": [
+     "Artillerimagasinet",
+     "Heerup Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Artillerimagasinet": "https://vestvolden.dk/artillerimagasinet/",
+     "Heerup Museum": "http://www.heerup.dk"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0183",
+   "nom": "Ishøj",
+   "scores": {
+    "musees": 1.9,
+    "patrimoine": 0.2
+   },
+   "counts": {
+    "musees": 1,
+    "patrimoine": 4
+   },
+   "names": {
+    "musees": [
+     "Arken"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Arken": "http://www.arken.dk"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0185",
+   "nom": "Tårnby",
+   "scores": {
+    "musees": 1.9,
+    "patrimoine": 0.8
+   },
+   "counts": {
+    "musees": 1,
+    "patrimoine": 14
+   },
+   "names": {
+    "musees": [
+     "Kastrupgårdsamlingen"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Kastrupgårdsamlingen": "http://www.kastrupgaardsamlingen.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0187",
+   "nom": "Vallensbæk",
+   "scores": {
+    "musees": 0.0,
+    "patrimoine": 0.0
+   },
+   "counts": {
+    "musees": 0,
+    "patrimoine": 0
+   },
+   "names": {
+    "musees": [],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {}
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0190",
+   "nom": "Furesø",
+   "scores": {
+    "musees": 5.6,
+    "patrimoine": 0.2
+   },
+   "counts": {
+    "musees": 3,
+    "patrimoine": 3
+   },
+   "names": {
+    "musees": [
+     "Museet for Kajs Avis",
+     "Værløse Flyhistoriske Hangar",
+     "Værløse Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Værløse Flyhistoriske Hangar": "https://historiskhangar.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0201",
+   "nom": "Allerød",
+   "scores": {
+    "musees": 1.9,
+    "patrimoine": 0.0
+   },
+   "counts": {
+    "musees": 1,
+    "patrimoine": 0
+   },
+   "names": {
+    "musees": [
+     "Blovstrødbanen"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Blovstrødbanen": "https://blovstrodbanen.dk/banen/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0210",
+   "nom": "Fredensborg",
+   "scores": {
+    "musees": 5.6,
+    "patrimoine": 2.2
+   },
+   "counts": {
+    "musees": 3,
+    "patrimoine": 39
+   },
+   "names": {
+    "musees": [
+     "Fredensborg Museum",
+     "Louisiana",
+     "Nivaagaards Malerisamling"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Nivaagaards Malerisamling": "https://www.nivaagaard.dk/",
+     "Fredensborg Museum": "https://www.fredensborgmuseum.dk/",
+     "Louisiana": "https://louisiana.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0217",
+   "nom": "Helsingør",
+   "scores": {
+    "musees": 14.8,
+    "patrimoine": 13.4
+   },
+   "counts": {
+    "musees": 8,
+    "patrimoine": 241
+   },
+   "names": {
+    "musees": [
+     "Danmarks Tekniske Museum",
+     "Flynderupgård Museet",
+     "Helsingør Bymuseum",
+     "Helsingør Værftsmuseum",
+     "Kronborg",
+     "Kulturhavn Kronborg",
+     "M/S Museet for Søfart",
+     "Skibsklarerergaarden"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Danmarks Tekniske Museum": "http://www.tekniskmuseum.dk",
+     "Helsingør Værftsmuseum": "https://helsingormuseer.dk/vaerftsmuseet/",
+     "Helsingør Bymuseum": "http://www.helsingormuseer.dk/",
+     "Kulturhavn Kronborg": "http://kulturhavnkronborg.dk",
+     "Kronborg": "https://www.kronborg.dk",
+     "Skibsklarerergaarden": "http://www.helsingormuseer.dk/index.php?option=com_content&view=article&id=11&Itemid=114",
+     "M/S Museet for Søfart": "https://mfs.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0219",
+   "nom": "Hillerød",
+   "scores": {
+    "musees": 7.4,
+    "patrimoine": 2.0
+   },
+   "counts": {
+    "musees": 4,
+    "patrimoine": 35
+   },
+   "names": {
+    "musees": [
+     "Det Nationalhistoriske Museum på Frederiksborg Slot",
+     "Frederiksborg Slot",
+     "Hillerød Bymuseum",
+     "Æbelholt Klostermuseum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Frederiksborg Slot": "https://dnm.dk/",
+     "Det Nationalhistoriske Museum på Frederiksborg Slot": "https://dnm.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0223",
+   "nom": "Hørsholm",
+   "scores": {
+    "musees": 3.7,
+    "patrimoine": 2.0
+   },
+   "counts": {
+    "musees": 2,
+    "patrimoine": 35
+   },
+   "names": {
+    "musees": [
+     "Hørsholm Egns Museum",
+     "Karen Blixen Museet"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Karen Blixen Museet": "https://blixen.dk"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0230",
+   "nom": "Rudersdal",
+   "scores": {
+    "musees": 7.4,
+    "patrimoine": 15.3
+   },
+   "counts": {
+    "musees": 4,
+    "patrimoine": 274
+   },
+   "names": {
+    "musees": [
+     "Gl. Holtegaard",
+     "Mothsgården",
+     "Rudersdal Museer",
+     "Sommer's Automobile Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Sommer's Automobile Museum": "http://www.sommersautomobilmuseum.dk/",
+     "Gl. Holtegaard": "http://glholtegaard.dk"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0240",
+   "nom": "Egedal",
+   "scores": {
+    "musees": 0.0,
+    "patrimoine": 0.1
+   },
+   "counts": {
+    "musees": 0,
+    "patrimoine": 2
+   },
+   "names": {
+    "musees": [],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {}
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0250",
+   "nom": "Frederikssund",
+   "scores": {
+    "musees": 11.1,
+    "patrimoine": 1.1
+   },
+   "counts": {
+    "musees": 6,
+    "patrimoine": 20
+   },
+   "names": {
+    "musees": [
+     "Frederikssund Museum",
+     "Jægerspris Mølle",
+     "Jægerspris Slot",
+     "Mindelunden ved Jægerspris Slot",
+     "Selsø",
+     "Willumsens Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Selsø": "http://www.selsoe.dk/",
+     "Frederikssund Museum": "http://frederikssundmuseum.dk/",
+     "Willumsens Museum": "http://www.jfwillumsensmuseum.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0253",
+   "nom": "Greve",
+   "scores": {
+    "musees": 1.9,
+    "patrimoine": 0.4
+   },
+   "counts": {
+    "musees": 1,
+    "patrimoine": 8
+   },
+   "names": {
+    "musees": [
+     "Greve Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Greve Museum": "http://www.grevemuseum.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0259",
+   "nom": "Køge",
+   "scores": {
+    "musees": 3.7,
+    "patrimoine": 4.1
+   },
+   "counts": {
+    "musees": 2,
+    "patrimoine": 73
+   },
+   "names": {
+    "musees": [
+     "Køge Museum",
+     "Landbomuseet Lundekrog"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Køge Museum": "http://www.koegemuseum.dk/",
+     "Landbomuseet Lundekrog": "http://lundekrog.net/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0260",
+   "nom": "Halsnæs",
+   "scores": {
+    "musees": 1.9,
+    "patrimoine": 1.4
+   },
+   "counts": {
+    "musees": 1,
+    "patrimoine": 25
+   },
+   "names": {
+    "musees": [
+     "Krudtværket"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {}
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0265",
+   "nom": "Roskilde",
+   "scores": {
+    "musees": 7.4,
+    "patrimoine": 3.5
+   },
+   "counts": {
+    "musees": 4,
+    "patrimoine": 63
+   },
+   "names": {
+    "musees": [
+     "Håndværkermuseet",
+     "Museet for Samtidskunst",
+     "Roskilde Museum",
+     "Vikingeskibsmuseet"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Museet for Samtidskunst": "http://www.samtidskunst.dk/",
+     "Roskilde Museum": "http://www.roskildemuseum.dk",
+     "Vikingeskibsmuseet": "https://www.vikingeskibsmuseet.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0269",
+   "nom": "Solrød",
+   "scores": {
+    "musees": 0.0,
+    "patrimoine": 0.4
+   },
+   "counts": {
+    "musees": 0,
+    "patrimoine": 8
+   },
+   "names": {
+    "musees": [],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {}
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0270",
+   "nom": "Gribskov",
+   "scores": {
+    "musees": 3.7,
+    "patrimoine": 1.4
+   },
+   "counts": {
+    "musees": 2,
+    "patrimoine": 26
+   },
+   "names": {
+    "musees": [
+     "Esrum Kloster & Møllegård",
+     "Tegners Museum og Statuepark"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Esrum Kloster & Møllegård": "http://www.esrum.dk/",
+     "Tegners Museum og Statuepark": "http://www.rudolphtegner.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0306",
+   "nom": "Odsherred",
+   "scores": {
+    "musees": 13.0,
+    "patrimoine": 2.6
+   },
+   "counts": {
+    "musees": 7,
+    "patrimoine": 46
+   },
+   "names": {
+    "musees": [
+     "Malergården",
+     "Nykøbing Sj. Psykiatriske Museum",
+     "Odsherred Brandmuseum",
+     "Odsherreds Kunstmuseum",
+     "Odsherreds Museum",
+     "Tun-museet",
+     "Ulvsborg Historisk Værksted"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Odsherred Brandmuseum": "http://www.odsherredbrandmuseum.dk/",
+     "Ulvsborg Historisk Værksted": "http://www.ulvsborg.dk/",
+     "Odsherreds Kunstmuseum": "https://www.vestmuseum.dk/odsherreds_kunstmuseum"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0316",
+   "nom": "Holbæk",
+   "scores": {
+    "musees": 9.3,
+    "patrimoine": 4.3
+   },
+   "counts": {
+    "musees": 5,
+    "patrimoine": 78
+   },
+   "names": {
+    "musees": [
+     "Holbæk Museum",
+     "Lindholt",
+     "Nørre Jernløse Mølle",
+     "Oplevelsescenter Nyvang",
+     "Æglageret"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Oplevelsescenter Nyvang": "https://www.oplevelsescenternyvang.dk/",
+     "Nørre Jernløse Mølle": "http://www.nrjernlosemolle.dk/",
+     "Holbæk Museum": "http://www.vestmuseum.dk/Forside-2.aspx"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0320",
+   "nom": "Faxe",
+   "scores": {
+    "musees": 5.6,
+    "patrimoine": 1.5
+   },
+   "counts": {
+    "musees": 3,
+    "patrimoine": 27
+   },
+   "names": {
+    "musees": [
+     "Geomuseum Faxe",
+     "Haslev Stationsbymuseum",
+     "SEAS-NVE Elmuseum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "SEAS-NVE Elmuseum": "https://www.seas-nve.dk/koncernen/om/elmuseum"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0326",
+   "nom": "Kalundborg",
+   "scores": {
+    "musees": 9.3,
+    "patrimoine": 2.8
+   },
+   "counts": {
+    "musees": 5,
+    "patrimoine": 51
+   },
+   "names": {
+    "musees": [
+     "Formidlingscenter Fugledegård",
+     "Kalundborg Museum",
+     "Landbomuseet på Birkendegaard",
+     "Reersø Museum",
+     "Vestsjællands Bilmuseum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Kalundborg Museum": "http://www.vestmuseum.dk/Forside-3.aspx",
+     "Landbomuseet på Birkendegaard": "http://www.landbrugsmus.dk/",
+     "Vestsjællands Bilmuseum": "http://www.vestsjaelland-bilmuseum.dk",
+     "Formidlingscenter Fugledegård": "http://naturparkaamosen.dk/kultur/formidlingscenter-fugledegard/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0329",
+   "nom": "Ringsted",
+   "scores": {
+    "musees": 5.6,
+    "patrimoine": 0.8
+   },
+   "counts": {
+    "musees": 3,
+    "patrimoine": 14
+   },
+   "names": {
+    "musees": [
+     "Ringsted Museum",
+     "Ringsted Radiomuseum",
+     "Sporvejsmuseet Skjoldenæsholm"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Sporvejsmuseet Skjoldenæsholm": "https://www.sporvejsmuseet.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0330",
+   "nom": "Slagelse",
+   "scores": {
+    "musees": 13.0,
+    "patrimoine": 5.1
+   },
+   "counts": {
+    "musees": 7,
+    "patrimoine": 92
+   },
+   "names": {
+    "musees": [
+     "Danmarks Busmuseum",
+     "Isbådsmuseet",
+     "Korsør By- og Overfartsmuseum",
+     "Panzermuseum East",
+     "Skovsgaard Mølle- og Bagerimuseum",
+     "Skælskør Bymuseum",
+     "Slagelse Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Slagelse Museum": "http://www.vestmuseum.dk/Forside-8.aspx",
+     "Korsør By- og Overfartsmuseum": "http://www.byogoverfartsmuseet.dk/",
+     "Panzermuseum East": "http://www.panzermuseumeast.dk/",
+     "Danmarks Busmuseum": "http://danmarks-busmuseum.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0336",
+   "nom": "Stevns",
+   "scores": {
+    "musees": 7.4,
+    "patrimoine": 1.7
+   },
+   "counts": {
+    "musees": 4,
+    "patrimoine": 30
+   },
+   "names": {
+    "musees": [
+     "Fiskerhuset",
+     "Koldkrigsmuseum Stevnsfort",
+     "Rødvig Skibsmotormuseum",
+     "Stevns Klint Experience"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Stevns Klint Experience": "https://stevnsklint.dk/",
+     "Rødvig Skibsmotormuseum": "http://www.skibsmotor.dk/",
+     "Koldkrigsmuseum Stevnsfort": "http://www.stevnsfortet.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0340",
+   "nom": "Sorø",
+   "scores": {
+    "musees": 5.6,
+    "patrimoine": 1.7
+   },
+   "counts": {
+    "musees": 3,
+    "patrimoine": 30
+   },
+   "names": {
+    "musees": [
+     "Hauchs Physiske Cabinet",
+     "Sorø Kunstmuseum",
+     "Sorø Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Hauchs Physiske Cabinet": "https://www.awhauch.dk/",
+     "Sorø Kunstmuseum": "http://www.sorokunstmuseum.dk/",
+     "Sorø Museum": "http://www.aabne-samlinger.dk/svm/soroe/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0350",
+   "nom": "Lejre",
+   "scores": {
+    "musees": 3.7,
+    "patrimoine": 1.7
+   },
+   "counts": {
+    "musees": 2,
+    "patrimoine": 31
+   },
+   "names": {
+    "musees": [
+     "Lejre Museum",
+     "Sagnlandet Lejre"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Lejre Museum": "http://www.lejremuseum.dk/",
+     "Sagnlandet Lejre": "http://www.sagnlandet.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0360",
+   "nom": "Lolland",
+   "scores": {
+    "musees": 24.1,
+    "patrimoine": 4.7
+   },
+   "counts": {
+    "musees": 13,
+    "patrimoine": 84
+   },
+   "names": {
+    "musees": [
+     "Askø Ø-Museum",
+     "Danmarks Sukkermuseum",
+     "Den Gamle Smedje",
+     "Det Gamle Trykkeri",
+     "Dodekalitten",
+     "Frilandsmuseet i Maribo",
+     "Museum Polakkasernen",
+     "Museumsbanen Maribo-Bandholm",
+     "Nakskov Brandmuseum",
+     "Nakskov Skibs- og Søfartsmuseum",
+     "Pederstrup",
+     "Reventlow-Museet Pederstrup",
+     "Stiftsmuseet Maribo"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Stiftsmuseet Maribo": "http://www.aabne-samlinger.dk/stiftsmuseet/stiftsmuseet/",
+     "Danmarks Sukkermuseum": "http://www.sukkermuseet.dk/",
+     "Nakskov Skibs- og Søfartsmuseum": "http://skibsmuseum-nakskov.dk",
+     "Museumsbanen Maribo-Bandholm": "http://www.museumsbanen.dk/",
+     "Det Gamle Trykkeri": "http://det-gamle-trykkeri.dk/",
+     "Nakskov Brandmuseum": "http://sprojtehuset.dk/",
+     "Dodekalitten": "https://www.dodekalit.dk/",
+     "Museum Polakkasernen": "http://www.polakkasernen.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0370",
+   "nom": "Næstved",
+   "scores": {
+    "musees": 7.4,
+    "patrimoine": 3.7
+   },
+   "counts": {
+    "musees": 4,
+    "patrimoine": 67
+   },
+   "names": {
+    "musees": [
+     "Medicinsk-historisk Museum",
+     "Næstved Automobilmuseum",
+     "Næstved Museum",
+     "Vindheimar"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Vindheimar": "http://www.alfredjensen.dk/",
+     "Medicinsk-historisk Museum": "http://www.mhm-naestved.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0376",
+   "nom": "Guldborgsund",
+   "scores": {
+    "musees": 22.2,
+    "patrimoine": 5.3
+   },
+   "counts": {
+    "musees": 12,
+    "patrimoine": 95
+   },
+   "names": {
+    "musees": [
+     "Brandmuseet",
+     "Bøtø Nor Pumpestation",
+     "Danmarks Traktormuseum",
+     "Det Sorte Geomuseum",
+     "Falsters Minder",
+     "Fuglsang Kunstmuseum",
+     "Gedser Remise",
+     "Legetøjsmuseet",
+     "Middelaldercentret",
+     "Nykøbing Falster Frisørmuseum",
+     "Stubbekøbing Motorcykel- og Radiomuseum",
+     "Stubbekøbing Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Bøtø Nor Pumpestation": "https://www.pumpemuseum.dk/",
+     "Danmarks Traktormuseum": "http://www.traktormuseum.dk/",
+     "Middelaldercentret": "https://www.middelaldercentret.dk/",
+     "Det Sorte Geomuseum": "http://www.detsortegeomuseum.dk/",
+     "Legetøjsmuseet": "http://www.legetojsmuseet-nykobing-f.dk/",
+     "Falsters Minder": "http://www.aabne-samlinger.dk/falsters-minder/falsters-minder/",
+     "Fuglsang Kunstmuseum": "http://www.fuglsangkunstmuseum.dk/",
+     "Gedser Remise": "http://gedserremise.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0390",
+   "nom": "Vordingborg",
+   "scores": {
+    "musees": 11.1,
+    "patrimoine": 8.5
+   },
+   "counts": {
+    "musees": 6,
+    "patrimoine": 152
+   },
+   "names": {
+    "musees": [
+     "Avnø Naturcenter",
+     "Danmarks Borgcenter",
+     "GeoCenter Møns Klint",
+     "Museumsgården",
+     "Møns Museum",
+     "Thorsvang - Danmarks Samlermuseum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Møns Museum": "http://www.empiregaarden.dk/",
+     "Thorsvang - Danmarks Samlermuseum": "https://www.thorsvangsamlermuseum.dk/",
+     "GeoCenter Møns Klint": "https://moensklint.dk/",
+     "Museumsgården": "http://www.museumsgaarden.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0400",
+   "nom": "Bornholm",
+   "scores": {
+    "musees": 29.6,
+    "patrimoine": 5.9
+   },
+   "counts": {
+    "musees": 16,
+    "patrimoine": 106
+   },
+   "names": {
+    "musees": [
+     "Bornholms Automobilmuseum",
+     "Bornholms Forsvarsmuseum",
+     "Bornholms Jernbanemuseum",
+     "Bornholms Kunstmuseum",
+     "Bornholms Middelaldercenter",
+     "Bornholms Museum",
+     "Bornholms Tekniske Samling",
+     "Erichsens Gård",
+     "Gudhjem Museum",
+     "Hammershus Besøgscenter",
+     "Melstedgård",
+     "Moseløkken Stenbrudsmuseum",
+     "NaturBornholm",
+     "Nexø Museum",
+     "Ole Christensens Skulpturpark",
+     "Oluf Høst Museet"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "NaturBornholm": "http://www.naturbornholm.dk",
+     "Nexø Museum": "https://www.nexoemuseum.dk",
+     "Oluf Høst Museet": "http://www.ohmus.dk",
+     "Bornholms Forsvarsmuseum": "http://bornholmsforsvarsmuseum.dk/",
+     "Bornholms Automobilmuseum": "http://www.bornholmsautomobilmuseum.dk/",
+     "Moseløkken Stenbrudsmuseum": "http://moseloekken.dk/",
+     "Bornholms Kunstmuseum": "http://www.bornholms-kunstmuseum.dk",
+     "Bornholms Jernbanemuseum": "https://www.dbj.dk/",
+     "Bornholms Tekniske Samling": "https://www.bornteksamling.dk/",
+     "Bornholms Middelaldercenter": "http://bornholmsmiddelaldercenter.dk/",
+     "Bornholms Museum": "https://bornholmsmuseum.dk/da/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0410",
+   "nom": "Middelfart",
+   "scores": {
+    "musees": 3.7,
+    "patrimoine": 2.1
+   },
+   "counts": {
+    "musees": 2,
+    "patrimoine": 38
+   },
+   "names": {
+    "musees": [
+     "CLAY Keramikmuseum Danmark",
+     "Middelfart Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "CLAY Keramikmuseum Danmark": "http://www.claymuseum.dk",
+     "Middelfart Museum": "http://www.middelfart-museum.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0420",
+   "nom": "Assens",
+   "scores": {
+    "musees": 13.0,
+    "patrimoine": 7.5
+   },
+   "counts": {
+    "musees": 7,
+    "patrimoine": 134
+   },
+   "names": {
+    "musees": [
+     "Assens Toldkammer",
+     "Frydenlund Fuglepark",
+     "Hørvævsmuseet på Krengerup",
+     "Lilleskov Teglværk",
+     "Skoda Museum Danmark",
+     "Strøjer Samlingen",
+     "Vestfyns Kunstmuseum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Lilleskov Teglværk": "https://lilleskov.dk/",
+     "Assens Toldkammer": "http://www.toldbodhus.info/",
+     "Vestfyns Kunstmuseum": "http://www.museumvestfyn.dk/forskellige-oplevelser/museets-udstillingssteder/vestfyns-kunstmuseum.html",
+     "Hørvævsmuseet på Krengerup": "https://hoervaevsmuseet.dk/",
+     "Skoda Museum Danmark": "https://skodamuseum.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0430",
+   "nom": "Faaborg-Midtfyn",
+   "scores": {
+    "musees": 14.8,
+    "patrimoine": 11.8
+   },
+   "counts": {
+    "musees": 8,
+    "patrimoine": 212
+   },
+   "names": {
+    "musees": [
+     "Carl Nielsens Barndomshjem",
+     "Egeskov Slot",
+     "Faaborg Museum",
+     "Falck Museet",
+     "Hudevad Smedje",
+     "Ringe Museum",
+     "Ryslinge Skulpturpark",
+     "Øhavsmuseet"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Hudevad Smedje": "http://hudevadsmedjemuseum.dk/",
+     "Faaborg Museum": "http://www.faaborgmuseum.dk/",
+     "Ringe Museum": "http://ringemuseum.dk/",
+     "Øhavsmuseet": "http://www.ohavsmuseet.dk/",
+     "Egeskov Slot": "http://www.egeskov.dk"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0440",
+   "nom": "Kerteminde",
+   "scores": {
+    "musees": 5.6,
+    "patrimoine": 3.2
+   },
+   "counts": {
+    "musees": 3,
+    "patrimoine": 58
+   },
+   "names": {
+    "musees": [
+     "Farvergården",
+     "Hindsholm Egnsmuseum",
+     "Vikingemuseet Ladby"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Vikingemuseet Ladby": "https://vikingemuseetladby.dk/",
+     "Farvergården": "http://www.ostfynsmuseer.dk/museer/farvergaarden/",
+     "Hindsholm Egnsmuseum": "http://www.hindsholm.com/Hindsholm_egnsmuseum.htm"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0450",
+   "nom": "Nyborg",
+   "scores": {
+    "musees": 5.6,
+    "patrimoine": 4.1
+   },
+   "counts": {
+    "musees": 3,
+    "patrimoine": 74
+   },
+   "names": {
+    "musees": [
+     "Borgmestergården",
+     "Nyborg Slot",
+     "Nyborg Slot"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {}
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0461",
+   "nom": "Odense",
+   "scores": {
+    "musees": 27.8,
+    "patrimoine": 5.5
+   },
+   "counts": {
+    "musees": 15,
+    "patrimoine": 99
+   },
+   "names": {
+    "musees": [
+     "Bymuseet Møntergården",
+     "Carl Nielsen Museet",
+     "Danmarks Jernbanemuseum",
+     "Den Fynske Landsby",
+     "Europæisk Automobilmuseum",
+     "Fyns Kunstmuseum",
+     "Fyns Militærhistoriske Museum",
+     "H.C. Andersens Barndomshjem",
+     "H.C. Andersens Hus",
+     "Kunstmuseum Brandts",
+     "Mediemuseet",
+     "Odense Bunkermuseum",
+     "Odins Odense",
+     "Thriges Kraftcentral",
+     "Tidens Samling"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Danmarks Jernbanemuseum": "http://www.jernbanemuseum.dk/",
+     "Europæisk Automobilmuseum": "http://automuseum.dk/",
+     "Odins Odense": "http://odinsodense.dk/",
+     "Kunstmuseum Brandts": "http://brandts.dk/",
+     "Odense Bunkermuseum": "http://odensebunkermuseum.dk/",
+     "Tidens Samling": "http://tidenssamling.dk/",
+     "Fyns Militærhistoriske Museum": "https://milmus.dk/",
+     "H.C. Andersens Barndomshjem": "https://hcandersensodense.dk/h-c-andersens-barndomshjem/",
+     "H.C. Andersens Hus": "https://hcandersenshus.dk/",
+     "Den Fynske Landsby": "http://museum.odense.dk/denfynskelandsby"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0479",
+   "nom": "Svendborg",
+   "scores": {
+    "musees": 11.1,
+    "patrimoine": 9.0
+   },
+   "counts": {
+    "musees": 6,
+    "patrimoine": 162
+   },
+   "names": {
+    "musees": [
+     "Danmarks Forsorgsmuseum",
+     "Danmarks Museum for Lystsejlads",
+     "Naturama",
+     "Ollerup Bunker Museum",
+     "Tåsinge Museum",
+     "Valdemars Slot"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Ollerup Bunker Museum": "http://www.ollerupbunkeren.dk/",
+     "Danmarks Forsorgsmuseum": "http://www.svendborgmuseum.dk/da/forsorgs.html",
+     "Valdemars Slot": "https://valdemarsslot.dk/",
+     "Danmarks Museum for Lystsejlads": "http://lystsejlads.dk/",
+     "Naturama": "http://www.naturama.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0480",
+   "nom": "Nordfyns",
+   "scores": {
+    "musees": 1.9,
+    "patrimoine": 2.8
+   },
+   "counts": {
+    "musees": 1,
+    "patrimoine": 51
+   },
+   "names": {
+    "musees": [
+     "Besættelsesmuseum Fyn"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Besættelsesmuseum Fyn": "http://besaettelsesmuseumfyn.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0482",
+   "nom": "Langeland",
+   "scores": {
+    "musees": 1.9,
+    "patrimoine": 4.1
+   },
+   "counts": {
+    "musees": 1,
+    "patrimoine": 73
+   },
+   "names": {
+    "musees": [
+     "Langelandsfortet"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {}
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0492",
+   "nom": "Ærø",
+   "scores": {
+    "musees": 1.9,
+    "patrimoine": 3.2
+   },
+   "counts": {
+    "musees": 1,
+    "patrimoine": 57
+   },
+   "names": {
+    "musees": [
+     "Marstal Søfartsmuseum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Marstal Søfartsmuseum": "http://marmus.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0510",
+   "nom": "Haderslev",
+   "scores": {
+    "musees": 7.4,
+    "patrimoine": 7.2
+   },
+   "counts": {
+    "musees": 4,
+    "patrimoine": 129
+   },
+   "names": {
+    "musees": [
+     "Christiansdal Vandkraftværk",
+     "Dansk Klokkemuseum",
+     "Gram Lergrav – Palæontologi",
+     "Sønderjysk Skolemuseum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Dansk Klokkemuseum": "http://www.klokkemuseum.dk",
+     "Sønderjysk Skolemuseum": "http://www.sonderjysk-skolemuseum.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0530",
+   "nom": "Billund",
+   "scores": {
+    "musees": 1.9,
+    "patrimoine": 0.1
+   },
+   "counts": {
+    "musees": 1,
+    "patrimoine": 1
+   },
+   "names": {
+    "musees": [
+     "Skulpturpark Billund"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {}
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0540",
+   "nom": "Sønderborg",
+   "scores": {
+    "musees": 20.4,
+    "patrimoine": 6.7
+   },
+   "counts": {
+    "musees": 11,
+    "patrimoine": 121
+   },
+   "names": {
+    "musees": [
+     "Augustiana",
+     "Cathrinesminde Teglværk",
+     "Dybbøl Mølle",
+     "Elstrup Mølle",
+     "Historiecenter Dybbøl Banke",
+     "Jollmands Gård",
+     "Ringridermuseet",
+     "Sønderborg Slot",
+     "Sønderjyllands Radiomuseum",
+     "Tandslet Transformatormuseum",
+     "Vagns Saab Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Augustiana": "http://www.augustiana.dk",
+     "Sønderjyllands Radiomuseum": "https://www.soenderjyllands-radiomuseum.dk/",
+     "Historiecenter Dybbøl Banke": "https://1864.dk/en/history-centre-dybboel-banke/",
+     "Jollmands Gård": "http://www.jollmandsgaard.dk",
+     "Ringridermuseet": "http://www.ringridermuseet.dk/",
+     "Dybbøl Mølle": "https://1864.dk/dybboel-moelle/",
+     "Sønderborg Slot": "https://msj.dk/soenderborg-slot/",
+     "Elstrup Mølle": "http://www.elstrupmolle.dk/",
+     "Vagns Saab Museum": "https://www.vagnssaabmuseum.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0550",
+   "nom": "Tønder",
+   "scores": {
+    "musees": 16.7,
+    "patrimoine": 9.9
+   },
+   "counts": {
+    "musees": 9,
+    "patrimoine": 178
+   },
+   "names": {
+    "musees": [
+     "Bådfolk ved Vidåen",
+     "Drøhses Hus",
+     "Højer Mølle",
+     "Kommandørgården",
+     "Kulturhistorie Tønder",
+     "Kunstmuseet i Tønder",
+     "Toftum Skole",
+     "Tønder Vandtårn",
+     "Zeppelin- & Garnisonsmuseum Tønder"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Zeppelin- & Garnisonsmuseum Tønder": "http://www.zeppelin-museum.dk",
+     "Kunstmuseet i Tønder": "http://www.museum-sonderjylland.dk/kunstmuseet-tonder.html",
+     "Drøhses Hus": "https://msj.dk/droehses-hus/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0561",
+   "nom": "Esbjerg",
+   "scores": {
+    "musees": 24.1,
+    "patrimoine": 9.5
+   },
+   "counts": {
+    "musees": 13,
+    "patrimoine": 170
+   },
+   "names": {
+    "musees": [
+     "Bogtrykmuseet i Esbjerg",
+     "Bramming Egnsmuseum",
+     "Esbjerg Kunstmuseum",
+     "Esbjerg Museum",
+     "Esbjerg Spejdermuseum",
+     "Fiskeri- og Søfartsmuseet",
+     "Mandøhuset",
+     "Motorfyrskibet Horns Rev",
+     "Museet Ribes Vikinger",
+     "Ribe Kunstmuseum",
+     "Ribe Vikingecenter",
+     "Tarp Bunkermuseum",
+     "Vadehavscentret"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Esbjerg Spejdermuseum": "http://www.esbjerg-spejdermuseum.dk/",
+     "Mandøhuset": "http://www.mandoehuset.dk/",
+     "Motorfyrskibet Horns Rev": "https://www.fyrskibet-esbjerg.dk/",
+     "Vadehavscentret": "https://www.vadehavscentret.dk/",
+     "Fiskeri- og Søfartsmuseet": "https://fimus.dk",
+     "Esbjerg Museum": "https://www.esbjergmuseum.dk/",
+     "Bogtrykmuseet i Esbjerg": "http://www.bogtrykmuseet.dk/",
+     "Ribe Vikingecenter": "http://www.ribevikingecenter.dk/",
+     "Museet Ribes Vikinger": "http://www.ribesvikinger.dk/",
+     "Esbjerg Kunstmuseum": "http://www.eskum.dk",
+     "Tarp Bunkermuseum": "http://www.bunker75665.dk/",
+     "Ribe Kunstmuseum": "http://www.ribekunstmuseum.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0563",
+   "nom": "Fanø",
+   "scores": {
+    "musees": 1.9,
+    "patrimoine": 5.5
+   },
+   "counts": {
+    "musees": 1,
+    "patrimoine": 98
+   },
+   "names": {
+    "musees": [
+     "Fanø Kunstmuseum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Fanø Kunstmuseum": "http://www.fanoekunstmuseum.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0573",
+   "nom": "Varde",
+   "scores": {
+    "musees": 16.7,
+    "patrimoine": 1.8
+   },
+   "counts": {
+    "musees": 9,
+    "patrimoine": 33
+   },
+   "names": {
+    "musees": [
+     "FLUGT – Refugee Museum of Denmark",
+     "Hjedding Mejerimuseum",
+     "Janus - Museum for Samtidskunst",
+     "Museum Frello",
+     "Nymindegab Museum",
+     "Nymindegab Redningsstation",
+     "Panser- & Artillerimuseum",
+     "Ravmuseet i Oksbøl",
+     "Tirpitz Museet"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "FLUGT – Refugee Museum of Denmark": "https://flugtmuseum.dk/",
+     "Janus - Museum for Samtidskunst": "https://vardemuseerne.dk/museum/janus/",
+     "Panser- & Artillerimuseum": "https://vardemuseerne.dk/museum/panser-artillerimuseum/",
+     "Hjedding Mejerimuseum": "https://vardemuseerne.dk/museum/hjedding-andelsmejeri/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0575",
+   "nom": "Vejen",
+   "scores": {
+    "musees": 11.1,
+    "patrimoine": 1.9
+   },
+   "counts": {
+    "musees": 6,
+    "patrimoine": 34
+   },
+   "names": {
+    "musees": [
+     "Hygum Hjemstavnsgård",
+     "Jels Vikingeby",
+     "Poul la Cour Museet",
+     "Sønderskov Hovedgård",
+     "Vejen Kunstmuseum",
+     "Wellings Landsbymuseum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Sønderskov Hovedgård": "http://www.sonderskov.dk/",
+     "Vejen Kunstmuseum": "http://www.vejenkunstmuseum.dk/",
+     "Wellings Landsbymuseum": "http://www.wellings.dk/",
+     "Hygum Hjemstavnsgård": "http://www.hygumhjemstavnsgaard.dk",
+     "Poul la Cour Museet": "https://www.poullacour.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0580",
+   "nom": "Aabenraa",
+   "scores": {
+    "musees": 13.0,
+    "patrimoine": 5.5
+   },
+   "counts": {
+    "musees": 7,
+    "patrimoine": 99
+   },
+   "names": {
+    "musees": [
+     "Brundlund Slot",
+     "Frøslevlejrens Museum",
+     "Jacob Michelsens Gård",
+     "Kunst Museum Panbo",
+     "Oldemorstoft",
+     "Rundemølle",
+     "Straagaards Smedje"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Frøslevlejrens Museum": "https://natmus.dk/museer-og-slotte/froeslevlejrens-museum/",
+     "Brundlund Slot": "https://msj.dk/brundlund-slot/",
+     "Oldemorstoft": "http://www.museum-sonderjylland.dk/oldemorstoft.html",
+     "Kunst Museum Panbo": "https://kunstmuseumpanbo.dk/",
+     "Straagaards Smedje": "http://kliplevarkiv.dk",
+     "Jacob Michelsens Gård": "http://www.jacobmichelsensgaard.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0607",
+   "nom": "Fredericia",
+   "scores": {
+    "musees": 1.9,
+    "patrimoine": 2.3
+   },
+   "counts": {
+    "musees": 1,
+    "patrimoine": 41
+   },
+   "names": {
+    "musees": [
+     "Fredericia Bymuseum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Fredericia Bymuseum": "http://fredericiahistorie.dk/side/fredericia-bymuseum"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0615",
+   "nom": "Horsens",
+   "scores": {
+    "musees": 5.6,
+    "patrimoine": 4.1
+   },
+   "counts": {
+    "musees": 3,
+    "patrimoine": 74
+   },
+   "names": {
+    "musees": [
+     "Danmarks Industrimuseum",
+     "Horsens Kunstmuseum",
+     "Horsens Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Horsens Kunstmuseum": "http://www.horsenskunstmuseum.dk",
+     "Danmarks Industrimuseum": "http://www.tekniskmuseum.dk/",
+     "Horsens Museum": "https://museumhorsens.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0621",
+   "nom": "Kolding",
+   "scores": {
+    "musees": 16.7,
+    "patrimoine": 4.2
+   },
+   "counts": {
+    "musees": 9,
+    "patrimoine": 76
+   },
+   "names": {
+    "musees": [
+     "Dansk Sygeplejehistorisk Museum",
+     "Genforenings- og Grænsemuseet",
+     "Harteværket",
+     "Koldinghus",
+     "Kongeåmuseet",
+     "Landbomuseet Kolding",
+     "Lunderskov remise",
+     "Museet på Koldinghus",
+     "Trapholt"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Dansk Sygeplejehistorisk Museum": "https://dsr.dk/dshm",
+     "Genforenings- og Grænsemuseet": "http://www.genforeningsmuseet.dk/",
+     "Harteværket": "http://www.hartevaerket.dk/",
+     "Kongeåmuseet": "http://www.kongeaamuseet.dk",
+     "Trapholt": "http://www.trapholt.dk/",
+     "Koldinghus": "https://www.koldinghus.dk/",
+     "Landbomuseet Kolding": "https://landbomuseet.kolding.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0630",
+   "nom": "Vejle",
+   "scores": {
+    "musees": 20.4,
+    "patrimoine": 1.6
+   },
+   "counts": {
+    "musees": 11,
+    "patrimoine": 29
+   },
+   "names": {
+    "musees": [
+     "Bindeballe Købmandsgård",
+     "Bindeballe Station",
+     "Egnsmuseet i Vandel",
+     "Egtved Museum",
+     "Kongernes Jelling",
+     "Kulturmuseet",
+     "Museum Give",
+     "Randbøldalmuseet",
+     "Tørskind grusgrav",
+     "Vejle Kunstmuseum",
+     "Vingsted Historiske Værksted"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Kongernes Jelling": "http://natmus.dk/museerne/kongernes-jelling/",
+     "Museum Give": "https://www.museumgive.dk/",
+     "Kulturmuseet": "https://www.kulturmuseet.dk/forside/",
+     "Vejle Kunstmuseum": "http://www.vejlemuseerne.dk/museum/vejle-kunstmuseum",
+     "Egtved Museum": "http://egtvedmuseum.dk",
+     "Bindeballe Købmandsgård": "http://www.bindeballekoebmandsgaard.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0657",
+   "nom": "Herning",
+   "scores": {
+    "musees": 13.0,
+    "patrimoine": 1.1
+   },
+   "counts": {
+    "musees": 7,
+    "patrimoine": 20
+   },
+   "names": {
+    "musees": [
+     "Carl-Henning Pedersen og Else Alfelts Museum",
+     "Danmarks Fotomuseum",
+     "Frilandsmuseet Herning",
+     "HEART",
+     "Herning Museum",
+     "Herningsholm",
+     "Tekstilmuseet"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "HEART": "http://www.heartmus.dk/",
+     "Herningsholm": "https://museummidtjylland.dk/herningsholm-museum/",
+     "Danmarks Fotomuseum": "http://www.fotomuseum.dk",
+     "Herning Museum": "http://www.herningmuseum.dk/",
+     "Carl-Henning Pedersen og Else Alfelts Museum": "http://www.chpeamuseum.dk/",
+     "Frilandsmuseet Herning": "https://museummidtjylland.dk/frilandsmuseet-herning/",
+     "Tekstilmuseet": "https://museummidtjylland.dk/tekstilmuseet/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0661",
+   "nom": "Holstebro",
+   "scores": {
+    "musees": 11.1,
+    "patrimoine": 1.1
+   },
+   "counts": {
+    "musees": 6,
+    "patrimoine": 19
+   },
+   "names": {
+    "musees": [
+     "Hjerl Hede",
+     "Holstebro Kunstmuseum",
+     "Holstebro Museum",
+     "Huset for Kunst og Design",
+     "Strandingsmuseum St. George",
+     "VW & Retro Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Huset for Kunst og Design": "https://www.hfkd.dk",
+     "Holstebro Museum": "http://www.holstebro-museum.dk/",
+     "Strandingsmuseum St. George": "https://strandingsmuseet.dk/",
+     "VW & Retro Museum": "https://www.vwretromuseum.dk/",
+     "Holstebro Kunstmuseum": "http://www.holstebrokunstmuseum.dk",
+     "Hjerl Hede": "https://hjerlhede.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0665",
+   "nom": "Lemvig",
+   "scores": {
+    "musees": 16.7,
+    "patrimoine": 0.7
+   },
+   "counts": {
+    "musees": 9,
+    "patrimoine": 13
+   },
+   "names": {
+    "musees": [
+     "Gjellergaard",
+     "Jens Søndergaards Museum",
+     "Kystcentret Thyborøn",
+     "Lemvig Bjergbane",
+     "Lemvig Museum",
+     "Museet for Religiøs Kunst",
+     "Sneglehuset",
+     "Søkrigsmuseet",
+     "Tuskjær Redningsstation"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Lemvig Bjergbane": "http://bjergbanen.dk/",
+     "Gjellergaard": "http://www.gjellergaard.dk/",
+     "Jens Søndergaards Museum": "http://jenssoendergaard.dk/",
+     "Søkrigsmuseet": "http://www.seawarmuseum.dk",
+     "Sneglehuset": "https://www.sneglehuset.dk/",
+     "Kystcentret Thyborøn": "http://www.kystcentret.dk/",
+     "Lemvig Museum": "http://www.lemvigmuseum.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0671",
+   "nom": "Struer",
+   "scores": {
+    "musees": 3.7,
+    "patrimoine": 0.2
+   },
+   "counts": {
+    "musees": 2,
+    "patrimoine": 4
+   },
+   "names": {
+    "musees": [
+     "Midt- og Vestjyllands Jernbanemuseum",
+     "Struer Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Struer Museum": "http://www.struermuseum.dk/",
+     "Midt- og Vestjyllands Jernbanemuseum": "https://www.struermuseum.dk/jernbanemuseum"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0706",
+   "nom": "Syddjurs",
+   "scores": {
+    "musees": 9.3,
+    "patrimoine": 4.8
+   },
+   "counts": {
+    "musees": 5,
+    "patrimoine": 86
+   },
+   "names": {
+    "musees": [
+     "Djurslands Jernbanemuseum",
+     "Fregatten Jylland",
+     "Glas - Museet for glaskunst",
+     "Karlsladen",
+     "Memory Lane Rockmuseum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Fregatten Jylland": "https://www.fregatten-jylland.dk/",
+     "Djurslands Jernbanemuseum": "http://www.djbm.dk",
+     "Memory Lane Rockmuseum": "http://www.memorylanerockmuseum.dk/",
+     "Glas - Museet for glaskunst": "http://www.glasmuseet.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0707",
+   "nom": "Norddjurs",
+   "scores": {
+    "musees": 9.3,
+    "patrimoine": 2.6
+   },
+   "counts": {
+    "musees": 5,
+    "patrimoine": 46
+   },
+   "names": {
+    "musees": [
+     "Anholt Museum",
+     "Dansk Motor- og Maskinsamling",
+     "Det Grønne Museum",
+     "Gammel Estrup, Danmarks Herregårdsmuseum",
+     "Museum Østjylland Grenaa"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Det Grønne Museum": "https://detgroennemuseum.dk/",
+     "Gammel Estrup, Danmarks Herregårdsmuseum": "http://gammelestrup.dk/",
+     "Dansk Motor- og Maskinsamling": "https://motorsamlingen.dk/",
+     "Museum Østjylland Grenaa": "http://www.djurslandsmuseum.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0710",
+   "nom": "Favrskov",
+   "scores": {
+    "musees": 0.0,
+    "patrimoine": 1.7
+   },
+   "counts": {
+    "musees": 0,
+    "patrimoine": 30
+   },
+   "names": {
+    "musees": [],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {}
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0727",
+   "nom": "Odder",
+   "scores": {
+    "musees": 1.9,
+    "patrimoine": 1.1
+   },
+   "counts": {
+    "musees": 1,
+    "patrimoine": 19
+   },
+   "names": {
+    "musees": [
+     "Odder Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {}
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0730",
+   "nom": "Randers",
+   "scores": {
+    "musees": 9.3,
+    "patrimoine": 3.9
+   },
+   "counts": {
+    "musees": 5,
+    "patrimoine": 70
+   },
+   "names": {
+    "musees": [
+     "GAIA Museum Outsider Art",
+     "Memphis Mansion",
+     "Museum Østjylland Randers",
+     "Randers Kunstmuseum",
+     "Sparebøssemuseet"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Memphis Mansion": "http://memphismansion.dk",
+     "GAIA Museum Outsider Art": "https://gaiamuseum.dk/english",
+     "Randers Kunstmuseum": "https://www.randerskunstmuseum.dk/",
+     "Sparebøssemuseet": "https://www.sparebossemuseet.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0740",
+   "nom": "Silkeborg",
+   "scores": {
+    "musees": 11.1,
+    "patrimoine": 1.0
+   },
+   "counts": {
+    "musees": 6,
+    "patrimoine": 18
+   },
+   "names": {
+    "musees": [
+     "Jysk Automobilmuseum",
+     "KunstCentret Silkeborg Bad",
+     "Museum Jorn",
+     "Museum Silkeborg",
+     "Silkeborg Bunker Museum",
+     "Veteranbanen Bryrup-Vrads"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Jysk Automobilmuseum": "http://www.jyskautomobilmuseum.dk",
+     "KunstCentret Silkeborg Bad": "https://www.silkeborgbad.dk/",
+     "Silkeborg Bunker Museum": "http://www.silkeborgbunkermuseum.dk/",
+     "Museum Jorn": "http://www.museumjorn.dk",
+     "Museum Silkeborg": "https://www.museumsilkeborg.dk/",
+     "Veteranbanen Bryrup-Vrads": "http://www.veteranbanen.dk"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0741",
+   "nom": "Samsø",
+   "scores": {
+    "musees": 5.6,
+    "patrimoine": 2.5
+   },
+   "counts": {
+    "musees": 3,
+    "patrimoine": 44
+   },
+   "names": {
+    "musees": [
+     "Morgan Motor Collection",
+     "Samsø Museum",
+     "Samsø Tekniske Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Morgan Motor Collection": "https://morgan-motor-collection.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0746",
+   "nom": "Skanderborg",
+   "scores": {
+    "musees": 5.6,
+    "patrimoine": 0.7
+   },
+   "counts": {
+    "musees": 3,
+    "patrimoine": 12
+   },
+   "names": {
+    "musees": [
+     "Museum Skanderborg",
+     "Skanderborg Bunkerne",
+     "Øm Kloster museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Museum Skanderborg": "http://www.museumskanderborg.dk/",
+     "Skanderborg Bunkerne": "http://www.museumskanderborg.dk/om-bunkerne"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0751",
+   "nom": "Aarhus",
+   "scores": {
+    "musees": 29.6,
+    "patrimoine": 9.5
+   },
+   "counts": {
+    "musees": 16,
+    "patrimoine": 170
+   },
+   "names": {
+    "musees": [
+     "Aarhus Søfartsmuseum",
+     "Antikmuseet",
+     "ARoS Aarhus Kunstmuseum",
+     "Besættelsesmuseet",
+     "Bymuseet",
+     "Dansk Plakatmuseum",
+     "Den Gamle By",
+     "Gellerup Museum",
+     "Huset",
+     "KØN",
+     "Legetøjsmuseet",
+     "Moesgaard",
+     "Museum Ovartaci",
+     "Naturhistorisk Museum Aarhus",
+     "Steno Museet",
+     "Vikingemuseet"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Den Gamle By": "https://www.dengamleby.dk/",
+     "Antikmuseet": "https://antikmuseet.au.dk/",
+     "Besættelsesmuseet": "http://www.besaettelsesmuseet.dk/",
+     "Dansk Plakatmuseum": "http://www.plakatmuseum.dk",
+     "Museum Ovartaci": "http://www.ovartaci.dk",
+     "Naturhistorisk Museum Aarhus": "http://www.naturhistoriskmuseum.dk/",
+     "Steno Museet": "http://www.stenomuseet.dk/",
+     "ARoS Aarhus Kunstmuseum": "https://www.aros.dk",
+     "Moesgaard": "http://www.moesgaardmuseum.dk",
+     "Vikingemuseet": "https://www.vikingemuseet.dk/",
+     "KØN": "http://www.kvindemuseet.dk"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0756",
+   "nom": "Ikast-Brande",
+   "scores": {
+    "musees": 3.7,
+    "patrimoine": 0.1
+   },
+   "counts": {
+    "musees": 2,
+    "patrimoine": 2
+   },
+   "names": {
+    "musees": [
+     "Klosterlund Museum",
+     "Vester Palsgaard Skovmuseum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Klosterlund Museum": "https://museummidtjylland.dk/klosterlund-museum/",
+     "Vester Palsgaard Skovmuseum": "https://museummidtjylland.dk/vester-palsgaard-skovmuseum/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0760",
+   "nom": "Ringkøbing-Skjern",
+   "scores": {
+    "musees": 22.2,
+    "patrimoine": 3.5
+   },
+   "counts": {
+    "musees": 12,
+    "patrimoine": 63
+   },
+   "names": {
+    "musees": [
+     "Abelines Gård",
+     "Bork Vikingehavn",
+     "Bundsbæk Mølle",
+     "Danmarks Flymuseum",
+     "Dejbjerg Jernalder",
+     "Fahl Kro",
+     "Hattemagerhuset",
+     "Kaj Munks Præstegård",
+     "Naturkraft",
+     "Ringkøbing Museum",
+     "Strandgården",
+     "Vestjyllands Kunstpavillon"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Danmarks Flymuseum": "http://flymuseum.dk/",
+     "Naturkraft": "https://www.naturkraft.dk/",
+     "Ringkøbing Museum": "https://levendehistorie.dk/ringkoebingmuseum",
+     "Kaj Munks Præstegård": "https://ringkobingfjordmuseer.dk/museer/kaj-munks-praestegaard/",
+     "Bundsbæk Mølle": "http://www.levendehistorie.dk/forside-8",
+     "Abelines Gård": "https://levendehistorie.dk/forside-4",
+     "Vestjyllands Kunstpavillon": "http://www.vestjyllandskunstpavillon.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0766",
+   "nom": "Hedensted",
+   "scores": {
+    "musees": 5.6,
+    "patrimoine": 1.3
+   },
+   "counts": {
+    "musees": 3,
+    "patrimoine": 23
+   },
+   "names": {
+    "musees": [
+     "Danmarks Ferguson Museum",
+     "Glud Museum",
+     "Hjortsvang Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Glud Museum": "http://www.gludmuseum.dk/",
+     "Hjortsvang Museum": "http://www.hjortsvangmuseum.dk/",
+     "Danmarks Ferguson Museum": "https://fergusonmuseum.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0773",
+   "nom": "Morsø",
+   "scores": {
+    "musees": 5.6,
+    "patrimoine": 0.9
+   },
+   "counts": {
+    "musees": 3,
+    "patrimoine": 16
+   },
+   "names": {
+    "musees": [
+     "Dansk Støberimuseum",
+     "Morsø Traktormuseum",
+     "Skarregaard"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Skarregaard": "https://museummors.dk/skarregaard/historie",
+     "Morsø Traktormuseum": "https://www.traktormuseum.net/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0779",
+   "nom": "Skive",
+   "scores": {
+    "musees": 5.6,
+    "patrimoine": 1.6
+   },
+   "counts": {
+    "musees": 3,
+    "patrimoine": 28
+   },
+   "names": {
+    "musees": [
+     "Fur Museum",
+     "Skive Museum",
+     "Spøttrup Borg"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Skive Museum": "http://www.skivemuseum.dk/",
+     "Fur Museum": "http://www.furmuseum.dk",
+     "Spøttrup Borg": "http://www.borrebygods.dk"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0787",
+   "nom": "Thisted",
+   "scores": {
+    "musees": 13.0,
+    "patrimoine": 1.0
+   },
+   "counts": {
+    "musees": 7,
+    "patrimoine": 18
+   },
+   "names": {
+    "musees": [
+     "Besøgscenter Østerild",
+     "Bunkermuseum Hanstholm",
+     "Heltborg Museum",
+     "Kirsten Kjær Museum",
+     "SMK Thy",
+     "Thisted Museum",
+     "Vorupør Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Heltborg Museum": "http://museumthy.dk",
+     "Besøgscenter Østerild": "https://www.testcenter.dk/",
+     "SMK Thy": "https://www.smkthy.dk/",
+     "Kirsten Kjær Museum": "http://www.kkmuseum.dk",
+     "Bunkermuseum Hanstholm": "https://bunkermuseumhanstholm.dk",
+     "Thisted Museum": "http://museumthy.dk/afdelinger/thisted.aspx"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0791",
+   "nom": "Viborg",
+   "scores": {
+    "musees": 16.7,
+    "patrimoine": 4.5
+   },
+   "counts": {
+    "musees": 9,
+    "patrimoine": 80
+   },
+   "names": {
+    "musees": [
+     "Bruunshaab Gamle Papfabrik",
+     "E Bindstouw",
+     "Energimuseet",
+     "Hvolris Jernalderlandsby",
+     "Skovgaard Museet",
+     "Ulbjerg Traktormuseum",
+     "Viborg Kunsthal",
+     "Viborg Museum",
+     "Vingaards Officin"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Hvolris Jernalderlandsby": "https://hvolris.viborg.dk/",
+     "Bruunshaab Gamle Papfabrik": "http://www.papfabrik.dk",
+     "Viborg Kunsthal": "http://viborgkunsthal.viborg.dk/",
+     "Energimuseet": "http://energimuseet.dk/",
+     "Viborg Museum": "http://www.viborgmuseum.dk/",
+     "Ulbjerg Traktormuseum": "http://ulbjergtraktormuseum.dk/",
+     "Skovgaard Museet": "https://www.skovgaardmuseet.dk/",
+     "Vingaards Officin": "http://www.vingaards-officin.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0810",
+   "nom": "Brønderslev",
+   "scores": {
+    "musees": 5.6,
+    "patrimoine": 0.8
+   },
+   "counts": {
+    "musees": 3,
+    "patrimoine": 15
+   },
+   "names": {
+    "musees": [
+     "Egnssamlingen for Østvendsyssel",
+     "Vildmosemuseet",
+     "Voergaard Slot"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Voergaard Slot": "https://www.voergaardslot.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0813",
+   "nom": "Frederikshavn",
+   "scores": {
+    "musees": 27.8,
+    "patrimoine": 4.3
+   },
+   "counts": {
+    "musees": 15,
+    "patrimoine": 78
+   },
+   "names": {
+    "musees": [
+     "Anchers Hus",
+     "Bangsbo Museum",
+     "Drachmanns Hus",
+     "Frederikshavn Exlibris Museum",
+     "Frederikshavn Kunstmuseum",
+     "Grenen Kunstmuseum",
+     "Kystmuseet Skagen",
+     "Maskinrummet",
+     "Skagen Bamsemuseum",
+     "Skagen Bunkermuseum",
+     "Skagen Naturhistoriske Museum",
+     "Skagen Odde Naturcenter",
+     "Skagens Museum",
+     "Sognefogedgården",
+     "Sæby Museum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Sæby Museum": "https://www.kystmuseet.dk/besoeg-os/kystmuseet-saeby//",
+     "Maskinrummet": "https://www.maskinrummet-skagen.dk/",
+     "Bangsbo Museum": "http://www.kystmuseet.dk/bangsbo-frederikshavn//",
+     "Frederikshavn Kunstmuseum": "http://www.frederikshavnkunstmuseum.dk/",
+     "Grenen Kunstmuseum": "http://www.grenenkunstmuseum.dk/",
+     "Anchers Hus": "http://www.anchershus.dk",
+     "Skagen Naturhistoriske Museum": "http://www.naturmuseum-skagen.dk",
+     "Frederikshavn Exlibris Museum": "http://art-exlibris.net",
+     "Drachmanns Hus": "http://www.drachmannshus.dk/",
+     "Skagen Bunkermuseum": "https://skagen-bunkermuseum.dk/",
+     "Skagen Bamsemuseum": "http://www.skagensbamsemuseum.dk/",
+     "Skagens Museum": "https://skagensmuseum.dk/",
+     "Sognefogedgården": "https://www.sognefogedgården.dk/",
+     "Skagen Odde Naturcenter": "http://www.skagen-natur.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0820",
+   "nom": "Vesthimmerlands",
+   "scores": {
+    "musees": 11.1,
+    "patrimoine": 0.8
+   },
+   "counts": {
+    "musees": 6,
+    "patrimoine": 14
+   },
+   "names": {
+    "musees": [
+     "Danmarks Cykelmuseum",
+     "Hessel",
+     "Johannes V. Jensen & Thit Jensen Museet",
+     "Limfjordsmuseet",
+     "Museumscenter Aars",
+     "Stone age center Ertebølle"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Danmarks Cykelmuseum": "http://www.cykelmuseum.dk/",
+     "Hessel": "http://herregaarden-hessel.dk/",
+     "Limfjordsmuseet": "http://www.limfjordsmuseet.dk/",
+     "Stone age center Ertebølle": "http://www.stenaldercenter.dk/",
+     "Johannes V. Jensen & Thit Jensen Museet": "https://www.jensenmuseet.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0825",
+   "nom": "Læsø",
+   "scores": {
+    "musees": 7.4,
+    "patrimoine": 1.0
+   },
+   "counts": {
+    "musees": 4,
+    "patrimoine": 18
+   },
+   "names": {
+    "musees": [
+     "Læsø Kunsthal",
+     "Læsø Museum",
+     "Læsø Saltsyderi",
+     "Museumsgården"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Læsø Museum": "http://www.laesoe-museum.dk",
+     "Læsø Saltsyderi": "https://www.laesoesalt.com/",
+     "Læsø Kunsthal": "http://www.laesoekunsthal.com",
+     "Museumsgården": "http://www.laesoe-museum.dk/afdelinger/museumsgaard"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0840",
+   "nom": "Rebild",
+   "scores": {
+    "musees": 5.6,
+    "patrimoine": 0.9
+   },
+   "counts": {
+    "musees": 3,
+    "patrimoine": 16
+   },
+   "names": {
+    "musees": [
+     "Boldrup Museum",
+     "Regan Vest",
+     "Thingbæk Kalkminer"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Regan Vest": "https://reganvest.dk",
+     "Boldrup Museum": "http://nordmus.dk/boldrup-museum"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0846",
+   "nom": "Mariagerfjord",
+   "scores": {
+    "musees": 20.4,
+    "patrimoine": 2.9
+   },
+   "counts": {
+    "musees": 11,
+    "patrimoine": 52
+   },
+   "names": {
+    "musees": [
+     "Gasmuseet",
+     "Hadsund Egnssamling",
+     "Hadsund kommandocentral",
+     "Hobro Museum",
+     "Lystfartøjsmuseet",
+     "Mariager Museum",
+     "Mariager salt center",
+     "Mariager-Handest Veteranjernbane",
+     "Møllehistorisk Samling",
+     "Sødisbakke Museum",
+     "Vikingemuseet Fyrkat"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Hadsund Egnssamling": "http://www.nordmus.dk/hadsundegnssamling",
+     "Sødisbakke Museum": "https://saerforanstaltninger.rn.dk/Om-Saerforanstaltninger/Omraadet-for-Voksne-med-Udviklingshandicap-Soedisbakke/Historie-og-museum",
+     "Mariager Museum": "https://www.mariagermuseum.dk",
+     "Vikingemuseet Fyrkat": "http://www.nordmus.dk/vikingecenter-fyrkat",
+     "Møllehistorisk Samling": "http://moelleforum.dk/",
+     "Hobro Museum": "https://oplevhobro.dk/hobro-museum/",
+     "Gasmuseet": "http://www.gasmuseet.dk/",
+     "Lystfartøjsmuseet": "https://nordmus.dk/u/lystfartoejsmuseet/",
+     "Mariager salt center": "http://saltcenter.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0849",
+   "nom": "Jammerbugt",
+   "scores": {
+    "musees": 1.9,
+    "patrimoine": 1.4
+   },
+   "counts": {
+    "musees": 1,
+    "patrimoine": 26
+   },
+   "names": {
+    "musees": [
+     "Museum for Papirkunst"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Museum for Papirkunst": "https://museumforpapirkunst.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0851",
+   "nom": "Aalborg",
+   "scores": {
+    "musees": 20.4,
+    "patrimoine": 3.7
+   },
+   "counts": {
+    "musees": 11,
+    "patrimoine": 67
+   },
+   "names": {
+    "musees": [
+     "Aalborg Forsvars- og Garnisonsmuseum",
+     "Aalborg Historiske Museum",
+     "Apotekersamlingen",
+     "Godthaab Hammerværk",
+     "Gråbrødrekloster Museet",
+     "Kunsten Museum of Modern Art Aalborg",
+     "Sebbersund Vikingeby",
+     "Springeren - Maritimt Oplevelsescenter",
+     "Utzon Center",
+     "Vandteknisk Museum",
+     "Vikingemuseet Lindholm Høje"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Godthaab Hammerværk": "http://www.godthaab-hammervaerk.dk/",
+     "Utzon Center": "http://www.utzoncenter.dk/",
+     "Kunsten Museum of Modern Art Aalborg": "http://kunsten.dk/",
+     "Aalborg Forsvars- og Garnisonsmuseum": "http://www.forsvarsmuseum.dk/",
+     "Aalborg Historiske Museum": "http://www.nordmus.dk/aalborg-historiske-museum",
+     "Springeren - Maritimt Oplevelsescenter": "http://www.aalborgmarinemuseum.dk/",
+     "Vandteknisk Museum": "https://www.aalborgforsyning.dk/vand/om-aalborg-forsynings-vandforsyning/vandteknisk-museum.aspx",
+     "Sebbersund Vikingeby": "https://vikingebyen.dk/"
+    }
+   },
+   "disciplines": {}
+  },
+  {
+   "code": "0860",
+   "nom": "Hjørring",
+   "scores": {
+    "musees": 22.2,
+    "patrimoine": 1.7
+   },
+   "counts": {
+    "musees": 12,
+    "patrimoine": 30
+   },
+   "names": {
+    "musees": [
+     "Bunkermuseet Hirtshals",
+     "Børglum Kloster",
+     "Kunstbygningen i Vrå",
+     "Landskabs- og Landbrugsmuseet",
+     "Løkken Kystfiskerimuseum",
+     "Løkken Museum",
+     "Moskildvad",
+     "Nordsøen Oceanarium",
+     "Odden Hovedgård",
+     "Sandflugtsmuseet",
+     "Vendsyssel Historiske Museum",
+     "Vendsyssel Kunstmuseum"
+    ],
+    "patrimoine": []
+   },
+   "urls": {
+    "musees": {
+     "Bunkermuseet Hirtshals": "http://www.bunkermuseethirtshals.dk/",
+     "Odden Hovedgård": "http://jfwillumsenodden.dk",
+     "Vendsyssel Historiske Museum": "http://www.vhm.dk/",
+     "Vendsyssel Kunstmuseum": "http://www.vkm.dk/",
+     "Kunstbygningen i Vrå": "http://www.kunstbygningenvraa.dk",
+     "Nordsøen Oceanarium": "http://www.nordsoenoceanarium.dk",
+     "Moskildvad": "http://www.martinussindal.dk/",
+     "Løkken Museum": "https://www.loekkenmuseum.dk/"
+    }
+   },
+   "disciplines": {}
+  }
+ ]
+}

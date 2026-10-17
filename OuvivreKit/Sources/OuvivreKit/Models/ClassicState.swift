@@ -111,9 +111,28 @@ final class ClassicState: ObservableObject {
         ClassicStatic.countryProfiles[country]?.facts ?? []
     }
 
+    /// Critères sans données pour le pays sélectionné (voir
+    /// `ClassicStatic.hiddenCriteria`).
+    private var hiddenCriteria: Set<String> { ClassicStatic.hiddenCriteria[country] ?? [] }
+
+    /// Poids de proximité réellement appliqués : ceux des critères masqués
+    /// pour le pays comptent pour 0, même s'ils restent réglés côté France.
+    var effectiveGeo2: [Int] {
+        zip(FranceGeoData.criterionKeys, geo2).map { hiddenCriteria.contains($0.0) ? 0 : $0.1 }
+    }
+
+    /// Poids Culture réellement appliqués (critères masqués à 0).
+    var effectiveCulture: [Int] {
+        zip(CultureScores.criterionKeys, culture).map { hiddenCriteria.contains($0.0) ? 0 : $0.1 }
+    }
+
     /// Géographie 2's rows, on its own 3-level (0...2) scale — "souhaitable" et "accessoire" fusionnés dans "important".
+    /// Les critères masqués pour le pays n'ont pas de réglette ; les `id`
+    /// restent les index dans `geo2`.
     var geo2Rows: [WeightedRow] {
-        ClassicStatic.geo.enumerated().map { WeightedRow(id: $0, label: $1, value: geo2[$0]) }
+        ClassicStatic.geo.enumerated()
+            .filter { !hiddenCriteria.contains(FranceGeoData.criterionKeys[$0.offset]) }
+            .map { WeightedRow(id: $0.offset, label: $0.element, value: geo2[$0.offset]) }
     }
 
     /// Les 3 réglettes Culture, mêmes 3 niveaux que "Proximités" — sources :
@@ -121,7 +140,9 @@ final class ClassicState: ObservableObject {
     /// - Lieux du patrimoine : https://culture.data.gouv.fr/datasets/628da9ff836d8bf454c7fd48
     /// - Festivals : https://culture.data.gouv.fr/datasets/62cf95993d99f22480f49334
     var cultureRows: [WeightedRow] {
-        ClassicStatic.culture.enumerated().map { WeightedRow(id: $0, label: $1, value: culture[$0]) }
+        ClassicStatic.culture.enumerated()
+            .filter { !hiddenCriteria.contains(CultureScores.criterionKeys[$0.offset]) }
+            .map { WeightedRow(id: $0.offset, label: $0.element, value: culture[$0.offset]) }
     }
 
     /// Les critères Culture dont le réglage est au-dessus de 0 (différent
@@ -129,16 +150,17 @@ final class ClassicState: ObservableObject {
     /// correspondante — utilisé par l'inspecteur pour lister les critères
     /// actifs et le contenu culturel du département cliqué.
     var activeCultureCriteria: [(label: String, key: String)] {
-        zip(zip(ClassicStatic.culture, CultureScores.criterionKeys), culture)
+        zip(zip(ClassicStatic.culture, CultureScores.criterionKeys), effectiveCulture)
             .filter { $0.1 > 0 }
             .map { (label: $0.0.0, key: $0.0.1) }
     }
 
     /// Real département scores (weighted by `geo2`), ranked — backed by
     /// `FranceGeoData` (IGN-derived, see geo_pipeline/). Replaces the old
-    /// fake `topScore = 60 + geoSum*1.6` formula.
+    /// fake `topScore = 60 + geoSum*1.6` formula. Limité au pays sélectionné
+    /// (départements français ou kommuner danoises).
     func rankedDepartements() -> [(dep: FranceGeoData.DepartementScore, score: Double)] {
-        let weights = geo2
+        let weights = effectiveGeo2
         let maxWeight = Self.maxWeight
         // Hard-filtered criteria (see `FranceGeoData.hardFilterCriteria`) get
         // an eligibility floor on top of the weighted average below — a
@@ -155,6 +177,7 @@ final class ClassicState: ObservableObject {
         let activeFilterCount = hardFilterWeights.filter { $0.weight > 0 }.count + (paysEtrangerWeight > 0 ? 1 : 0)
         let allowedMisses = FranceGeoData.allowedMisses(activeFilterCount: activeFilterCount)
         return FranceGeoData.departements
+            .filter { $0.country == country }
             .filter { !(excludeOverseas && $0.isOverseas) && !(excludeCorse && $0.isCorse) }
             // Un ou deux critères réglés s'appliquent en ET strict ; au-delà,
             // un raté est toléré (deux à partir de 5 critères), sinon leurs
