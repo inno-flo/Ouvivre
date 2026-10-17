@@ -21,6 +21,12 @@ struct SidebarNav: View {
     /// (≈ 25 pt du bord droit, contre ≈ 10 pt de marge intérieure des lignes).
     private static let trailingColumnWidth: CGFloat = 30
 
+    /// Nom suivi du drapeau du pays, pour les lieux hors de France seulement.
+    private static func displayName(_ dep: FranceGeoData.DepartementScore) -> String {
+        guard dep.country != "France", let flag = ClassicStatic.countryFlags[dep.country] else { return dep.nom }
+        return "\(dep.nom) \(flag)"
+    }
+
     private var isTous: Bool { state.screen == .favoris && state.selectedDepartementCode == nil }
 
     /// Départements favoris, badge `checkmark.seal.fill` en tête, puis ordre alphabétique — la liste suit
@@ -91,7 +97,7 @@ struct SidebarNav: View {
                         ForEach(favoriteDepartements(topCodes: topCodes), id: \.codeInsee) { dep in
                             let isTop = topCodes.contains(dep.codeInsee)
                             HStack(spacing: 0) {
-                                Self.rowLabel(dep.nom, systemImage: isTop ? "checkmark.seal.fill" : "mappin",
+                                Self.rowLabel(Self.displayName(dep), systemImage: isTop ? "checkmark.seal.fill" : "mappin",
                                               bold: state.selectedDepartementCode == dep.codeInsee, badge: isTop)
                                 Spacer(minLength: 4)
                             }
