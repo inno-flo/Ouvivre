@@ -8,19 +8,18 @@ struct PaysCountryBlock: View {
     @Environment(\.colorScheme) private var colorScheme
     let ink: Color
 
-    /// Pays dont le nom est grisé (données pas encore exploitées).
-    private static let dimmedCountries: Set<String> = ["Suède", "Japon"]
+    /// Pays dont la puce est masquée (données pas encore exploitées).
+    private static let hiddenCountries: Set<String> = ["Suède", "Japon"]
 
     var body: some View {
         FlowLayout(spacing: 8, rowSpacing: 8) {
-            ForEach(ClassicStatic.countries, id: \.self) { name in
+            ForEach(ClassicStatic.countries.filter { !Self.hiddenCountries.contains($0) }, id: \.self) { name in
                 let selected = name == state.country
-                let dimmed = Self.dimmedCountries.contains(name) && !selected
                 Button { state.country = name } label: {
                     // Drapeau devant le nom des pays dont les données sont chargées.
                     Text(ClassicStatic.countriesWithData.contains(name) ? [ClassicStatic.countryFlags[name], name].compactMap { $0 }.joined(separator: " ") : name)
                         .font(CFont.rounded(13, weight: .medium))
-                        .foregroundStyle(selected ? .white : (dimmed ? Color.secondary : ink))
+                        .foregroundStyle(selected ? .white : ink)
                         .padding(.horizontal, 12).padding(.vertical, 8)
                         .background(selected ? ClassicTheme.accent : .clear)
                         .clipShape(Capsule())
