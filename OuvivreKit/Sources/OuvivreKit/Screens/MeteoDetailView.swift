@@ -98,7 +98,7 @@ public struct MeteoDetailView: View {
         OptionalScroll(enabled: !embedded) {
             VStack(alignment: .leading, spacing: 24) {
                 if !embedded {
-                    DepartementHeaderAndMap(departementCode: departementCode, state: state)
+                    DepartementHeaderAndMap(departementCode: departementCode, state: state, showsFlag: true)
                 }
                 // Titre de section sous la carte.
                 Button {

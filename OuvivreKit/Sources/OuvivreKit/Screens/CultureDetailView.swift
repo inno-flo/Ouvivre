@@ -36,7 +36,7 @@ public struct CultureDetailView: View {
         OptionalScroll(enabled: !embedded) {
             VStack(alignment: .leading, spacing: 28) {
                 if !embedded {
-                    DepartementHeaderAndMap(departementCode: departementCode, state: state)
+                    DepartementHeaderAndMap(departementCode: departementCode, state: state, showsFlag: true)
                 }
 
                 // Titre de section sous la carte (en mode intégré, la carte est

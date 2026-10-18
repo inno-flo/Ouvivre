@@ -8,11 +8,18 @@ struct DepartementDetailHeader: View {
     let departementCode: String
     @ObservedObject var state: ClassicState
     let onRecenter: () -> Void
+    /// Drapeau du pays devant le nom, pour les localités danoises (fenêtre Climat).
+    var showsFlag = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
         HStack(alignment: .center, spacing: 10) {
             HStack(alignment: .center, spacing: 8) {
+                if showsFlag,
+                   let country = FranceGeoData.departements.first(where: { $0.codeInsee == departementCode })?.country,
+                   country == "Danemark", let flag = ClassicStatic.countryFlags[country] {
+                    Text(flag).font(.system(size: 20))
+                }
                 Text(FranceGeoData.nom(forCode: departementCode))
                     .font(CFont.rounded(20, weight: .bold))
                     .foregroundStyle(c.ink)
@@ -71,11 +78,12 @@ struct DepartementDetailHeader: View {
 struct DepartementHeaderAndMap: View {
     let departementCode: String
     @ObservedObject var state: ClassicState
+    var showsFlag = false
     @State private var mapFocusTick = 0
     @Environment(\.recordPin) private var recordPin
 
     var body: some View {
-        DepartementDetailHeader(departementCode: departementCode, state: state) { mapFocusTick += 1 }
+        DepartementDetailHeader(departementCode: departementCode, state: state, showsFlag: showsFlag) { mapFocusTick += 1 }
         PinnedMapCard(
             pin: recordPin,
             names: [FranceGeoData.nom(forCode: departementCode)],
