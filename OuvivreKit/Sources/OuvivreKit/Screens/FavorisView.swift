@@ -51,13 +51,20 @@ struct FavorisView: View {
         static let defaultValue: CGFloat = 0
         static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
     }
+    /// Nom affiché en en-tête de colonne : suivi du drapeau du pays pour les
+    /// lieux hors de France (kommuner danoises), comme dans la sidebar.
+    private static func displayName(_ d: FranceGeoData.DepartementScore) -> String {
+        guard d.country != "France", let flag = ClassicStatic.countryFlags[d.country] else { return d.nom }
+        return "\(d.nom) \(flag)"
+    }
+
     /// Largeur mesurée (SF Pro Rounded) du texte le plus large de l'en-tête —
     /// nom de département (13 semibold) ou de région (10) —, plus 1 caractère
     /// moyen d'espacement de chaque côté.
     private static func colW(_ departements: [FranceGeoData.DepartementScore]) -> CGFloat {
         let nameFont = roundedFont(13, .semibold), regionFont = roundedFont(10, .regular)
         let candidates = departements.flatMap { d in
-            [(d.nom, nameFont), (d.nomRegion, regionFont)]
+            [(displayName(d), nameFont), (d.nomRegion, regionFont)]
         }.map { text, font in
             (width: (text as NSString).size(withAttributes: [.font: font]).width, count: max(text.count, 1))
         }
@@ -322,7 +329,7 @@ struct FavorisView: View {
 
     private func headerContent(_ d: FranceGeoData.DepartementScore, isTop: Bool) -> some View {
         VStack(alignment: .center, spacing: 4) {
-            Text(d.nom).font(CFont.rounded(13, weight: .semibold)).foregroundStyle(pal.body)
+            Text(Self.displayName(d)).font(CFont.rounded(13, weight: .semibold)).foregroundStyle(pal.body)
             Text(d.nomRegion).font(CFont.rounded(10)).foregroundStyle(pal.sub)
             HStack(spacing: 6) {
                 Button { pendingRemovalCode = d.codeInsee } label: {
