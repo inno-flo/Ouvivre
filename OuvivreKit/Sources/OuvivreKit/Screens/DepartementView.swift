@@ -12,7 +12,7 @@ struct DepartementView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
-                DepartementHeaderAndMap(departementCode: departementCode, state: state)
+                DepartementHeaderAndMap(departementCode: departementCode, state: state, showsFlag: true)
                 MeteoDetailView(departementCode: departementCode, embedded: true)
                 // Une ligne vide sépare la rubrique Culture de la fin du Climat.
                 CultureDetailView(departementCode: departementCode, embedded: true)
